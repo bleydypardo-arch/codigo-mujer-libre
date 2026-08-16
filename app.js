@@ -70,22 +70,21 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Navegación interactiva
-  document.querySelectorAll("[data-section]").forEach(button => {
-    button.addEventListener("click", () => {
-      const section = button.getAttribute("data-section");
+document.querySelectorAll("nav button[data-page]").forEach((button) => {
+  button.addEventListener("click", () => {
+    const page = button.getAttribute("data-page");
 
-      document.querySelectorAll(".app-section").forEach(item => {
-        item.style.display = "none";
-      });
-
-      const target = document.getElementById(section);
-
-      if (target) {
-        target.style.display = "block";
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }
+    document.querySelectorAll(".page").forEach((section) => {
+      section.classList.remove("active");
     });
+
+    const target = document.getElementById(page);
+    if (target) {
+      target.classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   });
+});
 
   // Formularios
   document.querySelectorAll("form").forEach(form => {
