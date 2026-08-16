@@ -1,1 +1,1 @@
-Código Mujer Libre V1. Prototipo móvil bilingüe. Para compartir por QR con varias usuarias, el siguiente paso es conectarlo a una base de datos/autenticación y publicarlo en una URL HTTPS.
+Código Mujer Libre — interfaz bilingüe ES/EN. Subir index.html, style.css y app.js juntos al repositorio de GitHub Pages.

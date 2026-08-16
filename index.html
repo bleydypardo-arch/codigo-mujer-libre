@@ -1,15 +1,109 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#FFF9F5"><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="style.css"><title>Código Mujer Libre</title></head><body>
-<header><div><b>Código Mujer Libre</b><small>Conecta · Vive · Crece</small></div><button id="lang">EN</button></header>
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FFF9F5">
+<link rel="stylesheet" href="style.css">
+<title>Código Mujer Libre</title>
+</head>
+<body>
+<header>
+  <div><b>Código Mujer Libre</b><small data-i18n="tagline">Conecta · Vive · Crece</small></div>
+  <button id="langBtn">EN</button>
+</header>
+
 <main>
-<section id="home" class="page on"><div class="hero"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=85"><div><small>YOUR COMMUNITY</small><h1 data-es="Más conexión. Más vida. Más tú." data-en="More connection. More life. More you.">Más conexión. Más vida. Más tú.</h1><p data-es="Un espacio fresco para conectar, salir, crecer y sentirte acompañada." data-en="A fresh space to connect, go out, grow and feel supported.">Un espacio fresco para conectar, salir, crecer y sentirte acompañada.</p></div></div>
-<div class="quote"><div><small data-es="MENSAJE DE HOY" data-en="TODAY'S MESSAGE">MENSAJE DE HOY</small><h2 id="quote">Haz espacio para lo que también te hace sentir viva.</h2></div><button id="edit">✎</button></div>
-<h2 data-es="¿Cuál es tu código esta semana?" data-en="What's your code this week?">¿Cuál es tu código esta semana?</h2><div class="chips"><span>🥂 Social</span><span>🌿 Wellness</span><span>🙏 Faith</span><span>✈️ Adventure</span><span>👨‍👩‍👧 Family</span><span>🕊️ Support</span></div>
-<h2 data-es="Esta semana" data-en="This week">Esta semana</h2><div id="featured" class="cards"></div>
-<div class="blog"><small>LET'S TALK</small><h2 data-es="Volver a hacer amigas de adulta" data-en="Making friends again as an adult">Volver a hacer amigas de adulta</h2><p data-es="Conversaciones, ideas, recomendaciones y pequeños blogs para la comunidad." data-en="Conversations, ideas, recommendations and short community articles.">Conversaciones, ideas, recomendaciones y pequeños blogs para la comunidad.</p></div></section>
-<section id="events" class="page"><h1 data-es="Planes & Eventos" data-en="Plans & Events">Planes & Eventos</h1><div id="eventsList" class="cards"></div></section>
-<section id="community" class="page"><h1>Community</h1><div class="member">A <b>Ana</b><small>Brunch · Wellness · Travel</small></div><div class="member">M <b>María</b><small>Family · Coffee · Faith</small></div><textarea id="post" placeholder="Comparte algo..."></textarea><button class="primary" id="postBtn">Post</button><div id="posts"></div></section>
-<section id="messages" class="page"><h1 data-es="Mensajes" data-en="Messages">Mensajes</h1><div id="msgs"></div><button class="primary" onclick="support()" data-es="Mensaje privado a Admin" data-en="Private message to Admin">Mensaje privado a Admin</button></section>
-<section id="wellness" class="page"><h1>Wellness & Support</h1><div class="grid"><button onclick="support()">🕊️<b data-es="Necesito hablar" data-en="I need to talk">Necesito hablar</b></button><button>🙏<b>Faith</b></button><button>👨‍👩‍👧<b>Family</b></button><button onclick="support()">💡<b data-es="Sugerencia" data-en="Suggestion">Sugerencia</b></button></div><p class="note" data-es="Apoyo comunitario; no reemplaza servicios profesionales o de emergencia." data-en="Community support; not a replacement for professional or emergency services.">Apoyo comunitario; no reemplaza servicios profesionales o de emergencia.</p></section>
+<section id="home" class="page active">
+  <div class="hero">
+    <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=88" alt="Women together">
+    <div class="heroText">
+      <small data-i18n="communityLabel">TU COMUNIDAD</small>
+      <h1 data-i18n="heroTitle">Más conexión. Más vida. Más tú.</h1>
+      <p data-i18n="heroBody">Un espacio fresco para conectar, salir, crecer y sentirte acompañada.</p>
+    </div>
+  </div>
+
+  <div class="quote card">
+    <div>
+      <small class="rose" data-i18n="today">MENSAJE DE HOY</small>
+      <h2 id="dailyQuote">Haz espacio para lo que también te hace sentir viva.</h2>
+    </div>
+    <button class="round" id="editQuote">✎</button>
+  </div>
+
+  <h2 data-i18n="weeklyCode">¿Cuál es tu código esta semana?</h2>
+  <div class="chips">
+    <span>🥂 Social</span><span>🌿 Wellness</span><span>🙏 Faith</span>
+    <span>✈️ Adventure</span><span>👨‍👩‍👧 Family</span><span>🤝 Connection</span>
+    <span>🕊️ Support</span><span>😌 Recharge</span>
+  </div>
+
+  <h2 data-i18n="thisWeek">Esta semana</h2>
+  <div id="featured" class="cards"></div>
+
+  <div class="card">
+    <small class="rose" data-i18n="letsTalk">HABLEMOS</small>
+    <h2 data-i18n="articleTitle">Volver a hacer amigas de adulta</h2>
+    <p data-i18n="articleBody">Conversaciones, ideas y recomendaciones para crear conexiones reales.</p>
+  </div>
+</section>
+
+<section id="events" class="page">
+  <small class="rose" data-i18n="discover">DESCUBRE</small>
+  <h1 data-i18n="eventsTitle">Planes & Eventos</h1>
+  <div id="eventsList" class="cards"></div>
+</section>
+
+<section id="community" class="page">
+  <small class="rose">COMMUNITY</small>
+  <h1 data-i18n="communityTitle">Nuestra comunidad</h1>
+  <div class="member"><span>A</span><div><b>Ana</b><small>Brunch · Wellness · Travel</small></div></div>
+  <div class="member"><span>M</span><div><b>María</b><small>Family · Coffee · Faith</small></div></div>
+  <div class="card">
+    <h2 data-i18n="shareSomething">Comparte algo</h2>
+    <textarea id="postText" data-i18n-placeholder="postPlaceholder" placeholder="¿Qué quieres compartir con la comunidad?"></textarea>
+    <button class="primary" id="postBtn" data-i18n="post">Publicar</button>
+  </div>
+  <div id="posts"></div>
+</section>
+
+<section id="messages" class="page">
+  <small class="rose">MESSAGES</small>
+  <h1 data-i18n="messagesTitle">Mensajes</h1>
+  <div id="messagesList"></div>
+  <button class="primary" id="newMessage" data-i18n="messageAdmin">Mensaje privado a la administradora</button>
+</section>
+
+<section id="wellness" class="page">
+  <small class="rose">WELLNESS & SUPPORT</small>
+  <h1 data-i18n="yourSpace">Tu espacio</h1>
+  <div class="grid">
+    <button class="support" data-type="talk">🕊️<b data-i18n="needTalk">Necesito hablar</b><small data-i18n="privateAdmin">Mensaje privado a la administradora</small></button>
+    <button class="support" data-type="prayer">🙏<b data-i18n="prayer">Oración</b><small data-i18n="prayerSub">Pide acompañamiento</small></button>
+    <button class="support" data-type="idea">💡<b data-i18n="suggestion">Tengo una sugerencia</b><small data-i18n="suggestionSub">Eventos, temas o ideas</small></button>
+    <button class="support" data-type="family">👨‍👩‍👧<b>Family</b><small data-i18n="familySub">Planes y actividades familiares</small></button>
+  </div>
+  <p class="note" data-i18n="supportNote">Este espacio ofrece apoyo comunitario y no reemplaza servicios profesionales o de emergencia.</p>
+</section>
 </main>
-<nav><button data-p="home">⌂<small>Home</small></button><button data-p="events">◉<small>Events</small></button><button data-p="community">♡<small>Community</small></button><button data-p="messages">✉<small>Messages</small></button><button data-p="wellness">✦<small>Wellness</small></button></nav>
-<div id="modal"><div><button onclick="closeM()">×</button><h2 id="mt"></h2><textarea id="mi"></textarea><button class="primary" id="ms">Save</button></div></div><script src="app.js"></script></body></html>
+
+<nav>
+<button data-page="home">⌂<small data-i18n="home">Inicio</small></button>
+<button data-page="events">◉<small data-i18n="events">Eventos</small></button>
+<button data-page="community">♡<small>Community</small></button>
+<button data-page="messages">✉<small data-i18n="messages">Mensajes</small></button>
+<button data-page="wellness">✦<small>Wellness</small></button>
+</nav>
+
+<div id="modal">
+ <div class="modalCard">
+  <button class="x" id="closeModal">×</button>
+  <h2 id="modalTitle"></h2>
+  <textarea id="modalText"></textarea>
+  <button class="primary" id="modalSave"></button>
+ </div>
+</div>
+
+<script src="app.js"></script>
+</body></html>
