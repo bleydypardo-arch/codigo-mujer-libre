@@ -1,12 +1,12 @@
-// Código Mujer Libre — ES / EN
+// Código Mujer Libre — app.js
 
-let currentLanguage = "es";
+let currentLanguage = localStorage.getItem("codigoMujerLibreLanguage") || "es";
 
 const translations = {
   es: {
     community: "TU COMUNIDAD",
     heroTitle: "Más conexión. Más vida. Más tú.",
-    heroText: "Un espacio fresco para conectar, salir, crecer y sentirte acompañada.",
+    heroBody: "Un espacio fresco para conectar, salir, crecer y sentirte acompañada.",
     today: "MENSAJE DE HOY",
     home: "Inicio",
     events: "Eventos",
@@ -18,7 +18,7 @@ const translations = {
   en: {
     community: "YOUR COMMUNITY",
     heroTitle: "More connection. More life. More you.",
-    heroText: "A fresh space to connect, go out, grow and feel supported.",
+    heroBody: "A fresh space to connect, go out, grow and feel supported.",
     today: "TODAY'S MESSAGE",
     home: "Home",
     events: "Events",
@@ -28,19 +28,26 @@ const translations = {
   }
 };
 
+
+// ==============================
+// IDIOMA
+// ==============================
+
 function setLanguage(lang) {
   currentLanguage = lang;
   document.documentElement.lang = lang;
 
-  document.querySelectorAll("[data-es]").forEach(element => {
-    const text = element.getAttribute(`data-${lang}`);
-    if (text) element.textContent = text;
+  const t = translations[lang];
+
+  document.querySelectorAll("[data-i18n]").forEach(element => {
+    const key = element.getAttribute("data-i18n");
+
+    if (t[key]) {
+      element.textContent = t[key];
+    }
   });
 
-  const languageButton =
-    document.querySelector("#languageToggle") ||
-    document.querySelector(".language-toggle") ||
-    document.querySelector("[data-language-toggle]");
+  const languageButton = document.getElementById("langBtn");
 
   if (languageButton) {
     languageButton.textContent = lang === "es" ? "EN" : "ES";
@@ -49,52 +56,238 @@ function setLanguage(lang) {
   localStorage.setItem("codigoMujerLibreLanguage", lang);
 }
 
+
 function toggleLanguage() {
   setLanguage(currentLanguage === "es" ? "en" : "es");
 }
 
+
+// ==============================
+// NAVEGACIÓN
+// ==============================
+
+function showPage(pageName) {
+
+  document.querySelectorAll(".page").forEach(page => {
+    page.classList.remove("active");
+  });
+
+  const targetPage = document.getElementById(pageName);
+
+  if (targetPage) {
+    targetPage.classList.add("active");
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+}
+
+
+// ==============================
+// INICIO DE LA APP
+// ==============================
+
 document.addEventListener("DOMContentLoaded", () => {
 
-  const savedLanguage =
-    localStorage.getItem("codigoMujerLibreLanguage") || "es";
+  // Cargar idioma
+  setLanguage(currentLanguage);
 
-  setLanguage(savedLanguage);
 
-  const languageButton =
-    document.querySelector("#languageToggle") ||
-    document.querySelector(".language-toggle") ||
-    document.querySelector("[data-language-toggle]");
+  // Botón ES / EN
+  const languageButton = document.getElementById("langBtn");
 
   if (languageButton) {
     languageButton.addEventListener("click", toggleLanguage);
   }
 
-  // Navegación interactiva
-document.querySelectorAll("nav button[data-page]").forEach((button) => {
-  button.addEventListener("click", () => {
-    const page = button.getAttribute("data-page");
 
-    document.querySelectorAll(".page").forEach((section) => {
-      section.classList.remove("active");
+  // Botones de navegación inferior
+  document.querySelectorAll("nav button[data-page]").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const page = button.getAttribute("data-page");
+
+      showPage(page);
+
     });
 
-    const target = document.getElementById(page);
-    if (target) {
-      target.classList.add("active");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
   });
-});
 
-  // Formularios
+
+  // ==============================
+  // MODAL
+  // ==============================
+
+  const modal = document.getElementById("modal");
+  const closeModal = document.getElementById("closeModal");
+  const modalSave = document.getElementById("modalSave");
+  const modalText = document.getElementById("modalText");
+  const modalTitle = document.getElementById("modalTitle");
+
+
+  function openModal(title = "") {
+    if (!modal) return;
+
+    if (modalTitle) {
+      modalTitle.textContent = title;
+    }
+
+    modal.style.display = "flex";
+  }
+
+
+  function hideModal() {
+    if (!modal) return;
+
+    modal.style.display = "none";
+  }
+
+
+  if (closeModal) {
+    closeModal.addEventListener("click", hideModal);
+  }
+
+
+  if (modal) {
+    modal.addEventListener("click", event => {
+
+      if (event.target === modal) {
+        hideModal();
+      }
+
+    });
+  }
+
+
+  // ==============================
+  // MENSAJE DEL DÍA
+  // ==============================
+
+  const editQuote = document.getElementById("editQuote");
+  const dailyQuote = document.getElementById("dailyQuote");
+
+  if (editQuote) {
+
+    editQuote.addEventListener("click", () => {
+
+      if (modalText && dailyQuote) {
+        modalText.value = dailyQuote.textContent.trim();
+      }
+
+      openModal(
+        currentLanguage === "es"
+          ? "Mensaje de hoy"
+          : "Today's message"
+      );
+
+    });
+
+  }
+
+
+  if (modalSave) {
+
+    modalSave.addEventListener("click", () => {
+
+      if (modalText && dailyQuote) {
+
+        const newText = modalText.value.trim();
+
+        if (newText) {
+          dailyQuote.textContent = newText;
+
+          localStorage.setItem(
+            "codigoMujerLibreDailyQuote",
+            newText
+          );
+        }
+      }
+
+      hideModal();
+
+    });
+
+  }
+
+
+  // Recuperar mensaje guardado
+  const savedQuote = localStorage.getItem(
+    "codigoMujerLibreDailyQuote"
+  );
+
+  if (savedQuote && dailyQuote) {
+    dailyQuote.textContent = savedQuote;
+  }
+
+
+  // ==============================
+  // WELLNESS / SUPPORT
+  // ==============================
+
+  document.querySelectorAll(".support").forEach(button => {
+
+    button.addEventListener("click", () => {
+
+      const type = button.getAttribute("data-type");
+
+      const titlesES = {
+        talk: "Hablemos",
+        prayer: "Oración",
+        idea: "Ideas",
+        family: "Familia"
+      };
+
+      const titlesEN = {
+        talk: "Let's talk",
+        prayer: "Prayer",
+        idea: "Ideas",
+        family: "Family"
+      };
+
+      const titles =
+        currentLanguage === "es"
+          ? titlesES
+          : titlesEN;
+
+      if (modalText) {
+        modalText.value = "";
+      }
+
+      openModal(titles[type] || "");
+
+    });
+
+  });
+
+
+  // ==============================
+  // FORMULARIOS
+  // ==============================
+
   document.querySelectorAll("form").forEach(form => {
+
     form.addEventListener("submit", event => {
+
       event.preventDefault();
 
-      const data = Object.fromEntries(new FormData(form).entries());
+      const data = Object.fromEntries(
+        new FormData(form).entries()
+      );
 
-      const submissions =
-        JSON.parse(localStorage.getItem("codigoMujerLibreForms") || "[]");
+      let submissions = [];
+
+      try {
+        submissions =
+          JSON.parse(
+            localStorage.getItem(
+              "codigoMujerLibreForms"
+            )
+          ) || [];
+      } catch (error) {
+        submissions = [];
+      }
 
       submissions.push({
         ...data,
@@ -113,7 +306,17 @@ document.querySelectorAll("nav button[data-page]").forEach((button) => {
       );
 
       form.reset();
+
     });
+
   });
+
+
+  // Asegurar que Inicio aparezca al cargar
+  const activePage = document.querySelector(".page.active");
+
+  if (!activePage) {
+    showPage("home");
+  }
 
 });
