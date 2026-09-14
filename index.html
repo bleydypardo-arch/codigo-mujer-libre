@@ -1,278 +1,444 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Código Mujer Libre</title>
-
   <link rel="stylesheet" href="style.css">
 </head>
 
-
 <body>
 
-
-<!-- =========================
-     HEADER
-========================= -->
-
 <header>
-
   <div>
     <b>Código Mujer Libre</b>
-
-    <small data-i18n="tagline">
-      Conecta · Vive · Crece
-    </small>
+    <small data-i18n="tagline">Conecta · Vive · Crece</small>
   </div>
 
-  <button
-    id="langBtn"
-    type="button"
-    aria-label="Cambiar idioma"
-  >
-    EN
-  </button>
-
+  <button id="langBtn" type="button" aria-label="Switch to English">EN</button>
 </header>
 
-
-
 <main>
+  <p id="storageNotice" class="note" role="status" hidden></p>
+
+  <!-- INICIO -->
+  <section id="home" class="page active">
+
+    <div class="hero">
+
+      <img
+        src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=88"
+        alt="Mujeres compartiendo" data-i18n-alt="heroAlt"
+      >
+
+      <div class="heroText">
+
+        <small data-i18n="communityLabel">
+          TU COMUNIDAD
+        </small>
+
+        <h1 data-i18n="heroTitle">
+          Más conexión. Más vida. Más tú.
+        </h1>
+
+        <p data-i18n="heroBody">
+          Un espacio fresco para conectar, salir, crecer y sentirte acompañada.
+        </p>
+
+      </div>
+    </div>
 
 
-<!-- =========================
-     INICIO
-========================= -->
+    <div class="quote card">
 
-<section
-  id="home"
-  class="page active"
->
+      <div>
 
-  <div class="hero">
+        <small class="rose" data-i18n="today">
+          MENSAJE DE HOY
+        </small>
 
-    <img
-      src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=88"
-      alt="Women together"
-    >
+        <h2 id="dailyQuote">
+          Haz espacio para lo que también te hace sentir viva.
+        </h2>
 
-    <div class="heroText">
+      </div>
 
-      <small data-i18n="communityLabel">
-        TU COMUNIDAD
+      <button type="button"
+        class="round"
+        id="editQuote"
+        aria-label="Editar mensaje" data-i18n-aria="editQuoteLabel"
+      >
+        ✎
+      </button>
+
+    </div>
+
+
+    <h2 data-i18n="weeklyCode">
+      ¿Cuál es tu código esta semana?
+    </h2>
+
+
+    <div class="chips">
+
+      <button type="button" class="chip" data-code="Social" data-i18n="social" aria-pressed="false">
+        🥂 Social
+      </button>
+
+      <button type="button" class="chip" data-code="Wellness" data-i18n="wellnessChip" aria-pressed="false">
+        🌿 Bienestar
+      </button>
+
+      <button type="button" class="chip" data-code="Faith" data-i18n="faith" aria-pressed="false">
+        🙏 Fe
+      </button>
+
+      <button type="button" class="chip" data-code="Adventure" data-i18n="adventure" aria-pressed="false">
+        ✈️ Aventura
+      </button>
+
+      <button type="button" class="chip" data-code="Family" data-i18n="family" aria-pressed="false">
+        👨‍👩‍👧 Familia
+      </button>
+
+      <button type="button" class="chip" data-code="Connection" data-i18n="connection" aria-pressed="false">
+        🤝 Conexión
+      </button>
+
+      <button type="button" class="chip" data-code="Support" data-i18n="support" aria-pressed="false">
+        🕊️ Apoyo
+      </button>
+
+      <button type="button" class="chip" data-code="Recharge" data-i18n="recharge" aria-pressed="false">
+        😌 Recargar
+      </button>
+
+    </div>
+
+
+    <p id="weeklyCodeStatus" class="selection-status" aria-live="polite"></p>
+
+    <h2 data-i18n="thisWeek">
+      Esta semana
+    </h2>
+
+    <div id="featured" class="cards"></div>
+
+
+    <div class="card">
+
+      <small class="rose" data-i18n="letsTalk">
+        HABLEMOS
       </small>
 
-      <h1 data-i18n="heroTitle">
-        Más conexión. Más vida. Más tú.
-      </h1>
+      <h2 data-i18n="articleTitle">
+        Volver a hacer amigas de adulta
+      </h2>
 
-      <p data-i18n="heroBody">
-        Un espacio fresco para conectar, salir, crecer y sentirte acompañada.
+      <p data-i18n="articleBody">
+        Conversaciones, ideas y recomendaciones para crear conexiones reales.
       </p>
 
     </div>
 
-  </div>
+  </section>
 
 
 
-  <!-- MENSAJE DEL DÍA -->
+  <!-- EVENTOS -->
+  <section id="events" class="page">
 
-  <div class="quote card">
+    <small class="rose" data-i18n="discover">
+      DESCUBRE
+    </small>
 
-    <div>
+    <h1 data-i18n="eventsTitle">
+      Planes y Eventos
+    </h1>
 
-      <small
-        class="rose"
-        data-i18n="today"
-      >
-        MENSAJE DE HOY
-      </small>
+    <p data-i18n="eventsIntro">
+      Descubre actividades para conectar, compartir y disfrutar juntas.
+    </p>
 
-      <h2
-        id="dailyQuote"
-        data-i18n="dailyQuote"
-      >
-        Haz espacio para lo que también te hace sentir viva.
-      </h2>
+    <div id="eventsList" class="cards"></div>
+
+  </section>
+
+
+
+  <!-- COMUNIDAD -->
+  <section id="community" class="page">
+
+    <small class="rose" data-i18n="communitySection">
+      COMUNIDAD
+    </small>
+
+    <h1 data-i18n="communityTitle">
+      Nuestra comunidad
+    </h1>
+
+    <p data-i18n="communityIntro">
+      Conoce mujeres, comparte intereses y crea conexiones reales.
+    </p>
+
+
+    <div class="member">
+
+      <span>A</span>
+
+      <div>
+        <b>Ana</b>
+        <small data-i18n="anaInterests">
+          Brunch · Bienestar · Viajes
+        </small>
+      </div>
 
     </div>
 
-    <button
-      class="round"
-      id="editQuote"
-      type="button"
-      aria-label="Editar mensaje"
-    >
-      ✎
-    </button>
 
-  </div>
+    <div class="member">
 
+      <span>M</span>
 
+      <div>
+        <b>María</b>
+        <small data-i18n="mariaInterests">
+          Familia · Café · Fe
+        </small>
+      </div>
 
-  <!-- =========================
-       CÓDIGO DE LA SEMANA
-  ========================= -->
-
-  <h2 data-i18n="weeklyCode">
-    ¿Cuál es tu código esta semana?
-  </h2>
+    </div>
 
 
-  <div class="chips">
+    <div class="card">
 
+      <h2 data-i18n="shareSomething">
+        Comparte algo
+      </h2>
 
-    <button
-      type="button"
-      class="chip"
-      data-code="Social"
-      data-i18n="social"
-    >
-      🥂 Social
-    </button>
+      <textarea
+        id="postText"
+        data-i18n-placeholder="postPlaceholder"
+        data-i18n-aria="postLabel" aria-label="Tu publicación"
+        placeholder="¿Qué quieres compartir con la comunidad?"
+      ></textarea>
 
+      <button type="button"
+        class="primary"
+        id="postBtn"
+        data-i18n="post"
+      >
+        Publicar
+      </button>
 
-    <button
-      type="button"
-      class="chip"
-      data-code="Wellness"
-      data-i18n="wellnessChip"
-    >
-      🌿 Bienestar
-    </button>
+    </div>
 
+    <p class="note" data-i18n="communityLocalNote">Las publicaciones se guardan en este dispositivo; todavía no se comparten con otras personas.</p>
+    <div id="posts"></div>
 
-    <button
-      type="button"
-      class="chip"
-      data-code="Faith"
-      data-i18n="faith"
-    >
-      🙏 Fe
-    </button>
-
-
-    <button
-      type="button"
-      class="chip"
-      data-code="Adventure"
-      data-i18n="adventure"
-    >
-      ✈️ Aventura
-    </button>
-
-
-    <button
-      type="button"
-      class="chip"
-      data-code="Family"
-      data-i18n="family"
-    >
-      👨‍👩‍👧 Familia
-    </button>
-
-
-    <button
-      type="button"
-      class="chip"
-      data-code="Connection"
-      data-i18n="connection"
-    >
-      🤝 Conexión
-    </button>
-
-
-    <button
-      type="button"
-      class="chip"
-      data-code="Support"
-      data-i18n="support"
-    >
-      🕊️ Apoyo
-    </button>
-
-
-    <button
-      type="button"
-      class="chip"
-      data-code="Recharge"
-      data-i18n="recharge"
-    >
-      😌 Recargar
-    </button>
-
-
-  </div>
+  </section>
 
 
 
-  <!-- CONTENIDO DESTACADO -->
+  <!-- MENSAJES -->
+  <section id="messages" class="page">
 
-  <h2 data-i18n="thisWeek">
-    Esta semana
-  </h2>
-
-  <div
-    id="featured"
-    class="cards"
-  ></div>
-
-
-
-  <!-- ARTÍCULO -->
-
-  <div class="card">
-
-    <small
-      class="rose"
-      data-i18n="letsTalk"
-    >
-      HABLEMOS
+    <small class="rose" data-i18n="messagesLabel">
+      MENSAJES
     </small>
 
-    <h2 data-i18n="articleTitle">
-      Volver a hacer amigas de adulta
-    </h2>
+    <h1 data-i18n="messagesTitle">
+      Mensajes
+    </h1>
 
-    <p data-i18n="articleBody">
-      Conversaciones, ideas y recomendaciones para crear conexiones reales.
+    <p data-i18n="messagesIntro">
+      Escríbenos de forma privada cuando quieras hablar, preguntar o compartir algo.
     </p>
+
+    <div id="messagesList"></div>
+
+    <button type="button"
+      class="primary"
+      id="newMessage"
+      data-i18n="messageAdmin"
+    >
+      Mensaje privado a la administradora
+    </button>
+
+  </section>
+
+
+
+  <!-- BIENESTAR -->
+  <section id="wellness" class="page">
+
+    <small class="rose" data-i18n="wellnessLabel">
+      BIENESTAR Y APOYO
+    </small>
+
+    <h1 data-i18n="yourSpace">
+      Tu espacio
+    </h1>
+
+    <p data-i18n="wellnessIntro">
+      Un lugar para sentirte acompañada, escuchada y conectada.
+    </p>
+
+
+    <div class="grid">
+
+      <button type="button" class="support" data-type="talk">
+
+        🕊️
+
+        <b data-i18n="needTalk">
+          Necesito hablar
+        </b>
+
+        <small data-i18n="privateAdmin">
+          Mensaje privado a la administradora
+        </small>
+
+      </button>
+
+
+      <button type="button" class="support" data-type="prayer">
+
+        🙏
+
+        <b data-i18n="prayer">
+          Oración
+        </b>
+
+        <small data-i18n="prayerSub">
+          Pide acompañamiento
+        </small>
+
+      </button>
+
+
+      <button type="button" class="support" data-type="idea">
+
+        💡
+
+        <b data-i18n="suggestion">
+          Tengo una sugerencia
+        </b>
+
+        <small data-i18n="suggestionSub">
+          Eventos, temas o ideas
+        </small>
+
+      </button>
+
+
+      <button type="button" class="support" data-type="family">
+
+        👨‍👩‍👧
+
+        <b data-i18n="familyTitle">
+          Familia
+        </b>
+
+        <small data-i18n="familySub">
+          Planes y actividades familiares
+        </small>
+
+      </button>
+
+    </div>
+
+
+    <p class="note" data-i18n="supportNote">
+      Este espacio ofrece apoyo comunitario y no reemplaza servicios profesionales o de emergencia.
+    </p>
+
+  </section>
+
+</main>
+
+
+
+<!-- NAVEGACIÓN -->
+<p id="appStatus" class="app-status" role="status" aria-live="polite" hidden></p>
+<nav aria-label="Navegación principal" data-i18n-aria="navigationLabel">
+
+  <button type="button" data-page="home">
+    ⌂
+    <small data-i18n="home">
+      Inicio
+    </small>
+  </button>
+
+
+  <button type="button" data-page="events">
+    ◉
+    <small data-i18n="events">
+      Eventos
+    </small>
+  </button>
+
+
+  <button type="button" data-page="community">
+    ♡
+    <small data-i18n="communityNav">
+      Comunidad
+    </small>
+  </button>
+
+
+  <button type="button" data-page="messages">
+    ✉
+    <small data-i18n="messages">
+      Mensajes
+    </small>
+  </button>
+
+
+  <button type="button" data-page="wellness">
+    ✦
+    <small data-i18n="wellness">
+      Bienestar
+    </small>
+  </button>
+
+</nav>
+
+
+
+<!-- MODAL -->
+<div id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalNote" aria-hidden="true">
+
+  <div class="modalCard">
+
+    <button type="button"
+      class="x"
+      id="closeModal"
+      aria-label="Cerrar" data-i18n-aria="closeLabel"
+    >
+      ×
+    </button>
+
+    <h2 id="modalTitle"></h2>
+
+    <p id="modalNote" class="note"></p>
+    <label id="modalTextLabel" for="modalText"></label>
+    <textarea id="modalText" aria-describedby="modalNote modalFeedback"></textarea>
+    <p id="modalFeedback" class="form-feedback" role="alert" hidden></p>
+
+    <button type="button"
+      class="primary"
+      id="modalSave"
+    >
+      Guardar
+    </button>
 
   </div>
 
-</section>
+</div>
 
 
+<script src="app.js"></script>
 
-
-<!-- =========================
-     EVENTOS
-========================= -->
-
-<section
-  id="events"
-  class="page"
->
-
-  <small
-    class="rose"
-    data-i18n="discover"
-  >
-    DESCUBRE
-  </small>
-
-  <h1 data-i18n="eventsTitle">
-    Planes y Eventos
-  </h1>
-
-  <p data-i18n="eventsIntro">
-    Descubre actividades para conectar, compartir y disfrutar juntas.
-  </p>
-
-  <div
-    id="eventsList"
-    class="cards"
+</body>
+</html>
