@@ -3,6 +3,7 @@
 "use strict";
 const SUPABASE_KEY = "sb_publishable_cmiZ-mhW1wBf6hQuscVp7g_P7Wg4bPh";
 const SUPABASE_URL = "https://ltuklkfymedhqncnwzpks.supabase.co";
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);  
 const translations = {
   es: {
     tagline: "Conecta · Vive · Crece",
