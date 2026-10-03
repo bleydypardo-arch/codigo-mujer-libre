@@ -107,7 +107,7 @@ async function searchTicketmaster(keyword: string, from: string, to: string): Pr
       name: clean(e?.name, 160),
       date: /^\d{4}-\d{2}-\d{2}$/.test(e?.dates?.start?.localDate ?? "") ? e.dates.start.localDate : "",
       time: to12h(e?.dates?.start?.localTime ?? ""),
-      location: [v?.name, v?.city?.name].filter(Boolean).join(", "),
+      location: [v?.name, v?.city?.name && !String(v?.name ?? "").includes(v.city.name) ? v.city.name : ""].filter(Boolean).join(", "),
       price: pr && typeof pr.min === "number"
         ? (pr.max && pr.max !== pr.min ? `${money(pr.min, pr.currency)}–${money(pr.max, pr.currency)}` : money(pr.min, pr.currency))
         : "",
@@ -226,10 +226,13 @@ Deno.serve(async (req) => {
         system,
         `Administrator request: "${query}"\n` +
         `Here are REAL candidates found through Ticketmaster and Google Places (JSON): ${JSON.stringify(facts)}\n\n` +
-        `Pick up to 8 that best fit the request and the Código Mujer Libre audience, skipping anything unsuitable. ` +
-        `For each, write warm 1-2 sentence descriptions in Spanish and English using ONLY the given facts. ` +
+        `Pick up to 8 that best fit the request and the Código Mujer Libre audience (adult women). Skip anything aimed mainly at children or teens ` +
+        `(kids' shows, Disney, youth tours) unless the request is about family, and skip weak matches rather than padding the list. ` +
+        `For each, write warm 1-2 sentence descriptions in Spanish and English using ONLY the given facts (name, type, date, place). ` +
+        `Do NOT guess the music genre, performers, atmosphere, menu, or what the experience is like unless the "type" field says so; ` +
+        `when little is known, keep it short and neutral, e.g. "Live event at Kia Center on Nov 22." ` +
         `Never add dates, prices, venues, performers, or claims that are not in the data. ` +
-        `Return JSON: {"results":[{"id":"candidate id","code":"one of ${CODES.join("|")}","title_es":"","title_en":"","desc_es":"","desc_en":"","kind":"event"}],"note":"one short sentence on anything uncertain"}`,
+        `Return JSON: {"results":[{"id":"candidate id","code":"one of ${CODES.join("|")}","title_es":"","title_en":"","desc_es":"","desc_en":"","kind":"event"}],"note":"one short sentence listing what the admin should double-check (for example: no price listed, places have no date). Do not claim everything is suitable."}`,
       );
       const byId = new Map(candidates.map((c) => [c.id, c]));
       const used_ids = new Set<string>();
