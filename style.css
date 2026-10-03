@@ -85,3 +85,7 @@ input[type=search] { width: 100%; padding: 12px; border: 1px solid #dccbc7; bord
 #adminBody > .chips { margin-bottom: 8px; }
 #adminBody .chips .chip { flex-shrink: 0; white-space: nowrap; background: white; border: 1px solid #eadfdb; border-radius: 30px; padding: 10px 14px; font: inherit; color: inherit; min-height: 44px; }
 input[type=file] { margin-top: 6px; max-width: 100%; }
+
+/* Mobile app: chip rows wrap instead of showing a scroll bar */
+.chips { flex-wrap: wrap; overflow: visible; }
+.admin-tabs { flex-wrap: wrap; overflow: visible; }
