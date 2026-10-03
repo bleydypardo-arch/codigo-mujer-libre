@@ -340,3 +340,8 @@ grant select, insert, update          on public.messages        to authenticated
 grant select                          on public.settings        to anon, authenticated;
 grant insert, update, delete          on public.settings        to authenticated;
 -- ai_usage has no grants on purpose: only the Edge Function (service role) touches it.
+
+-- The Edge Function (ai-assist) reads profiles and counts AI usage using the service role.
+grant usage on schema public to service_role;
+grant select on public.profiles to service_role;
+grant select, insert, update on public.ai_usage to service_role;
