@@ -6,16 +6,29 @@
 -- 1. PROFILES (one row per registered member)
 -- ============================================================
 create table if not exists public.profiles (
-  id          uuid primary key references auth.users(id) on delete cascade,
-  email       text not null,
-  first_name  text not null default '',
-  last_name   text not null default '',
-  company     text not null default '',
-  city        text not null default '',
-  interests   text[] not null default '{}',
-  role        text not null default 'member' check (role in ('member','admin','super_admin')),
-  created_at  timestamptz not null default now()
+  id            uuid primary key references auth.users(id) on delete cascade,
+  display_name  text,
+  city          text,
+  role          text not null default 'member',
+  created_at    timestamptz not null default now()
 );
+
+-- Upgrade in place (works on a fresh project AND on the older profiles table, which had only
+-- id, display_name, city, role, created_at). Nothing is dropped; existing rows are kept.
+alter table public.profiles add column if not exists email      text not null default '';
+alter table public.profiles add column if not exists first_name text not null default '';
+alter table public.profiles add column if not exists last_name  text not null default '';
+alter table public.profiles add column if not exists company    text not null default '';
+alter table public.profiles add column if not exists interests  text[] not null default '{}';
+update public.profiles set city = '' where city is null;
+alter table public.profiles alter column city set default '';
+alter table public.profiles alter column city set not null;
+alter table public.profiles alter column role set default 'member';
+update public.profiles set role = 'member' where role not in ('member','admin','super_admin');
+alter table public.profiles drop constraint if exists profiles_role_check;
+alter table public.profiles add constraint profiles_role_check check (role in ('member','admin','super_admin'));
+update public.profiles p set email = lower(u.email) from auth.users u where u.id = p.id and p.email = '';
+update public.profiles set first_name = display_name where first_name = '' and coalesce(display_name,'') <> '';
 
 -- Role helpers (SECURITY DEFINER so policies can call them without recursion)
 create or replace function public.my_role() returns text
@@ -45,10 +58,11 @@ begin
     select coalesce(array_agg(left(v, 40)), '{}') into picked
     from (select jsonb_array_elements_text(meta->'interests') as v limit 20) s;
   end if;
-  insert into public.profiles (id, email, first_name, last_name, company, city, interests)
+  insert into public.profiles (id, email, display_name, first_name, last_name, company, city, interests)
   values (
     new.id,
     lower(coalesce(new.email, '')),
+    trim(left(coalesce(meta->>'first_name', '') || ' ' || coalesce(meta->>'last_name', ''), 120)),
     left(coalesce(meta->>'first_name', ''), 60),
     left(coalesce(meta->>'last_name', ''), 60),
     left(coalesce(meta->>'company', ''), 120),
@@ -65,6 +79,12 @@ create trigger on_auth_user_created
   for each row execute function public.handle_new_user();
 
 alter table public.profiles enable row level security;
+
+-- Remove the older policies from the previous profiles design ("update own profile" would let a
+-- member change her own role). The stricter policies below replace them.
+drop policy if exists "insert own profile" on public.profiles;
+drop policy if exists "read own profile"   on public.profiles;
+drop policy if exists "update own profile" on public.profiles;
 
 drop policy if exists "profiles read own or admin" on public.profiles;
 create policy "profiles read own or admin" on public.profiles
@@ -305,3 +325,18 @@ grant execute on function public.community_members() to authenticated;
 grant execute on function public.my_role()           to authenticated;
 grant execute on function public.is_admin()          to authenticated;
 grant execute on function public.is_super_admin()    to authenticated;
+
+-- ============================================================
+-- 10. DATA API ACCESS (this project does not expose new tables automatically)
+--     Row-level security above still decides which rows each person can touch.
+-- ============================================================
+grant usage on schema public to anon, authenticated;
+
+grant select, update                  on public.profiles        to authenticated;
+grant select, insert, update, delete  on public.plans           to authenticated;
+grant select, insert, update, delete  on public.responses       to authenticated;
+grant select, insert, delete          on public.community_posts to authenticated;
+grant select, insert, update          on public.messages        to authenticated;
+grant select                          on public.settings        to anon, authenticated;
+grant insert, update, delete          on public.settings        to authenticated;
+-- ai_usage has no grants on purpose: only the Edge Function (service role) touches it.
