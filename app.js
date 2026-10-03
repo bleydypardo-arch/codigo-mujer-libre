@@ -67,7 +67,7 @@ const translations = {
     heroBody: "A fresh space to connect, go out, grow and feel supported.",
     today: "TODAY'S MESSAGE",
     dailyQuote: "Make room for what also makes you feel alive.",
-    weeklyCode: "What's your code this week?",
+    weeklyCode: "What are you interested in this week?",
     social: "🥂 Social",
     wellnessChip: "🌿 Wellness",
     faith: "🙏 Faith",
