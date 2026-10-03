@@ -2,6 +2,9 @@
 (() => {
 "use strict";
 const SUPABASE_URL = "https://ltuklkfymedhqncwzpks.supabase.co";
+// Google Maps JavaScript key: meant for the browser. It is protected by an HTTP-referrer restriction
+// (only this site can use it) plus an API restriction, set in Google Cloud.
+const MAPS_KEY = "AIzaSyD7IzJRAwF9jZLESeqeNjGepo5gx5Mrifw";
 const SUPABASE_KEY = "sb_publishable_cmiZ-mhW1wBf6hQuscVp7g_P7Wg4bPh"; // publishable key: safe in the browser
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const translations = {
@@ -254,7 +257,10 @@ Object.assign(translations.es, {
   respondFail: "No se pudo guardar tu respuesta. Inténtalo de nuevo.",
   adminLabel: "ADMINISTRACIÓN",
   adminTitle: "Panel de administración",
-  adminNav: "Admin"
+  adminNav: "Admin",
+  viewOnMap: "Cómo llegar",
+  showMap: "Ver mapa",
+  mapUnavailable: "El mapa no está disponible ahora. Usa “Cómo llegar”."
 });
 Object.assign(translations.en, {
   loading: "Loading…",
@@ -317,7 +323,10 @@ Object.assign(translations.en, {
   respondFail: "Could not save your response. Please try again.",
   adminLabel: "ADMINISTRATION",
   adminTitle: "Admin dashboard",
-  adminNav: "Admin"
+  adminNav: "Admin",
+  viewOnMap: "Get directions",
+  showMap: "Show map",
+  mapUnavailable: "The map isn't available right now. Use “Get directions”."
 });
 
 
@@ -623,6 +632,46 @@ function respondButton(plan, status) {
   button.addEventListener("click", () => respond(plan.id, status));
   return button;
 }
+// ---- Maps: directions link (no key needed) + lazy embedded map (loads only when opened) ----
+let mapsPromise = null;
+function loadMaps() {
+  if (window.google && window.google.maps) return Promise.resolve();
+  if (!mapsPromise) mapsPromise = new Promise((resolve, reject) => {
+    window.__cmlMapsReady = resolve;
+    const s = document.createElement("script");
+    s.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(MAPS_KEY) + "&callback=__cmlMapsReady&loading=async";
+    s.async = true; s.onerror = () => { mapsPromise = null; reject(new Error("maps")); };
+    document.head.appendChild(s);
+  });
+  return mapsPromise;
+}
+function mapBlock(card, location) {
+  const q = encodeURIComponent(location);
+  card.appendChild(el("a", {
+    class: "link-btn", href: "https://www.google.com/maps/search/?api=1&query=" + q,
+    target: "_blank", rel: "noopener noreferrer", text: "📍 " + t("viewOnMap") + " ↗"
+  }));
+  const canvas = el("div", { class: "map-canvas" });
+  const box = el("details", { class: "more map-box" }, el("summary", { text: "🗺️ " + t("showMap") }), canvas);
+  let started = false;
+  box.addEventListener("toggle", async () => {
+    if (!box.open || started) return;
+    started = true;
+    try {
+      await loadMaps();
+      const { Geocoder } = await google.maps.importLibrary("geocoding");
+      const { Map, Marker } = await google.maps.importLibrary("maps").then(m => ({ Map: m.Map, Marker: google.maps.Marker || m.Marker }));
+      const results = await new Promise((res, rej) => new Geocoder().geocode({ address: location }, (r, status) => status === "OK" && r && r[0] ? res(r) : rej(new Error(status))));
+      const pos = results[0].geometry.location;
+      const map = new Map(canvas, { center: pos, zoom: 15, disableDefaultUI: true, zoomControl: true, gestureHandling: "cooperative" });
+      new Marker({ map, position: pos });
+    } catch (e) {
+      canvas.replaceChildren(el("p", { class: "small-note", text: t("mapUnavailable") }));
+      canvas.classList.add("map-failed");
+    }
+  });
+  card.appendChild(box);
+}
 function planCard(p) {
   const card = el("article", { class: "card plan" });
   const image = safeUrl(p.image_url);
@@ -648,6 +697,7 @@ function planCard(p) {
       class: "link-btn", href: url, target: "_blank", rel: "noopener noreferrer", text: t("moreInfo") + " ↗"
     }));
   }
+  if (p.location) mapBlock(card, p.location);
   if (p.details) {
     card.appendChild(el("details", { class: "more" },
       el("summary", { text: t("moreDetails") }),

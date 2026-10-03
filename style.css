@@ -89,3 +89,8 @@ input[type=file] { margin-top: 6px; max-width: 100%; }
 /* Mobile app: chip rows wrap instead of showing a scroll bar */
 .chips { flex-wrap: wrap; overflow: visible; }
 .admin-tabs { flex-wrap: wrap; overflow: visible; }
+
+/* Maps */
+.map-box { margin-top: 8px; }
+.map-canvas { width: 100%; height: 220px; border-radius: 14px; margin-top: 8px; overflow: hidden; background: #f4e3e3; }
+.map-canvas.map-failed { height: auto; padding: 10px; }
