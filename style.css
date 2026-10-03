@@ -15,3 +15,73 @@ nav button.active small { font-weight: bold; color: #633d45; }
 .modalCard { max-height: 85dvh; overflow-y: auto; }
 [hidden] { display: none !important; }
 @media (max-width: 400px) { .heroText h1 { font-size: 32px; } header b { font-size: 18px; } nav small { font-size: 10px; } }
+
+/* ===== Accounts, shared content and admin (added; existing look unchanged) ===== */
+input, select, textarea { font: inherit; }
+input:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid #80525a; outline-offset: 3px; }
+.header-actions { display: flex; gap: 6px; align-items: flex-start; }
+.langBtnAlt { border: 1px solid #eadfdb; background: white; border-radius: 30px; padding: 8px 12px; color: #B76E79; font-weight: bold; }
+.auth-gate { min-height: 100dvh; padding: 18px 14px; display: grid; place-items: center; background: linear-gradient(180deg, #fff9f5, #f8e9e6); }
+.auth-gate[hidden] { display: none !important; }
+.auth-card { width: min(100%, 560px); background: #fff; border: 1px solid #eadfdb; border-radius: 28px; padding: 22px; box-shadow: 0 16px 50px #5a3b4218; }
+.auth-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; }
+.auth-top b { font: 20px Georgia, serif; }
+.auth-top small { display: block; color: #746B6D; margin-top: 2px; }
+.auth-card h1 { font: 30px/1.1 Georgia, serif; margin: 6px 0 16px; }
+.auth-tabs { display: flex; gap: 8px; margin-bottom: 8px; }
+.auth-tab { flex: 1; min-height: 44px; border: 1px solid #eadfdb; background: white; border-radius: 30px; color: #80525a; font-weight: bold; }
+.auth-tab.active { background: #80525a; color: #fff; border-color: #80525a; }
+.auth-card label, .admin-form label { display: block; font-weight: 600; margin: 13px 0; }
+.auth-card input:not([type=checkbox]), .auth-card select, .admin-form input:not([type=checkbox]):not([type=file]), .admin-form select, .admin-form textarea, .admin-bar input, .admin-bar select, .admin-bar textarea { width: 100%; margin-top: 6px; padding: 12px; border: 1px solid #dccbc7; border-radius: 13px; background: white; min-height: 44px; }
+.admin-form textarea, .admin-bar textarea { min-height: 90px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.two-col label { margin: 13px 0 0; }
+.wide { width: 100%; margin-top: 10px; min-height: 48px; }
+.primary:disabled, .secondary:disabled { opacity: .6; cursor: default; }
+.secondary { border: 1px solid #B76E79; background: white; color: #80525a; border-radius: 30px; padding: 12px 17px; font-weight: bold; min-height: 44px; }
+.auth-card fieldset, .admin-form fieldset { border: 0; padding: 0; margin: 16px 0; }
+.auth-card legend { font-weight: bold; }
+.choice-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 4px; }
+.choice { display: inline-flex; align-items: center; gap: 4px; background: white; border: 1px solid #eadfdb; border-radius: 30px; padding: 10px 12px; min-height: 44px; font-weight: normal !important; margin: 0 !important; }
+.choice input { width: auto !important; margin: 0 4px 0 0 !important; min-height: 0 !important; }
+.choice:has(input:checked) { background: #f4e3e3; border-color: #B76E79; }
+.form-feedback.ok { color: #1f6b3a; }
+.plan-img { display: block; width: calc(100% + 36px); margin: -18px -18px 14px; height: 185px; object-fit: cover; border-radius: 22px 22px 0 0; }
+.plan h2 { margin: 6px 0; }
+.meta-line { margin: 4px 0; color: #4a4245; }
+.link-btn { display: inline-block; margin: 10px 0 4px; color: #80525a; font-weight: bold; min-height: 24px; }
+details.more { margin: 8px 0; }
+details.more summary { cursor: pointer; color: #80525a; font-weight: bold; min-height: 32px; }
+.resp-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.resp { flex: 1 1 130px; min-height: 46px; border: 1px solid #eadfdb; background: white; border-radius: 30px; padding: 10px 12px; font-weight: bold; color: #633d45; }
+.resp.on { background: #80525a; border-color: #80525a; color: #fff; }
+.reply { margin-top: 10px; padding: 12px; background: #fdf3f1; border-radius: 14px; }
+.link-danger { border: 0; background: none; color: #9b2525; font-weight: bold; padding: 8px 0 0; min-height: 36px; }
+#monthFilter { margin: 8px 0 14px; }
+#tripsBlock { margin-top: 28px; }
+
+/* Admin */
+.admin-tabs { display: flex; overflow-x: auto; gap: 8px; padding: 4px 0 8px; -webkit-overflow-scrolling: touch; }
+.admin-tabs .chip { flex-shrink: 0; }
+.admin-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 12px 0; }
+.admin-item { background: white; border: 1px solid #eee0dc; border-radius: 18px; padding: 14px; margin: 10px 0; }
+.admin-item h3 { margin: 4px 0; font: 19px Georgia, serif; overflow-wrap: anywhere; }
+.admin-item .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.admin-item .actions button { min-height: 40px; border: 1px solid #eadfdb; background: white; border-radius: 30px; padding: 8px 14px; font-weight: bold; color: #633d45; }
+.admin-item .actions .danger { color: #9b2525; border-color: #e7c4c4; }
+.badge { display: inline-block; font-size: 12px; font-weight: bold; padding: 3px 9px; border-radius: 20px; background: #f4e3e3; color: #633d45; }
+.badge.live { background: #e3f1e6; color: #1f6b3a; }
+.admin-form { background: white; border: 1px solid #eee0dc; border-radius: 22px; padding: 16px; margin: 12px 0; }
+.admin-form .preview { max-width: 100%; max-height: 180px; border-radius: 14px; display: block; margin-top: 8px; }
+.admin-form .check { display: flex; gap: 10px; align-items: center; font-weight: normal; }
+.admin-form .check input { width: auto; min-height: 0; margin: 0; }
+.ai-banner { background: #fff4d6; border: 1px solid #e6cf8c; border-radius: 14px; padding: 12px; margin: 10px 0; font-size: 14px; }
+.who { margin: 8px 0 0; padding-left: 18px; font-size: 14px; }
+.small-note { font-size: 13px; color: #746B6D; }
+@media (max-width: 400px) { .two-col { grid-template-columns: 1fr; } .auth-card h1 { font-size: 26px; } }
+input[type=search] { width: 100%; padding: 12px; border: 1px solid #dccbc7; border-radius: 13px; background: white; min-height: 44px; }
+.admin-tabs .chip { flex-shrink: 0; white-space: nowrap; background: white; border: 1px solid #eadfdb; border-radius: 30px; padding: 10px 14px; font: inherit; color: inherit; min-height: 44px; }
+.admin-tabs .chip.selected { color: #fff; background: #80525a; border-color: #80525a; }
+#adminBody > .chips { margin-bottom: 8px; }
+#adminBody .chips .chip { flex-shrink: 0; white-space: nowrap; background: white; border: 1px solid #eadfdb; border-radius: 30px; padding: 10px 14px; font: inherit; color: inherit; min-height: 44px; }
+input[type=file] { margin-top: 6px; max-width: 100%; }

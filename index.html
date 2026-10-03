@@ -9,13 +9,77 @@
 
 <body>
 
+<!-- ACCESO: registro / entrar -->
+<div id="authGate" class="auth-gate" hidden>
+  <div class="auth-card">
+    <div class="auth-top">
+      <div>
+        <b>Código Mujer Libre</b>
+        <small data-i18n="tagline">Conecta · Vive · Crece</small>
+      </div>
+      <button id="authLang" type="button" class="langBtnAlt" aria-label="Switch to English">EN</button>
+    </div>
+
+    <p id="authLoading" class="note" data-i18n="loading">Cargando…</p>
+
+    <div id="authForms" hidden>
+      <small class="rose" data-i18n="authLabel">BIENVENIDA</small>
+      <h1 data-i18n="authTitle">Tu comunidad para conectar, salir y crecer.</h1>
+
+      <div class="auth-tabs" role="tablist">
+        <button type="button" role="tab" id="tabLogin" class="auth-tab active" aria-selected="true" data-i18n="loginTab">Entrar</button>
+        <button type="button" role="tab" id="tabSignup" class="auth-tab" aria-selected="false" data-i18n="signupTab">Crear cuenta</button>
+      </div>
+
+      <form id="loginForm" novalidate>
+        <label><span data-i18n="email">Correo electrónico</span>
+          <input id="loginEmail" type="email" autocomplete="email" required></label>
+        <label><span data-i18n="password">Contraseña</span>
+          <input id="loginPassword" type="password" autocomplete="current-password" required></label>
+        <p class="form-feedback" id="loginFeedback" role="alert" hidden></p>
+        <button type="submit" class="primary wide" id="loginBtn" data-i18n="loginBtn">Entrar</button>
+      </form>
+
+      <form id="signupForm" hidden novalidate>
+        <div class="two-col">
+          <label><span data-i18n="firstName">Nombre</span>
+            <input id="suFirst" autocomplete="given-name" maxlength="60" required></label>
+          <label><span data-i18n="lastName">Apellido</span>
+            <input id="suLast" autocomplete="family-name" maxlength="60" required></label>
+        </div>
+        <label><span data-i18n="email">Correo electrónico</span>
+          <input id="suEmail" type="email" autocomplete="email" required></label>
+        <label><span data-i18n="password">Contraseña</span>
+          <input id="suPassword" type="password" autocomplete="new-password" minlength="8" required>
+          <small class="meta" data-i18n="passwordHint">Mínimo 8 caracteres.</small></label>
+        <label><span data-i18n="company">Empresa u organización (opcional)</span>
+          <input id="suCompany" autocomplete="organization" maxlength="120"></label>
+        <label><span data-i18n="city">Ciudad o zona (opcional)</span>
+          <input id="suCity" autocomplete="address-level2" maxlength="80"></label>
+        <fieldset>
+          <legend data-i18n="interestsLegend">¿Qué te interesa?</legend>
+          <p class="meta" data-i18n="interestsHelp">Elige las que quieras. Corresponden a nuestros códigos.</p>
+          <div class="choice-grid" id="suInterests"></div>
+        </fieldset>
+        <p class="form-feedback" id="signupFeedback" role="alert" hidden></p>
+        <button type="submit" class="primary wide" id="signupBtn" data-i18n="signupBtn">Crear mi cuenta</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="appShell" hidden>
+
 <header>
   <div>
     <b>Código Mujer Libre</b>
     <small data-i18n="tagline">Conecta · Vive · Crece</small>
   </div>
 
-  <button id="langBtn" type="button" aria-label="Switch to English">EN</button>
+  <div class="header-actions">
+    <button id="langBtn" type="button" aria-label="Switch to English">EN</button>
+    <button id="logoutBtn" type="button" data-i18n="logout">Salir</button>
+  </div>
 </header>
 
 <main>
@@ -26,7 +90,7 @@
 
     <div class="hero">
 
-      <img
+      <img id="heroImg"
         src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=88"
         alt="Mujeres compartiendo" data-i18n-alt="heroAlt"
       >
@@ -65,7 +129,7 @@
 
       <button type="button"
         class="round"
-        id="editQuote"
+        id="editQuote" hidden
         aria-label="Editar mensaje" data-i18n-aria="editQuoteLabel"
       >
         ✎
@@ -75,7 +139,7 @@
 
 
     <h2 data-i18n="weeklyCode">
-      ¿Cuál es tu código esta semana?
+      ¿Qué te interesa esta semana?
     </h2>
 
 
@@ -160,7 +224,16 @@
       Descubre actividades para conectar, compartir y disfrutar juntas.
     </p>
 
+    <div id="monthFilter" class="chips" role="group" data-i18n-aria="monthFilterLabel" aria-label="Filtrar por mes" hidden></div>
+
     <div id="eventsList" class="cards"></div>
+
+    <div id="tripsBlock" hidden>
+      <small class="rose" data-i18n="tripsLabel">FUTUROS PLANES</small>
+      <h2 data-i18n="tripsTitle">Viajes e ideas</h2>
+      <p data-i18n="tripsIntro">Ideas para más adelante. Dinos si te interesan.</p>
+      <div id="tripsList" class="cards"></div>
+    </div>
 
   </section>
 
@@ -182,32 +255,7 @@
     </p>
 
 
-    <div class="member">
-
-      <span>A</span>
-
-      <div>
-        <b>Ana</b>
-        <small data-i18n="anaInterests">
-          Brunch · Bienestar · Viajes
-        </small>
-      </div>
-
-    </div>
-
-
-    <div class="member">
-
-      <span>M</span>
-
-      <div>
-        <b>María</b>
-        <small data-i18n="mariaInterests">
-          Familia · Café · Fe
-        </small>
-      </div>
-
-    </div>
+    <div id="membersList"></div>
 
 
     <div class="card">
@@ -233,7 +281,7 @@
 
     </div>
 
-    <p class="note" data-i18n="communityLocalNote">Las publicaciones se guardan en este dispositivo; todavía no se comparten con otras personas.</p>
+    <p class="note" data-i18n="communityLocalNote">Las publicaciones las ve toda la comunidad.</p>
     <div id="posts"></div>
 
   </section>
@@ -349,10 +397,19 @@
     </div>
 
 
+    <div id="wellnessCards" class="cards"></div>
+
     <p class="note" data-i18n="supportNote">
       Este espacio ofrece apoyo comunitario y no reemplaza servicios profesionales o de emergencia.
     </p>
 
+  </section>
+
+  <!-- ADMIN -->
+  <section id="admin" class="page">
+    <small class="rose" data-i18n="adminLabel">ADMINISTRACIÓN</small>
+    <h1 data-i18n="adminTitle">Panel de administración</h1>
+    <div id="adminRoot"></div>
   </section>
 
 </main>
@@ -402,7 +459,14 @@
     </small>
   </button>
 
+  <button type="button" data-page="admin" id="navAdmin" hidden>
+    ⚙
+    <small data-i18n="adminNav">Admin</small>
+  </button>
+
 </nav>
+
+</div><!-- /appShell -->
 
 
 
@@ -440,6 +504,7 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js"></script>  
+<script src="app.js"></script>
+<script src="admin.js"></script>
 </body>
 </html>
