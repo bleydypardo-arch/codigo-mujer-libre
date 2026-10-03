@@ -542,7 +542,7 @@ function renderResults(box, out) {
           code: CODES.includes(r.code) ? r.code : "", title_es: r.title_es || "", title_en: r.title_en || "",
           desc_es: r.desc_es || "", desc_en: r.desc_en || "", event_date: date, event_time: r.time || "",
           date_text: kind === "trip" ? (r.date_text || "") : "", location: r.location || "", price: r.price || "",
-          url: safe, published: false
+          url: safe, image_url: C.safeUrl(r.image_url) || "", published: false
         }
       };
       tab = kind === "trip" ? "trips" : "plans";
