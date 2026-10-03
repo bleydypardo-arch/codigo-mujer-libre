@@ -39,6 +39,7 @@ const BRAND = `Código Mujer Libre is a small, bilingual (Spanish/English) commu
   `Its "códigos" (categories) are: Social (outings, happy hours, dinners), Wellness, Faith, Adventure (experiences, trips), Family, ` +
   `Connection (meeting people), Support, Recharge (rest, self-care). Tone: warm, simple, inclusive, never salesy.`;
 
+const diag: string[] = [];
 const clean = (v: unknown, max = 400) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 
 // ---------- OpenAI ----------
@@ -91,9 +92,10 @@ async function searchTicketmaster(keyword: string, from: string, to: string): Pr
   if (keyword) p.keyword = keyword;
   for (const [k, v] of Object.entries(p)) u.searchParams.set(k, v);
   const res = await fetch(u);
-  if (!res.ok) { console.error("ticketmaster", res.status); return []; }
+  if (!res.ok) { console.error("ticketmaster", res.status, (await res.text()).slice(0, 200)); diag.push(`Ticketmaster error ${res.status}`); return []; }
   const data = await res.json();
   const events = data?._embedded?.events ?? [];
+  diag.push(`Ticketmaster ${events.length} events`);
   return events.map((e: any, i: number): Candidate => {
     const v = e?._embedded?.venues?.[0];
     const pr = e?.priceRanges?.[0];
@@ -132,8 +134,14 @@ async function searchPlaces(queries: string[]): Promise<Candidate[]> {
       },
       body: JSON.stringify({ textQuery: `${q} near ${AREA}`, maxResultCount: MAX_PLACES, languageCode: "en" }),
     });
-    if (!res.ok) { console.error("places", res.status, (await res.text()).slice(0, 200)); continue; }
+    if (!res.ok) {
+      const body = (await res.text()).slice(0, 300);
+      console.error("places", res.status, body);
+      diag.push(`Google Places error ${res.status}: ${body.replace(/\s+/g, " ").slice(0, 160)}`);
+      continue;
+    }
     const data = await res.json();
+    diag.push(`Google Places ${(data?.places ?? []).length} places`);
     for (const p of data?.places ?? []) {
       if (!p?.id || seen.has(p.id)) continue;
       seen.add(p.id);
@@ -197,14 +205,19 @@ Deno.serve(async (req) => {
       const placeQs = (Array.isArray(plan.places_queries) ? plan.places_queries : []).map((x: unknown) => clean(x, 80)).filter(Boolean);
 
       // Step 2: fetch real data
+      diag.length = 0;
+      const tmSearch = async () => {
+        const first = await searchTicketmaster(clean(plan.ticketmaster_keyword, 60), from, to);
+        return first.length || !plan.ticketmaster_keyword ? first : await searchTicketmaster("", from, to);
+      };
       const [tm, pl] = await Promise.all([
-        searchTicketmaster(clean(plan.ticketmaster_keyword, 60), from, to).catch(() => []),
-        searchPlaces(placeQs.length ? placeQs : [query]).catch(() => []),
+        tmSearch().catch((e) => { diag.push("Ticketmaster failed: " + (e as Error).message); return [] as Candidate[]; }),
+        searchPlaces(placeQs.length ? placeQs : [query]).catch((e) => { diag.push("Places failed: " + (e as Error).message); return [] as Candidate[]; }),
       ]);
       const candidates = [...tm.slice(0, MAX_TM), ...pl.slice(0, MAX_PLACES)];
       const configured = Boolean(Deno.env.get("TICKETMASTER_API_KEY")) || Boolean(Deno.env.get("GOOGLE_PLACES_API_KEY"));
       if (!candidates.length) {
-        return json({ results: [], note: configured ? "No matches found. Try a broader request." : "Search sources are not configured yet (Ticketmaster / Google Places keys)." });
+        return json({ results: [], note: configured ? "No matches found. Try a broader request. (" + diag.join("; ") + ")" : "Search sources are not configured yet (Ticketmaster / Google Places keys)." });
       }
 
       // Step 3: OpenAI writes the cards, using ONLY the facts given
