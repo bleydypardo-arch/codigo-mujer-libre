@@ -12,7 +12,7 @@ const translations = {
     heroBody: "Un espacio fresco para conectar, salir, crecer y sentirte acompañada.",
     today: "MENSAJE DE HOY",
     dailyQuote: "Haz espacio para lo que también te hace sentir viva.",
-    weeklyCode: "¿Cuál es tu código esta semana?",
+    weeklyCode: "¿Qué te interesa esta semana?",
     social: "🥂 Social",
     wellnessChip: "🌿 Bienestar",
     faith: "🙏 Fe",
