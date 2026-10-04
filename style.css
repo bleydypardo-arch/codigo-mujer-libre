@@ -261,3 +261,4 @@ header button#profileBtn { padding: 8px 11px; }
 .prayer-item .link-btn { background: none; border: 0; padding: 8px 4px; margin: 0; min-height: 40px; font: inherit; font-weight: bold; }
 .prayer-form .primary { display: block; margin-top: 12px; }
 .prayer-form .meta { display: block; margin-top: 6px; }
+.resp.pray.on { color: #633d45; font-weight: bold; }
