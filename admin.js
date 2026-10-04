@@ -4,7 +4,8 @@
 
 const S = {
   es: {
-    tabs: { plans: "Planes y eventos", trips: "Futuros planes / viajes", home: "Inicio", wellness: "Bienestar", community: "Comunidad", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imagen y mensaje" },
+    mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", unapprove: "Quitar aprobación", approvalSaved: "Aprobación actualizada",
+    tabs: { plans: "Planes y eventos", trips: "Futuros planes / viajes", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imagen y mensaje" },
     loading: "Cargando…", loadFail: "No se pudo cargar. Inténtalo de nuevo.",
     newItem: "+ Nuevo", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Ocultar", live: "Publicado", draft: "Borrador",
     confirmDelete: "¿Eliminar esto de forma permanente?", saved: "Guardado.", deleted: "Eliminado.", saveFail: "No se pudo guardar.",
@@ -35,7 +36,8 @@ const S = {
     quoteTitle: "Mensaje de hoy", quoteEs: "Mensaje (español)", quoteEn: "Mensaje (inglés)"
   },
   en: {
-    tabs: { plans: "Plans & events", trips: "Future plans / trips", home: "Home", wellness: "Wellness", community: "Community", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Image & message" },
+    mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", unapprove: "Remove approval", approvalSaved: "Approval updated",
+    tabs: { plans: "Plans & events", trips: "Future plans / trips", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Image & message" },
     loading: "Loading…", loadFail: "Could not load. Please try again.",
     newItem: "+ New", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Hide", live: "Published", draft: "Draft",
     confirmDelete: "Delete this permanently?", saved: "Saved.", deleted: "Deleted.", saveFail: "Could not save.",
@@ -74,7 +76,7 @@ const KINDS = {
   wellness: { tab: "wellness", fields: ["title", "desc", "url", "details", "image"] }
 };
 const TAB_KIND = { plans: "event", trips: "trip", home: "home", wellness: "wellness" };
-const TABS = ["plans", "trips", "home", "wellness", "community", "messages", "users", "ai", "settings"];
+const TABS = ["plans", "trips", "home", "wellness", "community", "memories", "messages", "users", "ai", "settings"];
 const CODES = ["Social", "Wellness", "Faith", "Adventure", "Family", "Connection", "Support", "Recharge"];
 
 let C = null;
@@ -126,6 +128,7 @@ function render() {
     try {
       if (TAB_KIND[tab]) fill(await listView(TAB_KIND[tab]));
       else if (tab === "community") fill(await communityView());
+      else if (tab === "memories") fill(window.CMLMem ? await window.CMLMem.adminView({ empty: a("empty") }) : el("p", { class: "small-note", text: a("empty") }));
       else if (tab === "messages") fill(await messagesView());
       else if (tab === "users") fill(await usersView());
       else if (tab === "ai") fill(aiView());
@@ -155,10 +158,12 @@ async function listView(kind) {
       tally.set(x.plan_id, c);
     });
   }
-  data.forEach(row => wrap.appendChild(planItem(kind, row, tally.get(row.id) || { i: 0, g: 0 })));
+  let memIds = null;
+  if (kind === "event" && window.CMLMem) { try { memIds = await window.CMLMem.planMemoryIds(); } catch { memIds = null; } }
+  data.forEach(row => wrap.appendChild(planItem(kind, row, tally.get(row.id) || { i: 0, g: 0 }, memIds)));
   return wrap;
 }
-function planItem(kind, row, c) {
+function planItem(kind, row, c, memIds) {
   const title = C.pick(row, "title") || "—";
   const when = row.event_date ? C.fmtDate(row.event_date) + (row.event_time ? " · " + row.event_time : "") : (row.date_text || "");
   const item = el("div", { class: "admin-item" },
@@ -195,6 +200,15 @@ function planItem(kind, row, c) {
       whoBox.replaceChildren(group("interested", a("interestedWho")), group("going", a("goingWho")));
     });
     actions.appendChild(whoBtn);
+  }
+  if (kind === "event" && window.CMLMem && memIds) {
+    const existing = memIds.get(row.id);
+    actions.appendChild(button(existing ? a("openMemory") : a("mkMemory"), "", async () => {
+      if (existing) return window.CMLMem.openMemory(existing);
+      const r = await window.CMLMem.createFromPlan(row);
+      if (r.error) return toast(a("saveFail"));
+      toast(a("memCreated")); render();
+    }));
   }
   actions.appendChild(button(a("del"), "danger", async () => {
     if (!window.confirm(a("confirmDelete"))) return;
@@ -409,12 +423,20 @@ async function usersView() {
       const labels = (u.interests || []).map(c => C.codeLabels[c] ? C.t(C.codeLabels[c]) : c).join(" · ");
       const item = el("div", { class: "admin-item" },
         el("span", { class: "badge" + (u.role !== "member" ? " live" : ""), text: a("role")[u.role] || u.role }),
+        u.role === "member" ? el("span", { class: "badge" + (u.approved ? " live" : ""), text: " " + (u.approved ? a("approvedBadge") : a("pendingBadge")) }) : null,
         el("h3", { text: (u.first_name + " " + u.last_name).trim() || "—" }),
         el("p", { class: "small-note", text: u.email }),
         u.company ? el("p", { class: "small-note", text: a("company") + ": " + u.company }) : null,
         u.city ? el("p", { class: "small-note", text: a("city") + ": " + u.city }) : null,
         labels ? el("p", { class: "small-note", text: a("interests") + ": " + labels }) : null,
         el("p", { class: "small-note", text: a("joined") + ": " + new Date(u.created_at).toLocaleDateString(C.loc()) }));
+      if (u.role === "member") {
+        item.appendChild(el("div", { class: "actions" }, button(u.approved ? a("unapprove") : a("approve"), u.approved ? "danger" : "", async () => {
+          const r = await C.db.rpc("approve_member", { target: u.id, ok: !u.approved });
+          if (r.error) return toast(a("saveFail"));
+          toast(a("approvalSaved")); render();
+        })));
+      }
       if (C.isSuper() && u.id !== me && u.role !== "super_admin") {
         const makeAdmin = u.role !== "admin";
         item.appendChild(el("div", { class: "actions" }, button(makeAdmin ? a("makeAdmin") : a("removeAdmin"), makeAdmin ? "" : "danger", async () => {

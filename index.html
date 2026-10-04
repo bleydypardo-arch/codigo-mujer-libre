@@ -137,6 +137,9 @@
 
     </div>
 
+    <div id="homeMemory" class="card mem-home" hidden></div>
+
+
 
     <h2 data-i18n="weeklyCode">
       ¿Qué te interesa esta semana?
@@ -223,6 +226,12 @@
     <p data-i18n="eventsIntro">
       Descubre actividades para conectar, compartir y disfrutar juntas.
     </p>
+
+    <div id="memSwitch" class="seg" role="group" data-i18n-aria="memSwitchLabel" aria-label="Próximos o Recuerdos">
+      <button type="button" id="segUpcoming" class="seg-btn active" aria-pressed="true" data-i18n="memUpcoming">Próximos</button>
+      <button type="button" id="segMemories" class="seg-btn" aria-pressed="false" data-i18n="memMemories">Recuerdos</button>
+    </div>
+    <div id="memoriesView" hidden></div>
 
     <div id="monthFilter" class="chips" role="group" data-i18n-aria="monthFilterLabel" aria-label="Filtrar por mes" hidden></div>
 
@@ -506,5 +515,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
 <script src="admin.js"></script>
+  <script src="memories.js"></script>
 </body>
 </html>

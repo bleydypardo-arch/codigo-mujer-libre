@@ -1222,7 +1222,12 @@ function initialize() {
     t, lang: () => currentLanguage, loc,
     session: () => session, profile: () => profile,
     isAdmin, isSuper, announce,
-    refreshPublic: async () => { if (session) await loadAll(); }
+    refreshPublic: async () => { if (session) await loadAll(); },
+    showPage, signOut: () => db.auth.signOut(),
+    addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
+      Object.assign(translations.es, es); Object.assign(translations.en, en);
+      setLanguage(currentLanguage, false);
+    }
   };
 
   setLanguage(currentLanguage, false);

@@ -345,3 +345,317 @@ grant insert, update, delete          on public.settings        to authenticated
 grant usage on schema public to service_role;
 grant select on public.profiles to service_role;
 grant select, insert, update on public.ai_usage to service_role;
+
+-- ============================================================
+-- 11. MEMORIES / RECUERDOS  (event albums: photos, short videos, posts, comments, hearts)
+--     Private to approved members. Files live in a PRIVATE bucket and are shown with
+--     short-lived signed links, never public URLs.
+-- ============================================================
+
+-- 11a. Member approval gate. New members can use the app, but only approved members
+--      (and admins) can see Memories. One-time backfill: everyone who already exists is approved.
+do $$
+begin
+  if not exists (select 1 from information_schema.columns
+                 where table_schema = 'public' and table_name = 'profiles' and column_name = 'approved') then
+    alter table public.profiles add column approved boolean not null default false;
+    update public.profiles set approved = true;
+  end if;
+end $$;
+
+create or replace function public.my_approved() returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce((select approved from public.profiles where id = auth.uid()), false)
+$$;
+
+-- Approved member OR admin
+create or replace function public.is_approved() returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce((select approved or role in ('admin','super_admin') from public.profiles where id = auth.uid()), false)
+$$;
+
+-- A member can never approve herself: block any change of her own "approved" value.
+drop policy if exists "profiles update own" on public.profiles;
+create policy "profiles update own" on public.profiles
+  for update to authenticated
+  using (id = auth.uid())
+  with check (id = auth.uid() and role = public.my_role() and approved = public.my_approved());
+
+-- Admins approve / un-approve members through this function only (cannot touch roles).
+create or replace function public.approve_member(target uuid, ok boolean) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'not allowed'; end if;
+  update public.profiles set approved = ok where id = target;
+end $$;
+
+-- 11b. Tables
+create table if not exists public.memories (
+  id          uuid primary key default gen_random_uuid(),
+  plan_id     uuid unique references public.plans(id) on delete set null,   -- the original event
+  code        text check (code is null or code in
+                ('Social','Wellness','Faith','Adventure','Family','Connection','Support','Recharge')),
+  title_es    text not null default '',
+  title_en    text not null default '',
+  desc_es     text not null default '',
+  desc_en     text not null default '',
+  event_date  date,                                  -- ORIGINAL event date (never the upload date)
+  location    text not null default '',
+  image_url   text not null default '' check (image_url = '' or image_url ~* '^https?://'),
+  posting     text not null default 'going' check (posting in ('going','members','closed')),
+  cover_media_id uuid,
+  hidden      boolean not null default false,
+  created_by  uuid default auth.uid() references public.profiles(id) on delete set null,
+  created_at  timestamptz not null default now()
+);
+create index if not exists memories_date_idx on public.memories (event_date desc);
+
+create table if not exists public.memory_posts (
+  id          uuid primary key default gen_random_uuid(),
+  memory_id   uuid not null references public.memories(id) on delete cascade,
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  author_name text not null default '',
+  body        text not null default '' check (char_length(body) <= 1000),
+  hidden      boolean not null default false,
+  created_at  timestamptz not null default now()
+);
+create index if not exists memory_posts_memory_idx on public.memory_posts (memory_id, created_at desc);
+
+create table if not exists public.memory_media (
+  id          uuid primary key default gen_random_uuid(),
+  memory_id   uuid not null references public.memories(id) on delete cascade,
+  post_id     uuid not null references public.memory_posts(id) on delete cascade,
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  kind        text not null check (kind in ('photo','video')),
+  path        text not null,                       -- storage path in bucket "memories"
+  thumb_path  text not null default '',
+  caption     text not null default '' check (char_length(caption) <= 300),
+  size_bytes  integer not null default 0 check (size_bytes between 0 and 26214400),
+  width       integer,
+  height      integer,
+  duration_s  integer check (duration_s is null or duration_s <= 30),
+  hidden      boolean not null default false,
+  created_at  timestamptz not null default now()
+);
+create index if not exists memory_media_post_idx on public.memory_media (post_id);
+create index if not exists memory_media_memory_idx on public.memory_media (memory_id);
+
+do $$ begin
+  if not exists (select 1 from pg_constraint where conname = 'memories_cover_fk') then
+    alter table public.memories add constraint memories_cover_fk
+      foreign key (cover_media_id) references public.memory_media(id) on delete set null;
+  end if;
+end $$;
+
+create table if not exists public.memory_comments (
+  id          uuid primary key default gen_random_uuid(),
+  post_id     uuid not null references public.memory_posts(id) on delete cascade,
+  memory_id   uuid not null references public.memories(id) on delete cascade,
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  author_name text not null default '',
+  body        text not null check (char_length(body) between 1 and 500),
+  hidden      boolean not null default false,
+  created_at  timestamptz not null default now()
+);
+create index if not exists memory_comments_post_idx on public.memory_comments (post_id, created_at);
+
+create table if not exists public.memory_reactions (
+  post_id     uuid not null references public.memory_posts(id) on delete cascade,
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  created_at  timestamptz not null default now(),
+  primary key (post_id, user_id)                   -- one heart per member per post
+);
+
+-- Author names are stamped by the database so they cannot be faked.
+create or replace function public.stamp_author_name() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  select coalesce(nullif(trim(first_name || ' ' || case when last_name <> '' then left(last_name,1) || '.' else '' end), ''), 'Member')
+    into new.author_name from public.profiles where id = new.user_id;
+  if new.author_name is null then new.author_name := 'Member'; end if;
+  return new;
+end $$;
+drop trigger if exists memory_posts_author on public.memory_posts;
+create trigger memory_posts_author before insert on public.memory_posts
+  for each row execute function public.stamp_author_name();
+drop trigger if exists memory_comments_author on public.memory_comments;
+create trigger memory_comments_author before insert on public.memory_comments
+  for each row execute function public.stamp_author_name();
+
+-- 11c. Permission helpers
+-- Can the current user add posts/photos/videos to this memory?
+create or replace function public.can_post_memory(mid uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.is_approved() and exists (
+    select 1 from public.memories m
+    where m.id = mid
+      and (
+        public.is_admin()
+        or (not m.hidden and (
+              m.posting = 'members'
+              or (m.posting = 'going' and exists (
+                    select 1 from public.responses r
+                    where r.plan_id = m.plan_id and r.user_id = auth.uid() and r.status = 'going'))
+        ))
+      )
+  )
+$$;
+
+-- Can the current user comment / heart in this memory? (any approved member, unless closed or hidden)
+create or replace function public.can_interact_memory(mid uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.is_approved() and exists (
+    select 1 from public.memories m
+    where m.id = mid and (public.is_admin() or (not m.hidden and m.posting <> 'closed'))
+  )
+$$;
+
+-- Is this memory visible to the current user?
+create or replace function public.memory_visible(mid uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.is_approved() and exists (
+    select 1 from public.memories m where m.id = mid and (not m.hidden or public.is_admin())
+  )
+$$;
+
+-- 11d. Row-level security
+alter table public.memories          enable row level security;
+alter table public.memory_posts      enable row level security;
+alter table public.memory_media      enable row level security;
+alter table public.memory_comments   enable row level security;
+alter table public.memory_reactions  enable row level security;
+
+drop policy if exists "memories read"         on public.memories;
+drop policy if exists "memories admin insert" on public.memories;
+drop policy if exists "memories admin update" on public.memories;
+drop policy if exists "memories admin delete" on public.memories;
+create policy "memories read" on public.memories
+  for select to authenticated using (public.is_approved() and (not hidden or public.is_admin()));
+create policy "memories admin insert" on public.memories
+  for insert to authenticated with check (public.is_admin());
+create policy "memories admin update" on public.memories
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "memories admin delete" on public.memories
+  for delete to authenticated using (public.is_admin());
+
+drop policy if exists "mposts read"   on public.memory_posts;
+drop policy if exists "mposts insert" on public.memory_posts;
+drop policy if exists "mposts update" on public.memory_posts;
+drop policy if exists "mposts delete" on public.memory_posts;
+create policy "mposts read" on public.memory_posts
+  for select to authenticated
+  using (public.memory_visible(memory_id) and (not hidden or public.is_admin() or user_id = auth.uid()));
+create policy "mposts insert" on public.memory_posts
+  for insert to authenticated
+  with check (user_id = auth.uid() and hidden = false and public.can_post_memory(memory_id));
+create policy "mposts update" on public.memory_posts
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "mposts delete" on public.memory_posts
+  for delete to authenticated using (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists "mmedia read"   on public.memory_media;
+drop policy if exists "mmedia insert" on public.memory_media;
+drop policy if exists "mmedia update" on public.memory_media;
+drop policy if exists "mmedia delete" on public.memory_media;
+create policy "mmedia read" on public.memory_media
+  for select to authenticated
+  using (public.memory_visible(memory_id) and (not hidden or public.is_admin() or user_id = auth.uid()));
+create policy "mmedia insert" on public.memory_media
+  for insert to authenticated
+  with check (
+    user_id = auth.uid() and hidden = false and public.can_post_memory(memory_id)
+    and exists (select 1 from public.memory_posts p
+                where p.id = post_id and p.memory_id = memory_media.memory_id
+                  and (p.user_id = auth.uid() or public.is_admin()))
+  );
+create policy "mmedia update" on public.memory_media
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "mmedia delete" on public.memory_media
+  for delete to authenticated using (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists "mcomments read"   on public.memory_comments;
+drop policy if exists "mcomments insert" on public.memory_comments;
+drop policy if exists "mcomments update" on public.memory_comments;
+drop policy if exists "mcomments delete" on public.memory_comments;
+create policy "mcomments read" on public.memory_comments
+  for select to authenticated
+  using (public.memory_visible(memory_id) and (not hidden or public.is_admin() or user_id = auth.uid()));
+create policy "mcomments insert" on public.memory_comments
+  for insert to authenticated
+  with check (user_id = auth.uid() and hidden = false and public.can_interact_memory(memory_id)
+              and exists (select 1 from public.memory_posts p where p.id = post_id and p.memory_id = memory_comments.memory_id));
+create policy "mcomments update" on public.memory_comments
+  for update to authenticated using (public.is_admin()) with check (public.is_admin());
+create policy "mcomments delete" on public.memory_comments
+  for delete to authenticated using (user_id = auth.uid() or public.is_admin());
+
+drop policy if exists "mreact read"   on public.memory_reactions;
+drop policy if exists "mreact insert" on public.memory_reactions;
+drop policy if exists "mreact delete" on public.memory_reactions;
+create policy "mreact read" on public.memory_reactions
+  for select to authenticated
+  using (exists (select 1 from public.memory_posts p where p.id = post_id and public.memory_visible(p.memory_id)));
+create policy "mreact insert" on public.memory_reactions
+  for insert to authenticated
+  with check (user_id = auth.uid()
+              and exists (select 1 from public.memory_posts p where p.id = post_id and public.can_interact_memory(p.memory_id)));
+create policy "mreact delete" on public.memory_reactions
+  for delete to authenticated using (user_id = auth.uid());
+
+-- Counts for the timeline ("12 photos • 2 videos"). Runs as the caller, so RLS decides what is counted.
+create or replace function public.memory_stats()
+returns table (memory_id uuid, photos bigint, videos bigint, posts bigint)
+language sql stable security invoker set search_path = public as $$
+  select m.id,
+         (select count(*) from public.memory_media x where x.memory_id = m.id and x.kind = 'photo' and not x.hidden),
+         (select count(*) from public.memory_media x where x.memory_id = m.id and x.kind = 'video' and not x.hidden),
+         (select count(*) from public.memory_posts p where p.memory_id = m.id and not p.hidden)
+  from public.memories m
+$$;
+
+-- 11e. Private storage bucket "memories": 25 MB max per file; images and short videos only.
+--      File path format: <memory_id>/<member_id>/<random-name>.<ext>
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('memories', 'memories', false, 26214400,
+        array['image/jpeg','image/png','image/webp','video/mp4','video/quicktime','video/webm'])
+on conflict (id) do update
+  set public = false, file_size_limit = 26214400,
+      allowed_mime_types = array['image/jpeg','image/png','image/webp','video/mp4','video/quicktime','video/webm'];
+
+drop policy if exists "memories files read"   on storage.objects;
+drop policy if exists "memories files insert" on storage.objects;
+drop policy if exists "memories files delete" on storage.objects;
+create policy "memories files read" on storage.objects
+  for select to authenticated using (bucket_id = 'memories' and public.is_approved());
+create policy "memories files insert" on storage.objects
+  for insert to authenticated
+  with check (
+    bucket_id = 'memories' and public.is_approved()
+    and (storage.foldername(name))[2] = auth.uid()::text
+    and public.can_post_memory(((storage.foldername(name))[1])::uuid)
+  );
+create policy "memories files delete" on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'memories' and ((storage.foldername(name))[2] = auth.uid()::text or public.is_admin()));
+
+-- 11f. Function permissions and Data API access
+revoke all on function public.my_approved()            from public, anon;
+revoke all on function public.is_approved()            from public, anon;
+revoke all on function public.approve_member(uuid, boolean) from public, anon;
+revoke all on function public.can_post_memory(uuid)    from public, anon;
+revoke all on function public.can_interact_memory(uuid) from public, anon;
+revoke all on function public.memory_visible(uuid)     from public, anon;
+revoke all on function public.memory_stats()           from public, anon;
+grant execute on function public.my_approved()            to authenticated;
+grant execute on function public.is_approved()            to authenticated;
+grant execute on function public.approve_member(uuid, boolean) to authenticated;
+grant execute on function public.can_post_memory(uuid)    to authenticated;
+grant execute on function public.can_interact_memory(uuid) to authenticated;
+grant execute on function public.memory_visible(uuid)     to authenticated;
+grant execute on function public.memory_stats()           to authenticated;
+
+grant select, insert, update, delete on public.memories         to authenticated;
+grant select, insert, update, delete on public.memory_posts     to authenticated;
+grant select, insert, update, delete on public.memory_media     to authenticated;
+grant select, insert, update, delete on public.memory_comments  to authenticated;
+grant select, insert, delete         on public.memory_reactions to authenticated;
