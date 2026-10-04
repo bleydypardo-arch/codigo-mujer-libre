@@ -121,6 +121,16 @@ const translations = {
 
 
 Object.assign(translations.es, {
+  heroTitle: "La vida es mejor cuando la vivimos juntas.",
+  heroBody: "Planes que valen la pena. Mujeres que vale la pena conocer. Momentos que vale la pena guardar.",
+  heroCta: "Explora esta semana",
+  greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
+  greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
+  greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
+  upcomingTitle: "Próximas experiencias", seeAll: "Ver todas",
+  viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
+  firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
+  aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
   "heroAlt": "Mujeres compartiendo",
   "editQuoteLabel": "Editar mensaje de hoy",
   "closeLabel": "Cerrar",
@@ -158,6 +168,16 @@ Object.assign(translations.es, {
   "draftLabel": "Borrador · No enviado"
 });
 Object.assign(translations.en, {
+  heroTitle: "Life is better when we live it together.",
+  heroBody: "Plans worth making. Women worth knowing. Moments worth keeping.",
+  heroCta: "Explore this week",
+  greetMorning: n => n ? "Good morning, " + n : "Good morning",
+  greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
+  greetEvening: n => n ? "Good evening, " + n : "Good evening",
+  upcomingTitle: "Upcoming experiences", seeAll: "See all",
+  viewDetails: "View details", goingCount: n => n + " going",
+  firstToGo: "Be the first to join", attendanceTitle: "Who's going",
+  aboutEvent: "About this plan", detailsOf: "Plan details",
   "heroAlt": "Women spending time together",
   "editQuoteLabel": "Edit today's message",
   "closeLabel": "Close",
@@ -412,6 +432,8 @@ let profile = null;
 let plans = [];                 // published plans visible to members
 const counts = new Map();       // plan_id -> {interested, going}
 const mine = new Map();         // plan_id -> 'interested' | 'going'
+const attendees = new Map();    // plan_id -> [{user_id, first_name, avatar_path}] (going, approved members)
+let sheetPlanId = null, sheetTrigger = null;
 let settings = {};              // key -> jsonb value
 let posts = [];
 let myMessages = [];
@@ -420,6 +442,7 @@ let pendingFocus = "";
 
 const byId = id => document.getElementById(id);
 const t = key => translations[currentLanguage][key] || "";
+const tf = (key, ...args) => { const v = translations[currentLanguage][key]; return typeof v === "function" ? v(...args) : (v || ""); };
 const loc = () => (currentLanguage === "es" ? "es-US" : "en-US");
 const isAdmin = () => !!profile && (profile.role === "admin" || profile.role === "super_admin");
 const isPending = () => !!profile && profile.role === "member" && !profile.approved;
@@ -540,6 +563,8 @@ function renderAll() {
   renderQuote();
   renderFeatured();
   renderEvents();
+  renderUpcoming();
+  paintSheet(true);
   renderTrips();
   renderWellnessCards();
   renderMembers();
@@ -586,8 +611,19 @@ function showPage(pageId, focusHeading = true) {
 // Home
 // ==============================
 function renderHero() {
+  const greet = byId("heroGreet");
+  if (greet) {
+    const h = new Date().getHours();
+    const first = profile && profile.first_name ? profile.first_name : "";
+    greet.textContent = tf(h < 12 ? "greetMorning" : h < 19 ? "greetAfternoon" : "greetEvening", first);
+  }
   const img = byId("heroImg");
   if (!img) return;
+  if (!img.dataset.wired) {
+    img.dataset.wired = "1";
+    img.addEventListener("error", () => { img.hidden = true; });
+    img.addEventListener("load", () => { img.hidden = false; });
+  }
   const custom = settings.hero_image && safeUrl(settings.hero_image.url);
   const wanted = custom || DEFAULT_HERO;
   if (img.getAttribute("src") !== wanted) img.setAttribute("src", wanted);
@@ -631,7 +667,7 @@ function renderFeatured() {
 // ==============================
 // Plans (events, trips, wellness cards)
 // ==============================
-function respondButton(plan, status) {
+function respondButton(plan, status, attr = "data-resp") {
   const c = counts.get(plan.id) || { interested: 0, going: 0 };
   const active = mine.get(plan.id) === status;
   const icon = status === "interested" ? "❤️" : "✓";
@@ -640,7 +676,7 @@ function respondButton(plan, status) {
     type: "button",
     class: "resp" + (active ? " on" : ""),
     "aria-pressed": String(active),
-    "data-resp": plan.id + ":" + status
+    [attr]: plan.id + ":" + status
   }, icon + " " + label + " · " + (c[status] || 0));
   button.addEventListener("click", () => respond(plan.id, status));
   return button;
@@ -730,6 +766,146 @@ function planCard(p) {
   }
   return card;
 }
+
+// ---- Premium event card + detail sheet ----
+const toneOf = code => "tone-" + (codeLabels[code] ? code : "none");
+const emojiOfCode = code => { const m = codeLabels[code] ? /^\S+/.exec(t(codeLabels[code])) : null; return m ? m[0] : "✨"; };
+function shortWhen(p) {
+  if (p.event_date) {
+    const d = dateFromStr(p.event_date).toLocaleDateString(loc(), { weekday: "short", month: "short", day: "numeric" });
+    return d + (p.event_time ? " · " + p.event_time : "");
+  }
+  return p.date_text || (t("dateTbd") + (p.event_time ? " · " + p.event_time : ""));
+}
+function avatarStack(planId, max = 4) {
+  const c = counts.get(planId) || { interested: 0, going: 0 };
+  const who = attendees.get(planId) || [];
+  const row = el("div", { class: "ev-people" });
+  const shown = who.slice(0, max);
+  if (shown.length && window.CMLProfile) {
+    row.appendChild(el("span", { class: "avatar-stack", "aria-hidden": "true" },
+      ...shown.map(a => window.CMLProfile.avatarNode(a.avatar_path, a.first_name, "avatar-sm"))));
+  }
+  const extra = Math.max(0, c.going - shown.length);
+  row.appendChild(el("span", { class: "ev-going", text: (extra && shown.length ? "+" + extra + " · " : "") + (c.going ? tf("goingCount", c.going) : t("firstToGo")) }));
+  return row;
+}
+function eventMedia(p, cls) {
+  const image = safeUrl(p.image_url);
+  const box = el("div", { class: "ev-media " + cls + (image ? "" : " ev-ph " + toneOf(p.code)) });
+  if (image) {
+    const img = el("img", { src: image, alt: pick(p, "title") || "", loading: "lazy" });
+    img.addEventListener("error", () => { img.remove(); box.classList.add("ev-ph", toneOf(p.code)); box.prepend(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) })); });
+    box.appendChild(img);
+  } else box.appendChild(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) }));
+  if (p.code && codeLabels[p.code]) box.appendChild(el("span", { class: "ev-badge", text: t(codeLabels[p.code]) }));
+  return box;
+}
+function eventCard(p, mini) {
+  const card = el("article", { class: "ev-card" + (mini ? " ev-mini" : " card plan") });
+  const media = eventMedia(p, "ev-cover");
+  media.addEventListener("click", () => openDetail(p.id, card.querySelector(".ev-more")));
+  card.appendChild(media);
+  const body = el("div", { class: "ev-body" });
+  const title = pick(p, "title");
+  body.appendChild(el("h2", { class: "ev-title", text: title || "—" }));
+  body.appendChild(el("p", { class: "ev-when", text: "📅 " + shortWhen(p) }));
+  if (p.location) body.appendChild(el("p", { class: "ev-where", text: "📍 " + p.location }));
+  body.appendChild(avatarStack(p.id));
+  const attr = mini ? "data-resp-home" : "data-resp";
+  body.appendChild(el("div", { class: "resp-row" }, respondButton(p, "interested", attr), respondButton(p, "going", attr)));
+  const more = el("button", { type: "button", class: "ev-more", text: t("viewDetails") + " →" });
+  more.addEventListener("click", () => openDetail(p.id, more));
+  body.appendChild(more);
+  card.appendChild(body);
+  return card;
+}
+function detailNode(p) {
+  const box = el("div", { class: "sheet-content" });
+  box.appendChild(eventMedia(p, "sheet-hero"));
+  const body = el("div", { class: "sheet-main" });
+  body.appendChild(el("h2", { id: "sheetTitle", class: "sheet-title", text: pick(p, "title") || "—" }));
+  const meta = [];
+  meta.push("📅 " + (p.event_date ? fmtDate(p.event_date) + (p.event_time ? " · " + p.event_time : "") : shortWhen(p)));
+  if (p.location) meta.push("📍 " + p.location);
+  if (p.price) meta.push("💲 " + p.price);
+  meta.forEach(l => body.appendChild(el("p", { class: "meta-line", text: l })));
+  body.appendChild(el("h3", { class: "sheet-h", text: t("attendanceTitle") }));
+  body.appendChild(avatarStack(p.id, 8));
+  body.appendChild(el("div", { class: "resp-row" }, respondButton(p, "interested"), respondButton(p, "going")));
+  const description = pick(p, "desc");
+  if (description) {
+    body.appendChild(el("h3", { class: "sheet-h", text: t("aboutEvent") }));
+    body.appendChild(el("p", { class: "saved-text", text: description }));
+  }
+  const url = safeUrl(p.url);
+  if (url) body.appendChild(el("a", { class: "link-btn", href: url, target: "_blank", rel: "noopener noreferrer", text: t("moreInfo") + " ↗" }));
+  if (p.location) mapBlock(body, p.location);
+  if (p.details) {
+    body.appendChild(el("details", { class: "more" }, el("summary", { text: t("moreDetails") }), el("p", { class: "saved-text", text: p.details })));
+  }
+  if (window.CMLPolls) { const polls = window.CMLPolls.planBlock(p); if (polls) body.appendChild(polls); }
+  if (window.CMLSocial) { const chat = window.CMLSocial.chatBlock(p, mine.get(p.id)); if (chat) body.appendChild(chat); }
+  box.appendChild(body);
+  return box;
+}
+function paintSheet(keepScroll) {
+  const sheet = byId("eventSheet"), host = byId("sheetBody");
+  if (!sheet || !host || !sheetPlanId) return;
+  const p = plans.find(x => x.id === sheetPlanId);
+  if (!p) return closeDetail();
+  const panel = sheet.querySelector(".sheet-panel");
+  const top = keepScroll ? panel.scrollTop : 0;
+  host.replaceChildren(detailNode(p));
+  panel.scrollTop = top;
+}
+function openDetail(planId, trigger) {
+  const sheet = byId("eventSheet");
+  if (!sheet || !plans.some(p => p.id === planId)) return;
+  sheetPlanId = planId; sheetTrigger = trigger || document.activeElement;
+  sheet.hidden = false;
+  document.body.classList.add("sheet-open");
+  paintSheet(false);
+  const close = byId("sheetClose");
+  requestAnimationFrame(() => { sheet.classList.add("show"); if (close) close.focus({ preventScroll: true }); });
+}
+function closeDetail() {
+  const sheet = byId("eventSheet");
+  if (!sheet || sheet.hidden) return;
+  sheet.classList.remove("show"); sheet.hidden = true;
+  document.body.classList.remove("sheet-open");
+  byId("sheetBody")?.replaceChildren();
+  const back = sheetTrigger; sheetPlanId = null; sheetTrigger = null;
+  if (back && back.isConnected) back.focus({ preventScroll: true });
+}
+function wireSheet() {
+  const sheet = byId("eventSheet");
+  if (!sheet) return;
+  sheet.addEventListener("click", e => { if (e.target.closest("[data-close]") || e.target.closest("#sheetClose")) closeDetail(); });
+  document.addEventListener("keydown", e => {
+    if (sheet.hidden) return;
+    if (e.key === "Escape") { if (document.querySelector(".lightbox")) return; e.preventDefault(); closeDetail(); return; }
+    if (e.key !== "Tab") return;
+    const items = [...sheet.querySelectorAll('button, a[href], input, select, textarea, summary, [tabindex="0"]')].filter(n => !n.disabled && n.offsetParent !== null);
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && (document.activeElement === first || !sheet.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (document.activeElement === last || !sheet.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+  });
+}
+function renderUpcoming() {
+  const host = byId("homeUpcoming");
+  if (!host) return;
+  const today = todayStr();
+  const next = session ? plans.filter(p => p.kind === "event" && p.event_date && p.event_date >= today).sort(byDate).slice(0, 3) : [];
+  host.hidden = !next.length;
+  if (!next.length) return host.replaceChildren();
+  const all = el("button", { type: "button", class: "see-all", text: t("seeAll") + " →" });
+  all.addEventListener("click", () => showPage("events"));
+  host.replaceChildren(
+    el("div", { class: "section-head" }, el("h2", { text: t("upcomingTitle") }), all),
+    el("div", { class: "ev-grid" }, ...next.map(p => eventCard(p, true))));
+}
 function byDate(a, b) {
   if (a.event_date && b.event_date) return a.event_date < b.event_date ? -1 : a.event_date > b.event_date ? 1 : 0;
   if (a.event_date) return -1;
@@ -767,7 +943,7 @@ function renderEvents() {
   const shown = events.filter(p =>
     monthSel === "all" ||
     (monthSel === "tbd" ? !p.event_date : p.event_date && monthKey(p.event_date) === monthSel));
-  list.replaceChildren(...shown.map(planCard));
+  list.replaceChildren(...shown.map(p => eventCard(p)));
   restoreFocus();
 }
 function renderTrips() {
@@ -785,7 +961,8 @@ function renderWellnessCards() {
 }
 function restoreFocus() {
   if (!pendingFocus) return;
-  const target = document.querySelector('[data-resp="' + pendingFocus + '"]');
+  const all = [...document.querySelectorAll('[data-resp="' + pendingFocus + '"]')];
+  const target = all.find(n => n.offsetParent !== null) || all[0];
   pendingFocus = "";
   if (target) target.focus({ preventScroll: true });
 }
@@ -795,6 +972,14 @@ async function refreshCounts() {
   if (error) throw error;
   counts.clear();
   (data || []).forEach(r => counts.set(r.plan_id, { interested: Number(r.interested), going: Number(r.going) }));
+  try {
+    const a = await db.rpc("plan_attendees", { max_each: 8 });
+    if (!a.error) {
+      attendees.clear();
+      (a.data || []).forEach(r => { (attendees.get(r.plan_id) || attendees.set(r.plan_id, []).get(r.plan_id)).push(r); });
+      if (window.CMLProfile) await window.CMLProfile.signed((a.data || []).map(r => r.avatar_path));
+    }
+  } catch { /* avatars are optional */ }
 }
 async function respond(planId, status) {
   if (!session) return;
@@ -806,7 +991,7 @@ async function respond(planId, status) {
   if (current === status) mine.delete(planId);
   else { mine.set(planId, status); c[status] += 1; }
   counts.set(planId, c);
-  renderEvents(); renderTrips(); renderFeatured(); renderWellnessCards(); homeRefresh();
+  renderEvents(); renderTrips(); renderFeatured(); renderWellnessCards(); renderUpcoming(); paintSheet(true); homeRefresh();
   try {
     let result;
     if (current === status) {
@@ -821,7 +1006,7 @@ async function respond(planId, status) {
     announce("respondFail");
     try { await loadResponses(); await refreshCounts(); } catch { /* keep optimistic state */ }
   }
-  renderEvents(); renderTrips(); renderFeatured(); renderWellnessCards(); homeRefresh();
+  renderEvents(); renderTrips(); renderFeatured(); renderWellnessCards(); renderUpcoming(); paintSheet(true); homeRefresh();
 }
 async function loadResponses() {
   const { data, error } = await db.from("responses").select("plan_id,status").eq("user_id", session.user.id);
@@ -1113,8 +1298,8 @@ async function fetchProfile() {
 async function applySession(s) {
   session = s;
   if (!s) {
-    profile = null; plans = []; counts.clear(); mine.clear(); posts = []; myMessages = []; members = [];
-    closeModal();
+    profile = null; plans = []; counts.clear(); mine.clear(); attendees.clear(); posts = []; myMessages = []; members = [];
+    closeModal(); closeDetail();
     document.dispatchEvent(new CustomEvent("cml:session", { detail: { admin: false, super: false } }));
     showPage("home", false);
     byId("navAdmin").hidden = true;
@@ -1265,6 +1450,8 @@ function initialize() {
       renderWeeklyCode();
     }));
   byId("postBtn")?.addEventListener("click", addPost);
+  byId("heroCta")?.addEventListener("click", () => showPage("events"));
+  wireSheet();
   byId("editQuote")?.addEventListener("click", () => openModal("dailyQuote"));
   byId("newMessage")?.addEventListener("click", () => openModal("message"));
   document.querySelectorAll(".support[data-type]").forEach(button =>

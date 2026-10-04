@@ -34,7 +34,7 @@ const ES = {
   memConfirmDeleteMemory: "¿Eliminar este recuerdo con TODAS sus fotos, videos y comentarios? No se puede deshacer.",
   memEmojis: "Emojis", memLike: "Me encanta", memGallery: "Todas las fotos y videos", memClose: "Cerrar", memPrev: "Anterior", memNext: "Siguiente",
   memCover: "Usar como portada", memCoverSet: "Portada actualizada.", memPostedWhen: "publicó", memCommentFail: "No se pudo comentar.",
-  memHomeLabel: "ÚLTIMO RECUERDO", memHomeCta: "Ver recuerdos", memEventDate: "Fecha del evento",
+  memCount: "{n} recuerdos", memCount1: "1 recuerdo", memViewAlbum: "Ver álbum", memMore: "Más opciones", memHomeLabel: "ÚLTIMO RECUERDO", memHomeCta: "Ver recuerdos", memEventDate: "Fecha del evento",
   memCreate: "Crear recuerdo", memOpen: "Abrir recuerdo", memCreated: "Recuerdo creado.", memHasOne: "Ya tiene recuerdo",
   memAdminTitle: "Recuerdos", memAdminIntro: "Crea un recuerdo desde un evento (pestaña Planes y eventos → Crear recuerdo).",
   memStorage: "Almacenamiento usado (aprox.)", memStorageOf: "de 1 GB incluido en el plan gratuito",
@@ -71,7 +71,7 @@ const EN = {
   memConfirmDeleteMemory: "Delete this memory with ALL its photos, videos and comments? This cannot be undone.",
   memEmojis: "Emojis", memLike: "Love", memGallery: "All photos and videos", memClose: "Close", memPrev: "Previous", memNext: "Next",
   memCover: "Use as cover", memCoverSet: "Cover updated.", memPostedWhen: "posted", memCommentFail: "Could not comment.",
-  memHomeLabel: "LATEST MEMORY", memHomeCta: "See memories", memEventDate: "Event date",
+  memCount: "{n} memories", memCount1: "1 memory", memViewAlbum: "View album", memMore: "More options", memHomeLabel: "LATEST MEMORY", memHomeCta: "See memories", memEventDate: "Event date",
   memCreate: "Create memory", memOpen: "Open memory", memCreated: "Memory created.", memHasOne: "Already has a memory",
   memAdminTitle: "Memories", memAdminIntro: "Create a memory from an event (Plans & events tab → Create memory).",
   memStorage: "Storage used (approx.)", memStorageOf: "of the 1 GB included in the free plan",
@@ -87,6 +87,7 @@ let C = null;
 let list = [];                 // memories visible to this user
 let stats = new Map();         // memory_id -> {photos, videos, posts}
 let covers = new Map();        // memory_id -> signed thumbnail URL
+let people = new Map();        // memory_id -> [{first_name, avatar_path}] contributors
 let filt = { year: "all", month: "all", code: "all" };
 let memMode = false;
 let openId = null;
@@ -166,6 +167,35 @@ async function loadList() {
   });
   const get = await signed([...paths.values()]);
   covers = new Map([...paths].map(([id, p]) => [id, get(p)]));
+  await loadPeople();
+}
+async function loadPeople() {
+  people = new Map();
+  try {
+    const pr = await C.db.from("memory_posts").select("memory_id,user_id").limit(1000);
+    if (pr.error) return;
+    const by = new Map();
+    (pr.data || []).forEach(r => { const a = by.get(r.memory_id) || by.set(r.memory_id, []).get(r.memory_id); if (!a.includes(r.user_id)) a.push(r.user_id); });
+    const ids = [...new Set([...by.values()].flat())];
+    if (!ids.length) return;
+    const av = await C.db.rpc("member_avatars", { ids });
+    if (av.error) return;
+    const who = new Map((av.data || []).map(r => [r.id, r]));
+    if (window.CMLProfile) await window.CMLProfile.signed((av.data || []).map(r => r.avatar_path));
+    by.forEach((uids, mid) => people.set(mid, uids.map(u => who.get(u)).filter(Boolean)));
+  } catch { /* avatars are optional */ }
+}
+function peopleStack(mid, max = 4) {
+  const row = el("span", { class: "avatar-stack", "aria-hidden": "true" });
+  const who = (people.get(mid) || []).slice(0, max);
+  if (!who.length || !window.CMLProfile) return null;
+  who.forEach(w => row.appendChild(window.CMLProfile.avatarNode(w.avatar_path, w.first_name, "avatar-sm")));
+  return row;
+}
+function countLine(id) {
+  const s = stats.get(id) || { photos: 0, videos: 0 };
+  const n = s.photos + s.videos;
+  return n === 1 ? t("memCount1") : t("memCount", { n });
 }
 
 // ---------- timeline ----------
@@ -229,14 +259,17 @@ function paintList() {
     if (p.y !== lastY) { body.appendChild(el("h3", { class: "mem-year", text: String(p.y) })); lastY = p.y; lastK = null; }
     if (p.key !== lastK) { body.appendChild(el("h4", { class: "mem-month", text: C.monthLabel(p.key).replace(/\s*\d{4}$/, "") })); lastK = p.key; }
     const cover = covers.get(m.id);
+    const stack = peopleStack(m.id);
     const card = el("button", { type: "button", class: "mem-card" },
-      cover ? el("img", { src: cover, alt: "", loading: "lazy" }) : el("span", { class: "mem-ph", text: (codeText(m.code).split(" ")[0]) || "📷", "aria-hidden": "true" }),
+      el("span", { class: "mem-cover" },
+        cover ? el("img", { src: cover, alt: "", loading: "lazy" }) : el("span", { class: "mem-ph", text: (codeText(m.code).split(" ")[0]) || "📷", "aria-hidden": "true" }),
+        m.code ? el("span", { class: "ev-badge", text: codeText(m.code) }) : null),
       el("span", { class: "mem-card-body" },
-        m.code ? el("small", { class: "rose", text: codeText(m.code) }) : null,
         el("b", { text: title(m) }),
-        el("span", { class: "meta-line", text: longDate(m) }),
-        el("span", { class: "meta-line", text: statsLine(m.id) }),
-        m.hidden ? el("span", { class: "badge", text: t("memHiddenBadge") }) : null));
+        el("span", { class: "meta-line", text: longDate(m) + (m.location ? " · " + m.location : "") }),
+        el("span", { class: "mem-card-foot" }, stack, el("span", { class: "mem-count", text: countLine(m.id) })),
+        m.hidden ? el("span", { class: "badge", text: t("memHiddenBadge") }) : null,
+        el("span", { class: "mem-cta", text: t("memViewAlbum") + " →" })));
     card.addEventListener("click", () => openAlbum(m.id));
     body.appendChild(card);
   });
@@ -250,11 +283,14 @@ function renderHome() {
   const m = list[0];
   if (!C || !C.session() || !approved() || !m) { card.hidden = true; card.replaceChildren(); return; }
   card.hidden = false;
+  const cover = covers.get(m.id);
   const go = el("button", { type: "button", class: "mem-home-btn" },
-    el("span", {},
+    el("span", { class: "mem-cover" }, cover ? el("img", { src: cover, alt: "", loading: "lazy" }) : el("span", { class: "mem-ph", text: (codeText(m.code).split(" ")[0]) || "📷", "aria-hidden": "true" })),
+    el("span", { class: "mem-home-text" },
       el("small", { class: "rose", text: t("memHomeLabel") }),
       el("b", { text: (codeText(m.code).split(" ")[0] ? codeText(m.code).split(" ")[0] + " " : "") + title(m) }),
       el("span", { class: "meta-line", text: longDate(m) + " · " + statsLine(m.id) }),
+      el("span", { class: "mem-card-foot" }, peopleStack(m.id), el("span", { class: "mem-count", text: countLine(m.id) })),
       el("span", { class: "link-btn", text: t("memHomeCta") + " →" })));
   go.addEventListener("click", () => { C.showPage("events", false); openId = m.id; setMode(true); });
   card.replaceChildren(go);
@@ -299,21 +335,27 @@ function repaintAlbum() { return openAlbum(A.m.id); }
 
 function paintAlbum() {
   const v = host(); const m = A.m;
-  const head = el("div", { class: "mem-head card" },
-    m.code ? el("small", { class: "rose", text: codeText(m.code) }) : null,
-    el("h2", { text: title(m) }),
-    el("p", { class: "meta-line", text: "📅 " + longDate(m) }),
-    m.location ? el("p", { class: "meta-line", text: "📍 " + m.location }) : null,
-    C.pick(m, "desc") ? el("p", { class: "saved-text", text: C.pick(m, "desc") }) : null,
-    el("p", { class: "meta-line", text: statsLine(m.id) }),
-    m.hidden ? el("span", { class: "badge", text: t("memHiddenBadge") }) : null);
-  if (C.isAdmin()) head.appendChild(adminBar());
+  const coverRow = (m.cover_media_id && A.media.find(x => x.id === m.cover_media_id)) || A.media.find(x => x.kind === "photo");
+  const coverSrc = coverRow ? (coverRow.thumb_path ? A.url(coverRow.thumb_path) : A.url(coverRow.path)) : (covers.get(m.id) || "");
+  const stack = peopleStack(m.id, 6);
+  const head = el("div", { class: "mem-head mem-hero" },
+    coverSrc ? el("img", { src: coverSrc, alt: "" }) : null,
+    el("div", { class: "mem-hero-text" },
+      m.code ? el("small", { class: "rose", text: codeText(m.code) }) : null,
+      el("h2", { text: title(m) }),
+      el("p", { class: "meta-line", text: "📅 " + longDate(m) }),
+      m.location ? el("p", { class: "meta-line", text: "📍 " + m.location }) : null,
+      C.pick(m, "desc") ? el("p", { class: "saved-text", text: C.pick(m, "desc") }) : null,
+      el("div", { class: "ev-people" }, stack, el("span", { class: "ev-going", text: countLine(m.id) + " · " + statsLine(m.id) })),
+      m.hidden ? el("span", { class: "badge", text: t("memHiddenBadge") }) : null));
+  const heroWrap = el("div", { class: "mem-hero-wrap" }, head);
+  if (C.isAdmin()) heroWrap.appendChild(el("details", { class: "mem-menu" }, el("summary", { "aria-label": t("memMore"), text: "•••" }), adminBar()));
 
   const feed = el("div", { class: "mem-feed" });
   paintFeed(feed);
 
   const gallery = galleryNode();
-  v.replaceChildren(btn(t("memBack"), "link-btn", showList), head, composerNode(), gallery, feed);
+  v.replaceChildren(btn(t("memBack"), "link-btn", showList), heroWrap, composerNode(), gallery, feed);
 }
 
 function adminBar() {
@@ -388,9 +430,8 @@ function mediaTile(x, onOpen) {
 function galleryNode() {
   const items = A.media;
   if (!items.length) return el("div");
-  const box = el("details", { class: "more mem-gallery" }, el("summary", { text: "🖼️ " + t("memGallery") + " (" + items.length + ")" }),
-    el("div", { class: "mem-grid" }, items.map((x, i) => mediaTile(x, () => lightbox(items, i)))));
-  return box;
+  return el("div", { class: "mem-gallery" },
+    el("div", { class: "mem-grid mem-mosaic" }, items.map((x, i) => mediaTile(x, () => lightbox(items, i)))));
 }
 let lb = null;
 async function lightbox(items, index) {

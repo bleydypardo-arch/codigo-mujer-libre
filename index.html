@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Código Mujer Libre</title>
+  <meta name="theme-color" content="#1b2236">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="design.css">
 </head>
 
 <body>
@@ -92,18 +97,24 @@
 <div id="appShell" hidden>
 
 <header>
-  <div>
-    <b>Código Mujer Libre</b>
-    <small data-i18n="tagline">Conecta · Vive · Crece</small>
-  </div>
+  <div class="brand"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M25 9.2A11 11 0 1 0 25 22.8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><rect x="19.5" y="14" width="4.4" height="4.4" rx="1.1" fill="#c8a76b"/></svg><div><b>Código Mujer Libre</b>
+    <small data-i18n="tagline">Conecta · Vive · Crece</small></div></div>
 
   <div class="header-actions">
-    <button id="bellBtn" type="button" class="bell" aria-label="Avisos" data-i18n-aria="ntBell" aria-expanded="false">🔔<span id="bellBadge" class="bell-badge" hidden></span></button>
-    <button id="profileBtn" type="button" aria-label="Mi perfil" data-i18n-aria="profBtn">👤</button>
+    <button id="bellBtn" type="button" class="bell" aria-label="Avisos" data-i18n-aria="ntBell" aria-expanded="false"><svg class="hi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg><span id="bellBadge" class="bell-badge" hidden></span></button>
+    <button id="profileBtn" type="button" aria-label="Mi perfil" data-i18n-aria="profBtn"><svg class="hi" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20c.6-3.6 3.5-5.6 7.2-5.6s6.6 2 7.2 5.6"/></svg></button>
     <button id="langBtn" type="button" aria-label="Switch to English">EN</button>
     <button id="logoutBtn" type="button" data-i18n="logout">Salir</button>
   </div>
 </header>
+
+<div id="eventSheet" class="sheet" hidden>
+  <div class="sheet-backdrop" data-close="1"></div>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" tabindex="-1">
+    <button type="button" class="sheet-close" id="sheetClose" aria-label="Cerrar" data-i18n-aria="closeLabel">×</button>
+    <div id="sheetBody"></div>
+  </div>
+</div>
 
 <div id="notifPanel" class="notif-panel" role="dialog" aria-modal="false" hidden></div>
 
@@ -114,29 +125,25 @@
   <section id="home" class="page active">
 
     <div class="hero">
-
-      <img id="heroImg"
-        src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=88"
-        alt="Mujeres compartiendo" data-i18n-alt="heroAlt"
-      >
-
+      <img id="heroImg" src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1600&q=85" alt="Mujeres compartiendo" data-i18n-alt="heroAlt">
       <div class="heroText">
-
-        <small data-i18n="communityLabel">
-          TU COMUNIDAD
-        </small>
-
-        <h1 data-i18n="heroTitle">
-          Más conexión. Más vida. Más tú.
-        </h1>
-
-        <p data-i18n="heroBody">
-          Un espacio fresco para conectar, salir, crecer y sentirte acompañada.
-        </p>
-
+        <p class="hero-greet" id="heroGreet"></p>
+        <h1 data-i18n="heroTitle">La vida es mejor cuando la vivimos juntas.</h1>
+        <p class="hero-sub" data-i18n="heroBody">Planes que valen la pena. Mujeres que vale la pena conocer. Momentos que vale la pena guardar.</p>
+        <button type="button" class="hero-cta" id="heroCta" data-i18n="heroCta">Explora esta semana</button>
       </div>
     </div>
 
+    <div id="homeUpcoming" class="home-upcoming" hidden></div>
+
+    <div id="homeWeekend" class="card weekend-card" hidden></div>
+
+    <div id="homeMemory" class="card mem-home" hidden></div>
+
+    <div class="home-pair">
+      <div id="homeUpdates" class="card home-updates" hidden></div>
+      <div id="homeBirthdays" class="card bd-card" hidden></div>
+    </div>
 
     <div class="quote card">
 
@@ -162,13 +169,6 @@
 
     </div>
 
-    <div id="homeMemory" class="card mem-home" hidden></div>
-
-    <div id="homeBirthdays" class="card bd-card" hidden></div>
-
-    <div id="homeUpdates" class="card home-updates" hidden></div>
-
-    <div id="homeWeekend" class="card weekend-card" hidden></div>
 
 
 
@@ -476,7 +476,7 @@
 <nav aria-label="Navegación principal" data-i18n-aria="navigationLabel">
 
   <button type="button" data-page="home">
-    ⌂
+    <svg class="ni" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.8V20h13V9.8"/><path d="M10 20v-5.5h4V20"/></svg>
     <small data-i18n="home">
       Inicio
     </small>
@@ -484,7 +484,7 @@
 
 
   <button type="button" data-page="events">
-    ◉
+    <svg class="ni" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15.8 8.2-2.2 5.4-5.4 2.2 2.2-5.4z"/></svg>
     <small data-i18n="events">
       Eventos
     </small>
@@ -492,7 +492,7 @@
 
 
   <button type="button" data-page="community">
-    ♡
+    <svg class="ni" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.4-7.5-10A4.3 4.3 0 0 1 12 7.3 4.3 4.3 0 0 1 19.5 10c0 5.6-7.5 10-7.5 10z"/></svg>
     <small data-i18n="communityNav">
       Comunidad
     </small>
@@ -500,7 +500,7 @@
 
 
   <button type="button" data-page="messages">
-    ✉
+    <svg class="ni" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="m4 8 8 5.5L20 8"/></svg>
     <small data-i18n="messages">
       Mensajes
     </small>
@@ -508,14 +508,14 @@
 
 
   <button type="button" data-page="wellness">
-    ✦
+    <svg class="ni" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-7 4.5-12.5 14-14 0 8-4.5 13.5-12 13.5"/><path d="M5 19c2.5-4 5.5-6.5 9-8"/></svg>
     <small data-i18n="wellness">
       Bienestar
     </small>
   </button>
 
   <button type="button" data-page="admin" id="navAdmin" hidden>
-    ⚙
+    <svg class="ni" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M18 6l-1.6 1.6M7.6 16.4 6 18"/></svg>
     <small data-i18n="adminNav">Admin</small>
   </button>
 
