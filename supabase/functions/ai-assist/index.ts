@@ -69,8 +69,13 @@ async function openaiJson(system: string, user: string): Promise<any> {
 type Candidate = {
   id: string; source: "ticketmaster" | "places";
   name: string; date: string; time: string; location: string; price: string;
-  url: string; image_url: string; hint: string;
+  url: string; image_url: string; hint: string; kids?: boolean;
 };
+
+// Kids / family-targeted events are hidden unless the admin asks for them.
+const KIDS_WORDS = /\b(kids?|children|child|toddler|disney|nickelodeon|nick jr|paw patrol|bluey|cocomelon|sesame|barney|peppa|wiggles|descendants|camp rock|zombies|jr\.?|junior|teen|youth|family (show|fun|day|night)|princess|puppet|storytime|fairy tale|pokemon|mickey|frozen|encanto|dora|baby shark)\b/i;
+const WANTS_KIDS = /\b(kids?|children|child|famil(y|ia|ies|iar)|ni(ñ|n)os?|ni(ñ|n)as?|toddlers?|teens?|youth|disney)\b/i;
+const isKidsEvent = (name: string, family: unknown) => family === true || KIDS_WORDS.test(name);
 
 function to12h(t: string): string {
   const m = /^(\d{2}):(\d{2})/.exec(t || ""); if (!m) return "";
@@ -113,6 +118,7 @@ async function searchTicketmaster(keyword: string, from: string, to: string): Pr
         : "",
       url: typeof e?.url === "string" && e.url.startsWith("https://") ? e.url : "",
       image_url: img?.url && String(img.url).startsWith("https://") ? img.url : "",
+      kids: isKidsEvent(clean(e?.name, 160), cls?.family),
       hint: [cls?.segment?.name, cls?.genre?.name].filter((x: string) => x && x !== "Undefined").join(" / "),
     };
   }).filter((c: Candidate) => c.name);
@@ -214,7 +220,11 @@ Deno.serve(async (req) => {
         tmSearch().catch((e) => { diag.push("Ticketmaster failed: " + (e as Error).message); return [] as Candidate[]; }),
         searchPlaces(placeQs.length ? placeQs : [query]).catch((e) => { diag.push("Places failed: " + (e as Error).message); return [] as Candidate[]; }),
       ]);
-      const candidates = [...tm.slice(0, MAX_TM), ...pl.slice(0, MAX_PLACES)];
+      const wantsKids = code === "Family" || WANTS_KIDS.test(query);
+      const tmKept = wantsKids ? tm : tm.filter((c) => !c.kids);
+      const hiddenKids = tm.length - tmKept.length;
+      if (hiddenKids) diag.push(`${hiddenKids} kids/family event(s) hidden`);
+      const candidates = [...tmKept.slice(0, MAX_TM), ...pl.slice(0, MAX_PLACES)];
       const configured = Boolean(Deno.env.get("TICKETMASTER_API_KEY")) || Boolean(Deno.env.get("GOOGLE_PLACES_API_KEY"));
       if (!candidates.length) {
         return json({ results: [], note: configured ? "No matches found. Try a broader request. (" + diag.join("; ") + ")" : "Search sources are not configured yet (Ticketmaster / Google Places keys)." });
@@ -227,7 +237,7 @@ Deno.serve(async (req) => {
         `Administrator request: "${query}"\n` +
         `Here are REAL candidates found through Ticketmaster and Google Places (JSON): ${JSON.stringify(facts)}\n\n` +
         `Pick up to 8 that best fit the request and the Código Mujer Libre audience (adult women). Skip anything aimed mainly at children or teens ` +
-        `(kids' shows, Disney, youth tours) unless the request is about family, and skip weak matches rather than padding the list. ` +
+        `(kids' shows, Disney, youth tours)${wantsKids ? " only if it does not fit the request (the administrator asked for family/kids options)" : " unless the request is about family"}, and skip weak matches rather than padding the list. ` +
         `For each, write warm 1-2 sentence descriptions in Spanish and English using ONLY the given facts (name, type, date, place). ` +
         `Do NOT guess the music genre, performers, atmosphere, menu, or what the experience is like unless the "type" field says so; ` +
         `when little is known, keep it short and neutral, e.g. "Live event at Kia Center on Nov 22." ` +
