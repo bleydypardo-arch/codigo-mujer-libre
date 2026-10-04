@@ -1252,3 +1252,38 @@ alter table public.profiles add column if not exists notif_prefs   jsonb not nul
 alter table public.profiles drop constraint if exists profiles_notif_prefs_check;
 alter table public.profiles add constraint profiles_notif_prefs_check
   check (jsonb_typeof(notif_prefs) = 'object' and pg_column_size(notif_prefs) < 512);
+
+-- ============================================================================
+-- 20. WHO IS GOING / WHO POSTED: first name + profile photo of people who are GOING to a published
+--     event (small avatar stacks on event cards) and of members whose posts the caller can already
+--     see (Memories). Approved members only. Nothing else about a member is exposed.
+--     Safe to run more than once.
+-- ============================================================================
+create or replace function public.plan_attendees(max_each int default 6)
+returns table (plan_id uuid, user_id uuid, first_name text, avatar_path text)
+language sql stable security definer set search_path = public as $$
+  select x.plan_id, x.user_id, x.first_name, x.avatar_path
+  from (
+    select r.plan_id, r.user_id, p.first_name, p.avatar_path,
+           row_number() over (partition by r.plan_id order by r.created_at) as n
+    from public.responses r
+    join public.plans pl on pl.id = r.plan_id and pl.published
+    join public.profiles p on p.id = r.user_id and p.first_name <> '' and (p.approved or p.role in ('admin','super_admin'))
+    where r.status = 'going' and public.is_approved()
+  ) x
+  where x.n <= greatest(1, least(max_each, 12))
+$$;
+
+create or replace function public.member_avatars(ids uuid[])
+returns table (id uuid, first_name text, avatar_path text)
+language sql stable security definer set search_path = public as $$
+  select p.id, p.first_name, p.avatar_path
+  from public.profiles p
+  where public.is_approved() and p.id = any(ids[1:200]) and p.first_name <> ''
+    and (p.approved or p.role in ('admin','super_admin'))
+$$;
+
+revoke all on function public.plan_attendees(int)    from public, anon;
+revoke all on function public.member_avatars(uuid[]) from public, anon;
+grant execute on function public.plan_attendees(int)    to authenticated;
+grant execute on function public.member_avatars(uuid[]) to authenticated;
