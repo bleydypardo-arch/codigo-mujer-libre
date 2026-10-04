@@ -10,7 +10,7 @@ const ES = {
   pollOne: "Elige una opción", pollMany: "Puedes elegir varias", pollVotes: n => n + (n === 1 ? " voto" : " votos"),
   pollVoted: n => n + (n === 1 ? " persona votó" : " personas votaron"), pollClosed: "Cerrada",
   pollCloses: d => "Cierra " + d, pollFail: "No se pudo guardar tu voto.", pollNoVotes: "Sé la primera en votar.",
-  pollLabel: "Votación",
+  pollLabel: "Votación", pollYour: "✓ Tu voto: ", pollYours: "✓ Tus votos: ", pollThanks: "¡Gracias! Tu voto quedó guardado.",
   aPollsTab: "Votaciones", aPollIntro: "Crea una votación para el grupo (por ejemplo: «¿Viernes o sábado?»). Puedes unirla a un evento o a un viaje.",
   aPollNew: "+ Nueva votación", aPollQuestion: "Pregunta", aPollOptions: "Opciones (una por línea, mínimo 2)",
   aPollMulti: "Se pueden elegir varias opciones", aPollCloses: "Cierra el (opcional)", aPollAttach: "Unir a", aPollNone: "— Votación general —",
@@ -24,7 +24,7 @@ const EN = {
   pollOne: "Pick one", pollMany: "Pick as many as you like", pollVotes: n => n + (n === 1 ? " vote" : " votes"),
   pollVoted: n => n + (n === 1 ? " person voted" : " people voted"), pollClosed: "Closed",
   pollCloses: d => "Closes " + d, pollFail: "Your vote could not be saved.", pollNoVotes: "Be the first to vote.",
-  pollLabel: "Poll",
+  pollLabel: "Poll", pollYour: "✓ Your vote: ", pollYours: "✓ Your votes: ", pollThanks: "Thank you! Your vote was saved.",
   aPollsTab: "Polls", aPollIntro: "Create a poll for the group (for example “Friday or Saturday?”). You can attach it to an event or a trip.",
   aPollNew: "+ New poll", aPollQuestion: "Question", aPollOptions: "Options (one per line, at least 2)",
   aPollMulti: "Members can pick more than one option", aPollCloses: "Closes on (optional)", aPollAttach: "Attach to", aPollNone: "— General poll —",
@@ -102,6 +102,8 @@ async function vote(p, o) {
       if (r.error && r.error.code !== "23505") throw r.error;
     }
     await refreshResults(); repaint();
+    if (!had) C.announce("pollThanks");
+    if (window.CMLHome) window.CMLHome.render(true);
   } catch {
     mine = before.mine; tally = before.tally; voters = before.voters; repaint();
     await refreshResults().catch(() => {}); repaint();
@@ -131,8 +133,10 @@ function pollNode(p) {
     b.addEventListener("click", () => vote(p, o));
     return b;
   });
-  return el("div", { class: "poll", role: "group", "aria-label": t("pollLabel") + ": " + p.question },
+  const picked = list.filter(o => mine.has(p.id + ":" + o.id)).map(o => o.label);
+  return el("div", { class: "poll" + (picked.length ? " voted" : ""), role: "group", "aria-label": t("pollLabel") + ": " + p.question },
     head, ...rows,
+    picked.length ? el("p", { class: "poll-mine", text: (picked.length > 1 ? t("pollYours") : t("pollYour")) + picked.join(", ") }) : null,
     el("small", { class: "meta-line", text: total ? t("pollVoted", n) : t("pollNoVotes") }));
 }
 function repaint() {
@@ -275,7 +279,9 @@ function init() {
     reload, planBlock, adminView, paintGeneral,
     unvoted: (hours) => polls.filter(p => isOpen(p) && p.closes_at && new Date(p.closes_at).getTime() - Date.now() <= (hours || 24) * 3600000 && !(opts.get(p.id) || []).some(o => mine.has(p.id + ":" + o.id))),
     closingSoon: (hours) => polls.filter(p => isOpen(p) && p.closes_at && new Date(p.closes_at).getTime() - Date.now() <= (hours || 48) * 3600000),
-    prefill: id => { prefillPlan = id || ""; }
+    prefill: id => { prefillPlan = id || ""; },
+    // open polls this member hasn't voted in yet (for "Tu semana" on Home)
+    pending: () => polls.filter(p => isOpen(p) && !(opts.get(p.id) || []).some(o => mine.has(p.id + ":" + o.id)))
   };
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();

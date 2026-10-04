@@ -15,7 +15,8 @@ const ES = {
   bdToday: n => "🎂 ¡Hoy es el cumpleaños de " + n + "!", bdTomorrow: n => "🎂 El cumpleaños de " + n + " es mañana.",
   bdDay: (n, d) => "🎂 El cumpleaños de " + n + " es el " + d + ".", bdWeek: n => "🎉 El cumpleaños de " + n + " es la próxima semana.",
   bdCelebrate: "Crear celebración", bdTitle: "Cumpleaños", bdEventTitleEs: n => "🎂 Cumpleaños de " + n, bdEventTitleEn: n => "🎂 " + n + "'s birthday",
-  bdCreated: "Celebración creada como borrador. Revísala y publícala.", bdFail: "No se pudo crear la celebración.", bdAdminLine: "🎂 Cumpleaños"
+  bdCreated: "Celebración creada como borrador. Revísala y publícala.", bdFail: "No se pudo crear la celebración.", bdAdminLine: "🎂 Cumpleaños",
+  bdCongrats: "Felicitar", bdDraft: n => "🎂 ¡Feliz cumpleaños, " + n + "! "
 };
 const EN = {
   profBtn: "My profile", profTitle: "My profile", profIntro: "Other members only see your first name, your photo and your birthday's day and month (if you add it). Never your age.",
@@ -26,7 +27,8 @@ const EN = {
   bdToday: n => "🎂 It's " + n + "'s birthday today!", bdTomorrow: n => "🎂 " + n + "'s birthday is tomorrow.",
   bdDay: (n, d) => "🎂 " + n + "'s birthday is " + d + ".", bdWeek: n => "🎉 " + n + "'s birthday is next week.",
   bdCelebrate: "Create celebration", bdTitle: "Birthdays", bdEventTitleEs: n => "🎂 Cumpleaños de " + n, bdEventTitleEn: n => "🎂 " + n + "'s birthday",
-  bdCreated: "Celebration created as a draft. Review it and publish.", bdFail: "Could not create the celebration.", bdAdminLine: "🎂 Birthday"
+  bdCreated: "Celebration created as a draft. Review it and publish.", bdFail: "Could not create the celebration.", bdAdminLine: "🎂 Birthday",
+  bdCongrats: "Congratulate", bdDraft: n => "🎂 Happy birthday, " + n + "! "
 };
 const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "function" ? v(...args) : (v || key); };
 const el = (...a) => C.el(...a);
@@ -164,32 +166,32 @@ function renderProfile() {
     ...(window.CMLRedesign ? [window.CMLRedesign.essenceLink()] : []));
 }
 
-// ---------- birthdays on Home ----------
+// ---------- birthdays (shown inside "Tu semana" on Home, drawn by home.js) ----------
+// Only first name, photo and day/month come back from the database — never a year or an age.
 const parseDay = s => { const [y, m, d] = String(s).split("-").map(Number); return new Date(y, m - 1, d); };
+let bdRows = [];
+function bdLine(x) {
+  const n = x.first_name, d = Number(x.days_until);
+  if (d === 0) return t("bdToday", n);
+  if (d === 1) return t("bdTomorrow", n);
+  if (d <= 6) return t("bdDay", n, parseDay(x.next_on).toLocaleDateString(C.loc(), { weekday: "long" }));
+  return t("bdWeek", n);
+}
+const homeRender = () => { if (window.CMLHome) window.CMLHome.render(true); };
 async function renderBirthdays() {
-  const host = document.getElementById("homeBirthdays");
-  if (!host) return;
-  if (!C || !C.session() || !C.profile() || (C.profile().approved === false && !C.isAdmin())) { host.hidden = true; host.replaceChildren(); return; }
+  if (!C || !C.session() || !C.profile() || (C.profile().approved === false && !C.isAdmin())) { bdRows = []; homeRender(); return; }
   const r = await C.db.rpc("upcoming_birthdays", { within_days: 13 });
-  if (r.error || !(r.data || []).length) { host.hidden = true; host.replaceChildren(); return; }
-  const rows = r.data;
-  await signed(rows.map(x => x.avatar_path));
-  const line = x => {
-    const n = x.first_name, d = Number(x.days_until);
-    if (d === 0) return t("bdToday", n);
-    if (d === 1) return t("bdTomorrow", n);
-    if (d <= 6) return t("bdDay", n, parseDay(x.next_on).toLocaleDateString(C.loc(), { weekday: "long" }));
-    return t("bdWeek", n);
-  };
-  host.hidden = false;
-  host.replaceChildren(...rows.map(x => {
-    const row = el("div", { class: "bd-row" }, avatarNode(x.avatar_path, x.first_name, "avatar-sm"), el("span", { class: "bd-text", text: line(x) }));
-    if (C.isAdmin() && window.CMLAdmin) {
-      const b = el("button", { type: "button", class: "link-btn", text: t("bdCelebrate") });
-      b.addEventListener("click", () => window.CMLAdmin.celebrate({ first_name: x.first_name, birth_month: x.birth_month, birth_day: x.birth_day }));
-      row.appendChild(b);
-    }
-    return row;
+  bdRows = r.error ? [] : (r.data || []);
+  if (bdRows.length) await signed(bdRows.map(x => x.avatar_path));
+  homeRender();
+}
+function birthdays() {
+  if (!C || !C.session()) return [];
+  const myId = uid();
+  return bdRows.map(x => ({
+    first_name: x.first_name, avatar_path: x.avatar_path, days_until: Number(x.days_until), text: bdLine(x),
+    mine: !!myId && x.user_id === myId,
+    celebrate: C.isAdmin() && window.CMLAdmin ? () => window.CMLAdmin.celebrate({ first_name: x.first_name, birth_month: x.birth_month, birth_day: x.birth_day }) : null
   }));
 }
 
@@ -201,7 +203,7 @@ function init() {
   const btn = document.getElementById("profileBtn");
   if (btn) btn.addEventListener("click", () => { renderProfile(); C.showPage("profile"); });
   document.addEventListener("cml:session", e => {
-    if (!C.session() || (e.detail && e.detail.pending)) { urls.clear(); const h = document.getElementById("homeBirthdays"); if (h) { h.hidden = true; h.replaceChildren(); } return; }
+    if (!C.session() || (e.detail && e.detail.pending)) { urls.clear(); bdRows = []; return; }
     const me = C.profile();
     if (me && me.pref_lang && me.pref_lang !== C.lang()) C.setLanguage(me.pref_lang);
     renderBirthdays();
@@ -209,9 +211,9 @@ function init() {
   document.addEventListener("cml:lang", () => {
     if (!C.session()) return;
     const p = page(); if (p && p.classList.contains("active")) renderProfile();
-    renderBirthdays();
+    homeRender();
   });
-  window.CMLProfile = { renderBirthdays, avatarNode, signed };
+  window.CMLProfile = { renderBirthdays, birthdays, avatarNode, signed };
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
 })();

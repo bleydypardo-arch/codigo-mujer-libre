@@ -359,32 +359,42 @@ Object.assign(translations.en, {
   mapUnavailable: "The map isn't available right now. Use “Get directions”."
 });
 
+// ---- UX polish: honest empty states, action feedback, code filter, community ----
+Object.assign(translations.es, {
+  chooseCode: "Toca un código para ver solo esos planes.",
+  codeShowing: (c, n) => "Mostrando " + c + " · " + (n === 1 ? "1 plan" : n + " planes"),
+  evEmptyTitle: "Pronto publicaremos nuevos planes",
+  evEmptyText: "Mientras tanto, cuéntanos qué te gustaría hacer: tus ideas inspiran los próximos eventos.",
+  evEmptyCta: "Proponer una idea", evNoMatch: "No hay planes con ese filtro.", evShowAll: "Ver todos los planes",
+  respGoing: n => n ? "¡Listo! Vas a «" + n + "». Te esperamos." : "¡Listo! Te esperamos.",
+  respInterested: n => n ? "Guardado: te interesa «" + n + "»." : "Guardado en tus intereses.",
+  respRemoved: "Quitaste tu respuesta.",
+  suggestToCommunity: "Proponerlo en la comunidad", suggestDraft: n => "¿Alguien se anima esta semana? 💛 «" + n + "»",
+  membersCount: n => n === 1 ? "1 mujer en la comunidad" : n + " mujeres en la comunidad", membersAll: "Ver todas", membersLess: "Ver menos",
+  noPosts: "Todavía no hay publicaciones", noPostsText: "Comparte un momento, una idea o una pregunta. Toda la comunidad podrá verla.", noPostsCta: "Escribir la primera",
+  justNow: "Ahora mismo", minsAgo: n => "Hace " + n + " min",
+  noMessages: "Tu buzón privado", noMessagesText: "Aquí verás los mensajes que le envíes a la administradora y sus respuestas. Solo ella puede leerlos.",
+  msgAnswered: "Respondido"
+});
+Object.assign(translations.en, {
+  chooseCode: "Tap a code to see only those plans.",
+  codeShowing: (c, n) => "Showing " + c + " · " + (n === 1 ? "1 plan" : n + " plans"),
+  evEmptyTitle: "New plans are coming soon",
+  evEmptyText: "In the meantime, tell us what you'd love to do: your ideas inspire the next events.",
+  evEmptyCta: "Suggest an idea", evNoMatch: "No plans match this filter.", evShowAll: "See all plans",
+  respGoing: n => n ? "You're in! You're going to “" + n + "”." : "You're in! See you there.",
+  respInterested: n => n ? "Saved: you're interested in “" + n + "”." : "Saved to your interests.",
+  respRemoved: "Your response was removed.",
+  suggestToCommunity: "Suggest it to the community", suggestDraft: n => "Anyone up for this this week? 💛 “" + n + "”",
+  membersCount: n => n === 1 ? "1 woman in the community" : n + " women in the community", membersAll: "See all", membersLess: "See less",
+  noPosts: "No posts yet", noPostsText: "Share a moment, an idea or a question. The whole community will see it.", noPostsCta: "Write the first one",
+  justNow: "Just now", minsAgo: n => n + " min ago",
+  noMessages: "Your private inbox", noMessagesText: "Here you'll see the messages you send to the administrator and her replies. Only she can read them.",
+  msgAnswered: "Answered"
+});
 
-// ==============================
-// Sample cards (shown only until the administrator publishes real content)
-// ==============================
-const SAMPLE_EVENTS = {
-  es: [
-    { title: "Café & Conexión", text: "Un encuentro relajado para conversar y conocer nuevas amigas." },
-    { title: "Caminata de bienestar", text: "Sal, muévete y comparte una mañana al aire libre." },
-    { title: "Noche entre amigas", text: "Una noche sencilla para conversar, reír y conectar." }
-  ],
-  en: [
-    { title: "Coffee & Connection", text: "A relaxed meetup to talk and meet new friends." },
-    { title: "Wellness Walk", text: "Get outside, move and share a morning together." },
-    { title: "Girls' Night", text: "A simple evening to talk, laugh and connect." }
-  ]
-};
-const SAMPLE_FEATURED = {
-  es: [
-    { title: "Un café sin prisa", text: "Invita a alguien con quien quieras reconectar." },
-    { title: "Haz algo nuevo", text: "Prueba un lugar, actividad o plan diferente esta semana." }
-  ],
-  en: [
-    { title: "Coffee without rushing", text: "Invite someone you'd like to reconnect with." },
-    { title: "Try something new", text: "Try a different place, activity or plan this week." }
-  ]
-};
+
+// (Sample cards were removed: empty sections now show an honest empty state instead of placeholder plans.)
 const DEFAULT_HERO = "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=88";
 
 // ==============================
@@ -424,6 +434,7 @@ let currentModalType = "";
 let returnFocus = null;
 let previousOverflow = "";
 let statusKey = "";
+let statusArgs = [];
 let errorKey = "";
 let statusTimer = 0;
 
@@ -512,7 +523,7 @@ function renderStatus() {
   const status = byId("appStatus");
   if (status) {
     status.hidden = !statusKey;
-    status.textContent = statusKey ? t(statusKey) : "";
+    status.textContent = statusKey ? tf(statusKey, ...statusArgs) : "";
   }
   const feedback = byId("modalFeedback");
   if (feedback) {
@@ -520,8 +531,9 @@ function renderStatus() {
     feedback.textContent = errorKey ? t(errorKey) : "";
   }
 }
-function announce(key) {
+function announce(key, ...args) {
   statusKey = key;
+  statusArgs = args;
   renderStatus();
   clearTimeout(statusTimer);
   if (key) statusTimer = setTimeout(() => { statusKey = ""; renderStatus(); }, 6000);
@@ -576,6 +588,7 @@ function renderAll() {
   renderStatus();
   renderStorageNotice();
   homeRefresh();
+  document.dispatchEvent(new CustomEvent("cml:render"));
 }
 function homeRefresh() { if (window.CMLHome) window.CMLHome.render(); }
 
@@ -638,30 +651,55 @@ function renderQuote() {
   const edit = byId("editQuote");
   if (edit) edit.hidden = !isAdmin();
 }
+// "¿Qué te interesa esta semana?" — the chosen code really filters the Events list (Events page).
+// Only codes that have upcoming events are offered, so a chip never leads to an empty list.
+const upcomingEvents = () => { const today = todayStr(); return plans.filter(p => p.kind === "event" && (!p.event_date || p.event_date >= today)); };
+function selectedCode() {
+  const code = readStored("weeklyCode");
+  return codeLabels[code] && upcomingEvents().some(p => p.code === code) ? code : "";
+}
 function renderWeeklyCode() {
-  const selected = readStored("weeklyCode");
+  const selected = selectedCode();
+  const present = new Set(upcomingEvents().map(p => p.code).filter(c => codeLabels[c]));
+  const box = byId("codeFilter");
+  if (box) box.hidden = present.size < 2;
   document.querySelectorAll(".chip[data-code]").forEach(button => {
-    const active = button.getAttribute("data-code") === selected;
+    const code = button.getAttribute("data-code");
+    const active = code === selected;
+    button.hidden = !present.has(code);
     button.classList.toggle("selected", active);
     button.setAttribute("aria-pressed", String(active));
   });
   const status = byId("weeklyCodeStatus");
-  if (status) status.textContent = codeLabels[selected]
-    ? t("selectedCode") + t(codeLabels[selected]) : t("chooseCode");
+  if (status) {
+    const n = selected ? upcomingEvents().filter(p => p.code === selected).length : 0;
+    status.textContent = selected ? tf("codeShowing", t(codeLabels[selected]), n) : t("chooseCode");
+  }
 }
-function sampleCards(container, items) {
-  container.replaceChildren();
-  items.forEach(item => {
-    container.appendChild(el("div", { class: "card" },
-      el("h2", { text: item.title }), el("p", { text: item.text })));
-  });
-}
+// Home "Esta semana": real Home ideas published by the admin. Hidden (no sample cards) when there are none.
 function renderFeatured() {
   const container = byId("featured");
   if (!container) return;
-  const items = plans.filter(p => p.kind === "home");
-  if (!items.length) return sampleCards(container, SAMPLE_FEATURED[currentLanguage]);
-  container.replaceChildren(...items.map(p => planCard(p)));
+  const block = byId("featuredBlock");
+  const items = session ? plans.filter(p => p.kind === "home") : [];
+  if (block) block.hidden = !items.length;
+  container.replaceChildren(...items.map(p => {
+    const card = planCard(p);
+    const title = pick(p, "title");
+    if (window.CMLRedesign && title) {
+      const share = el("button", { type: "button", class: "link-btn suggest-btn", text: t("suggestToCommunity") + " →" });
+      share.addEventListener("click", () => window.CMLRedesign.compose(tf("suggestDraft", title)));
+      card.appendChild(share);
+    }
+    return card;
+  }));
+}
+function emptyState(icon, title, text, action) {
+  return el("div", { class: "empty-state" },
+    el("span", { class: "empty-ic", "aria-hidden": "true", text: icon }),
+    el("b", { text: title }),
+    text ? el("p", { text }) : null,
+    action || null);
 }
 
 // ==============================
@@ -920,10 +958,15 @@ function renderEvents() {
   const events = plans
     .filter(p => p.kind === "event" && (!p.event_date || p.event_date >= today))
     .sort(byDate);
+  renderWeeklyCode();
   if (!events.length) {
     if (filter) filter.hidden = true;
-    return sampleCards(list, SAMPLE_EVENTS[currentLanguage]);
+    if (!session) return list.replaceChildren();
+    const idea = el("button", { type: "button", class: "secondary", text: t("evEmptyCta") });
+    idea.addEventListener("click", () => openModal("idea"));
+    return list.replaceChildren(emptyState("📅", t("evEmptyTitle"), t("evEmptyText"), idea));
   }
+  const code = selectedCode();
   const months = [...new Set(events.filter(p => p.event_date).map(p => monthKey(p.event_date)))].sort();
   const hasTbd = events.some(p => !p.event_date);
   const options = ["all", ...months, ...(hasTbd ? ["tbd"] : [])];
@@ -941,9 +984,13 @@ function renderEvents() {
     }));
   }
   const shown = events.filter(p =>
-    monthSel === "all" ||
-    (monthSel === "tbd" ? !p.event_date : p.event_date && monthKey(p.event_date) === monthSel));
-  list.replaceChildren(...shown.map(p => eventCard(p)));
+    (!code || p.code === code) && (monthSel === "all" ||
+    (monthSel === "tbd" ? !p.event_date : p.event_date && monthKey(p.event_date) === monthSel)));
+  if (!shown.length) {
+    const all = el("button", { type: "button", class: "secondary", text: t("evShowAll") });
+    all.addEventListener("click", () => { monthSel = "all"; writeStored("weeklyCode", ""); renderEvents(); });
+    list.replaceChildren(emptyState("🔎", t("evNoMatch"), "", all));
+  } else list.replaceChildren(...shown.map(p => eventCard(p)));
   restoreFocus();
 }
 function renderTrips() {
@@ -1002,6 +1049,10 @@ async function respond(planId, status) {
     }
     if (result.error) throw result.error;
     await refreshCounts();
+    const plan = plans.find(p => p.id === planId);
+    const name = plan ? (pick(plan, "title") || "") : "";
+    if (current === status) announce("respRemoved");
+    else announce(status === "going" ? "respGoing" : "respInterested", name);
   } catch {
     announce("respondFail");
     try { await loadResponses(); await refreshCounts(); } catch { /* keep optimistic state */ }
@@ -1024,12 +1075,24 @@ function renderMembers() {
   if (!container) return;
   container.replaceChildren();
   if (!members.length) return appendParagraph(container, t("membersEmpty"), "meta");
-  members.slice(0, 30).forEach(m => {
+  // Compact on phones: one scrollable row of members; "See all" opens the full list with interests.
+  const shown = members.slice(0, 30);
+  const expanded = container.dataset.expanded === "1";
+  container.classList.toggle("expanded", expanded);
+  const head = el("div", { class: "members-head" }, el("b", { text: tf("membersCount", members.length) }));
+  if (members.length > 4) {
+    const toggle = el("button", { type: "button", class: "see-all", "aria-expanded": String(expanded), text: t(expanded ? "membersLess" : "membersAll") });
+    toggle.addEventListener("click", () => { container.dataset.expanded = expanded ? "" : "1"; renderMembers(); });
+    head.appendChild(toggle);
+  }
+  const strip = el("div", { class: "members-strip" });
+  shown.forEach(m => {
     const interests = (m.interests || []).map(code => codeLabels[code] ? t(codeLabels[code]) : code).join(" · ");
-    container.appendChild(el("div", { class: "member" },
-      el("span", { text: (m.first_name || "?").charAt(0).toUpperCase() }),
-      el("div", {}, el("b", { text: m.first_name }), el("small", { text: interests }))));
+    strip.appendChild(el("div", { class: "member" },
+      el("span", { "aria-hidden": "true", text: (m.first_name || "?").charAt(0).toUpperCase() }),
+      el("div", {}, el("b", { text: m.first_name }), interests ? el("small", { text: interests }) : null)));
   });
+  container.append(head, strip);
 }
 function appendParagraph(container, text, className = "") {
   container.appendChild(el("p", { class: className, text }));
@@ -1038,18 +1101,27 @@ function renderPosts() {
   const container = byId("posts");
   if (!container) return;
   container.replaceChildren();
-  if (!posts.length) return appendParagraph(container, t("noPosts"), "meta");
+  if (!posts.length) {
+    if (!session) return;
+    const write = el("button", { type: "button", class: "secondary", text: t("noPostsCta") });
+    write.addEventListener("click", () => byId("postText")?.focus());
+    return container.appendChild(emptyState("💬", t("noPosts"), t("noPostsText"), write));
+  }
   const S = window.CMLSocial;
+  const P = window.CMLProfile;
   posts.forEach(post => {
-    const card = el("div", { class: "card" },
-      el("b", { text: post.author_name || "" }));
+    const date = new Date(post.created_at);
+    const okDate = !Number.isNaN(date.getTime());
+    const name = post.author_name || "";
+    const card = el("div", { class: "card post-card" },
+      el("div", { class: "post-head" },
+        P ? P.avatarNode(postAvatars.get(post.user_id) || null, name || "?", "avatar-post") : null,
+        el("span", { class: "post-who" },
+          el("b", { text: name }),
+          okDate ? el("time", { class: "meta", datetime: date.toISOString(), text: postWhen(date) }) : null)));
     if (post.body) card.appendChild(el("p", { class: "saved-text", text: post.body }));
     const photo = S && S.photoNode(post);
     if (photo) card.appendChild(photo);
-    const date = new Date(post.created_at);
-    if (!Number.isNaN(date.getTime())) {
-      card.appendChild(el("time", { class: "meta", datetime: date.toISOString(), text: date.toLocaleString(loc()) }));
-    }
     let del = null;
     if (session && (post.user_id === session.user.id || isAdmin())) {
       del = el("button", { type: "button", class: "link-danger", text: t("postDelete") });
@@ -1071,6 +1143,26 @@ async function loadPosts() {
   if (error) throw error;
   posts = data || [];
   if (window.CMLSocial) { try { await window.CMLSocial.loadExtras(posts); } catch { /* extras are optional */ } }
+  await loadPostAvatars();
+}
+// Author photos for posts: existing member_avatars() RPC (first name + photo path of approved members only).
+const postAvatars = new Map();
+async function loadPostAvatars() {
+  const ids = [...new Set(posts.map(p => p.user_id).filter(Boolean))].filter(id => !postAvatars.has(id));
+  if (!ids.length) return;
+  try {
+    const r = await db.rpc("member_avatars", { ids });
+    if (r.error) return;
+    (r.data || []).forEach(x => postAvatars.set(x.id, x.avatar_path || null));
+    if (window.CMLProfile) await window.CMLProfile.signed((r.data || []).map(x => x.avatar_path));
+  } catch { /* initials are shown instead */ }
+}
+function postWhen(d) {
+  const mins = Math.round((Date.now() - d.getTime()) / 60000);
+  if (mins < 1) return t("justNow");
+  if (mins < 60) return tf("minsAgo", mins);
+  if (new Date().toDateString() === d.toDateString()) return d.toLocaleTimeString(loc(), { hour: "numeric", minute: "2-digit" });
+  return d.toLocaleDateString(loc(), { month: "short", day: "numeric" }) + " · " + d.toLocaleTimeString(loc(), { hour: "numeric", minute: "2-digit" });
 }
 async function addPost() {
   const field = byId("postText");
@@ -1125,11 +1217,11 @@ function renderMessages() {
   const container = byId("messagesList");
   if (!container) return;
   container.replaceChildren();
-  if (!myMessages.length) return appendParagraph(container, t("noMessages"), "meta");
+  if (!myMessages.length) return session ? container.appendChild(emptyState("✉️", t("noMessages"), t("noMessagesText"))) : undefined;
   myMessages.forEach(message => {
     const card = el("div", { class: "card" },
       el("h2", { text: t(modalTitles[message.type] || "newMessageTitle") }),
-      el("p", { class: "meta", text: t("draftLabel") }),
+      el("p", { class: "meta", text: t(message.admin_reply ? "msgAnswered" : "draftLabel") }),
       el("p", { class: "saved-text", text: message.body }));
     const date = new Date(message.created_at);
     if (!Number.isNaN(date.getTime())) {
@@ -1298,7 +1390,7 @@ async function fetchProfile() {
 async function applySession(s) {
   session = s;
   if (!s) {
-    profile = null; plans = []; counts.clear(); mine.clear(); attendees.clear(); posts = []; myMessages = []; members = [];
+    profile = null; plans = []; counts.clear(); mine.clear(); attendees.clear(); posts = []; myMessages = []; members = []; postAvatars.clear();
     closeModal(); closeDetail();
     document.dispatchEvent(new CustomEvent("cml:session", { detail: { admin: false, super: false } }));
     showPage("home", false);
@@ -1446,8 +1538,8 @@ function initialize() {
   document.querySelectorAll(".chip[data-code]").forEach(button =>
     button.addEventListener("click", () => {
       const code = button.getAttribute("data-code");
-      writeStored("weeklyCode", readStored("weeklyCode") === code ? "" : code);
-      renderWeeklyCode();
+      writeStored("weeklyCode", selectedCode() === code ? "" : code);
+      renderEvents();
     }));
   byId("postBtn")?.addEventListener("click", addPost);
   byId("heroCta")?.addEventListener("click", () => showPage("events"));
@@ -1489,7 +1581,8 @@ function initialize() {
     isAdmin, isSuper, announce,
     refreshPublic: async () => { if (session) await loadAll(); },
     showPage, signOut: () => db.auth.signOut(), setLanguage,
-    homeData: () => ({ plans, counts, mine, posts }), respond,
+    homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,
+    setting: key => settings[key],
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
       setLanguage(currentLanguage, false);

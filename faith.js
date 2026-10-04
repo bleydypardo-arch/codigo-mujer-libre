@@ -17,7 +17,11 @@ const ES = {
   wallPray: "🙏 Orando por ti", wallPraying: "🙏 Orando por ti · ", wallDelete: "Eliminar", wallConfirm: "¿Eliminar esta petición?",
   wallAnonAuthor: "Anónima", wallYouAnon: "Tú · anónima", wallYou: "Tú", wallAdminSees: "Cuenta (solo administradoras): ",
   wallLoadFail: "No se pudo cargar el muro.", wallNotEmergency: "Si es urgente, no esperes respuestas aquí: usa los números de arriba.",
-  wallPrivateNote: "Para hablar en privado con la administradora, usa «Necesito hablar» abajo."
+  wallPrivateNote: "Para hablar en privado con la administradora, usa «Necesito hablar» arriba.",
+  safeNow: "¿Necesitas ayuda ahora?", safe911Lbl: "Emergencias", safe988Lbl: "Crisis · llamada o texto, 24 h",
+  safeMore: "Más información y recursos", wallEyebrow: "ORACIÓN",
+  wallIPray: "🙏 Oraré por ti", wallPrayingOn: "✓ Estoy orando contigo",
+  wallCount: n => n === 1 ? "1 mujer está orando" : n + " mujeres están orando", wallThanks: "Gracias por orar. Ella no está sola."
 };
 const EN = {
   safeTitle: "Before you begin",
@@ -31,22 +35,31 @@ const EN = {
   wallPray: "🙏 Praying for you", wallPraying: "🙏 Praying for you · ", wallDelete: "Delete", wallConfirm: "Delete this request?",
   wallAnonAuthor: "Anonymous", wallYouAnon: "You · anonymous", wallYou: "You", wallAdminSees: "Account (admins only): ",
   wallLoadFail: "The wall could not be loaded.", wallNotEmergency: "If it's urgent, don't wait for replies here: use the numbers above.",
-  wallPrivateNote: "To talk privately with the admin, use “I need to talk” below."
+  wallPrivateNote: "To talk privately with the admin, use “I need to talk” above.",
+  safeNow: "Need help right now?", safe911Lbl: "Emergencies", safe988Lbl: "Crisis · call or text, 24/7",
+  safeMore: "More information and resources", wallEyebrow: "PRAYER",
+  wallIPray: "🙏 I'll pray for you", wallPrayingOn: "✓ Praying with you",
+  wallCount: n => n === 1 ? "1 woman is praying" : n + " women are praying", wallThanks: "Thank you for praying. She is not alone."
 };
-const t = key => { const v = C ? C.t(key) : ""; return v || key; };
+const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "function" ? v(...args) : (v || key); };
 const el = (...a) => C.el(...a);
 const tel = (num, text) => el("a", { href: "tel:" + num, class: "safe-link", text });
 
 // ---------- safety card (always visible on Wellness) ----------
+// 911 and 988 are always on screen as large tap-to-call buttons; the longer explanation folds away.
 function renderSafety() {
   const host = document.getElementById("safetyCard");
   if (!host || !C) return;
+  const big = (num, label, sub) => el("a", { href: "tel:" + num, class: "safe-call" }, el("b", { text: label }), el("small", { text: sub }));
   host.replaceChildren(
-    el("b", { text: "🛟 " + t("safeTitle") }),
-    el("p", { text: t("safeBody") }),
-    el("p", {}, t("safe911") + " ", tel("911", "911"), "."),
-    el("p", {}, t("safe988a") + " ", tel("988", "988"), " " + t("safe988b")),
-    el("p", {}, t("safeDv") + " ", tel("18007997233", "1-800-799-7233"), " " + t("safeDvb")));
+    el("b", { class: "safe-title", text: "🛟 " + t("safeNow") }),
+    el("div", { class: "safe-calls" }, big("911", "911", t("safe911Lbl")), big("988", "988", t("safe988Lbl"))),
+    el("details", { class: "safe-more" },
+      el("summary", { text: t("safeMore") }),
+      el("p", { text: t("safeBody") }),
+      el("p", {}, t("safe911") + " ", tel("911", "911"), "."),
+      el("p", {}, t("safe988a") + " ", tel("988", "988"), " " + t("safe988b")),
+      el("p", {}, t("safeDv") + " ", tel("18007997233", "1-800-799-7233"), " " + t("safeDvb"))));
 }
 
 // ---------- the wall ----------
@@ -93,10 +106,12 @@ function paint(failed) {
   const items = rows.map(x => {
     const author = x.anonymous ? (x.mine ? t("wallYouAnon") : t("wallAnonAuthor")) : (x.mine ? t("wallYou") + " · " + x.author_name : x.author_name);
     const pray = el("button", { type: "button", class: "resp pray" + (x.i_pray ? " on" : ""), "aria-pressed": String(!!x.i_pray) },
-      Number(x.praying) ? t("wallPraying") + x.praying : t("wallPray"));
+      x.i_pray ? t("wallPrayingOn") : t("wallIPray"));
+    const nPray = Number(x.praying) || 0;
     pray.addEventListener("click", async () => {
       const was = x.i_pray;
       x.i_pray = !was; x.praying = Math.max(0, Number(x.praying) + (was ? -1 : 1)); paint();
+      if (!was) C.announce("wallThanks");
       const r = was
         ? await C.db.from("prayer_responses").delete().eq("request_id", x.id).eq("user_id", C.session().user.id)
         : await C.db.from("prayer_responses").insert({ request_id: x.id });
@@ -106,7 +121,7 @@ function paint(failed) {
       el("p", { class: "prayer-body", text: x.body }),
       el("small", { class: "meta-line", text: author + " · " + when(x.created_at) }),
       x.real_name ? el("small", { class: "prayer-admin", text: "👁 " + t("wallAdminSees") + x.real_name }) : null);
-    const acts = el("div", { class: "resp-row" }, pray);
+    const acts = el("div", { class: "resp-row" }, pray, nPray ? el("small", { class: "pray-count", text: t("wallCount", nPray) }) : null);
     if (x.mine || C.isAdmin()) {
       const del = el("button", { type: "button", class: "link-btn", text: t("wallDelete") });
       del.addEventListener("click", async () => {
@@ -120,7 +135,7 @@ function paint(failed) {
     return card;
   });
   host.replaceChildren(
-    el("small", { class: "rose", text: "🙏" }),
+    el("small", { class: "rose", text: t("wallEyebrow") }),
     el("h2", { text: t("wallTitle") }),
     el("p", { class: "small-note", text: t("wallIntro") }),
     form,

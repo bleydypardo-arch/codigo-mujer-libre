@@ -134,7 +134,7 @@ function paintTravel() {
   if (!hero) return;
   const pickTrip = trips.find(p => C.safeUrl(p.image_url)) || trips[0];
   if (!pickTrip) { hero.hidden = true; hero.replaceChildren(); return; }
-  const img = C.safeUrl(pickTrip.image_url);
+  const img = C.safeUrl(pickTrip.image_url) || settingUrl("travel_image");
   const btn = C.el("button", { type: "button", class: "trip-hero" + (img ? "" : " no-img") },
     img ? C.el("img", { src: img, alt: "", loading: "lazy" }) : null,
     C.el("span", { class: "trip-fade", "aria-hidden": "true" }),
@@ -146,6 +146,54 @@ function paintTravel() {
   btn.addEventListener("click", () => { if (block && !block.hidden) block.scrollIntoView({ behavior: "smooth", block: "start" }); });
   hero.replaceChildren(btn);
   hero.hidden = false;
+}
+
+// ---------- editorial images (admin-editable through the existing settings table) ----------
+const DEFAULT_TRAVEL = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80";
+function settingUrl(key) {
+  const v = C && C.setting ? C.setting(key) : null;
+  return v && v.url ? C.safeUrl(v.url) : "";
+}
+function travelImage() {
+  if (!C) return DEFAULT_TRAVEL;
+  const fromSetting = settingUrl("travel_image");
+  if (fromSetting) return fromSetting;
+  const trip = C.session() ? C.homeData().plans.find(p => p.kind === "trip" && C.safeUrl(p.image_url)) : null;
+  return trip ? C.safeUrl(trip.image_url) : DEFAULT_TRAVEL;
+}
+function paintEditorial() {
+  if (!C) return;
+  const src = travelImage();
+  document.querySelectorAll("img[data-editorial=travel]").forEach(img => { if (img.getAttribute("src") !== src) { img.hidden = false; img.setAttribute("src", src); } });
+  const box = document.querySelector("#essence .ess-photo");
+  if (box) {
+    const url = settingUrl("founder_photo");
+    if (!box._orig) box._orig = [...box.childNodes];
+    const current = box.querySelector("img");
+    if (url && (!current || current.getAttribute("src") !== url)) {
+      const img = C.el("img", { src: url, alt: "" });
+      img.addEventListener("error", () => { box.replaceChildren(...box._orig); box.classList.remove("has-photo"); });
+      box.replaceChildren(img); box.classList.add("has-photo");
+    } else if (!url && current) {
+      box.classList.remove("has-photo");
+      box.replaceChildren(...box._orig);
+    }
+  }
+}
+
+// ---------- write in Community with a prepared first line (the member still decides to publish) ----------
+function compose(text) {
+  if (!C) return;
+  C.showPage("community", false);
+  const field = document.getElementById("postText");
+  if (!field) return;
+  const start = field.value.trim();
+  field.value = start ? start + "\n" + text : text;
+  requestAnimationFrame(() => {
+    field.scrollIntoView({ behavior: "smooth", block: "center" });
+    field.focus({ preventScroll: true });
+    field.setSelectionRange(field.value.length, field.value.length);
+  });
 }
 
 // ---------- Wellness: need/mood → prewritten response ----------
@@ -196,12 +244,13 @@ function essenceLink() {
 function init() {
   C = window.CML;
   if (!C) return;
-  window.CMLRedesign = { essenceLink, paintTravel };
+  window.CMLRedesign = { essenceLink, paintTravel, compose, travelImage };
   C.addStrings(ES, EN);
   wireFlip(); wireGo(); wireMoods();
   renderCode(); paintMood();
   document.addEventListener("cml:lang", () => { renderCode(); paintMood(); paintTravel(); });
-  document.addEventListener("cml:session", () => { mood = null; paintMood(); renderCode(); paintTravel(); });
+  document.addEventListener("cml:session", () => { mood = null; paintMood(); renderCode(); paintTravel(); paintEditorial(); });
+  document.addEventListener("cml:render", () => { paintEditorial(); if (document.getElementById("travel")?.classList.contains("active")) paintTravel(); });
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
 })();

@@ -180,32 +180,59 @@
       <button type="button" class="quick-btn" data-go="travel"><svg class="ci t-sage" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 3 3 10.5l7 2.5 2.5 7zM21 3 10 13"/></svg><span data-i18n="travelShort">Viajes</span></button>
     </div>
 
-    <div id="homeUpcoming" class="home-upcoming" hidden></div>
+    <div id="homeChecklist" class="card home-checklist" hidden></div>
 
-    <button type="button" class="immerse" data-go="travel">
-      <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80" alt="" loading="lazy">
-      <span class="immerse-text">
-        <span class="immerse-title" data-i18n="immerseTitle">Sumérgete a una experiencia</span>
-        <span class="immerse-sub" data-i18n="immerseSub">Viajes · Retiros · Fiestas · Gastronomía · Actividades únicas para nuestra comunidad.</span>
-      </span>
-      <span class="round-go" aria-hidden="true"><svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="M9 6l6 6-6 6"/></svg></span>
-    </button>
-
-    <div id="homeWeekend" class="card weekend-card" hidden></div>
-
-    <div class="home-pair">
-      <div id="homeUpdates" class="card home-updates" hidden></div>
-      <div id="homeBirthdays" class="card bd-card" hidden></div>
+    <div class="home-cols">
+      <div class="home-col home-col-main">
+        <div id="homeWeek" class="card week-card" hidden></div>
+        <div id="homeUpcoming" class="home-upcoming" hidden></div>
+        <div id="homeWeekend" class="card weekend-card" hidden></div>
+        <div id="featuredBlock" class="featured-block" hidden>
+          <h2 data-i18n="thisWeek">Esta semana</h2>
+          <div id="featured" class="cards"></div>
+        </div>
+      </div>
+      <div class="home-col home-col-side">
+        <div id="homeUpdates" class="card home-updates" hidden></div>
+        <div id="homeMemory" class="card mem-home" hidden></div>
+        <div id="homeDiscover" class="card discover-card" hidden></div>
+        <div id="homeTalk" class="card talk-card" hidden></div>
+      </div>
     </div>
 
-    <div id="homeMemory" class="card mem-home" hidden></div>
-
-    <h2 data-i18n="weeklyCode">
-      ¿Qué te interesa esta semana?
-    </h2>
+  </section>
 
 
-    <div class="chips">
+
+  <!-- MI PERFIL -->
+  <section id="profile" class="page"></section>
+
+  <!-- EVENTOS -->
+  <section id="events" class="page">
+
+    <small class="rose" data-i18n="discover">
+      DESCUBRE
+    </small>
+
+    <h1 data-i18n="eventsTitle">
+      Planes y Eventos
+    </h1>
+
+    <p data-i18n="eventsIntro">
+      Descubre actividades para conectar, compartir y disfrutar juntas.
+    </p>
+
+    <div id="memSwitch" class="seg" role="group" data-i18n-aria="memSwitchLabel" aria-label="Próximos o Recuerdos">
+      <button type="button" id="segUpcoming" class="seg-btn active" aria-pressed="true" data-i18n="memUpcoming">Próximos</button>
+      <button type="button" id="segMemories" class="seg-btn" aria-pressed="false" data-i18n="memMemories">Recuerdos</button>
+    </div>
+    <div id="memoriesView" hidden></div>
+
+    <div id="generalPolls" class="polls general-polls" hidden></div>
+
+    <div id="codeFilter" class="code-filter" hidden>
+      <p class="code-filter-q" data-i18n="weeklyCode">¿Qué te interesa esta semana?</p>
+    <div class="chips code-chips" role="group" data-i18n-aria="weeklyCode" aria-label="¿Qué te interesa esta semana?">
 
       <button type="button" class="chip" data-code="Social" data-i18n="social" aria-pressed="false">
         🥂 Social
@@ -240,69 +267,15 @@
       </button>
 
     </div>
-
-
-    <p id="weeklyCodeStatus" class="selection-status" aria-live="polite"></p>
-
-    <h2 data-i18n="thisWeek">
-      Esta semana
-    </h2>
-
-    <div id="featured" class="cards"></div>
-
-
-    <div class="card">
-
-      <small class="rose" data-i18n="letsTalk">
-        HABLEMOS
-      </small>
-
-      <h2 data-i18n="articleTitle">
-        Volver a hacer amigas de adulta
-      </h2>
-
-      <p data-i18n="articleBody">
-        Conversaciones, ideas y recomendaciones para crear conexiones reales.
-      </p>
-
+      <p id="weeklyCodeStatus" class="selection-status" aria-live="polite"></p>
     </div>
-
-  </section>
-
-
-
-  <!-- MI PERFIL -->
-  <section id="profile" class="page"></section>
-
-  <!-- EVENTOS -->
-  <section id="events" class="page">
-
-    <small class="rose" data-i18n="discover">
-      DESCUBRE
-    </small>
-
-    <h1 data-i18n="eventsTitle">
-      Planes y Eventos
-    </h1>
-
-    <p data-i18n="eventsIntro">
-      Descubre actividades para conectar, compartir y disfrutar juntas.
-    </p>
-
-    <div id="memSwitch" class="seg" role="group" data-i18n-aria="memSwitchLabel" aria-label="Próximos o Recuerdos">
-      <button type="button" id="segUpcoming" class="seg-btn active" aria-pressed="true" data-i18n="memUpcoming">Próximos</button>
-      <button type="button" id="segMemories" class="seg-btn" aria-pressed="false" data-i18n="memMemories">Recuerdos</button>
-    </div>
-    <div id="memoriesView" hidden></div>
-
-    <div id="generalPolls" class="polls general-polls" hidden></div>
 
     <div id="monthFilter" class="chips" role="group" data-i18n-aria="monthFilterLabel" aria-label="Filtrar por mes" hidden></div>
 
     <div id="eventsList" class="cards"></div>
 
     <button type="button" class="immerse events-immerse" data-go="travel">
-      <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80" alt="" loading="lazy">
+      <img data-editorial="travel" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80" alt="" loading="lazy">
       <span class="immerse-text">
         <span class="immerse-title" data-i18n="travelTitle">Viajes y Experiencias</span>
         <span class="immerse-sub" data-i18n="travelTeaser">Vota y vive las grandes experiencias de la comunidad</span>

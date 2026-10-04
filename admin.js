@@ -5,7 +5,11 @@
 const S = {
   es: {
     pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada",
-    tabs: { plans: "Planes y eventos", trips: "Viajes y Experiencias", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imagen y mensaje" },
+    tabs: { plans: "Planes y eventos", trips: "Viajes y Experiencias", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imágenes y mensaje" },
+    groups: { content: "Contenido", people: "Comunidad", tools: "Herramientas" },
+    imgTravelTitle: "Imagen de Viajes y Experiencias", imgTravelHelp: "Se usa en la portada de Viajes (si el viaje no tiene foto) y en los accesos a Viajes desde Inicio y Eventos.",
+    imgFounderTitle: "Foto de la fundadora (Nuestra esencia)", imgFounderHelp: "Aparece en la página «Nuestra esencia». Mejor una foto vertical o cuadrada.",
+    imgDefault: "Quitar y usar la predeterminada",
     loading: "Cargando…", loadFail: "No se pudo cargar. Inténtalo de nuevo.",
     newItem: "+ Nuevo", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Ocultar", live: "Publicado", draft: "Borrador",
     confirmDelete: "¿Eliminar esto de forma permanente?", saved: "Guardado.", deleted: "Eliminado.", saveFail: "No se pudo guardar.",
@@ -37,7 +41,11 @@ const S = {
   },
   en: {
     pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated",
-    tabs: { plans: "Plans & events", trips: "Travel & Experiences", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Image & message" },
+    tabs: { plans: "Plans & events", trips: "Travel & Experiences", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Images & message" },
+    groups: { content: "Content", people: "Community", tools: "Tools" },
+    imgTravelTitle: "Travel & Experiences image", imgTravelHelp: "Used on the Travel cover (when the trip has no photo) and on the Travel entry points on Home and Events.",
+    imgFounderTitle: "Founder photo (Our essence)", imgFounderHelp: "Shown on the “Our essence” page. A portrait or square photo works best.",
+    imgDefault: "Remove and use the default",
     loading: "Loading…", loadFail: "Could not load. Please try again.",
     newItem: "+ New", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Hide", live: "Published", draft: "Draft",
     confirmDelete: "Delete this permanently?", saved: "Saved.", deleted: "Deleted.", saveFail: "Could not save.",
@@ -78,6 +86,12 @@ const KINDS = {
 };
 const TAB_KIND = { plans: "event", trips: "trip", weekend: "weekend", home: "home", wellness: "wellness" };
 const TABS = ["plans", "trips", "weekend", "home", "wellness", "community", "memories", "polls", "messages", "users", "ai", "settings"];
+// Visual grouping only: every tab (and what it can do) is exactly the same as before.
+const GROUPS = [
+  ["content", ["plans", "trips", "weekend", "home", "wellness", "polls", "settings"]],
+  ["people", ["users", "messages", "community", "memories"]],
+  ["tools", ["ai"]]
+];
 const CODES = ["Social", "Wellness", "Faith", "Adventure", "Family", "Connection", "Support", "Recharge"];
 
 let C = null;
@@ -152,16 +166,21 @@ function render() {
   const host = root();
   if (!host || !C || !C.isAdmin()) return;
   const token = ++renderToken;
-  const tabsBar = el("div", { class: "admin-tabs", role: "tablist" }, TABS.map(key => {
-    const b = el("button", { type: "button", role: "tab", class: "chip" + (tab === key ? " selected" : ""), "aria-selected": String(tab === key), text: a("tabs")[key] });
-    b.addEventListener("click", () => { tab = key; editing = null; render(); });
-    return b;
-  }));
+  const tabsBar = el("div", { class: "admin-groups" }, GROUPS.map(([g, keys]) =>
+    el("div", { class: "admin-group" },
+      el("small", { class: "admin-group-label", id: "ag-" + g, text: a("groups")[g] }),
+      el("div", { class: "admin-tabs", role: "tablist", "aria-labelledby": "ag-" + g }, keys.map(key => {
+        const b = el("button", { type: "button", role: "tab", class: "chip" + (tab === key ? " selected" : ""), "aria-selected": String(tab === key), "data-tab": key, text: a("tabs")[key] });
+        b.addEventListener("click", () => { tab = key; editing = null; render(); });
+        return b;
+      })))));
   const body = el("div", { id: "adminBody" }, loadingNode());
   const banner = el("div", { class: "pending-banner", role: "status", hidden: true });
   host.replaceChildren(tabsBar, banner, body);
   pendingCount().then(n => {
     if (token !== renderToken) return;
+    const usersChip = tabsBar.querySelector('[data-tab="users"]');
+    if (usersChip && n) usersChip.appendChild(el("span", { class: "tab-badge", "aria-label": String(n), text: String(n) }));
     if (!n || tab === "users") { banner.hidden = true; return; }
     banner.hidden = false;
     banner.replaceChildren(el("span", { text: "⏳ " + a("pendingBanner")(n) }), button(a("reviewNow"), "primary", () => { tab = "users"; editing = null; render(); }));
@@ -542,6 +561,8 @@ async function settingsView() {
         hero.value = ""; await C.refreshPublic(); toast(a("saved"));
       })));
   wrap.appendChild(heroForm);
+  wrap.appendChild(imageSetting(cfg, "travel_image", a("imgTravelTitle"), a("imgTravelHelp")));
+  wrap.appendChild(imageSetting(cfg, "founder_photo", a("imgFounderTitle"), a("imgFounderHelp")));
 
   const q = cfg.daily_quote || {};
   const qEs = el("textarea"); qEs.value = q.es || "";
@@ -555,6 +576,25 @@ async function settingsView() {
       await C.refreshPublic(); toast(a("saved"));
     }))));
   return wrap;
+}
+
+// Editorial images kept in the existing settings table (same admin-only write rule as the hero image).
+function imageSetting(cfg, key, title, help) {
+  const pick = imagePicker((cfg[key] && cfg[key].url) || "");
+  return el("div", { class: "admin-form" },
+    el("h3", { text: title }), el("p", { class: "small-note", text: help }), pick.node,
+    el("div", { class: "admin-bar" },
+      button(a("save"), "primary", async () => {
+        if (!pick.value || !C.safeUrl(pick.value)) return toast(a("badUrl"));
+        const r = await C.db.from("settings").upsert({ key, value: { url: pick.value }, updated_at: new Date().toISOString() }, { onConflict: "key" });
+        if (r.error) return toast(a("saveFail"));
+        await C.refreshPublic(); toast(a("saved"));
+      }),
+      button(a("imgDefault"), "secondary", async () => {
+        const r = await C.db.from("settings").delete().eq("key", key);
+        if (r.error) return toast(a("saveFail"));
+        pick.value = ""; await C.refreshPublic(); toast(a("saved"));
+      })));
 }
 
 // ---------- AI assistant (calls the secure Edge Function; no secret key in the browser) ----------

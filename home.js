@@ -1,6 +1,10 @@
-// Código Mujer Libre — Home that feels alive: community updates built from data the app already has
-// (events, trips, polls, Memories, prayer wall) + "What should we do this weekend?" ideas.
-// No new content system: updates are computed, weekend ideas are ordinary plans (kind = 'weekend').
+// Código Mujer Libre — Home that feels alive, built only from data the app already has:
+//  • "Tu semana": my plans, polls waiting for my vote, birthdays (with "Felicitar").
+//  • Community updates, weekend ideas (plans kind = 'weekend').
+//  • "Haz algo nuevo": discovery picks from real events / trips / wellness content.
+//  • "Hablemos": a weekly conversation prompt that opens the Community composer.
+//  • A small, dismissible profile checklist for new members.
+// No new content system and no new tables: everything is computed in the browser.
 (function () {
 "use strict";
 let C = null;
@@ -13,7 +17,16 @@ const ES = {
   hupVote: q => "🗳 Pronto cierra la votación: " + q,
   hupPrayer: "🙏 Se compartió una nueva petición de oración.",
   whToday: "hoy", whTomorrow: "mañana", whOn: d => "el " + d,
-  wkTitle: "✨ ¿QUÉ HACEMOS ESTE FIN DE SEMANA?", wkIntro: "Ideas para este fin de semana. Toca ❤️ si te interesa.", wkOther: "✨ MÁS IDEAS"
+  wkTitle: "¿QUÉ HACEMOS ESTE FIN DE SEMANA?", wkIntro: "Ideas para este fin de semana. Toca ❤️ si te interesa.", wkOther: "MÁS IDEAS",
+  weekLabel: "TU SEMANA", weekGoing: "Vas", weekInterested: "Te interesa", weekNoPlans: "Aún no tienes planes confirmados",
+  weekNoPlansSub: "Mira lo que viene y elige algo para ti", weekVote: "Tu voto cuenta", weekVoteCloses: d => "Tu voto cuenta · cierra " + d,
+  weekBirthdays: "CUMPLEAÑOS",
+  discLabel: "HAZ ALGO NUEVO", discTitle: "Algo distinto para esta semana", discNewCode: "PRUEBA ALGO DISTINTO", discForYou: "PARA TI",
+  discEvents: "Planes y eventos", discEventsSub: "Mira todo lo que viene", discTravelK: "VIAJES Y EXPERIENCIAS",
+  discWellK: "BIENESTAR", discWellTitle: "¿Cómo te sientes hoy?", discWellSub: "Una idea sencilla para cuidarte",
+  talkLabel: "HABLEMOS", talkCta: "Compartir mi respuesta",
+  ckTitle: "Completa tu perfil", ckSub: "Así las demás te reconocen en eventos y en la comunidad.", ckOf: (a, b) => a + " de " + b,
+  ckPhoto: "Foto", ckBirthday: "Cumpleaños", ckInterests: "Intereses", ckHide: "Ocultar"
 };
 const EN = {
   hupTitle: "LATELY IN THE COMMUNITY",
@@ -23,7 +36,16 @@ const EN = {
   hupVote: q => "🗳 Voting closes soon: " + q,
   hupPrayer: "🙏 A new prayer request was shared.",
   whToday: "today", whTomorrow: "tomorrow", whOn: d => "on " + d,
-  wkTitle: "✨ WHAT SHOULD WE DO THIS WEEKEND?", wkIntro: "Ideas for this weekend. Tap ❤️ if you're interested.", wkOther: "✨ MORE IDEAS"
+  wkTitle: "WHAT SHOULD WE DO THIS WEEKEND?", wkIntro: "Ideas for this weekend. Tap ❤️ if you're interested.", wkOther: "MORE IDEAS",
+  weekLabel: "YOUR WEEK", weekGoing: "Going", weekInterested: "Interested", weekNoPlans: "No plans confirmed yet",
+  weekNoPlansSub: "See what's coming up and pick something for you", weekVote: "Your vote counts", weekVoteCloses: d => "Your vote counts · closes " + d,
+  weekBirthdays: "BIRTHDAYS",
+  discLabel: "TRY SOMETHING NEW", discTitle: "Something different this week", discNewCode: "TRY SOMETHING DIFFERENT", discForYou: "FOR YOU",
+  discEvents: "Plans & events", discEventsSub: "See everything coming up", discTravelK: "TRAVEL & EXPERIENCES",
+  discWellK: "WELLNESS", discWellTitle: "How are you feeling today?", discWellSub: "A simple idea to take care of yourself",
+  talkLabel: "LET'S TALK", talkCta: "Share my answer",
+  ckTitle: "Complete your profile", ckSub: "So others recognize you at events and in the community.", ckOf: (a, b) => a + " of " + b,
+  ckPhoto: "Photo", ckBirthday: "Birthday", ckInterests: "Interests", ckHide: "Hide"
 };
 const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "function" ? v(...args) : (v || key); };
 const el = (...a) => C.el(...a);
@@ -125,9 +147,181 @@ function renderWeekend() {
   host.replaceChildren(...nodes);
 }
 
+// ---------- shared bits ----------
+const shortDate = d => parse(d).toLocaleDateString(C.loc(), { weekday: "short", day: "numeric", month: "short" });
+const P = () => window.CMLProfile;
+function go2(page) { return () => { if (page === "travel" && window.CMLRedesign) window.CMLRedesign.paintTravel(); C.showPage(page); }; }
+function row(cls, icon, title, sub, onClick, extraNode) {
+  const b = el("button", { type: "button", class: "wrow " + (cls || "") },
+    icon,
+    el("span", { class: "wrow-txt" }, el("b", { text: title }), sub ? el("small", { text: sub }) : null),
+    el("span", { class: "wrow-go", "aria-hidden": "true", text: "›" }));
+  b.addEventListener("click", onClick);
+  return extraNode ? el("div", { class: "wrow-wrap" }, b, extraNode) : b;
+}
+const ic = (text, cls) => el("span", { class: "wrow-ic " + (cls || ""), "aria-hidden": "true", text });
+function scrollToNode(node) { if (node) requestAnimationFrame(() => node.scrollIntoView({ behavior: "smooth", block: "center" })); }
+
+// ---------- profile checklist (new members; dismissible; remembered on this device only) ----------
+const ckKey = () => "cmlChecklistHidden:" + ((C.session() && C.session().user.id) || "");
+function ckHidden() { try { return localStorage.getItem(ckKey()) === "1"; } catch { return false; } }
+function renderChecklist() {
+  const host = document.getElementById("homeChecklist");
+  if (!host) return;
+  const me = C.session() ? C.profile() : null;
+  const items = me ? [
+    ["ckPhoto", !!me.avatar_path], ["ckBirthday", !!me.birth_month], ["ckInterests", (me.interests || []).length > 0]
+  ] : [];
+  const done = items.filter(i => i[1]).length;
+  if (!me || done === items.length || ckHidden()) { host.hidden = true; host.replaceChildren(); return; }
+  const openProfile = () => { const b = document.getElementById("profileBtn"); if (b) b.click(); };
+  const hide = el("button", { type: "button", class: "ck-hide", "aria-label": t("ckHide"), text: "×" });
+  hide.addEventListener("click", () => { try { localStorage.setItem(ckKey(), "1"); } catch { /* session only */ } host.hidden = true; });
+  const pills = items.map(([k, ok]) => {
+    const b = el("button", { type: "button", class: "ck-pill" + (ok ? " ok" : "") }, (ok ? "✓ " : "+ ") + t(k));
+    b.addEventListener("click", openProfile);
+    return b;
+  });
+  host.hidden = false;
+  host.replaceChildren(
+    el("div", { class: "ck-top" },
+      el("span", { class: "ck-txt" }, el("b", { text: t("ckTitle") }), el("small", { text: t("ckSub") })),
+      el("span", { class: "ck-count", text: t("ckOf", done, items.length) }), hide),
+    el("div", { class: "ck-bar", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(items.length), "aria-valuenow": String(done) },
+      el("span", { style: "width:" + Math.round(done / items.length * 100) + "%" })),
+    el("div", { class: "ck-pills" }, ...pills));
+}
+
+// ---------- Tu semana ----------
+function weekRange() {
+  const a = day0(), b = new Date(a.getTime() + 6 * DAY);
+  const f = d => d.toLocaleDateString(C.loc(), { day: "numeric", month: "short" });
+  return f(a) + " – " + f(b);
+}
+function openPoll(p) {
+  const { plans } = C.homeData();
+  const plan = p.plan_id ? plans.find(x => x.id === p.plan_id) : null;
+  if (plan && plan.kind === "trip") { go2("travel")(); scrollToNode(document.querySelector("#tripsList .poll")); return; }
+  if (plan && plan.kind === "event" && C.openDetail) { C.openDetail(plan.id); return; }
+  C.showPage("events"); scrollToNode(document.getElementById("generalPolls"));
+}
+function renderWeek() {
+  const host = document.getElementById("homeWeek");
+  if (!host) return;
+  if (!C.session()) { host.hidden = true; host.replaceChildren(); return; }
+  const { plans, mine } = C.homeData();
+  const today = day0().getTime(), until = today + 14 * DAY;
+  const myPlans = plans.filter(p => p.kind === "event" && p.event_date && mine.has(p.id) &&
+      parse(p.event_date).getTime() >= today && parse(p.event_date).getTime() <= until)
+    .sort((a, b) => (a.event_date < b.event_date ? -1 : 1)).slice(0, 3);
+  const rows = myPlans.map(p => {
+    const going = mine.get(p.id) === "going";
+    const r = row("", ic(going ? "✓" : "♥", going ? "on" : ""), C.pick(p, "title") || "—",
+      (going ? t("weekGoing") : t("weekInterested")) + " · " + shortDate(p.event_date) + (p.event_time ? " · " + p.event_time : ""),
+      () => C.openDetail(p.id, r));
+    return r;
+  });
+  if (!myPlans.length) rows.push(row("soft", ic("📅"), t("weekNoPlans"), t("weekNoPlansSub"), go2("events")));
+  const pending = window.CMLPolls && window.CMLPolls.pending ? window.CMLPolls.pending().slice(0, 2) : [];
+  pending.forEach(p => rows.push(row("", ic("🗳"), p.question,
+    p.closes_at ? t("weekVoteCloses", new Date(p.closes_at).toLocaleDateString(C.loc(), { month: "short", day: "numeric" })) : t("weekVote"),
+    () => openPoll(p))));
+
+  const bdays = P() && P().birthdays ? P().birthdays() : [];
+  const bdBox = el("div", { id: "homeBirthdays", class: "week-bd" });
+  bdBox.hidden = !bdays.length;
+  if (bdays.length) {
+    bdBox.appendChild(el("small", { class: "week-sub", text: t("weekBirthdays") }));
+    bdays.forEach(x => {
+      const acts = el("span", { class: "bd-acts" });
+      if (!x.mine && window.CMLRedesign) {
+        const b = el("button", { type: "button", class: "resp bd-hug", text: "🎉 " + C.t("bdCongrats") });
+        b.addEventListener("click", () => window.CMLRedesign.compose(t("bdDraft", x.first_name)));
+        acts.appendChild(b);
+      }
+      if (x.celebrate) {
+        const c = el("button", { type: "button", class: "link-btn", text: C.t("bdCelebrate") });
+        c.addEventListener("click", x.celebrate);
+        acts.appendChild(c);
+      }
+      bdBox.appendChild(el("div", { class: "bd-row" }, P().avatarNode(x.avatar_path, x.first_name, "avatar-sm"),
+        el("span", { class: "bd-text", text: x.text }), acts));
+    });
+  }
+  host.hidden = false;
+  host.replaceChildren(
+    el("div", { class: "week-head" }, el("small", { class: "rose", text: t("weekLabel") }), el("span", { class: "week-range", text: weekRange() })),
+    el("div", { class: "week-rows" }, ...rows), bdBox);
+}
+
+// ---------- Haz algo nuevo (discovery from real content) ----------
+function thumb(src, code) {
+  const box = el("span", { class: "disc-th" + (src ? "" : " tone-" + (C.codeLabels[code] ? code : "none")), "aria-hidden": "true" });
+  if (src) {
+    const img = el("img", { src, alt: "", loading: "lazy" });
+    img.addEventListener("error", () => { img.remove(); box.classList.add("tone-none"); box.textContent = emojiOf(code); });
+    box.appendChild(img);
+  } else box.textContent = emojiOf(code);
+  return box;
+}
+function disc(th, kicker, title, sub, onClick) {
+  const b = el("button", { type: "button", class: "disc-row" }, th,
+    el("span", { class: "disc-txt" }, el("small", { text: kicker }), el("b", { text: title }), sub ? el("span", { text: sub }) : null),
+    el("span", { class: "wrow-go", "aria-hidden": "true", text: "›" }));
+  b.addEventListener("click", onClick);
+  return b;
+}
+function renderDiscover() {
+  const host = document.getElementById("homeDiscover");
+  if (!host) return;
+  if (!C.session()) { host.hidden = true; host.replaceChildren(); return; }
+  const { plans, mine } = C.homeData();
+  const today = day0().getTime();
+  const tried = new Set(plans.filter(p => mine.has(p.id) && p.code).map(p => p.code));
+  const fresh = plans.filter(p => p.kind === "event" && !mine.has(p.id) && (!p.event_date || parse(p.event_date).getTime() >= today))
+    .sort((a, b) => (tried.has(a.code) - tried.has(b.code)) || String(a.event_date || "9").localeCompare(String(b.event_date || "9")));
+  const rows = [];
+  const ev = fresh[0];
+  if (ev) {
+    rows.push(disc(thumb(C.safeUrl(ev.image_url), ev.code), ev.code && !tried.has(ev.code) ? t("discNewCode") : t("discForYou"),
+      C.pick(ev, "title") || "—", ev.event_date ? shortDate(ev.event_date) + (ev.location ? " · " + ev.location : "") : (ev.location || ""),
+      () => C.openDetail(ev.id)));
+  } else rows.push(disc(thumb("", "Social"), t("discForYou"), t("discEvents"), t("discEventsSub"), go2("events")));
+  const trip = plans.find(p => p.kind === "trip");
+  const travelImg = window.CMLRedesign ? window.CMLRedesign.travelImage() : "";
+  rows.push(disc(thumb(travelImg, "Adventure"), t("discTravelK"),
+    trip ? (C.pick(trip, "title") || C.t("travelTitle")) : C.t("travelTitle"),
+    trip ? [trip.location, trip.date_text].filter(Boolean).join(" · ") : C.t("travelTeaser"), go2("travel")));
+  const well = plans.find(p => p.kind === "wellness");
+  rows.push(disc(thumb(well ? C.safeUrl(well.image_url) : "", "Wellness"), t("discWellK"),
+    well ? (C.pick(well, "title") || t("discWellTitle")) : t("discWellTitle"), well ? (C.pick(well, "desc") || t("discWellSub")) : t("discWellSub"), go2("wellness")));
+  host.hidden = false;
+  host.replaceChildren(el("small", { class: "rose", text: t("discLabel") }), el("h2", { text: t("discTitle") }), el("div", { class: "disc-list" }, ...rows));
+}
+
+// ---------- Hablemos: a weekly conversation prompt → Community composer ----------
+const TALK = [
+  { es: ["Volver a hacer amigas de adulta", "¿Qué te ha ayudado a hacer nuevas amigas de adulta?"], en: ["Making friends again as an adult", "What has helped you make new friends as an adult?"] },
+  { es: ["Un ritual para recargar", "¿Qué pequeño ritual te ayuda a recargar energía durante la semana?"], en: ["A ritual to recharge", "What small ritual helps you recharge during the week?"] },
+  { es: ["Un lugar para recomendar", "¿Qué lugar cerca de ti recomendarías para un café sin prisa?"], en: ["A place to recommend", "What place near you would you recommend for an unhurried coffee?"] },
+  { es: ["Gratitud", "¿Por qué estás agradecida esta semana?"], en: ["Gratitude", "What are you grateful for this week?"] },
+  { es: ["Algo que aprendiste", "¿Qué aprendiste este año que te gustaría compartir con otras mujeres?"], en: ["Something you learned", "What did you learn this year that you'd like to share with other women?"] }
+];
+function renderTalk() {
+  const host = document.getElementById("homeTalk");
+  if (!host) return;
+  if (!C.session()) { host.hidden = true; host.replaceChildren(); return; }
+  const week = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / (7 * DAY));
+  const item = TALK[((week % TALK.length) + TALK.length) % TALK.length][C.lang()] || TALK[0].es;
+  const cta = el("button", { type: "button", class: "secondary talk-cta", text: "💬 " + t("talkCta") });
+  cta.addEventListener("click", () => { if (window.CMLRedesign) window.CMLRedesign.compose(t("talkLabel").charAt(0) + t("talkLabel").slice(1).toLowerCase() + " · " + item[1] + "\n"); });
+  host.hidden = false;
+  host.replaceChildren(el("small", { class: "rose", text: t("talkLabel") }), el("h2", { text: item[0] }), el("p", { text: item[1] }), cta);
+}
+
 function render(fromFetch) {
   if (!C || !C.homeData) return;
-  renderUpdates(); renderWeekend();
+  renderChecklist(); renderWeek(); renderUpdates(); renderWeekend(); renderDiscover(); renderTalk();
   if (!fromFetch && C.session() && Date.now() - extra.at > 60000) fetchExtra();
 }
 
@@ -137,7 +331,7 @@ function init() {
   C.addStrings(ES, EN);
   document.addEventListener("cml:session", e => {
     extra = { at: 0, photos: 0, prayer: false };
-    if (!C.session() || (e.detail && e.detail.pending)) { renderUpdates(); renderWeekend(); return; }
+    if (!C.session() || (e.detail && e.detail.pending)) { render(true); return; }
     render();
   });
   document.addEventListener("cml:lang", () => render(true));
