@@ -1230,3 +1230,13 @@ revoke all on function public.stamp_prayer_author() from public, anon;
 grant execute on function public.prayer_wall(int) to authenticated;
 grant select, insert, delete on public.prayer_requests  to authenticated;
 grant select, insert, delete on public.prayer_responses to authenticated;
+
+-- ============================================================================
+-- 18. HOME: weekend ideas ("What should we do this weekend?")
+--     Weekend ideas are ordinary rows of the existing plans table (kind = 'weekend'), so the admin
+--     tools, the AI assistant, publishing and the ❤️ Interested counts (responses + plan_counts)
+--     are all reused. Nothing else is created. Safe to run more than once.
+-- ============================================================================
+alter table public.plans drop constraint if exists plans_kind_check;
+alter table public.plans add constraint plans_kind_check
+  check (kind in ('event','trip','home','wellness','weekend'));

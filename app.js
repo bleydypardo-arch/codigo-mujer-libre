@@ -550,7 +550,9 @@ function renderAll() {
   renderModalText();
   renderStatus();
   renderStorageNotice();
+  homeRefresh();
 }
+function homeRefresh() { if (window.CMLHome) window.CMLHome.render(); }
 
 // ==============================
 // Navigation
@@ -804,7 +806,7 @@ async function respond(planId, status) {
   if (current === status) mine.delete(planId);
   else { mine.set(planId, status); c[status] += 1; }
   counts.set(planId, c);
-  renderEvents(); renderTrips(); renderFeatured(); renderWellnessCards();
+  renderEvents(); renderTrips(); renderFeatured(); renderWellnessCards(); homeRefresh();
   try {
     let result;
     if (current === status) {
@@ -819,7 +821,7 @@ async function respond(planId, status) {
     announce("respondFail");
     try { await loadResponses(); await refreshCounts(); } catch { /* keep optimistic state */ }
   }
-  renderEvents(); renderTrips(); renderFeatured(); renderWellnessCards();
+  renderEvents(); renderTrips(); renderFeatured(); renderWellnessCards(); homeRefresh();
 }
 async function loadResponses() {
   const { data, error } = await db.from("responses").select("plan_id,status").eq("user_id", session.user.id);
@@ -1300,6 +1302,7 @@ function initialize() {
     isAdmin, isSuper, announce,
     refreshPublic: async () => { if (session) await loadAll(); },
     showPage, signOut: () => db.auth.signOut(), setLanguage,
+    homeData: () => ({ plans, counts, mine }), respond,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
       setLanguage(currentLanguage, false);

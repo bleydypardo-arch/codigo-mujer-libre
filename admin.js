@@ -5,7 +5,7 @@
 const S = {
   es: {
     pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada",
-    tabs: { plans: "Planes y eventos", trips: "Futuros planes / viajes", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imagen y mensaje" },
+    tabs: { plans: "Planes y eventos", trips: "Futuros planes / viajes", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imagen y mensaje" },
     loading: "Cargando…", loadFail: "No se pudo cargar. Inténtalo de nuevo.",
     newItem: "+ Nuevo", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Ocultar", live: "Publicado", draft: "Borrador",
     confirmDelete: "¿Eliminar esto de forma permanente?", saved: "Guardado.", deleted: "Eliminado.", saveFail: "No se pudo guardar.",
@@ -13,7 +13,7 @@ const S = {
     counts: (i, g) => "❤️ " + i + " · ✓ " + g,
     empty: "Todavía no hay nada aquí.",
     fCode: "Código / categoría", fNone: "— Sin código —", fTitleEs: "Título (español)", fTitleEn: "Título (inglés)",
-    fDescEs: "Descripción (español)", fDescEn: "Descripción (inglés)", fDate: "Fecha", fDateHelp: "El mes se calcula solo a partir de la fecha. Déjala vacía si aún no hay fecha.",
+    fDescEs: "Descripción (español)", fDescEn: "Descripción (inglés)", fDate: "Fecha", fDateHelp: "El mes se calcula solo a partir de la fecha. Déjala vacía si aún no hay fecha.", aiToWeekend: "Agregar a ideas de fin de semana", fDateWeekend: "Fin de semana (fecha del sábado; se oculta sola al pasar)",
     fTime: "Hora (ej. 7:00 PM)", fDateText: "Fechas tentativas (ej. mayo, o 15–17 de mayo)", fLocationEvent: "Lugar", fLocationTrip: "Destino",
     fPriceEvent: "Precio aproximado", fPriceTrip: "Presupuesto aproximado", fUrl: "Enlace externo (https://…)", fDetails: "Más detalles / contacto",
     fImage: "Imagen", fImageUrl: "o pega la dirección de una imagen", uploading: "Subiendo imagen…", imageFail: "No se pudo subir la imagen (usa JPG, PNG o WebP).",
@@ -37,7 +37,7 @@ const S = {
   },
   en: {
     pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated",
-    tabs: { plans: "Plans & events", trips: "Future plans / trips", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Image & message" },
+    tabs: { plans: "Plans & events", trips: "Future plans / trips", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Image & message" },
     loading: "Loading…", loadFail: "Could not load. Please try again.",
     newItem: "+ New", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Hide", live: "Published", draft: "Draft",
     confirmDelete: "Delete this permanently?", saved: "Saved.", deleted: "Deleted.", saveFail: "Could not save.",
@@ -45,7 +45,7 @@ const S = {
     counts: (i, g) => "❤️ " + i + " · ✓ " + g,
     empty: "Nothing here yet.",
     fCode: "Código / category", fNone: "— No code —", fTitleEs: "Title (Spanish)", fTitleEn: "Title (English)",
-    fDescEs: "Description (Spanish)", fDescEn: "Description (English)", fDate: "Date", fDateHelp: "The month is worked out from the date. Leave empty if there is no date yet.",
+    fDescEs: "Description (Spanish)", fDescEn: "Description (English)", fDate: "Date", fDateHelp: "The month is worked out from the date. Leave empty if there is no date yet.", aiToWeekend: "Add to weekend ideas", fDateWeekend: "Weekend (Saturday's date; hides itself afterwards)",
     fTime: "Time (e.g. 7:00 PM)", fDateText: "Tentative dates (e.g. May, or May 15–17)", fLocationEvent: "Location", fLocationTrip: "Destination",
     fPriceEvent: "Approximate price", fPriceTrip: "Approximate budget", fUrl: "External link (https://…)", fDetails: "More details / contact",
     fImage: "Image", fImageUrl: "or paste an image address", uploading: "Uploading image…", imageFail: "Could not upload the image (use JPG, PNG or WebP).",
@@ -73,10 +73,11 @@ const KINDS = {
   event:    { tab: "plans",    fields: ["code", "title", "desc", "date", "time", "location", "price", "url", "details", "image"] },
   trip:     { tab: "trips",    fields: ["code", "title", "desc", "date_text", "location", "price", "url", "details", "image"] },
   home:     { tab: "home",     fields: ["title", "desc", "image"] },
-  wellness: { tab: "wellness", fields: ["title", "desc", "url", "details", "image"] }
+  wellness: { tab: "wellness", fields: ["title", "desc", "url", "details", "image"] },
+  weekend:  { tab: "weekend",  fields: ["code", "title", "desc", "date", "location", "url"] }
 };
-const TAB_KIND = { plans: "event", trips: "trip", home: "home", wellness: "wellness" };
-const TABS = ["plans", "trips", "home", "wellness", "community", "memories", "polls", "messages", "users", "ai", "settings"];
+const TAB_KIND = { plans: "event", trips: "trip", weekend: "weekend", home: "home", wellness: "wellness" };
+const TABS = ["plans", "trips", "weekend", "home", "wellness", "community", "memories", "polls", "messages", "users", "ai", "settings"];
 const CODES = ["Social", "Wellness", "Faith", "Adventure", "Family", "Connection", "Support", "Recharge"];
 
 let C = null;
@@ -181,7 +182,7 @@ function render() {
 // ---------- plans / trips / home / wellness ----------
 async function listView(kind) {
   const q = C.db.from("plans").select("*").eq("kind", kind);
-  const { data, error } = (kind === "event" || kind === "trip")
+  const { data, error } = (kind === "event" || kind === "trip" || kind === "weekend")
     ? await q.order("event_date", { ascending: false, nullsFirst: true })
     : await q.order("created_at", { ascending: false });
   if (error) throw error;
@@ -190,7 +191,7 @@ async function listView(kind) {
   if (!data.length) wrap.appendChild(el("p", { class: "small-note", text: a("empty") }));
 
   let tally = new Map();
-  if (kind === "event" || kind === "trip") {
+  if (kind === "event" || kind === "trip" || kind === "weekend") {
     const r = await C.db.from("responses").select("plan_id,status");
     if (!r.error) (r.data || []).forEach(x => {
       const c = tally.get(x.plan_id) || { i: 0, g: 0 };
@@ -212,7 +213,7 @@ function planItem(kind, row, c, memIds) {
     el("h3", { text: title }),
     when ? el("p", { class: "small-note", text: "📅 " + when }) : null,
     row.location ? el("p", { class: "small-note", text: "📍 " + row.location }) : null,
-    (kind === "event" || kind === "trip") ? el("p", { class: "small-note", text: a("counts")(c.i, c.g) }) : null);
+    (kind === "event" || kind === "trip" || kind === "weekend") ? el("p", { class: "small-note", text: a("counts")(c.i, c.g) }) : null);
   const whoBox = el("div");
   const actions = el("div", { class: "actions" },
     button(a("edit"), "", () => { editing = { kind, row }; render(); }),
@@ -331,7 +332,7 @@ function formView() {
   form.appendChild(field(a("fTitleEn"), text("title_en", d.title_en, { maxlength: 140 })));
   form.appendChild(field(a("fDescEs"), area("desc_es", d.desc_es)));
   form.appendChild(field(a("fDescEn"), area("desc_en", d.desc_en)));
-  if (cfg.fields.includes("date")) form.appendChild(field(a("fDate"), add("event_date", el("input", { type: "date", value: d.event_date || "" })), a("fDateHelp")));
+  if (cfg.fields.includes("date")) form.appendChild(field(kind === "weekend" ? a("fDateWeekend") : a("fDate"), add("event_date", el("input", { type: "date", value: d.event_date || "" })), kind === "weekend" ? null : a("fDateHelp")));
   if (cfg.fields.includes("time")) form.appendChild(field(a("fTime"), text("event_time", d.event_time, { maxlength: 60 })));
   if (cfg.fields.includes("date_text")) form.appendChild(field(a("fDateText"), text("date_text", d.date_text, { maxlength: 80 })));
   if (cfg.fields.includes("location")) form.appendChild(field(kind === "trip" ? a("fLocationTrip") : a("fLocationEvent"), text("location", d.location, { maxlength: 200 })));
@@ -614,19 +615,20 @@ function renderResults(box, out) {
       safe ? el("p", { class: "small-note" }, a("aiSource") + ": ",
         el("a", { href: safe, target: "_blank", rel: "noopener noreferrer", text: safe.replace(/^https?:\/\//, "").slice(0, 60) }),
         " · ", r.url_verified ? a("aiVerified") : a("aiUnverified")) : null);
-    item.appendChild(el("div", { class: "actions" }, button(a("aiUse"), "", () => {
+    const useAs = k => {
       editing = {
-        kind, ai: true, row: null,
+        kind: k, ai: true, row: null,
         prefill: {
           code: CODES.includes(r.code) ? r.code : "", title_es: r.title_es || "", title_en: r.title_en || "",
           desc_es: r.desc_es || "", desc_en: r.desc_en || "", event_date: date, event_time: r.time || "",
-          date_text: kind === "trip" ? (r.date_text || "") : "", location: r.location || "", price: r.price || "",
+          date_text: k === "trip" ? (r.date_text || "") : "", location: r.location || "", price: r.price || "",
           url: safe, image_url: C.safeUrl(r.image_url) || "", published: false
         }
       };
-      tab = kind === "trip" ? "trips" : "plans";
+      tab = k === "trip" ? "trips" : k === "weekend" ? "weekend" : "plans";
       render();
-    })));
+    };
+    item.appendChild(el("div", { class: "actions" }, button(a("aiUse"), "", () => useAs(kind)), button("✨ " + a("aiToWeekend"), "", () => useAs("weekend"))));
     box.appendChild(item);
   });
   if (out.note) box.appendChild(el("p", { class: "small-note", text: a("aiNote") + ": " + out.note }));
