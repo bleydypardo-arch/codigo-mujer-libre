@@ -1145,3 +1145,88 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.upcoming_birthdays(int) from public, anon;
 grant execute on function public.upcoming_birthdays(int) to authenticated;
+
+-- ============================================================================
+-- 17. PRAYER & SUPPORT WALL (private to approved members)
+--     "Anonymous" = anonymous to ordinary members. The table can only be read by its author and
+--     by admins; members read the wall through prayer_wall(), which never reveals who wrote an
+--     anonymous request (admins still see the account, for moderation and safety).
+--     Safe to run more than once.
+-- ============================================================================
+create table if not exists public.prayer_requests (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  body        text not null check (char_length(body) between 1 and 1000),
+  anonymous   boolean not null default true,
+  author_name text not null default '',
+  created_at  timestamptz not null default now()
+);
+create index if not exists prayer_requests_created_idx on public.prayer_requests (created_at desc);
+
+create table if not exists public.prayer_responses (
+  request_id uuid not null references public.prayer_requests(id) on delete cascade,
+  user_id    uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (request_id, user_id)
+);
+
+-- Identity is set by the database, never by the browser: first name only, empty when anonymous.
+create or replace function public.stamp_prayer_author() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  new.user_id := coalesce(auth.uid(), new.user_id);
+  new.author_name := case when new.anonymous then ''
+                          else coalesce((select first_name from public.profiles where id = new.user_id), '') end;
+  return new;
+end $$;
+drop trigger if exists prayer_requests_stamp on public.prayer_requests;
+create trigger prayer_requests_stamp before insert on public.prayer_requests
+  for each row execute function public.stamp_prayer_author();
+
+alter table public.prayer_requests  enable row level security;
+alter table public.prayer_responses enable row level security;
+
+drop policy if exists "prayer read own or admin" on public.prayer_requests;
+drop policy if exists "prayer insert"            on public.prayer_requests;
+drop policy if exists "prayer delete"            on public.prayer_requests;
+create policy "prayer read own or admin" on public.prayer_requests for select to authenticated
+  using (public.is_admin() or (user_id = auth.uid() and public.is_approved()));
+create policy "prayer insert" on public.prayer_requests for insert to authenticated
+  with check (user_id = auth.uid() and public.is_approved());
+create policy "prayer delete" on public.prayer_requests for delete to authenticated
+  using (public.is_admin() or (user_id = auth.uid() and public.is_approved()));
+
+drop policy if exists "prayer responses read"   on public.prayer_responses;
+drop policy if exists "prayer responses insert" on public.prayer_responses;
+drop policy if exists "prayer responses delete" on public.prayer_responses;
+create policy "prayer responses read" on public.prayer_responses for select to authenticated
+  using (user_id = auth.uid() and public.is_approved());
+create policy "prayer responses insert" on public.prayer_responses for insert to authenticated
+  with check (user_id = auth.uid() and public.is_approved());
+create policy "prayer responses delete" on public.prayer_responses for delete to authenticated
+  using (user_id = auth.uid() and public.is_approved());
+
+-- The wall: what members may see. Real identity (author_id / real_name) only for admins, only on
+-- anonymous requests; a member sees "mine = true" on her own posts.
+create or replace function public.prayer_wall(max_rows int default 50)
+returns table (id uuid, body text, anonymous boolean, author_name text, created_at timestamptz,
+               mine boolean, praying bigint, i_pray boolean, real_name text)
+language sql stable security definer set search_path = public as $$
+  select r.id, r.body, r.anonymous, r.author_name, r.created_at,
+         (r.user_id = auth.uid()),
+         (select count(*) from public.prayer_responses x where x.request_id = r.id),
+         exists (select 1 from public.prayer_responses x where x.request_id = r.id and x.user_id = auth.uid()),
+         case when public.is_admin() and r.anonymous
+              then (select trim(p.first_name || ' ' || p.last_name) from public.profiles p where p.id = r.user_id)
+              else null end
+  from public.prayer_requests r
+  where public.is_approved()
+  order by r.created_at desc
+  limit greatest(1, least(max_rows, 200))
+$$;
+
+revoke all on function public.prayer_wall(int) from public, anon;
+revoke all on function public.stamp_prayer_author() from public, anon;
+grant execute on function public.prayer_wall(int) to authenticated;
+grant select, insert, delete on public.prayer_requests  to authenticated;
+grant select, insert, delete on public.prayer_responses to authenticated;

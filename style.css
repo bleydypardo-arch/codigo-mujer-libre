@@ -248,3 +248,16 @@ header button#profileBtn { padding: 8px 11px; }
 .bd-text { flex: 1; min-width: 160px; overflow-wrap: anywhere; }
 .prof-form .md { grid-template-columns: 1fr 1fr !important; }
 .prof-form .link-btn, .bd-row .link-btn { border: 0; background: none; color: #80525a; text-decoration: underline; padding: 8px 4px; min-height: 40px; font: inherit; font-weight: bold; }
+
+/* ---- safety note + prayer wall ---- */
+.safety-card { background: #fff7ee; border-color: #f0d9c4; }
+.safety-card p { margin: 6px 0; line-height: 1.45; }
+.safe-link { color: #80525a; font-weight: bold; }
+.prayer-form textarea { min-height: 84px; }
+.prayer-item { border-top: 1px solid #eee0dc; padding: 12px 0 4px; }
+.prayer-body { margin: 0 0 4px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.prayer-admin { display: block; color: #80525a; margin-top: 2px; }
+.resp.pray.on { background: #f4e3e3; border-color: #B76E79; }
+.prayer-item .link-btn { background: none; border: 0; padding: 8px 4px; margin: 0; min-height: 40px; font: inherit; font-weight: bold; }
+.prayer-form .primary { display: block; margin-top: 12px; }
+.prayer-form .meta { display: block; margin-top: 6px; }
