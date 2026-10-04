@@ -273,3 +273,16 @@ header button#profileBtn { padding: 8px 11px; }
 .wk-text { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
 .wk-btn { flex: none; min-height: 44px; }
 .wk-item .link-btn { margin: 2px 0 0; }
+
+/* ---- notifications bell + panel ---- */
+header button.bell { position: relative; padding: 8px 11px; }
+.bell-badge { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #c0392b; color: #fff; font-size: 11px; font-weight: bold; line-height: 18px; text-align: center; }
+.notif-panel { position: fixed; top: 64px; left: 10px; right: 10px; max-width: 520px; margin: 0 auto; z-index: 20; max-height: calc(100vh - 150px); overflow-y: auto; background: #fff; border: 1px solid #eadfdb; border-radius: 20px; padding: 12px 14px; box-shadow: 0 16px 40px #5a3b4230; }
+.notif-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.notif-head .link-btn { background: none; border: 0; margin: 0; padding: 8px; min-height: 40px; font: inherit; font-weight: bold; color: #80525a; }
+.notif-item { display: block; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid #f1e6e2; padding: 12px 8px; min-height: 44px; font: inherit; color: #292527; line-height: 1.4; border-radius: 8px; }
+.notif-item.new { background: #fbefee; font-weight: bold; }
+.notif-settings { margin-top: 10px; }
+.notif-settings summary { min-height: 44px; display: flex; align-items: center; color: #80525a; font-weight: bold; }
+.notif-settings .check { display: flex; gap: 10px; align-items: center; min-height: 40px; font-weight: normal; }
+.notif-settings .check input { width: 20px; height: 20px; }
