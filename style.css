@@ -174,3 +174,9 @@ body.lb-open { overflow: hidden; }
 .mem-home-btn { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 0; font: inherit; color: inherit; }
 .mem-home-btn > span { display: flex; flex-direction: column; gap: 4px; }
 .mem-home-btn b { font: 21px Georgia, serif; }
+
+#navAdmin { position: relative; }
+.nav-badge { position: absolute; top: 2px; right: 6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: #c0392b; color: #fff; font-size: 11px; font-weight: bold; line-height: 18px; text-align: center; }
+.pending-banner { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: #fff3e0; border: 1px solid #f0c987; border-radius: 16px; padding: 10px 14px; margin: 10px 0; font-weight: bold; color: #6b4a12; }
+.pending-banner[hidden] { display: none; }
+.pending-banner .primary { min-height: 44px; }
