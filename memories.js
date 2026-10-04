@@ -32,7 +32,7 @@ const ES = {
   memDelete: "Eliminar", memEdit: "Editar", memHide: "Ocultar", memUnhide: "Mostrar", memHiddenBadge: "Oculto",
   memConfirmDelete: "¿Eliminar esto de forma permanente?",
   memConfirmDeleteMemory: "¿Eliminar este recuerdo con TODAS sus fotos, videos y comentarios? No se puede deshacer.",
-  memLike: "Me encanta", memGallery: "Todas las fotos y videos", memClose: "Cerrar", memPrev: "Anterior", memNext: "Siguiente",
+  memEmojis: "Emojis", memLike: "Me encanta", memGallery: "Todas las fotos y videos", memClose: "Cerrar", memPrev: "Anterior", memNext: "Siguiente",
   memCover: "Usar como portada", memCoverSet: "Portada actualizada.", memPostedWhen: "publicó", memCommentFail: "No se pudo comentar.",
   memHomeLabel: "ÚLTIMO RECUERDO", memHomeCta: "Ver recuerdos", memEventDate: "Fecha del evento",
   memCreate: "Crear recuerdo", memOpen: "Abrir recuerdo", memCreated: "Recuerdo creado.", memHasOne: "Ya tiene recuerdo",
@@ -69,7 +69,7 @@ const EN = {
   memDelete: "Delete", memEdit: "Edit", memHide: "Hide", memUnhide: "Unhide", memHiddenBadge: "Hidden",
   memConfirmDelete: "Delete this permanently?",
   memConfirmDeleteMemory: "Delete this memory with ALL its photos, videos and comments? This cannot be undone.",
-  memLike: "Love", memGallery: "All photos and videos", memClose: "Close", memPrev: "Previous", memNext: "Next",
+  memEmojis: "Emojis", memLike: "Love", memGallery: "All photos and videos", memClose: "Close", memPrev: "Previous", memNext: "Next",
   memCover: "Use as cover", memCoverSet: "Cover updated.", memPostedWhen: "posted", memCommentFail: "Could not comment.",
   memHomeLabel: "LATEST MEMORY", memHomeCta: "See memories", memEventDate: "Event date",
   memCreate: "Create memory", memOpen: "Open memory", memCreated: "Memory created.", memHasOne: "Already has a memory",
@@ -280,7 +280,7 @@ async function openAlbum(id) {
     ]);
     if (posts.error || media.error || comments.error) throw new Error("load");
     const ids = (posts.data || []).map(p => p.id);
-    const re = ids.length ? await C.db.from("memory_reactions").select("post_id,user_id").in("post_id", ids) : { data: [] };
+    const re = ids.length ? await C.db.from("memory_reactions").select("post_id,user_id,emoji").in("post_id", ids) : { data: [] };
     const goingYes = !!(going.data && going.data.status === "going");
     A = {
       m, posts: posts.data || [], media: media.data || [], comments: comments.data || [], reactions: re.data || [],
@@ -465,32 +465,33 @@ function postNode(p) {
   if (p.body) card.appendChild(el("p", { class: "saved-text", text: p.body }));
   if (media.length) card.appendChild(el("div", { class: "mem-grid" }, media.map((x, i) => mediaTile(x, () => lightbox(media, i)))));
 
-  // ❤️ hearts: one per member (the database also enforces it)
-  const hearts = () => A.reactions.filter(r => r.post_id === p.id);
-  const heart = el("button", { type: "button", class: "resp mem-heart" });
-  const paintHeart = () => {
-    const mineOn = hearts().some(r => r.user_id === uid());
-    heart.setAttribute("aria-pressed", String(mineOn));
-    heart.setAttribute("aria-label", t("memLike"));
-    heart.textContent = (mineOn ? "❤️" : "🤍") + " " + hearts().length;
-    heart.disabled = !A.canInteract;
+  // Emoji reactions: each member can add any of the emojis once per post (the database also enforces it)
+  const react = el("div", { class: "resp-row mem-react", role: "group", "aria-label": t("memLike") });
+  const paintReact = () => {
+    react.replaceChildren(...EMOJIS.map(em => {
+      const rows = A.reactions.filter(r => r.post_id === p.id && (r.emoji || "❤️") === em);
+      const on = rows.some(r => r.user_id === uid());
+      const b = el("button", { type: "button", class: "resp mem-heart" + (on ? " on" : ""), "aria-pressed": String(on), text: em + (rows.length ? " " + rows.length : "") });
+      b.disabled = !A.canInteract;
+      b.addEventListener("click", async () => {
+        if (!A.canInteract) return;
+        if (on) {
+          A.reactions = A.reactions.filter(r => !(r.post_id === p.id && r.user_id === uid() && (r.emoji || "❤️") === em)); paintReact();
+          const r = await C.db.from("memory_reactions").delete().eq("post_id", p.id).eq("user_id", uid()).eq("emoji", em);
+          if (r.error) { A.reactions.push({ post_id: p.id, user_id: uid(), emoji: em }); paintReact(); }
+        } else {
+          A.reactions.push({ post_id: p.id, user_id: uid(), emoji: em }); paintReact();
+          const r = await C.db.from("memory_reactions").insert({ post_id: p.id, emoji: em });
+          if (r.error && r.error.code !== "23505") { A.reactions = A.reactions.filter(x => !(x.post_id === p.id && x.user_id === uid() && x.emoji === em)); paintReact(); }
+        }
+      });
+      return b;
+    }));
   };
-  heart.addEventListener("click", async () => {
-    if (!A.canInteract) return;
-    const mineOn = hearts().some(r => r.user_id === uid());
-    if (mineOn) {
-      A.reactions = A.reactions.filter(r => !(r.post_id === p.id && r.user_id === uid())); paintHeart();
-      const r = await C.db.from("memory_reactions").delete().eq("post_id", p.id).eq("user_id", uid());
-      if (r.error) { A.reactions.push({ post_id: p.id, user_id: uid() }); paintHeart(); }
-    } else {
-      A.reactions.push({ post_id: p.id, user_id: uid() }); paintHeart();
-      const r = await C.db.from("memory_reactions").insert({ post_id: p.id });
-      if (r.error && r.error.code !== "23505") { A.reactions = A.reactions.filter(x => !(x.post_id === p.id && x.user_id === uid())); paintHeart(); }
-    }
-  });
-  paintHeart();
+  paintReact();
+  card.appendChild(react);
 
-  const actions = el("div", { class: "actions" }, heart);
+  const actions = el("div", { class: "actions" });
   if (mine || C.isAdmin()) actions.appendChild(btn(t("memDelete"), "danger", async () => {
     if (!window.confirm(t("memConfirmDelete"))) return;
     const files = media.flatMap(x => [x.path, x.thumb_path]);
@@ -533,7 +534,10 @@ function postNode(p) {
   if (A.canInteract) {
     const input = el("input", { type: "text", maxlength: 500, placeholder: t("memCommentPh"), "aria-label": t("memCommentPh") });
     const send = el("button", { type: "submit", class: "primary", text: t("memComment") });
-    const form = el("form", { class: "mem-comment-form" }, input, send);
+    const bar = emojiBar(input); bar.hidden = true;
+    const face = btn("😊", "mem-face", () => { bar.hidden = !bar.hidden; face.setAttribute("aria-expanded", String(!bar.hidden)); });
+    face.setAttribute("aria-label", t("memEmojis")); face.setAttribute("aria-expanded", "false");
+    const form = el("form", { class: "mem-comment-form" }, face, input, send);
     form.addEventListener("submit", async e => {
       e.preventDefault();
       const body = input.value.trim();
@@ -544,7 +548,7 @@ function postNode(p) {
       if (r.error) return C.announce("memCommentFail");
       A.comments.push(r.data); input.value = ""; paintComments();
     });
-    card.appendChild(form);
+    card.appendChild(form); card.appendChild(bar);
   }
   return card;
 }
@@ -557,13 +561,15 @@ function composerNode() {
   let staged = [];     // { file, kind, preview, duration }
   const text = el("textarea", { maxlength: 1000, placeholder: t("memCaptionPh"), "aria-label": t("memCaptionPh") });
   const file = el("input", { type: "file", accept: "image/*,video/mp4,video/quicktime,video/webm", multiple: true, class: "mem-file" });
+  const capBar = emojiBar(text); capBar.hidden = true;
+  const capFace = btn("😊 " + t("memEmojis"), "mem-face-wide", () => { capBar.hidden = !capBar.hidden; });
   const label = el("label", { class: "mem-addfiles" }, "📷 " + t("memAddPhotos"), file);
   const previews = el("div", { class: "mem-previews" });
   const status = el("p", { class: "small-note", role: "status" });
   const feedback = el("p", { class: "form-feedback", role: "alert" });
   const post = el("button", { type: "submit", class: "primary", text: t("memPost") });
   const form = el("form", { class: "card mem-composer", novalidate: true },
-    el("b", { text: t("memAddMemory") }), text, label, previews,
+    el("b", { text: t("memAddMemory") }), text, capFace, capBar, label, previews,
     note(t("memLimitsNote", { p: LIMITS.maxPhotos, s: LIMITS.maxVideoSec })), feedback, status, post);
 
   const paintPreviews = () => {
@@ -642,6 +648,25 @@ function composerNode() {
     }
   });
   return form;
+}
+const EMOJIS = ["❤️", "😂", "😍", "👏", "🔥", "🥂"];
+const PICKER = ["❤️", "😍", "😂", "🥰", "👏", "🔥", "🥂", "🎉", "✨", "🙏", "💃", "🌸", "😊", "🤗", "💖", "🍷"];
+// small row of emoji buttons that inserts at the cursor of an input/textarea
+function emojiBar(field) {
+  const bar = el("div", { class: "mem-emojis", role: "group", "aria-label": t("memEmojis") });
+  PICKER.forEach(em => {
+    const b = el("button", { type: "button", class: "mem-emoji", text: em, "aria-label": em });
+    b.addEventListener("mousedown", e => e.preventDefault());
+    b.addEventListener("click", () => {
+      const max = Number(field.getAttribute("maxlength")) || 1e9;
+      if (field.value.length + em.length > max) return;
+      const st = field.selectionStart == null ? field.value.length : field.selectionStart, en = field.selectionEnd == null ? st : field.selectionEnd;
+      field.value = field.value.slice(0, st) + em + field.value.slice(en);
+      field.focus(); try { field.setSelectionRange(st + em.length, st + em.length); } catch { /* ignore */ }
+    });
+    bar.appendChild(b);
+  });
+  return bar;
 }
 const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
 async function upload(path, blob, type, uploaded) {
