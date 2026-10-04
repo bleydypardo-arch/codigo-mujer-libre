@@ -273,6 +273,7 @@ function init() {
   document.addEventListener("cml:lang", () => { paintGeneral(); repaint(); });
   window.CMLPolls = {
     reload, planBlock, adminView, paintGeneral,
+    closingSoon: (hours) => polls.filter(p => isOpen(p) && p.closes_at && new Date(p.closes_at).getTime() - Date.now() <= (hours || 48) * 3600000),
     prefill: id => { prefillPlan = id || ""; }
   };
 }

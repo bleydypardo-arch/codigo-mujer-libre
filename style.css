@@ -262,3 +262,14 @@ header button#profileBtn { padding: 8px 11px; }
 .prayer-form .primary { display: block; margin-top: 12px; }
 .prayer-form .meta { display: block; margin-top: 6px; }
 .resp.pray.on { color: #633d45; font-weight: bold; }
+
+/* ---- Home: community updates + weekend ideas ---- */
+.home-updates { padding: 12px 14px; }
+.upd-row { display: block; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid #f1e6e2; padding: 11px 2px; min-height: 44px; font: inherit; color: #292527; line-height: 1.4; }
+.upd-row:last-child { border-bottom: 0; }
+.weekend-card { background: #fff7f5; }
+.wk-cat { display: block; margin: 14px 0 4px; color: #80525a; font-weight: bold; letter-spacing: .08em; }
+.wk-item { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1e6e2; }
+.wk-text { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.wk-btn { flex: none; min-height: 44px; }
+.wk-item .link-btn { margin: 2px 0 0; }
