@@ -249,10 +249,8 @@ function renderHome() {
   if (!card) return;
   const m = list[0];
   if (!C || !C.session() || !approved() || !m) { card.hidden = true; card.replaceChildren(); return; }
-  const cover = covers.get(m.id);
   card.hidden = false;
   const go = el("button", { type: "button", class: "mem-home-btn" },
-    cover ? el("img", { src: cover, alt: "", loading: "lazy" }) : null,
     el("span", {},
       el("small", { class: "rose", text: t("memHomeLabel") }),
       el("b", { text: (codeText(m.code).split(" ")[0] ? codeText(m.code).split(" ")[0] + " " : "") + title(m) }),

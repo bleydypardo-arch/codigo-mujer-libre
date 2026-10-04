@@ -170,3 +170,7 @@ body.lb-open { overflow: hidden; }
 .mem-face-wide { align-self: flex-start; min-height: 44px; border: 1px solid #eadfdb; background: #fff; border-radius: 30px; padding: 0 14px; font: inherit; font-weight: bold; color: #633d45; margin: 0 0 8px; }
 .mem-composer .mem-emojis[hidden], .mem-post .mem-emojis[hidden] { display: none; }
 .mem-comment-form .mem-face { flex-shrink: 0; width: 44px; }
+
+.mem-home-btn { display: block; width: 100%; text-align: left; border: 0; background: none; padding: 0; font: inherit; color: inherit; }
+.mem-home-btn > span { display: flex; flex-direction: column; gap: 4px; }
+.mem-home-btn b { font: 21px Georgia, serif; }
