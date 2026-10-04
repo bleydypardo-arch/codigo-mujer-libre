@@ -186,3 +186,29 @@ body.lb-open { overflow: hidden; }
 .approval-body p { line-height: 1.5; color: #4a4245; margin: 0 0 18px; }
 .approval-body .link-btn { background: none; border: 0; min-height: 44px; font: inherit; font-weight: bold; color: #80525a; margin-top: 8px; }
 #approvalGate[hidden] { display: none !important; }
+
+/* ===== Event chat + Community upgrade ===== */
+.event-chat { margin-top: 12px; border-top: 1px solid #f0e6e2; padding-top: 10px; }
+.event-chat > summary { cursor: pointer; font-weight: bold; color: #80525a; min-height: 44px; display: flex; align-items: center; }
+.chat-locked { margin: 12px 0 0; }
+.chat-list { max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 6px 2px; }
+.chat-msg { background: #fbf3f0; border-radius: 16px; padding: 8px 12px; max-width: 92%; align-self: flex-start; overflow-wrap: anywhere; }
+.chat-msg.mine { background: #f4e3e3; align-self: flex-end; }
+.chat-msg p { margin: 2px 0 0; }
+.chat-time { font-size: 11px; color: #746B6D; margin-left: 8px; }
+.chat-del { background: none; border: 0; padding: 4px 0; min-height: 32px; font: inherit; font-size: 12px; font-weight: bold; color: #80525a; margin: 0; }
+.chat-form, .post-comment-form { display: flex; gap: 8px; margin-top: 8px; }
+.chat-form input, .post-comment-form input { flex: 1; min-width: 0; min-height: 44px; border: 1px solid #eadfdb; border-radius: 30px; padding: 0 14px; font: inherit; }
+.chat-form .primary, .post-comment-form .primary { min-height: 44px; }
+.post-photo-row { margin: 4px 0 12px; }
+.post-photo-btn { margin: 0; }
+#postPhotoPrev { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.post-photo-thumb { width: 72px; height: 72px; object-fit: cover; border-radius: 12px; }
+#postPhotoPrev .link-btn { background: none; border: 0; min-height: 44px; font: inherit; font-weight: bold; color: #80525a; margin: 0; }
+.post-photo { display: block; width: 100%; max-height: 420px; object-fit: cover; border-radius: 16px; margin: 8px 0; background: #f4e3e3; }
+.post-actions { margin-top: 10px; gap: 6px; }
+.post-actions .resp { flex: 0 0 auto; min-width: 56px; min-height: 44px; }
+.post-actions .link-danger { min-height: 44px; margin-left: auto; }
+.post-comments { margin-top: 8px; border-top: 1px solid #f0e6e2; padding-top: 8px; }
+.post-comment { margin: 6px 0; font-size: 14px; overflow-wrap: anywhere; }
+.post-comment .link-btn { background: none; border: 0; padding: 4px 0; min-height: 36px; font: inherit; font-size: 13px; font-weight: bold; color: #80525a; margin: 0; }

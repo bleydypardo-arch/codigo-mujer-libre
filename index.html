@@ -301,6 +301,12 @@
         placeholder="¿Qué quieres compartir con la comunidad?"
       ></textarea>
 
+      <div class="post-photo-row">
+        <label class="mem-addfiles post-photo-btn"><span data-i18n="addPhoto">📷 Agregar foto (opcional)</span>
+          <input type="file" id="postPhoto" accept="image/jpeg,image/png,image/webp,image/*" class="mem-file"></label>
+        <div id="postPhotoPrev"></div>
+      </div>
+
       <button type="button"
         class="primary"
         id="postBtn"
@@ -537,5 +543,6 @@
 <script src="app.js"></script>
 <script src="admin.js"></script>
   <script src="memories.js"></script>
+  <script src="social.js"></script>
 </body>
 </html>
