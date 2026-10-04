@@ -99,6 +99,8 @@
   </div>
 </div>
 
+<div class="bg-flora" aria-hidden="true"></div>
+
 <div id="appShell" hidden>
 
 <header>
@@ -180,6 +182,12 @@
       <button type="button" class="quick-btn" data-go="travel"><svg class="ci t-sage" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 3 3 10.5l7 2.5 2.5 7zM21 3 10 13"/></svg><span data-i18n="travelShort">Viajes</span></button>
     </div>
 
+    <button type="button" class="support-strip" data-go="support">
+      <span class="support-link-ic" aria-hidden="true"><svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="M12 20s-7-4.3-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.7 12 20 12 20z"/></svg></span>
+      <span class="support-strip-txt"><b data-i18n="supStripTitle">Apoyo y oración</b><small data-i18n="supStripSub">Habla en privado, pide oración o apoyo para tu familia</small></span>
+      <span class="wrow-go" aria-hidden="true">›</span>
+    </button>
+
     <div id="homeChecklist" class="card home-checklist" hidden></div>
 
     <div class="home-cols">
@@ -193,6 +201,7 @@
         </div>
       </div>
       <div class="home-col home-col-side">
+        <div id="homeMatcha" class="matcha-card-wrap" hidden></div>
         <div id="homeUpdates" class="card home-updates" hidden></div>
         <div id="homeMemory" class="card mem-home" hidden></div>
         <div id="homeDiscover" class="card discover-card" hidden></div>
@@ -228,47 +237,7 @@
     </div>
     <div id="memoriesView" hidden></div>
 
-    <div id="generalPolls" class="polls general-polls" hidden></div>
-
-    <div id="codeFilter" class="code-filter" hidden>
-      <p class="code-filter-q" data-i18n="weeklyCode">¿Qué te interesa esta semana?</p>
-    <div class="chips code-chips" role="group" data-i18n-aria="weeklyCode" aria-label="¿Qué te interesa esta semana?">
-
-      <button type="button" class="chip" data-code="Social" data-i18n="social" aria-pressed="false">
-        🥂 Social
-      </button>
-
-      <button type="button" class="chip" data-code="Wellness" data-i18n="wellnessChip" aria-pressed="false">
-        🌿 Bienestar
-      </button>
-
-      <button type="button" class="chip" data-code="Faith" data-i18n="faith" aria-pressed="false">
-        🙏 Fe
-      </button>
-
-      <button type="button" class="chip" data-code="Adventure" data-i18n="adventure" aria-pressed="false">
-        ✈️ Aventura
-      </button>
-
-      <button type="button" class="chip" data-code="Family" data-i18n="family" aria-pressed="false">
-        👨‍👩‍👧 Familia
-      </button>
-
-      <button type="button" class="chip" data-code="Connection" data-i18n="connection" aria-pressed="false">
-        🤝 Conexión
-      </button>
-
-      <button type="button" class="chip" data-code="Support" data-i18n="support" aria-pressed="false">
-        🕊️ Apoyo
-      </button>
-
-      <button type="button" class="chip" data-code="Recharge" data-i18n="recharge" aria-pressed="false">
-        😌 Recargar
-      </button>
-
-    </div>
-      <p id="weeklyCodeStatus" class="selection-status" aria-live="polite"></p>
-    </div>
+    <div id="evCats" class="ev-cats" role="group" aria-label="¿Qué te apetece?" data-i18n-aria="catsLabel" hidden></div>
 
     <div id="monthFilter" class="chips" role="group" data-i18n-aria="monthFilterLabel" aria-label="Filtrar por mes" hidden></div>
 
@@ -366,6 +335,8 @@
 
     <div id="membersList"></div>
 
+    <div id="generalPolls" class="card polls general-polls" hidden></div>
+
 
     <div class="card">
 
@@ -432,24 +403,17 @@
 
 
 
-  <!-- BIENESTAR -->
+  <!-- BIENESTAR (lifestyle + discovery; help & support live in their own page) -->
   <section id="wellness" class="page">
 
-    <small class="rose" data-i18n="wellnessLabel">
-      BIENESTAR Y APOYO
-    </small>
+    <small class="rose" data-i18n="wellnessLabel">BIENESTAR</small>
 
-    <h1 data-i18n="yourSpace">
-      Tu espacio
-    </h1>
+    <h1 data-i18n="yourSpace">Cuídate a tu manera</h1>
 
-    <p data-i18n="wellnessIntro">
-      Un lugar para sentirte acompañada, escuchada y conectada.
-    </p>
-
+    <p data-i18n="wellnessIntro">Elige cómo quieres sentirte hoy y descubre experiencias para cuidarte.</p>
 
     <div class="moods" role="group" aria-labelledby="moodQ">
-      <p id="moodQ" class="mood-q" data-i18n="moodQ">¿Cómo te sientes hoy?</p>
+      <h2 id="moodQ" class="mood-q" data-i18n="moodQ">¿Cómo quieres sentirte hoy?</h2>
       <div class="mood-grid">
         <button type="button" class="mood" data-mood="energy" aria-pressed="false"><svg class="ci t-gold" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span data-i18n="moodEnergy">Más energía</span></button>
         <button type="button" class="mood" data-mood="stress" aria-pressed="false"><svg class="ci t-sage" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14zM5 19l7-7"/></svg><span data-i18n="moodStress">Menos estrés</span></button>
@@ -458,8 +422,34 @@
         <button type="button" class="mood" data-mood="move" aria-pressed="false"><svg class="ci t-sage" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 7v10M3.5 9v6M18 7v10M20.5 9v6M6 12h12"/></svg><span data-i18n="moodMove">Mover mi cuerpo</span></button>
         <button type="button" class="mood" data-mood="peace" aria-pressed="false"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20c-4 0-8-2-9-6 3 0 5.5 1 7 3M12 20c4 0 8-2 9-6-3 0-5.5 1-7 3M12 20c-2.5-2-3.5-5-3.5-8 0-2.5 1.5-5 3.5-7 2 2 3.5 4.5 3.5 7 0 3-1 6-3.5 8z"/></svg><span data-i18n="moodPeace">Necesito paz</span></button>
       </div>
-      <p id="moodTip" class="mood-tip" role="status" aria-live="polite" hidden></p>
+      <div id="moodTip" class="mood-tip" role="status" aria-live="polite" hidden></div>
     </div>
+
+
+    <div id="wellDiscover" class="well-discover" hidden></div>
+
+    <div id="wellnessCards" hidden></div>
+
+    <div id="wellUpcoming" class="well-upcoming" hidden></div>
+
+    <button type="button" class="support-link" data-go="support">
+      <span class="support-link-ic" aria-hidden="true"><svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="M12 20s-7-4.3-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.7 12 20 12 20z"/></svg></span>
+      <span class="support-link-txt"><b data-i18n="supLinkTitle">¿Necesitas apoyo?</b><small data-i18n="supLinkSub">Habla en privado, pide oración o encuentra ayuda inmediata.</small></span>
+      <span class="wrow-go" aria-hidden="true">›</span>
+    </button>
+
+  </section>
+
+  <!-- APOYO (support: private talk, prayer, family, suggestions, prayer wall, emergency numbers) -->
+  <section id="support" class="page">
+
+    <div class="page-back"><button type="button" class="back-btn" data-go="home" aria-label="Volver" data-i18n-aria="backLabel"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>
+
+    <small class="rose" data-i18n="supLabel">APOYO</small>
+
+    <h1 data-i18n="supTitle">Aquí estamos para ti</h1>
+
+    <p data-i18n="supIntro">Habla en privado, pide oración o comparte una necesidad. No estás sola.</p>
 
     <div id="safetyCard" class="card safety-card"></div>
 
@@ -526,14 +516,26 @@
 
     </div>
 
+    <div id="supFamily" class="card sup-family" hidden></div>
 
     <div id="prayerWall" class="card prayer-wall"></div>
 
-    <div id="wellnessCards" class="cards"></div>
+    <button type="button" class="link-btn sup-messages" data-go="messages" data-i18n="supMyMessages">Ver mis mensajes privados →</button>
 
     <p class="note" data-i18n="supportNote">
       Este espacio ofrece apoyo comunitario y no reemplaza servicios profesionales o de emergencia.
     </p>
+
+  </section>
+
+  <!-- MATCHA Y ARTE (editorial collection: tagged plans + community shares; no new backend) -->
+  <section id="matcha" class="page">
+
+    <div class="page-back"><button type="button" class="back-btn" data-go="home" aria-label="Volver" data-i18n-aria="backLabel"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>
+
+    <div id="matchaHero" class="matcha-hero"></div>
+
+    <div id="matchaBody"></div>
 
   </section>
 
@@ -646,5 +648,6 @@
   <script src="home.js"></script>
   <script src="notify.js"></script>
   <script src="redesign.js"></script>
+  <script src="discover.js"></script>
 </body>
 </html>

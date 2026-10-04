@@ -6,32 +6,36 @@
 let C = null;
 
 const ES = {
-  pollsTitle: "Votaciones", pollsIntro: "Vota y mira cómo va el grupo.",
+  pollsTitle: "Votaciones", pollsIntro: "Tu voto ayuda a decidir el próximo plan. Puedes cambiarlo mientras la votación esté abierta.",
+  pollsTogether: "DECIDAMOS JUNTAS", pollsTogetherTitle: "Tu opinión cuenta", pollKicker: "VOTACIÓN",
+  pollChange: "Votaste · toca otra opción para cambiar tu voto", pollChangeMulti: "Votaste · puedes marcar o quitar opciones", pollClosedRes: "Votación cerrada · resultado final",
   pollOne: "Elige una opción", pollMany: "Puedes elegir varias", pollVotes: n => n + (n === 1 ? " voto" : " votos"),
   pollVoted: n => n + (n === 1 ? " persona votó" : " personas votaron"), pollClosed: "Cerrada",
   pollCloses: d => "Cierra " + d, pollFail: "No se pudo guardar tu voto.", pollNoVotes: "Sé la primera en votar.",
   pollLabel: "Votación", pollYour: "✓ Tu voto: ", pollYours: "✓ Tus votos: ", pollThanks: "¡Gracias! Tu voto quedó guardado.",
-  aPollsTab: "Votaciones", aPollIntro: "Crea una votación para el grupo (por ejemplo: «¿Viernes o sábado?»). Puedes unirla a un evento o a un viaje.",
+  aPollsTab: "Votaciones", aPollIntro: "Crea una votación para decidir juntas (por ejemplo: «¿Brunch el sábado o tarde de domingo?»). Las generales aparecen en Comunidad; también puedes unirla a un evento o a un viaje.",
   aPollNew: "+ Nueva votación", aPollQuestion: "Pregunta", aPollOptions: "Opciones (una por línea, mínimo 2)",
   aPollMulti: "Se pueden elegir varias opciones", aPollCloses: "Cierra el (opcional)", aPollAttach: "Unir a", aPollNone: "— Votación general —",
   aPollSave: "Crear votación", aPollCancel: "Cancelar", aPollNeedQ: "Escribe la pregunta.", aPollNeedOpts: "Escribe al menos 2 opciones distintas (máximo 10).",
   aPollSaved: "Votación creada.", aPollFail: "No se pudo guardar.", aPollClose: "Cerrar votación", aPollReopen: "Reabrir",
   aPollDelete: "Eliminar", aPollConfirm: "¿Eliminar esta votación y sus votos?", aPollEmpty: "Todavía no hay votaciones.",
-  aPollGeneral: "General", aPollOpen: "Abierta"
+  aPollGeneral: "General", aPollOpen: "Abierta", aPollTest: "⚠ Parece una votación de prueba (contiene «test»): no se muestra en la app. Elimínala cuando quieras."
 };
 const EN = {
-  pollsTitle: "Polls", pollsIntro: "Vote and see how the group is leaning.",
+  pollsTitle: "Polls", pollsIntro: "Your vote helps decide the next plan. You can change it while the poll is open.",
+  pollsTogether: "LET'S DECIDE TOGETHER", pollsTogetherTitle: "Your opinion counts", pollKicker: "POLL",
+  pollChange: "You voted · tap another option to change your vote", pollChangeMulti: "You voted · you can add or remove options", pollClosedRes: "Poll closed · final result",
   pollOne: "Pick one", pollMany: "Pick as many as you like", pollVotes: n => n + (n === 1 ? " vote" : " votes"),
   pollVoted: n => n + (n === 1 ? " person voted" : " people voted"), pollClosed: "Closed",
   pollCloses: d => "Closes " + d, pollFail: "Your vote could not be saved.", pollNoVotes: "Be the first to vote.",
   pollLabel: "Poll", pollYour: "✓ Your vote: ", pollYours: "✓ Your votes: ", pollThanks: "Thank you! Your vote was saved.",
-  aPollsTab: "Polls", aPollIntro: "Create a poll for the group (for example “Friday or Saturday?”). You can attach it to an event or a trip.",
+  aPollsTab: "Polls", aPollIntro: "Create a poll to decide together (for example “Saturday brunch or Sunday afternoon?”). General polls appear in Community; you can also attach one to an event or a trip.",
   aPollNew: "+ New poll", aPollQuestion: "Question", aPollOptions: "Options (one per line, at least 2)",
   aPollMulti: "Members can pick more than one option", aPollCloses: "Closes on (optional)", aPollAttach: "Attach to", aPollNone: "— General poll —",
   aPollSave: "Create poll", aPollCancel: "Cancel", aPollNeedQ: "Write the question.", aPollNeedOpts: "Write at least 2 different options (maximum 10).",
   aPollSaved: "Poll created.", aPollFail: "Could not save.", aPollClose: "Close poll", aPollReopen: "Reopen",
   aPollDelete: "Delete", aPollConfirm: "Delete this poll and its votes?", aPollEmpty: "No polls yet.",
-  aPollGeneral: "General", aPollOpen: "Open"
+  aPollGeneral: "General", aPollOpen: "Open", aPollTest: "⚠ Looks like a test poll (contains “test”): it is not shown in the app. Delete it whenever you like."
 };
 
 const t = (key, arg) => { const v = C ? C.t(key) : ""; return typeof v === "function" ? v(arg) : (v || key); };
@@ -53,7 +57,7 @@ async function reload() {
     C.db.from("poll_votes").select("poll_id,option_id").eq("user_id", uid())
   ]);
   if (p.error || o.error) { clear(); return; }
-  polls = p.data || [];
+  polls = (p.data || []).filter(x => !/\btest(ing)?\b/i.test(x.question || ""));
   opts = new Map();
   (o.data || []).forEach(x => { (opts.get(x.poll_id) || opts.set(x.poll_id, []).get(x.poll_id)).push(x); });
   readResults(r);
@@ -110,34 +114,43 @@ async function vote(p, o) {
     C.announce("pollFail");
   }
 }
+// Question → options → vote → confirmation → results.
+// Before voting, options are plain choices (no numbers, so nobody is nudged); after voting, or once
+// the poll closes, the results appear with "✓ Tu voto" and the winning option highlighted.
 function pollNode(p) {
   const open = isOpen(p);
   const list = opts.get(p.id) || [];
-  const total = list.reduce((s, o) => s + (tally.get(o.id) || 0), 0);
   const n = voters.get(p.id) || 0;
+  const picked = list.filter(o => mine.has(p.id + ":" + o.id)).map(o => o.label);
+  const voted = picked.length > 0;
+  const showResults = voted || !open;
+  const top = Math.max(0, ...list.map(o => tally.get(o.id) || 0));
+  const status = !open ? t("pollClosedRes") : voted ? (p.multi ? t("pollChangeMulti") : t("pollChange")) : (p.multi ? t("pollMany") : t("pollOne"));
   const head = el("div", { class: "poll-head" },
-    el("b", { class: "poll-q", text: "🗳 " + p.question }),
-    el("small", { class: "meta-line", text: (open ? (p.multi ? t("pollMany") : t("pollOne")) : t("pollClosed")) + (open && p.closes_at ? " · " + closesText(p) : "") }));
+    el("small", { class: "poll-kicker", text: "🗳 " + t("pollKicker") }),
+    el("b", { class: "poll-q", text: p.question }),
+    el("small", { class: "meta-line", text: status + (open && p.closes_at ? " · " + closesText(p) : "") }));
   const rows = list.map(o => {
     const v = tally.get(o.id) || 0;
     const pct = n ? Math.round((v / n) * 100) : 0;
     const on = mine.has(p.id + ":" + o.id);
+    const lead = showResults && v > 0 && v === top;
     const b = el("button", {
-      type: "button", class: "poll-opt" + (on ? " on" : ""), "aria-pressed": String(on),
-      disabled: open ? null : "", "data-poll-opt": o.id
+      type: "button", class: "poll-opt" + (on ? " on" : "") + (showResults ? " results" : "") + (lead && !open ? " lead" : ""),
+      "aria-pressed": String(on), disabled: open ? null : "", "data-poll-opt": o.id
     },
-      el("span", { class: "poll-bar", style: "width:" + pct + "%" }),
-      el("span", { class: "poll-label", text: (on ? "✓ " : "") + o.label }),
-      el("span", { class: "poll-count", text: v + " · " + pct + "%" }));
+      showResults ? el("span", { class: "poll-bar", style: "width:" + pct + "%" }) : null,
+      el("span", { class: "poll-dot" + (p.multi ? " sq" : ""), "aria-hidden": "true", text: on ? "✓" : "" }),
+      el("span", { class: "poll-label", text: o.label }),
+      showResults ? el("span", { class: "poll-count", text: pct + "%" }) : null);
     if (!open) b.disabled = true;
     b.addEventListener("click", () => vote(p, o));
     return b;
   });
-  const picked = list.filter(o => mine.has(p.id + ":" + o.id)).map(o => o.label);
-  return el("div", { class: "poll" + (picked.length ? " voted" : ""), role: "group", "aria-label": t("pollLabel") + ": " + p.question },
+  return el("div", { class: "poll" + (voted ? " voted" : "") + (open ? "" : " closed"), role: "group", "aria-label": t("pollLabel") + ": " + p.question },
     head, ...rows,
-    picked.length ? el("p", { class: "poll-mine", text: (picked.length > 1 ? t("pollYours") : t("pollYour")) + picked.join(", ") }) : null,
-    el("small", { class: "meta-line", text: total ? t("pollVoted", n) : t("pollNoVotes") }));
+    voted ? el("p", { class: "poll-mine", text: (picked.length > 1 ? t("pollYours") : t("pollYour")) + picked.join(", ") }) : null,
+    el("small", { class: "meta-line poll-foot", text: n ? t("pollVoted", n) : t("pollNoVotes") }));
 }
 function repaint() {
   live.forEach(item => {
@@ -159,14 +172,16 @@ function planBlock(plan) {
 function paintGeneral() {
   const host = document.getElementById("generalPolls");
   if (!host) return;
-  const general = C && C.session() && loaded ? polls.filter(p => !p.plan_id) : [];
+  const recent = p => isOpen(p) || (p.closes_at && Date.now() - new Date(p.closes_at).getTime() < 7 * 86400000);
+  const general = C && C.session() && loaded ? polls.filter(p => !p.plan_id && recent(p)) : [];
   host.hidden = !general.length;
   for (const item of [...live]) if (item.host === host) live.delete(item);
   if (!general.length) { host.replaceChildren(); return; }
   const build = () => [
-    el("small", { class: "rose", text: t("pollsTitle").toUpperCase() }),
+    el("small", { class: "rose", text: t("pollsTogether") }),
+    el("h2", { text: t("pollsTogetherTitle") }),
     el("p", { class: "small-note", text: t("pollsIntro") }),
-    ...polls.filter(p => !p.plan_id).map(pollNode)
+    ...general.map(pollNode)
   ];
   host.replaceChildren(...build());
   live.add({ host, build });
@@ -249,6 +264,7 @@ async function adminView(helpers) {
       el("span", { class: "badge" + (open ? " live" : ""), text: open ? t("aPollOpen") : t("pollClosed") }),
       el("span", { class: "badge", text: " " + (poll.plan_id ? planName(poll.plan_id) || "—" : t("aPollGeneral")) }),
       el("h3", { text: poll.question }),
+      /\btest(ing)?\b/i.test(poll.question) ? el("p", { class: "test-flag", text: t("aPollTest") }) : null,
       ...list.map(x => el("p", { class: "small-note", text: x.label + " — " + (votes.get(x.id) || 0) })),
       el("p", { class: "small-note", text: t("pollVoted", n) }));
     item.appendChild(el("div", { class: "actions" },

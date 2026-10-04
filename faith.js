@@ -156,8 +156,6 @@ function init() {
     load();
   });
   document.addEventListener("cml:lang", () => { renderSafety(); if (C.session()) paint(); });
-  const nav = document.querySelector("nav button[data-page=wellness]");
-  if (nav) nav.addEventListener("click", () => { if (C.session()) load(); });
   window.CMLFaith = { load, latest: () => rows[0] || null };
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();

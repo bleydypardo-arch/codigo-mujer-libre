@@ -374,7 +374,13 @@ Object.assign(translations.es, {
   noPosts: "Todavía no hay publicaciones", noPostsText: "Comparte un momento, una idea o una pregunta. Toda la comunidad podrá verla.", noPostsCta: "Escribir la primera",
   justNow: "Ahora mismo", minsAgo: n => "Hace " + n + " min",
   noMessages: "Tu buzón privado", noMessagesText: "Aquí verás los mensajes que le envíes a la administradora y sus respuestas. Solo ella puede leerlos.",
-  msgAnswered: "Respondido"
+  msgAnswered: "Respondido",
+  catsLabel: "¿Qué te apetece?", cat_social: "Happy hours y social", cat_dining: "Restaurantes", cat_events: "Eventos",
+  catDesc_social: "Brindis, terrazas, noches", catDesc_dining: "Brunch, cenas, cafés", catDesc_events: "Conciertos, mercados, festivales",
+  catCount: n => n === 1 ? "1 plan" : n + " planes",
+  catEmpty_social: "Pronto habrá nuevos happy hours", catEmpty_dining: "Pronto recomendaremos restaurantes", catEmpty_events: "Pronto habrá nuevos eventos",
+  catEmptyText: "¿Conoces un lugar o un plan que valga la pena? Recomiéndalo y lo compartimos con la comunidad.", catSuggest: "Recomendar un lugar o plan",
+  wellnessLabel: "BIENESTAR", yourSpace: "Cuídate a tu manera", wellnessIntro: "Elige cómo quieres sentirte hoy y descubre experiencias para cuidarte."
 });
 Object.assign(translations.en, {
   chooseCode: "Tap a code to see only those plans.",
@@ -390,7 +396,13 @@ Object.assign(translations.en, {
   noPosts: "No posts yet", noPostsText: "Share a moment, an idea or a question. The whole community will see it.", noPostsCta: "Write the first one",
   justNow: "Just now", minsAgo: n => n + " min ago",
   noMessages: "Your private inbox", noMessagesText: "Here you'll see the messages you send to the administrator and her replies. Only she can read them.",
-  msgAnswered: "Answered"
+  msgAnswered: "Answered",
+  catsLabel: "What are you in the mood for?", cat_social: "Happy hours & social", cat_dining: "Restaurants", cat_events: "Events",
+  catDesc_social: "Drinks, rooftops, nights out", catDesc_dining: "Brunch, dinners, cafés", catDesc_events: "Concerts, markets, festivals",
+  catCount: n => n === 1 ? "1 plan" : n + " plans",
+  catEmpty_social: "New happy hours are coming soon", catEmpty_dining: "Restaurant picks are coming soon", catEmpty_events: "New events are coming soon",
+  catEmptyText: "Know a place or plan worth sharing? Recommend it and we'll share it with the community.", catSuggest: "Recommend a place or plan",
+  wellnessLabel: "WELLNESS", yourSpace: "Care for yourself, your way", wellnessIntro: "Choose how you want to feel today and discover experiences to take care of yourself."
 });
 
 
@@ -618,6 +630,7 @@ function showPage(pageId, focusHeading = true) {
     }
   }
   window.scrollTo({ top: 0, behavior: "auto" });
+  document.dispatchEvent(new CustomEvent("cml:page", { detail: { page: pageId } }));
 }
 
 // ==============================
@@ -651,30 +664,40 @@ function renderQuote() {
   const edit = byId("editQuote");
   if (edit) edit.hidden = !isAdmin();
 }
-// "¿Qué te interesa esta semana?" — the chosen code really filters the Events list (Events page).
-// Only codes that have upcoming events are offered, so a chip never leads to an empty list.
-const upcomingEvents = () => { const today = todayStr(); return plans.filter(p => p.kind === "event" && (!p.event_date || p.event_date >= today)); };
-function selectedCode() {
-  const code = readStored("weeklyCode");
-  return codeLabels[code] && upcomingEvents().some(p => p.code === code) ? code : "";
+// ---- Plan tags: category / collection chosen by the admin, kept in the existing settings table
+// (key "plan_tags" → { planId: { cat, matcha } }). Untagged events fall back to their code.
+const isTestContent = (...texts) => texts.some(x => /\btest(ing)?\b/i.test(String(x || "")));
+function planTag(id) { const all = settings.plan_tags; return (all && typeof all === "object" && all[id]) || {}; }
+const EVENT_CATS = ["social", "dining", "events"];
+function eventCategory(p) {
+  const cat = planTag(p.id).cat;
+  if (EVENT_CATS.includes(cat)) return cat;
+  return p.code === "Social" || p.code === "Connection" ? "social" : "events";
 }
-function renderWeeklyCode() {
-  const selected = selectedCode();
-  const present = new Set(upcomingEvents().map(p => p.code).filter(c => codeLabels[c]));
-  const box = byId("codeFilter");
-  if (box) box.hidden = present.size < 2;
-  document.querySelectorAll(".chip[data-code]").forEach(button => {
-    const code = button.getAttribute("data-code");
-    const active = code === selected;
-    button.hidden = !present.has(code);
-    button.classList.toggle("selected", active);
-    button.setAttribute("aria-pressed", String(active));
-  });
-  const status = byId("weeklyCodeStatus");
-  if (status) {
-    const n = selected ? upcomingEvents().filter(p => p.code === selected).length : 0;
-    status.textContent = selected ? tf("codeShowing", t(codeLabels[selected]), n) : t("chooseCode");
-  }
+const upcomingEvents = () => { const today = todayStr(); return plans.filter(p => p.kind === "event" && (!p.event_date || p.event_date >= today)); };
+let catSel = "all";
+const CAT_ICON = {
+  social: "M8 3h8l-1 7a3 3 0 0 1-6 0zM12 13v6M8.5 21h7",
+  dining: "M7 3v8a2 2 0 0 0 2 2v8M7 3v5M11 3v5M17 3c-1.7 1-3 3-3 6v4h3v8",
+  events: "M12 3l2.4 5.2 5.6.6-4.2 3.8 1.2 5.6L12 15.4 6.9 18.2l1.2-5.6L4 8.8l5.6-.6z"
+};
+function renderWeeklyCode() {            // (name kept: renderAll calls it) → Events discovery categories
+  const box = byId("evCats");
+  if (!box) return;
+  const evs = session ? upcomingEvents() : [];
+  box.hidden = !session;
+  if (!EVENT_CATS.includes(catSel)) catSel = "all";
+  box.replaceChildren(...EVENT_CATS.map(cat => {
+    const n = evs.filter(p => eventCategory(p) === cat).length;
+    const on = catSel === cat;
+    const b = el("button", { type: "button", class: "ev-cat" + (on ? " on" : ""), "aria-pressed": String(on), "data-cat": cat },
+      el("span", { class: "ev-cat-ic", "aria-hidden": "true" }),
+      el("span", { class: "ev-cat-txt" }, el("b", { text: t("cat_" + cat) }), el("small", { text: t("catDesc_" + cat) })),
+      el("span", { class: "ev-cat-n" + (n ? "" : " zero"), "aria-label": tf("catCount", n), text: String(n) }));
+    b.querySelector(".ev-cat-ic").innerHTML = '<svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="' + CAT_ICON[cat] + '"/></svg>';
+    b.addEventListener("click", () => { catSel = on ? "all" : cat; renderEvents(); });
+    return b;
+  }));
 }
 // Home "Esta semana": real Home ideas published by the admin. Hidden (no sample cards) when there are none.
 function renderFeatured() {
@@ -966,7 +989,7 @@ function renderEvents() {
     idea.addEventListener("click", () => openModal("idea"));
     return list.replaceChildren(emptyState("📅", t("evEmptyTitle"), t("evEmptyText"), idea));
   }
-  const code = selectedCode();
+  const cat = catSel;
   const months = [...new Set(events.filter(p => p.event_date).map(p => monthKey(p.event_date)))].sort();
   const hasTbd = events.some(p => !p.event_date);
   const options = ["all", ...months, ...(hasTbd ? ["tbd"] : [])];
@@ -984,12 +1007,17 @@ function renderEvents() {
     }));
   }
   const shown = events.filter(p =>
-    (!code || p.code === code) && (monthSel === "all" ||
+    (cat === "all" || eventCategory(p) === cat) && (monthSel === "all" ||
     (monthSel === "tbd" ? !p.event_date : p.event_date && monthKey(p.event_date) === monthSel)));
   if (!shown.length) {
     const all = el("button", { type: "button", class: "secondary", text: t("evShowAll") });
-    all.addEventListener("click", () => { monthSel = "all"; writeStored("weeklyCode", ""); renderEvents(); });
-    list.replaceChildren(emptyState("🔎", t("evNoMatch"), "", all));
+    all.addEventListener("click", () => { monthSel = "all"; catSel = "all"; renderEvents(); });
+    const idea = el("button", { type: "button", class: "link-btn", text: t("catSuggest") });
+    idea.addEventListener("click", () => openModal("idea"));
+    const empty = cat !== "all" && monthSel === "all"
+      ? emptyState("✨", t("catEmpty_" + cat), t("catEmptyText"), el("div", { class: "empty-acts" }, idea, all))
+      : emptyState("🔎", t("evNoMatch"), "", all);
+    list.replaceChildren(empty);
   } else list.replaceChildren(...shown.map(p => eventCard(p)));
   restoreFocus();
 }
@@ -1001,11 +1029,7 @@ function renderTrips() {
   list.replaceChildren(...trips.map(planCard));
   restoreFocus();
 }
-function renderWellnessCards() {
-  const list = byId("wellnessCards");
-  if (!list) return;
-  list.replaceChildren(...plans.filter(p => p.kind === "wellness").map(planCard));
-}
+function renderWellnessCards() { if (window.CMLDiscover) window.CMLDiscover.render(); }
 function restoreFocus() {
   if (!pendingFocus) return;
   const all = [...document.querySelectorAll('[data-resp="' + pendingFocus + '"]')];
@@ -1431,7 +1455,9 @@ async function loadAll() {
     ]);
     if (pl.error) throw pl.error;
     if (st.error) throw st.error;
-    plans = pl.data || [];
+    // Records whose title contains the word "test" are development leftovers: they stay in the database
+    // (the admin panel still lists them, flagged, to edit or delete) but are not shown in the app.
+    plans = (pl.data || []).filter(p => !isTestContent(p.title_es, p.title_en));
     settings = {};
     (st.data || []).forEach(r => { settings[r.key] = r.value; });
     await Promise.all([loadResponses(), refreshCounts()]);
@@ -1535,12 +1561,6 @@ function initialize() {
   byId("signupForm")?.addEventListener("submit", handleSignup);
   document.querySelectorAll("nav button[data-page]").forEach(button =>
     button.addEventListener("click", () => showPage(button.getAttribute("data-page"))));
-  document.querySelectorAll(".chip[data-code]").forEach(button =>
-    button.addEventListener("click", () => {
-      const code = button.getAttribute("data-code");
-      writeStored("weeklyCode", selectedCode() === code ? "" : code);
-      renderEvents();
-    }));
   byId("postBtn")?.addEventListener("click", addPost);
   byId("heroCta")?.addEventListener("click", () => showPage("events"));
   wireSheet();
@@ -1582,7 +1602,7 @@ function initialize() {
     refreshPublic: async () => { if (session) await loadAll(); },
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,
-    setting: key => settings[key],
+    setting: key => settings[key], isTestContent, planTag, eventCategory, eventCard, openModal, byDate,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
       setLanguage(currentLanguage, false);

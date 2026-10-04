@@ -67,7 +67,7 @@ async function collect() {
     });
   }
   if (on("polls") && window.CMLPolls) {
-    window.CMLPolls.unvoted(24).forEach(p => out.push({ at: new Date(p.closes_at).getTime() - DAY, text: t("ntPoll", p.question), page: "events", pri: 2 }));
+    window.CMLPolls.unvoted(24).forEach(p => out.push({ at: new Date(p.closes_at).getTime() - DAY, text: t("ntPoll", p.question), page: p.plan_id ? "events" : "community", pri: 2 }));
   }
   if (on("newEvents")) {
     const mineCodes = me.interests || [];

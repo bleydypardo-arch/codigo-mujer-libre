@@ -10,6 +10,10 @@ const S = {
     imgTravelTitle: "Imagen de Viajes y Experiencias", imgTravelHelp: "Se usa en la portada de Viajes (si el viaje no tiene foto) y en los accesos a Viajes desde Inicio y Eventos.",
     imgFounderTitle: "Foto de la fundadora (Nuestra esencia)", imgFounderHelp: "Aparece en la página «Nuestra esencia». Mejor una foto vertical o cuadrada.",
     imgDefault: "Quitar y usar la predeterminada",
+    imgMatchaTitle: "Imagen de Matcha y Arte", imgMatchaHelp: "Aparece en la tarjeta de Inicio y en la página de la colección.",
+    fType: "Tipo de plan (filtros de Eventos)", fTypeAuto: "Automático (según el código)", fType_social: "Happy hour y social", fType_dining: "Restaurante", fType_events: "Evento (conciertos, mercados, festivales…)",
+    fWcat: "Categoría de bienestar", fWcatNone: "— Sin categoría —", fMatcha: "Incluir en la colección «Matcha y Arte»",
+    fUrlOffer: "Enlace de la oferta o reserva (https://…)", testFlag: "⚠ Parece contenido de prueba (contiene «test»): no se muestra en la app. Cámbiale el título o elimínalo.",
     loading: "Cargando…", loadFail: "No se pudo cargar. Inténtalo de nuevo.",
     newItem: "+ Nuevo", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Ocultar", live: "Publicado", draft: "Borrador",
     confirmDelete: "¿Eliminar esto de forma permanente?", saved: "Guardado.", deleted: "Eliminado.", saveFail: "No se pudo guardar.",
@@ -46,6 +50,10 @@ const S = {
     imgTravelTitle: "Travel & Experiences image", imgTravelHelp: "Used on the Travel cover (when the trip has no photo) and on the Travel entry points on Home and Events.",
     imgFounderTitle: "Founder photo (Our essence)", imgFounderHelp: "Shown on the “Our essence” page. A portrait or square photo works best.",
     imgDefault: "Remove and use the default",
+    imgMatchaTitle: "Matcha & Art image", imgMatchaHelp: "Shown on the Home card and on the collection page.",
+    fType: "Plan type (Events filters)", fTypeAuto: "Automatic (from the code)", fType_social: "Happy hour & social", fType_dining: "Restaurant", fType_events: "Event (concerts, markets, festivals…)",
+    fWcat: "Wellness category", fWcatNone: "— No category —", fMatcha: "Include in the “Matcha & Art” collection",
+    fUrlOffer: "Offer or booking link (https://…)", testFlag: "⚠ Looks like test content (contains “test”): it is not shown in the app. Rename or delete it.",
     loading: "Loading…", loadFail: "Could not load. Please try again.",
     newItem: "+ New", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Hide", live: "Published", draft: "Draft",
     confirmDelete: "Delete this permanently?", saved: "Saved.", deleted: "Deleted.", saveFail: "Could not save.",
@@ -81,7 +89,7 @@ const KINDS = {
   event:    { tab: "plans",    fields: ["code", "title", "desc", "date", "time", "location", "price", "url", "details", "image"] },
   trip:     { tab: "trips",    fields: ["code", "title", "desc", "date_text", "location", "price", "url", "details", "image"] },
   home:     { tab: "home",     fields: ["title", "desc", "image"] },
-  wellness: { tab: "wellness", fields: ["title", "desc", "url", "details", "image"] },
+  wellness: { tab: "wellness", fields: ["title", "desc", "location", "price", "url", "details", "image"] },
   weekend:  { tab: "weekend",  fields: ["code", "title", "desc", "date", "location", "url"] }
 };
 const TAB_KIND = { plans: "event", trips: "trip", weekend: "weekend", home: "home", wellness: "wellness" };
@@ -93,6 +101,21 @@ const GROUPS = [
   ["tools", ["ai"]]
 ];
 const CODES = ["Social", "Wellness", "Faith", "Adventure", "Family", "Connection", "Support", "Recharge"];
+const EVENT_TYPES = ["social", "dining", "events"];
+const WCATS = ["spa", "beauty", "movement", "mind", "retreat", "food", "workshop"];
+const looksLikeTest = (...texts) => texts.some(x => /\btest(ing)?\b/i.test(String(x || "")));
+// Category / collection tags live in the existing settings table (key "plan_tags"), admin-only write.
+async function saveTag(planId, tag) {
+  const r = await C.db.from("settings").select("key,value").eq("key", "plan_tags").maybeSingle();
+  if (r.error) throw r.error;
+  const all = Object.assign({}, (r.data && r.data.value) || {});
+  const clean = {};
+  if (tag.cat) clean.cat = tag.cat;
+  if (tag.matcha) clean.matcha = true;
+  if (Object.keys(clean).length) all[planId] = clean; else delete all[planId];
+  const w = await C.db.from("settings").upsert({ key: "plan_tags", value: all, updated_at: new Date().toISOString() }, { onConflict: "key" });
+  if (w.error) throw w.error;
+}
 
 let C = null;
 let tab = "plans";
@@ -235,7 +258,13 @@ function planItem(kind, row, c, memIds) {
   const item = el("div", { class: "admin-item" },
     el("span", { class: "badge" + (row.published ? " live" : ""), text: row.published ? a("live") : a("draft") }),
     row.code && C.codeLabels[row.code] ? el("span", { class: "badge", text: " " + C.t(C.codeLabels[row.code]) }) : null,
+    (() => { const tg = C.planTag ? C.planTag(row.id) : {}; const bits = [];
+      if (kind === "event" && EVENT_TYPES.includes(tg.cat)) bits.push(a("fType_" + tg.cat).split(" (")[0]);
+      if (kind === "wellness" && WCATS.includes(tg.cat)) bits.push(C.t("wcat_" + tg.cat));
+      if (tg.matcha) bits.push("🍵 " + C.t("maName"));
+      return bits.length ? el("span", { class: "badge", text: bits.join(" · ") }) : null; })(),
     el("h3", { text: title }),
+    looksLikeTest(row.title_es, row.title_en) ? el("p", { class: "test-flag", text: a("testFlag") }) : null,
     when ? el("p", { class: "small-note", text: "📅 " + when }) : null,
     row.location ? el("p", { class: "small-note", text: "📍 " + row.location }) : null,
     (kind === "event" || kind === "trip" || kind === "weekend") ? el("p", { class: "small-note", text: a("counts")(c.i, c.g) }) : null);
@@ -353,6 +382,23 @@ function formView() {
     sel.value = d.code || "";
     form.appendChild(field(a("fCode"), sel));
   }
+  const oldTag = (row && C.planTag) ? C.planTag(row.id) : {};
+  let typeSel = null, matchaBox = null;
+  if (kind === "event" || kind === "weekend") {
+    typeSel = el("select", {}, el("option", { value: "", text: a("fTypeAuto") }), EVENT_TYPES.map(k => el("option", { value: k, text: a("fType_" + k) })));
+    typeSel.value = EVENT_TYPES.includes(oldTag.cat) ? oldTag.cat : "";
+    if (kind === "event") form.appendChild(field(a("fType"), typeSel));
+    else typeSel = null;
+  }
+  if (kind === "wellness") {
+    typeSel = el("select", {}, el("option", { value: "", text: a("fWcatNone") }), WCATS.map(k => el("option", { value: k, text: C.t("wcat_" + k) })));
+    typeSel.value = WCATS.includes(oldTag.cat) ? oldTag.cat : "";
+    form.appendChild(field(a("fWcat"), typeSel));
+  }
+  if (kind === "event" || kind === "weekend" || kind === "wellness") {
+    matchaBox = el("input", { type: "checkbox" }); matchaBox.checked = !!oldTag.matcha;
+    form.appendChild(el("label", { class: "check" }, matchaBox, a("fMatcha")));
+  }
   form.appendChild(field(a("fTitleEs"), text("title_es", d.title_es, { maxlength: 140 })));
   form.appendChild(field(a("fTitleEn"), text("title_en", d.title_en, { maxlength: 140 })));
   form.appendChild(field(a("fDescEs"), area("desc_es", d.desc_es)));
@@ -362,7 +408,7 @@ function formView() {
   if (cfg.fields.includes("date_text")) form.appendChild(field(a("fDateText"), text("date_text", d.date_text, { maxlength: 80 })));
   if (cfg.fields.includes("location")) form.appendChild(field(kind === "trip" ? a("fLocationTrip") : a("fLocationEvent"), text("location", d.location, { maxlength: 200 })));
   if (cfg.fields.includes("price")) form.appendChild(field(kind === "trip" ? a("fPriceTrip") : a("fPriceEvent"), text("price", d.price, { maxlength: 80 })));
-  if (cfg.fields.includes("url")) form.appendChild(field(a("fUrl"), text("url", d.url, { type: "url", inputmode: "url", placeholder: "https://…" })));
+  if (cfg.fields.includes("url")) form.appendChild(field(kind === "wellness" ? a("fUrlOffer") : a("fUrl"), text("url", d.url, { type: "url", inputmode: "url", placeholder: "https://…" })));
   if (cfg.fields.includes("details")) form.appendChild(field(a("fDetails"), area("details", d.details)));
   const picker = cfg.fields.includes("image") ? imagePicker(d.image_url) : null;
   if (picker) form.appendChild(el("fieldset", {}, el("legend", { text: a("fImage") }), picker.node));
@@ -418,9 +464,14 @@ function formView() {
     };
     saveBtn.disabled = true;
     const res = row ? await C.db.from("plans").update(payload).eq("id", row.id)
-                    : await C.db.from("plans").insert(payload);
+                    : await C.db.from("plans").insert(payload).select("id").single();
+    if (res.error) { saveBtn.disabled = false; console.error(res.error); return fail("saveFail"); }
+    const id = row ? row.id : (res.data && res.data.id);
+    const tag = { cat: typeSel ? typeSel.value : "", matcha: !!(matchaBox && matchaBox.checked) };
+    if (id && (tag.cat !== (oldTag.cat || "") || tag.matcha !== !!oldTag.matcha)) {
+      try { await saveTag(id, tag); } catch (e) { console.error(e); saveBtn.disabled = false; return fail("saveFail"); }
+    }
     saveBtn.disabled = false;
-    if (res.error) { console.error(res.error); return fail("saveFail"); }
     await C.refreshPublic();
     toast(a("saved"));
     editing = null; render();
@@ -563,6 +614,7 @@ async function settingsView() {
   wrap.appendChild(heroForm);
   wrap.appendChild(imageSetting(cfg, "travel_image", a("imgTravelTitle"), a("imgTravelHelp")));
   wrap.appendChild(imageSetting(cfg, "founder_photo", a("imgFounderTitle"), a("imgFounderHelp")));
+  wrap.appendChild(imageSetting(cfg, "matcha_image", a("imgMatchaTitle"), a("imgMatchaHelp")));
 
   const q = cfg.daily_quote || {};
   const qEs = el("textarea"); qEs.value = q.es || "";

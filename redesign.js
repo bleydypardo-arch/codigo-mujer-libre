@@ -26,7 +26,8 @@ const ES = {
   essP2: "Este es un espacio para recordarnos que nosotras también importamos. Para encontrar un poco más de equilibrio entre nuestra vida cotidiana, nuestro bienestar, nuestra vida espiritual, nuestras amistades y esos momentos que simplemente nos hacen sentir bien.",
   essP3: "No se trata de hacer más. Se trata de vivir mejor, conectar, disfrutar y también hacer espacio para nosotras.",
   essLove: "Con cariño,", essRole: "Fundadora, Código Mujer Libre", essLink: "Nuestra esencia", essLinkSub: "¿Por qué nació Código Mujer Libre?",
-  moodQ: "¿Cómo te sientes hoy?", moodEnergy: "Más energía", moodStress: "Menos estrés", moodSleep: "Dormir mejor", moodEat: "Comer mejor", moodMove: "Mover mi cuerpo", moodPeace: "Necesito paz"
+  moodChosen: "Elegiste", moodReset: "MINI PAUSA",
+  moodQ: "¿Cómo quieres sentirte hoy?", moodEnergy: "Más energía", moodStress: "Menos estrés", moodSleep: "Dormir mejor", moodEat: "Comer mejor", moodMove: "Mover mi cuerpo", moodPeace: "Necesito paz"
 };
 const EN = {
   codeToday: "YOUR CODE FOR TODAY", codeYourMsg: "YOUR MESSAGE", codeTap: "Tap to discover your message", codeTapBack: "Tap to turn back",
@@ -44,7 +45,8 @@ const EN = {
   essP2: "This is a space to remind us that we matter too. A place to find a little more balance between our everyday life, our well-being, our spiritual life, our friendships and those moments that simply make us feel good.",
   essP3: "It's not about doing more. It's about living better, connecting, enjoying, and also making room for ourselves.",
   essLove: "With love,", essRole: "Founder, Código Mujer Libre", essLink: "Our essence", essLinkSub: "Why was Código Mujer Libre born?",
-  moodQ: "How are you feeling today?", moodEnergy: "More energy", moodStress: "Less stress", moodSleep: "Sleep better", moodEat: "Eat better", moodMove: "Move my body", moodPeace: "I need peace"
+  moodChosen: "You chose", moodReset: "MINI RESET",
+  moodQ: "How do you want to feel today?", moodEnergy: "More energy", moodStress: "Less stress", moodSleep: "Sleep better", moodEat: "Eat better", moodMove: "Move my body", moodPeace: "I need peace"
 };
 
 // ---------- Tu código de hoy: library (Scripture from public-domain Reina-Valera 1909 / King James) ----------
@@ -200,18 +202,43 @@ function compose(text) {
 const TIPS = {
   energy: { es: ["Una caminata corta al sol y un vaso de agua pueden cambiar tu tarde. Mira también los planes de esta semana en Eventos.", "Elige una sola cosa que te ilusione hoy y dale espacio. La energía también se contagia: escribe a una amiga."],
             en: ["A short walk in the sun and a glass of water can change your afternoon. Check this week's plans in Events, too.", "Pick one thing you're looking forward to today and give it room. Energy is contagious: text a friend."] },
-  stress: { es: ["Respira: inhala 4, sostén 4, exhala 6, cinco veces. Si quieres hablarlo, toca «Necesito hablar» abajo.", "Escribe en una lista lo que te preocupa y elige solo lo próximo. Lo demás puede esperar."],
-            en: ["Breathe: in for 4, hold for 4, out for 6, five times. If you'd like to talk, tap “I need to talk” below.", "Write down what's on your mind and choose only the next step. The rest can wait."] },
+  stress: { es: ["Respira: inhala 4, sostén 4, exhala 6, cinco veces. Si quieres hablarlo, ve a Apoyo y toca «Necesito hablar».", "Escribe en una lista lo que te preocupa y elige solo lo próximo. Lo demás puede esperar."],
+            en: ["Breathe: in for 4, hold for 4, out for 6, five times. If you'd like to talk, go to Support and tap “I need to talk”.", "Write down what's on your mind and choose only the next step. The rest can wait."] },
   sleep:  { es: ["Esta noche, deja el teléfono 30 minutos antes de dormir y termina el día dando gracias por tres cosas.", "Una luz tenue, una bebida caliente sin cafeína y una oración breve preparan tu descanso."],
             en: ["Tonight, put your phone away 30 minutes before bed and end the day thanking God for three things.", "Dim light, a warm caffeine-free drink and a short prayer help you get ready to rest."] },
   eat:    { es: ["Agrega un color más a tu plato hoy y toma agua con cada comida. Pequeños pasos cuentan.", "Comer acompañada también nutre: invita a alguien a compartir un café o un almuerzo."],
             en: ["Add one more color to your plate today and drink water with each meal. Small steps count.", "Eating with others nourishes too: invite someone to share a coffee or lunch."] },
   move:   { es: ["Quince minutos de caminata cuentan. Si prefieres compañía, busca un plan de bienestar en Eventos.", "Estira cuello, hombros y espalda dos minutos. Tu cuerpo te lo agradecerá."],
             en: ["Fifteen minutes of walking counts. If you'd like company, look for a wellness plan in Events.", "Stretch your neck, shoulders and back for two minutes. Your body will thank you."] },
-  peace:  { es: ["Haz una pausa: voltea tu Código de hoy en Inicio, o comparte una petición en el muro de oración de abajo.", "Busca un lugar tranquilo, cierra los ojos un minuto y entrega a Dios lo que te pesa."],
-            en: ["Take a pause: flip Your Code for Today on Home, or share a request on the prayer wall below.", "Find a quiet spot, close your eyes for a minute and hand over to God what weighs on you."] }
+  peace:  { es: ["Haz una pausa: voltea tu Código de hoy en Inicio, o comparte una petición en el muro de oración (en Apoyo).", "Busca un lugar tranquilo, cierra los ojos un minuto y entrega a Dios lo que te pesa."],
+            en: ["Take a pause: flip Your Code for Today on Home, or share a request on the prayer wall (in Support).", "Find a quiet spot, close your eyes for a minute and hand over to God what weighs on you."] }
 };
+// Richer response card: what she chose, a short suggestion, a 3-step mini reset and one useful next step.
+const RESET = {
+  energy: { es: { t: "Despierta tu energía", steps: ["Toma un vaso de agua", "Sal 10 minutos a la luz del día", "Escríbele a una amiga para un plan"], a: "Ver planes de esta semana" },
+            en: { t: "Wake up your energy", steps: ["Drink a glass of water", "Step outside for 10 minutes of daylight", "Text a friend about a plan"], a: "See this week's plans" }, go: "events", art: "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" },
+  stress: { es: { t: "Un minuto para soltar", steps: ["Inhala 4 segundos", "Sostén 4 segundos", "Exhala 6 segundos · repite 5 veces"], a: "Hablar con alguien" },
+            en: { t: "A minute to let go", steps: ["Breathe in for 4 seconds", "Hold for 4 seconds", "Breathe out for 6 · repeat 5 times"], a: "Talk to someone" }, go: "support", art: "M5 19c0-8 5-13 14-14-1 9-6 14-14 14zM5 19l7-7" },
+  sleep:  { es: { t: "Prepárate para descansar", steps: ["Deja el teléfono 30 minutos antes", "Luz tenue y una bebida caliente", "Agradece tres cosas de hoy"], a: "Leer tu código de hoy" },
+            en: { t: "Get ready to rest", steps: ["Put your phone away 30 minutes before", "Dim light and a warm drink", "Give thanks for three things today"], a: "Read your code for today" }, go: "home", art: "M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" },
+  eat:    { es: { t: "Nútrete con cariño", steps: ["Agrega un color más a tu plato", "Agua con cada comida", "Come sin pantallas, sin prisa"], a: "Descubrir bienestar" },
+            en: { t: "Nourish yourself kindly", steps: ["Add one more color to your plate", "Water with every meal", "Eat slowly, away from screens"], a: "Discover wellness" }, go: "discover", art: "M12 7c-1-1.5-3-2-4.5-1.2C5 7 4.5 10.5 6 14c1.2 2.8 3 5 4.5 5 .8 0 1-.5 1.5-.5s.7.5 1.5.5c1.5 0 3.3-2.2 4.5-5 1.5-3.5 1-7-1.5-8.2C15 5 13 5.5 12 7zM12 7c0-2 1-3.5 2.5-4" },
+  move:   { es: { t: "Mueve tu cuerpo hoy", steps: ["Estira cuello y hombros 2 minutos", "Camina 15 minutos", "Elige un plan activo con la comunidad"], a: "Ver planes de bienestar" },
+            en: { t: "Move your body today", steps: ["Stretch neck and shoulders for 2 minutes", "Walk for 15 minutes", "Pick an active plan with the community"], a: "See wellness plans" }, go: "discover", art: "M6 7v10M3.5 9v6M18 7v10M20.5 9v6M6 12h12" },
+  peace:  { es: { t: "Haz espacio para la paz", steps: ["Busca un lugar tranquilo", "Cierra los ojos un minuto", "Entrega a Dios lo que te pesa"], a: "Pedir oración" },
+            en: { t: "Make room for peace", steps: ["Find a quiet spot", "Close your eyes for a minute", "Hand over to God what weighs on you"], a: "Ask for prayer" }, go: "support", art: "M12 20c-4 0-8-2-9-6 3 0 5.5 1 7 3M12 20c4 0 8-2 9-6-3 0-5.5 1-7 3M12 20c-2.5-2-3.5-5-3.5-8 0-2.5 1.5-5 3.5-7 2 2 3.5 4.5 3.5 7 0 3-1 6-3.5 8z" }
+};
+const MOOD_LABEL = { energy: "moodEnergy", stress: "moodStress", sleep: "moodSleep", eat: "moodEat", move: "moodMove", peace: "moodPeace" };
 let mood = null;
+function moodAction(k) {
+  const go = RESET[k].go;
+  if (go === "discover") {
+    const target = document.getElementById(k === "move" && !document.getElementById("wellUpcoming").hidden ? "wellUpcoming" : "wellDiscover");
+    if (target && !target.hidden) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  C.showPage(go);
+}
 function paintMood() {
   const tip = document.getElementById("moodTip");
   document.querySelectorAll(".mood[data-mood]").forEach(b => {
@@ -219,9 +246,25 @@ function paintMood() {
     b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
   });
   if (!tip || !C) return;
-  if (!mood || !TIPS[mood]) { tip.hidden = true; tip.textContent = ""; return; }
-  const list = TIPS[mood][C.lang()] || TIPS[mood].es;
-  tip.textContent = list[dayOfYear(new Date()) % list.length];
+  if (!mood || !TIPS[mood]) { tip.hidden = true; tip.replaceChildren(); return; }
+  const lang = C.lang();
+  const list = TIPS[mood][lang] || TIPS[mood].es;
+  const r = RESET[mood][lang] || RESET[mood].es;
+  const close = C.el("button", { type: "button", class: "mood-close", "aria-label": C.t("closeLabel"), text: "×" });
+  close.addEventListener("click", () => { mood = null; paintMood(); });
+  const act = C.el("button", { type: "button", class: "secondary mood-act", text: r.a + " →" });
+  const k = mood;
+  act.addEventListener("click", () => moodAction(k));
+  const art = C.el("span", { class: "mood-art", "aria-hidden": "true" });
+  art.innerHTML = '<svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="' + RESET[mood].art + '"/></svg>';
+  tip.replaceChildren(
+    C.el("div", { class: "mood-tip-top" }, art,
+      C.el("span", { class: "mood-chosen" }, C.el("small", { text: C.t("moodChosen") }), C.el("b", { text: C.t(MOOD_LABEL[mood]) })), close),
+    C.el("h3", { class: "mood-title", text: r.t }),
+    C.el("p", { class: "mood-text", text: list[dayOfYear(new Date()) % list.length] }),
+    C.el("small", { class: "mood-reset-k", text: C.t("moodReset") }),
+    C.el("ol", { class: "mood-steps" }, ...r.steps.map(x => C.el("li", { text: x }))),
+    act);
   tip.hidden = false;
 }
 function wireMoods() {
@@ -229,6 +272,8 @@ function wireMoods() {
     const k = b.getAttribute("data-mood");
     mood = mood === k ? null : k;
     paintMood();
+    const tip = document.getElementById("moodTip");
+    if (mood && tip) requestAnimationFrame(() => tip.scrollIntoView({ behavior: "smooth", block: "nearest" }));
   }));
 }
 

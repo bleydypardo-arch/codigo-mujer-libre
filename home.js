@@ -89,7 +89,7 @@ function updates() {
   const today = day0(), rows = [];
   if (window.CMLPolls) {
     window.CMLPolls.closingSoon(48).slice(0, 1).forEach(p =>
-      rows.push({ text: t("hupVote", p.question), open: go("events") }));
+      rows.push({ text: t("hupVote", p.question), open: go(p.plan_id ? "events" : "community") }));
   }
   plans.filter(p => p.kind === "event" && p.event_date).forEach(p => {
     const diff = Math.round((parse(p.event_date) - today) / DAY);
@@ -102,7 +102,7 @@ function updates() {
     if (n >= 2) rows.push({ text: t("hupInterested", n, p.location || C.pick(p, "title")), open: go("events") });
   });
   if (extra.photos > 0) rows.push({ text: t("hupPhotos", extra.photos), open: go("events", () => { const b = document.getElementById("segMemories"); if (b) b.click(); }) });
-  if (extra.prayer) rows.push({ text: t("hupPrayer"), open: go("wellness") });
+  if (extra.prayer) rows.push({ text: t("hupPrayer"), open: go("support") });
   return rows.slice(0, 5);
 }
 
@@ -203,7 +203,7 @@ function openPoll(p) {
   const plan = p.plan_id ? plans.find(x => x.id === p.plan_id) : null;
   if (plan && plan.kind === "trip") { go2("travel")(); scrollToNode(document.querySelector("#tripsList .poll")); return; }
   if (plan && plan.kind === "event" && C.openDetail) { C.openDetail(plan.id); return; }
-  C.showPage("events"); scrollToNode(document.getElementById("generalPolls"));
+  C.showPage("community"); scrollToNode(document.getElementById("generalPolls"));
 }
 function renderWeek() {
   const host = document.getElementById("homeWeek");
