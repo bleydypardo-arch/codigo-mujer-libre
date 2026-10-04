@@ -718,7 +718,11 @@ function planCard(p) {
     card.appendChild(el("div", { class: "resp-row" },
       respondButton(p, "interested"), respondButton(p, "going")));
   }
-  if (p.kind === "event" && window.CMLSocial) {
+  if ((p.kind === "event" || p.kind === "trip") && window.CMLPolls) {
+    const polls = window.CMLPolls.planBlock(p);
+    if (polls) card.appendChild(polls);
+  }
+  if ((p.kind === "event" || p.kind === "trip") && window.CMLSocial) {
     const chat = window.CMLSocial.chatBlock(p, mine.get(p.id));
     if (chat) card.appendChild(chat);
   }
@@ -1160,6 +1164,8 @@ async function loadAll() {
     loadPosts().catch(() => {}),
     loadMessages().catch(() => {})
   ]);
+  if (!session || session.user.id !== uid) return;
+  if (window.CMLPolls) { try { await window.CMLPolls.reload(); } catch { /* polls are optional */ } }
   if (!session || session.user.id !== uid) return;
   renderAll();
 }

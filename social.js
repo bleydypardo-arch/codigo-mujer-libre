@@ -8,7 +8,7 @@ const BUCKET = "community";
 const MAX_PX = 1600;
 
 const ES = {
-  chatTitle: "Chat del evento", chatLocked: "Marca «Voy» para entrar al chat de este evento.",
+  chatTitle: "Chat del evento", chatLocked: "Marca «Voy» para entrar al chat de este evento.", tripTitle: "Conversación del viaje", tripLocked: "Marca «Me interesa» o «Voy» para entrar a la conversación del viaje.",
   chatEmpty: "Todavía no hay mensajes. Pregunta algo o organiza cómo llegar.",
   chatPh: "Escribe un mensaje…", chatSend: "Enviar", chatFail: "No se pudo enviar el mensaje.",
   chatLoadFail: "No se pudo cargar el chat.", chatDelete: "Eliminar",
@@ -18,7 +18,7 @@ const ES = {
   commentFail: "No se pudo comentar.", commentDelete: "Eliminar", noComments: "Sé la primera en comentar."
 };
 const EN = {
-  chatTitle: "Event chat", chatLocked: "Mark “Going” to join this event's chat.",
+  chatTitle: "Event chat", chatLocked: "Mark “Going” to join this event's chat.", tripTitle: "Trip discussion", tripLocked: "Mark “Interested” or “Going” to join the trip discussion.",
   chatEmpty: "No messages yet. Ask something or plan how to get there.",
   chatPh: "Write a message…", chatSend: "Send", chatFail: "The message could not be sent.",
   chatLoadFail: "The chat could not be loaded.", chatDelete: "Delete",
@@ -189,10 +189,11 @@ function postFooter(post, deleteBtn) {
 const openChats = new Set();
 function chatBlock(plan, status) {
   if (!C || !C.session()) return null;
-  const can = C.isAdmin() || status === "going";
-  if (!can) return el("p", { class: "small-note chat-locked", text: "💬 " + t("chatLocked") });
+  const trip = plan.kind === "trip";
+  const can = C.isAdmin() || status === "going" || (trip && status === "interested");
+  if (!can) return el("p", { class: "small-note chat-locked", text: "💬 " + t(trip ? "tripLocked" : "chatLocked") });
 
-  const details = el("details", { class: "event-chat" }, el("summary", { text: "💬 " + t("chatTitle") }));
+  const details = el("details", { class: "event-chat" }, el("summary", { text: "💬 " + t(trip ? "tripTitle" : "chatTitle") }));
   const list = el("div", { class: "chat-list", role: "log", "aria-live": "polite" });
   const input = el("input", { type: "text", maxlength: 500, placeholder: t("chatPh"), "aria-label": t("chatPh") });
   const send = el("button", { type: "submit", class: "primary", text: t("chatSend") });

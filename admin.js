@@ -5,7 +5,7 @@
 const S = {
   es: {
     pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada",
-    tabs: { plans: "Planes y eventos", trips: "Futuros planes / viajes", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imagen y mensaje" },
+    tabs: { plans: "Planes y eventos", trips: "Futuros planes / viajes", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imagen y mensaje" },
     loading: "Cargando…", loadFail: "No se pudo cargar. Inténtalo de nuevo.",
     newItem: "+ Nuevo", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Ocultar", live: "Publicado", draft: "Borrador",
     confirmDelete: "¿Eliminar esto de forma permanente?", saved: "Guardado.", deleted: "Eliminado.", saveFail: "No se pudo guardar.",
@@ -37,7 +37,7 @@ const S = {
   },
   en: {
     pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated",
-    tabs: { plans: "Plans & events", trips: "Future plans / trips", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Image & message" },
+    tabs: { plans: "Plans & events", trips: "Future plans / trips", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Image & message" },
     loading: "Loading…", loadFail: "Could not load. Please try again.",
     newItem: "+ New", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Hide", live: "Published", draft: "Draft",
     confirmDelete: "Delete this permanently?", saved: "Saved.", deleted: "Deleted.", saveFail: "Could not save.",
@@ -76,7 +76,7 @@ const KINDS = {
   wellness: { tab: "wellness", fields: ["title", "desc", "url", "details", "image"] }
 };
 const TAB_KIND = { plans: "event", trips: "trip", home: "home", wellness: "wellness" };
-const TABS = ["plans", "trips", "home", "wellness", "community", "memories", "messages", "users", "ai", "settings"];
+const TABS = ["plans", "trips", "home", "wellness", "community", "memories", "polls", "messages", "users", "ai", "settings"];
 const CODES = ["Social", "Wellness", "Faith", "Adventure", "Family", "Connection", "Support", "Recharge"];
 
 let C = null;
@@ -149,6 +149,7 @@ function render() {
       if (TAB_KIND[tab]) fill(await listView(TAB_KIND[tab]));
       else if (tab === "community") fill(await communityView());
       else if (tab === "memories") fill(window.CMLMem ? await window.CMLMem.adminView({ empty: a("empty") }) : el("p", { class: "small-note", text: a("empty") }));
+      else if (tab === "polls") fill(window.CMLPolls ? await window.CMLPolls.adminView({ empty: a("empty") }) : el("p", { class: "small-note", text: a("empty") }));
       else if (tab === "messages") fill(await messagesView());
       else if (tab === "users") fill(await usersView());
       else if (tab === "ai") fill(aiView());
@@ -220,6 +221,9 @@ function planItem(kind, row, c, memIds) {
       whoBox.replaceChildren(group("interested", a("interestedWho")), group("going", a("goingWho")));
     });
     actions.appendChild(whoBtn);
+  }
+  if ((kind === "event" || kind === "trip") && window.CMLPolls) {
+    actions.appendChild(button("🗳 " + C.t("aPollsTab"), "", () => { window.CMLPolls.prefill(row.id); tab = "polls"; editing = null; render(); }));
   }
   if (kind === "event" && window.CMLMem && memIds) {
     const existing = memIds.get(row.id);
