@@ -4,7 +4,7 @@
 
 const S = {
   es: {
-    mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", unapprove: "Quitar aprobación", approvalSaved: "Aprobación actualizada",
+    pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", unapprove: "Quitar aprobación", approvalSaved: "Aprobación actualizada",
     tabs: { plans: "Planes y eventos", trips: "Futuros planes / viajes", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imagen y mensaje" },
     loading: "Cargando…", loadFail: "No se pudo cargar. Inténtalo de nuevo.",
     newItem: "+ Nuevo", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Ocultar", live: "Publicado", draft: "Borrador",
@@ -36,7 +36,7 @@ const S = {
     quoteTitle: "Mensaje de hoy", quoteEs: "Mensaje (español)", quoteEn: "Mensaje (inglés)"
   },
   en: {
-    mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", unapprove: "Remove approval", approvalSaved: "Approval updated",
+    pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", unapprove: "Remove approval", approvalSaved: "Approval updated",
     tabs: { plans: "Plans & events", trips: "Future plans / trips", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Image & message" },
     loading: "Loading…", loadFail: "Could not load. Please try again.",
     newItem: "+ New", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Hide", live: "Published", draft: "Draft",
@@ -108,6 +108,19 @@ function button(text, cls, handler) {
 }
 function loadingNode() { return el("p", { class: "small-note", text: a("loading") }); }
 
+// ---------- pending approvals: badge on the Admin button + banner ----------
+async function pendingCount() {
+  const r = await C.db.from("profiles").select("id", { count: "exact", head: true }).eq("approved", false).eq("role", "member");
+  const n = r.error ? 0 : (r.count || 0);
+  const nav = document.getElementById("navAdmin");
+  if (nav) {
+    let b = nav.querySelector(".nav-badge");
+    if (!n) { if (b) b.remove(); }
+    else { if (!b) { b = document.createElement("span"); b.className = "nav-badge"; nav.appendChild(b); } b.textContent = String(n); b.setAttribute("aria-label", String(n)); }
+  }
+  return n;
+}
+
 // ---------- rendering ----------
 function render() {
   const host = root();
@@ -119,7 +132,14 @@ function render() {
     return b;
   }));
   const body = el("div", { id: "adminBody" }, loadingNode());
-  host.replaceChildren(tabsBar, body);
+  const banner = el("div", { class: "pending-banner", role: "status", hidden: true });
+  host.replaceChildren(tabsBar, banner, body);
+  pendingCount().then(n => {
+    if (token !== renderToken) return;
+    if (!n || tab === "users") { banner.hidden = true; return; }
+    banner.hidden = false;
+    banner.replaceChildren(el("span", { text: "⏳ " + a("pendingBanner")(n) }), button(a("reviewNow"), "primary", () => { tab = "users"; editing = null; render(); }));
+  });
   const fill = node => { if (token === renderToken) body.replaceChildren(node); };
   const fail = () => fill(el("p", { class: "form-feedback", text: a("loadFail") }));
 
@@ -434,7 +454,7 @@ async function usersView() {
         item.appendChild(el("div", { class: "actions" }, button(u.approved ? a("unapprove") : a("approve"), u.approved ? "danger" : "", async () => {
           const r = await C.db.rpc("approve_member", { target: u.id, ok: !u.approved });
           if (r.error) return toast(a("saveFail"));
-          toast(a("approvalSaved")); render();
+          toast(a("approvalSaved")); pendingCount(); render();
         })));
       }
       if (C.isSuper() && u.id !== me && u.role !== "super_admin") {
