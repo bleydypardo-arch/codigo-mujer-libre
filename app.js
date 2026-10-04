@@ -1299,7 +1299,7 @@ function initialize() {
     session: () => session, profile: () => profile,
     isAdmin, isSuper, announce,
     refreshPublic: async () => { if (session) await loadAll(); },
-    showPage, signOut: () => db.auth.signOut(),
+    showPage, signOut: () => db.auth.signOut(), setLanguage,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
       setLanguage(currentLanguage, false);

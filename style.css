@@ -227,3 +227,24 @@ body.lb-open { overflow: hidden; }
 .poll-label, .poll-count { position: relative; z-index: 1; }
 .poll-label { overflow-wrap: anywhere; }
 .poll-count { font-size: 13px; white-space: nowrap; color: #633d45; }
+
+/* ---- profile + birthdays ---- */
+header button#profileBtn { padding: 8px 11px; }
+.avatar { display: inline-grid; place-items: center; border-radius: 50%; background: #F4E3E3; color: #B76E79; font-weight: bold; overflow: hidden; flex: none; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar-sm { width: 36px; height: 36px; }
+.avatar-lg { width: 96px; height: 96px; font-size: 38px; }
+.prof-photo { display: flex; align-items: center; gap: 14px; margin: 8px 0 14px; flex-wrap: wrap; }
+.prof-photo-actions { display: grid; gap: 6px; justify-items: start; }
+.prof-label { font-weight: 600; }
+.prof-form label { display: block; font-weight: 600; margin: 13px 0; }
+.prof-form input:not([type=checkbox]):not([type=file]), .prof-form select { width: 100%; margin-top: 6px; padding: 12px; border: 1px solid #dccbc7; border-radius: 13px; background: white; min-height: 44px; font: inherit; }
+.prof-form fieldset { border: 0; padding: 0; margin: 16px 0; }
+.prof-form legend { font-weight: bold; }
+.prof-form .two-col select { margin-top: 6px; }
+.prof-form .choice { margin: 0 !important; }
+.bd-card { padding: 10px 14px; }
+.bd-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; flex-wrap: wrap; }
+.bd-text { flex: 1; min-width: 160px; overflow-wrap: anywhere; }
+.prof-form .md { grid-template-columns: 1fr 1fr !important; }
+.prof-form .link-btn, .bd-row .link-btn { border: 0; background: none; color: #80525a; text-decoration: underline; padding: 8px 4px; min-height: 40px; font: inherit; font-weight: bold; }
