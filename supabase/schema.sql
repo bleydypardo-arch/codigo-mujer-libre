@@ -659,3 +659,13 @@ grant select, insert, update, delete on public.memory_posts     to authenticated
 grant select, insert, update, delete on public.memory_media     to authenticated;
 grant select, insert, update, delete on public.memory_comments  to authenticated;
 grant select, insert, delete         on public.memory_reactions to authenticated;
+
+-- ============================================================================
+-- 12. MEMORIES: EMOJI REACTIONS (❤️ 😂 😍 👏 🔥 🥂) — safe to run more than once
+-- ============================================================================
+alter table public.memory_reactions add column if not exists emoji text not null default '❤️';
+alter table public.memory_reactions drop constraint if exists memory_reactions_emoji_check;
+alter table public.memory_reactions add constraint memory_reactions_emoji_check
+  check (emoji in ('❤️','😂','😍','👏','🔥','🥂'));
+alter table public.memory_reactions drop constraint if exists memory_reactions_pkey;
+alter table public.memory_reactions add primary key (post_id, user_id, emoji);
