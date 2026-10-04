@@ -945,3 +945,132 @@ grant execute on function public.can_chat_event(uuid) to authenticated;
 grant select, insert, delete on public.event_messages     to authenticated;
 grant select, insert, delete on public.community_comments to authenticated;
 grant select, insert, delete on public.community_reactions to authenticated;
+
+-- ============================================================================
+-- 15. POLLS (reusable: attached to an event, a trip, or free-standing) + TRIP PLANNING CHAT
+--     Safe to run more than once. Admins create polls; approved members vote and see results.
+-- ============================================================================
+create table if not exists public.polls (
+  id         uuid primary key default gen_random_uuid(),
+  plan_id    uuid references public.plans(id) on delete cascade,   -- null = general poll
+  question   text not null check (char_length(question) between 1 and 200),
+  multi      boolean not null default false,                       -- false = one choice only
+  closes_at  timestamptz,
+  closed     boolean not null default false,
+  created_by uuid default auth.uid() references public.profiles(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+create index if not exists polls_plan_idx on public.polls (plan_id);
+
+create table if not exists public.poll_options (
+  id       uuid primary key default gen_random_uuid(),
+  poll_id  uuid not null references public.polls(id) on delete cascade,
+  label    text not null check (char_length(label) between 1 and 100),
+  position int  not null default 0
+);
+create index if not exists poll_options_poll_idx on public.poll_options (poll_id, position);
+
+create table if not exists public.poll_votes (
+  poll_id    uuid not null references public.polls(id) on delete cascade,
+  option_id  uuid not null references public.poll_options(id) on delete cascade,
+  user_id    uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (poll_id, user_id, option_id)         -- the same option can never be counted twice
+);
+
+-- Who may see / vote
+create or replace function public.poll_visible(pid uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.is_approved() and exists (
+    select 1 from public.polls p
+    where p.id = pid
+      and (p.plan_id is null or public.is_admin()
+           or exists (select 1 from public.plans pl where pl.id = p.plan_id and pl.published)))
+$$;
+
+create or replace function public.can_vote(pid uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.poll_visible(pid) and exists (
+    select 1 from public.polls p
+    where p.id = pid and not p.closed and (p.closes_at is null or p.closes_at > now()))
+$$;
+
+-- One-choice polls: a second, different option from the same member is refused.
+-- The option must belong to the poll.
+create or replace function public.check_poll_vote() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare is_multi boolean;
+begin
+  if not exists (select 1 from public.poll_options o where o.id = new.option_id and o.poll_id = new.poll_id) then
+    raise exception 'That option does not belong to this poll.';
+  end if;
+  select multi into is_multi from public.polls where id = new.poll_id;
+  if not is_multi and exists (select 1 from public.poll_votes v
+                              where v.poll_id = new.poll_id and v.user_id = new.user_id and v.option_id <> new.option_id) then
+    raise exception 'This poll allows only one choice.';
+  end if;
+  return new;
+end $$;
+drop trigger if exists poll_votes_check on public.poll_votes;
+create trigger poll_votes_check before insert on public.poll_votes
+  for each row execute function public.check_poll_vote();
+
+alter table public.polls        enable row level security;
+alter table public.poll_options enable row level security;
+alter table public.poll_votes   enable row level security;
+
+drop policy if exists "polls read"          on public.polls;
+drop policy if exists "polls admin write"   on public.polls;
+create policy "polls read" on public.polls for select to authenticated using (public.poll_visible(id));
+create policy "polls admin write" on public.polls for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists "poll options read"        on public.poll_options;
+drop policy if exists "poll options admin write" on public.poll_options;
+create policy "poll options read" on public.poll_options for select to authenticated using (public.poll_visible(poll_id));
+create policy "poll options admin write" on public.poll_options for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
+
+-- Members see only their OWN votes (and admins see all). Everyone sees totals through poll_results().
+drop policy if exists "poll votes read"   on public.poll_votes;
+drop policy if exists "poll votes insert" on public.poll_votes;
+drop policy if exists "poll votes delete" on public.poll_votes;
+create policy "poll votes read" on public.poll_votes for select to authenticated
+  using (public.is_admin() or (user_id = auth.uid() and public.is_approved()));
+create policy "poll votes insert" on public.poll_votes for insert to authenticated
+  with check (user_id = auth.uid() and public.can_vote(poll_id));
+create policy "poll votes delete" on public.poll_votes for delete to authenticated
+  using (user_id = auth.uid() and public.can_vote(poll_id));
+
+-- Totals per option (no names), for every poll the caller may see
+create or replace function public.poll_results()
+returns table (poll_id uuid, option_id uuid, votes bigint, voters bigint)
+language sql stable security definer set search_path = public as $$
+  select o.poll_id, o.id,
+         (select count(*) from public.poll_votes v where v.option_id = o.id),
+         (select count(distinct v.user_id) from public.poll_votes v where v.poll_id = o.poll_id)
+  from public.poll_options o
+  where public.poll_visible(o.poll_id)
+$$;
+
+-- Trip planning: members who are INTERESTED or GOING in a trip can join its discussion
+-- (events stay GOING-only).
+create or replace function public.can_chat_event(pid uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.is_approved()
+     and exists (select 1 from public.plans p where p.id = pid and (p.published or public.is_admin()))
+     and (public.is_admin()
+          or exists (select 1 from public.responses r join public.plans p on p.id = r.plan_id
+                     where r.plan_id = pid and r.user_id = auth.uid()
+                       and (r.status = 'going' or (p.kind = 'trip' and r.status = 'interested'))))
+$$;
+
+revoke all on function public.poll_visible(uuid) from public, anon;
+revoke all on function public.can_vote(uuid)     from public, anon;
+revoke all on function public.poll_results()     from public, anon;
+grant execute on function public.poll_visible(uuid) to authenticated;
+grant execute on function public.can_vote(uuid)     to authenticated;
+grant execute on function public.poll_results()     to authenticated;
+grant select, insert, update, delete on public.polls        to authenticated;
+grant select, insert, update, delete on public.poll_options to authenticated;
+grant select, insert, delete         on public.poll_votes   to authenticated;
