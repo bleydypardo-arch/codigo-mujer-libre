@@ -4,7 +4,7 @@
 
 const S = {
   es: {
-    pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", unapprove: "Quitar aprobación", approvalSaved: "Aprobación actualizada",
+    pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada",
     tabs: { plans: "Planes y eventos", trips: "Futuros planes / viajes", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imagen y mensaje" },
     loading: "Cargando…", loadFail: "No se pudo cargar. Inténtalo de nuevo.",
     newItem: "+ Nuevo", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Ocultar", live: "Publicado", draft: "Borrador",
@@ -36,7 +36,7 @@ const S = {
     quoteTitle: "Mensaje de hoy", quoteEs: "Mensaje (español)", quoteEn: "Mensaje (inglés)"
   },
   en: {
-    pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", unapprove: "Remove approval", approvalSaved: "Approval updated",
+    pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated",
     tabs: { plans: "Plans & events", trips: "Future plans / trips", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Image & message" },
     loading: "Loading…", loadFail: "Could not load. Please try again.",
     newItem: "+ New", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Hide", live: "Published", draft: "Draft",
@@ -110,7 +110,7 @@ function loadingNode() { return el("p", { class: "small-note", text: a("loading"
 
 // ---------- pending approvals: badge on the Admin button + banner ----------
 async function pendingCount() {
-  const r = await C.db.from("profiles").select("id", { count: "exact", head: true }).eq("approved", false).eq("role", "member");
+  const r = await C.db.from("profiles").select("id", { count: "exact", head: true }).eq("approved", false).eq("rejected", false).eq("role", "member");
   const n = r.error ? 0 : (r.count || 0);
   const nav = document.getElementById("navAdmin");
   if (nav) {
@@ -443,7 +443,7 @@ async function usersView() {
       const labels = (u.interests || []).map(c => C.codeLabels[c] ? C.t(C.codeLabels[c]) : c).join(" · ");
       const item = el("div", { class: "admin-item" },
         el("span", { class: "badge" + (u.role !== "member" ? " live" : ""), text: a("role")[u.role] || u.role }),
-        u.role === "member" ? el("span", { class: "badge" + (u.approved ? " live" : ""), text: " " + (u.approved ? a("approvedBadge") : a("pendingBadge")) }) : null,
+        u.role === "member" ? el("span", { class: "badge" + (u.approved ? " live" : ""), text: " " + (u.approved ? a("approvedBadge") : (u.rejected ? a("rejectedBadge") : a("pendingBadge"))) }) : null,
         el("h3", { text: (u.first_name + " " + u.last_name).trim() || "—" }),
         el("p", { class: "small-note", text: u.email }),
         u.company ? el("p", { class: "small-note", text: a("company") + ": " + u.company }) : null,
@@ -451,17 +451,27 @@ async function usersView() {
         labels ? el("p", { class: "small-note", text: a("interests") + ": " + labels }) : null,
         el("p", { class: "small-note", text: a("joined") + ": " + new Date(u.created_at).toLocaleDateString(C.loc()) }));
       if (u.role === "member") {
-        item.appendChild(el("div", { class: "actions" }, button(u.approved ? a("unapprove") : a("approve"), u.approved ? "danger" : "", async () => {
-          const r = await C.db.rpc("approve_member", { target: u.id, ok: !u.approved });
+        const setApproval = async ok => {
+          const r = ok ? await C.db.rpc("approve_member", { target: u.id, ok: true }) : await C.db.rpc("reject_member", { target: u.id });
           if (r.error) return toast(a("saveFail"));
           toast(a("approvalSaved")); pendingCount(); render();
-        })));
+        };
+        const acts = el("div", { class: "actions" });
+        if (!u.approved) acts.appendChild(button(a("approve"), "", () => setApproval(true)));
+        if (u.approved) acts.appendChild(button(a("unapprove"), "danger", async () => {
+          const r = await C.db.rpc("approve_member", { target: u.id, ok: false });
+          if (r.error) return toast(a("saveFail"));
+          toast(a("approvalSaved")); pendingCount(); render();
+        }));
+        else if (!u.rejected) acts.appendChild(button(a("reject"), "danger", () => setApproval(false)));
+        item.appendChild(acts);
       }
       if (C.isSuper() && u.id !== me && u.role !== "super_admin") {
         const makeAdmin = u.role !== "admin";
         item.appendChild(el("div", { class: "actions" }, button(makeAdmin ? a("makeAdmin") : a("removeAdmin"), makeAdmin ? "" : "danger", async () => {
+          if (makeAdmin && data.some(x => x.role === "admin")) return toast(a("adminTaken"));
           const r = await C.db.from("profiles").update({ role: makeAdmin ? "admin" : "member" }).eq("id", u.id);
-          if (r.error) return toast(a("saveFail"));
+          if (r.error) return toast(r.error.code === "23505" ? a("adminTaken") : a("saveFail"));
           toast(a("roleSaved")); render();
         })));
       }

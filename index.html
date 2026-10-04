@@ -9,6 +9,27 @@
 
 <body>
 
+<!-- ESPERANDO APROBACIÓN: membresía pendiente o no aprobada -->
+<div id="approvalGate" class="auth-gate" hidden>
+  <div class="auth-card approval-card">
+    <div class="auth-top">
+      <div>
+        <b>Código Mujer Libre</b>
+        <small data-i18n="tagline">Conecta · Vive · Crece</small>
+      </div>
+      <button id="pendLang" type="button" class="langBtnAlt" aria-label="Switch to English">EN</button>
+    </div>
+    <div class="approval-body" role="status" aria-live="polite">
+      <div class="approval-icon" aria-hidden="true">🌸</div>
+      <h1 id="approvalTitle" data-i18n="pendTitle">Bienvenida a Código Mujer Libre.</h1>
+      <p id="approvalText" data-i18n="pendBody">Tu membresía está pendiente de aprobación. Te avisaremos cuando tengas acceso.</p>
+      <p class="form-feedback" id="approvalFeedback" role="alert" hidden></p>
+      <button type="button" class="primary wide" id="pendCheck" data-i18n="pendCheck">Revisar de nuevo</button>
+      <button type="button" class="link-btn" id="pendLogout" data-i18n="logout">Salir</button>
+    </div>
+  </div>
+</div>
+
 <!-- ACCESO: registro / entrar -->
 <div id="authGate" class="auth-gate" hidden>
   <div class="auth-card">

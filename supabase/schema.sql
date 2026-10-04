@@ -669,3 +669,144 @@ alter table public.memory_reactions add constraint memory_reactions_emoji_check
   check (emoji in ('❤️','😂','😍','👏','🔥','🥂'));
 alter table public.memory_reactions drop constraint if exists memory_reactions_pkey;
 alter table public.memory_reactions add primary key (post_id, user_id, emoji);
+
+-- ============================================================================
+-- 13. SECURITY: APPROVAL FOR THE WHOLE APP + EXACTLY TWO ADMIN POSITIONS
+--     Safe to run more than once. Existing members are NOT locked out: anyone who is
+--     already approved stays approved (the memory gate in section 11 backfilled it).
+-- ============================================================================
+
+-- 13a. Rejected state (approved=false + rejected=true  → "not approved" screen)
+alter table public.profiles add column if not exists rejected boolean not null default false;
+
+create or replace function public.my_rejected() returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce((select rejected from public.profiles where id = auth.uid()), false)
+$$;
+
+-- A member can never change her own role, approval or rejection.
+drop policy if exists "profiles update own" on public.profiles;
+create policy "profiles update own" on public.profiles
+  for update to authenticated
+  using (id = auth.uid())
+  with check (id = auth.uid()
+              and role = public.my_role()
+              and approved = public.my_approved()
+              and rejected = public.my_rejected());
+
+-- Admins (owner or second admin) approve / reject ordinary members only.
+create or replace function public.approve_member(target uuid, ok boolean) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'not allowed'; end if;
+  update public.profiles set approved = ok, rejected = false
+   where id = target and role = 'member';
+end $$;
+
+create or replace function public.reject_member(target uuid) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'not allowed'; end if;
+  update public.profiles set approved = false, rejected = true
+   where id = target and role = 'member';
+end $$;
+
+revoke all on function public.my_rejected()                from public, anon;
+revoke all on function public.reject_member(uuid)          from public, anon;
+grant execute on function public.my_rejected()             to authenticated;
+grant execute on function public.reject_member(uuid)       to authenticated;
+
+-- 13b. Every private table now requires an approved member (or an admin).
+drop policy if exists "plans read published or admin" on public.plans;
+create policy "plans read published or admin" on public.plans
+  for select to authenticated
+  using (public.is_admin() or (published and public.is_approved()));
+
+drop policy if exists "responses read own or admin" on public.responses;
+create policy "responses read own or admin" on public.responses
+  for select to authenticated
+  using (public.is_admin() or (user_id = auth.uid() and public.is_approved()));
+
+drop policy if exists "responses insert own" on public.responses;
+create policy "responses insert own" on public.responses
+  for insert to authenticated
+  with check (user_id = auth.uid() and public.is_approved()
+              and exists (select 1 from public.plans p where p.id = plan_id and p.published));
+
+drop policy if exists "responses update own" on public.responses;
+create policy "responses update own" on public.responses
+  for update to authenticated
+  using (user_id = auth.uid() and public.is_approved())
+  with check (user_id = auth.uid() and public.is_approved());
+
+drop policy if exists "responses delete own" on public.responses;
+create policy "responses delete own" on public.responses
+  for delete to authenticated using (user_id = auth.uid() and public.is_approved());
+
+create or replace function public.plan_counts()
+returns table (plan_id uuid, interested bigint, going bigint)
+language sql stable security definer set search_path = public as $$
+  select r.plan_id,
+         count(*) filter (where r.status = 'interested'),
+         count(*) filter (where r.status = 'going')
+  from public.responses r
+  join public.plans p on p.id = r.plan_id and p.published
+  where public.is_approved()
+  group by r.plan_id
+$$;
+
+drop policy if exists "posts read" on public.community_posts;
+create policy "posts read" on public.community_posts
+  for select to authenticated using (public.is_approved());
+
+drop policy if exists "posts insert own" on public.community_posts;
+create policy "posts insert own" on public.community_posts
+  for insert to authenticated with check (user_id = auth.uid() and public.is_approved());
+
+drop policy if exists "posts delete own or admin" on public.community_posts;
+create policy "posts delete own or admin" on public.community_posts
+  for delete to authenticated
+  using (public.is_admin() or (user_id = auth.uid() and public.is_approved()));
+
+create or replace function public.community_members()
+returns table (first_name text, interests text[])
+language sql stable security definer set search_path = public as $$
+  select first_name, interests from public.profiles
+  where first_name <> '' and public.is_approved()
+  order by created_at desc
+  limit 100
+$$;
+
+drop policy if exists "messages read own or admin" on public.messages;
+create policy "messages read own or admin" on public.messages
+  for select to authenticated
+  using (public.is_admin() or (user_id = auth.uid() and public.is_approved()));
+
+drop policy if exists "messages insert own" on public.messages;
+create policy "messages insert own" on public.messages
+  for insert to authenticated
+  with check (user_id = auth.uid() and admin_reply = '' and public.is_approved());
+
+-- 13c. EXACTLY TWO ADMIN POSITIONS: one owner (super_admin) + at most one admin.
+--      Unique partial indexes make this impossible to break, even by a race.
+create unique index if not exists one_super_admin_only on public.profiles ((true)) where role = 'super_admin';
+create unique index if not exists one_second_admin_only on public.profiles ((true)) where role = 'admin';
+
+-- The owner's super_admin status cannot be removed or handed out from the app
+-- (only from the SQL editor, where there is no signed-in app user).
+create or replace function public.protect_owner() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is not null then
+    if tg_op = 'UPDATE' and old.role = 'super_admin' and new.role <> 'super_admin' then
+      raise exception 'The owner role cannot be removed from the app.';
+    end if;
+    if new.role = 'super_admin' and (tg_op = 'INSERT' or old.role <> 'super_admin') then
+      raise exception 'Only one owner is allowed.';
+    end if;
+  end if;
+  return new;
+end $$;
+drop trigger if exists profiles_protect_owner on public.profiles;
+create trigger profiles_protect_owner before insert or update of role on public.profiles
+  for each row execute function public.protect_owner();

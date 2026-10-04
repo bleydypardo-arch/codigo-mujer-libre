@@ -738,7 +738,7 @@ async function adminView(helpers) {
   const [m, med, pend] = await Promise.all([
     C.db.from("memories").select("*").order("event_date", { ascending: false, nullsFirst: false }),
     C.db.from("memory_media").select("size_bytes"),
-    C.db.from("profiles").select("id", { count: "exact", head: true }).eq("approved", false).eq("role", "member")
+    C.db.from("profiles").select("id", { count: "exact", head: true }).eq("approved", false).eq("rejected", false).eq("role", "member")
   ]);
   if (m.error) throw m.error;
   const bytes = (med.data || []).reduce((s, x) => s + (x.size_bytes || 0), 0);
