@@ -5,7 +5,7 @@
 const S = {
   es: {
     pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada",
-    tabs: { plans: "Planes y eventos", trips: "Futuros planes / viajes", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imagen y mensaje" },
+    tabs: { plans: "Planes y eventos", trips: "Viajes y Experiencias", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imagen y mensaje" },
     loading: "Cargando…", loadFail: "No se pudo cargar. Inténtalo de nuevo.",
     newItem: "+ Nuevo", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Ocultar", live: "Publicado", draft: "Borrador",
     confirmDelete: "¿Eliminar esto de forma permanente?", saved: "Guardado.", deleted: "Eliminado.", saveFail: "No se pudo guardar.",
@@ -28,7 +28,7 @@ const S = {
     aiUse: "Usar esta opción", aiNone: "No encontré opciones. Prueba con otra búsqueda.", aiVerified: "Fuente verificada", aiUnverified: "Enlace sin verificar",
     aiNotReady: "El asistente de IA todavía no está activado (falta desplegar la función o la clave).", aiLimit: "Llegaste al límite diario del asistente. Inténtalo mañana.", aiFail: "El asistente no pudo responder. Inténtalo de nuevo.",
     aiNote: "Nota", aiSource: "Fuente",
-    userCount: n => n + " usuarias registradas", search: "Buscar por nombre, correo o empresa…", role: { member: "Miembro", admin: "Administradora", super_admin: "Administradora principal" },
+    userCount: n => n + " usuarias registradas", search: "Buscar por nombre, correo o empresa…", role: { member: "Miembro", admin: "Administradora", super_admin: "Fundadora y propietaria" },
     makeAdmin: "Hacer administradora", removeAdmin: "Quitar administradora", roleSaved: "Rol actualizado.", joined: "Se unió",
     company: "Empresa", city: "Ciudad", interests: "Intereses",
     reply: "Respuesta", sendReply: "Guardar respuesta", replySaved: "Respuesta guardada.", from: "De",
@@ -37,7 +37,7 @@ const S = {
   },
   en: {
     pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated",
-    tabs: { plans: "Plans & events", trips: "Future plans / trips", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Image & message" },
+    tabs: { plans: "Plans & events", trips: "Travel & Experiences", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Image & message" },
     loading: "Loading…", loadFail: "Could not load. Please try again.",
     newItem: "+ New", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Hide", live: "Published", draft: "Draft",
     confirmDelete: "Delete this permanently?", saved: "Saved.", deleted: "Deleted.", saveFail: "Could not save.",
@@ -60,7 +60,7 @@ const S = {
     aiUse: "Use this option", aiNone: "No options found. Try a different search.", aiVerified: "Source verified", aiUnverified: "Link not verified",
     aiNotReady: "The AI assistant isn't switched on yet (the function or key still needs to be set up).", aiLimit: "You've reached the assistant's daily limit. Try again tomorrow.", aiFail: "The assistant couldn't answer. Please try again.",
     aiNote: "Note", aiSource: "Source",
-    userCount: n => n + " registered members", search: "Search by name, email or company…", role: { member: "Member", admin: "Administrator", super_admin: "Primary administrator" },
+    userCount: n => n + " registered members", search: "Search by name, email or company…", role: { member: "Member", admin: "Administrator", super_admin: "Founder & Owner" },
     makeAdmin: "Make administrator", removeAdmin: "Remove administrator", roleSaved: "Role updated.", joined: "Joined",
     company: "Company", city: "City", interests: "Interests",
     reply: "Reply", sendReply: "Save reply", replySaved: "Reply saved.", from: "From",
@@ -126,7 +126,13 @@ async function celebrate(person) {
   C.showPage("admin", false);
   tab = "plans"; editing = { kind: "event", row: r.data }; render();
 }
-window.CMLAdmin = { celebrate };
+// Opens one existing admin tab (used by the "Gestionar experiencias" shortcut on Viajes y Experiencias).
+function openTab(key) {
+  if (!C || !C.isAdmin() || !TABS.includes(key)) return;
+  C.showPage("admin", false);
+  tab = key; editing = null; render();
+}
+window.CMLAdmin = { celebrate, openTab };
 
 // ---------- pending approvals: badge on the Admin button + banner ----------
 async function pendingCount() {

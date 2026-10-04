@@ -160,7 +160,8 @@ function renderProfile() {
   host.replaceChildren(
     el("h1", { text: t("profTitle") }),
     el("p", { class: "small-note", text: t("profIntro") }),
-    form);
+    form,
+    ...(window.CMLRedesign ? [window.CMLRedesign.essenceLink()] : []));
 }
 
 // ---------- birthdays on Home ----------
