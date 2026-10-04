@@ -277,3 +277,60 @@ body.sheet-open { overflow: hidden; }
 .hi { width: 22px; height: 22px; }
 .bell-badge { position: absolute; top: 4px; right: 2px; }
 .sheet-main .link-btn { margin-right: var(--s5); }
+
+/* ================= Phase 2: remaining screens ================= */
+/* Sign-in + approval */
+.auth-gate { background: radial-gradient(120% 80% at 50% 0%, #3a2f52 0%, var(--navy) 55%, #141a2b 100%); }
+.auth-card { background: var(--paper); border: 0; border-radius: var(--r-lg); box-shadow: var(--sh-2); padding: var(--s6) var(--s5); width: min(100%, 520px); }
+.auth-brand { display: flex; align-items: center; gap: 10px; }
+.auth-brand img { width: 58px; height: 39px; object-fit: contain; }
+.auth-top b { font: 500 1.15rem/1.1 var(--font-display); color: var(--navy); }
+.auth-top small { color: var(--muted); }
+.auth-card h1 { font: 500 var(--fs-xl)/1.15 var(--font-display); color: var(--navy); text-wrap: balance; }
+.auth-tab { border: 1.5px solid var(--line); color: var(--wine); }
+.auth-tab.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+.auth-card input:not([type=checkbox]), .auth-card select, .admin-form input:not([type=checkbox]):not([type=file]), .admin-form select, .admin-form textarea, .admin-bar input, .admin-bar select, .admin-bar textarea, textarea, input[type=search] { border: 1.5px solid var(--line); border-radius: var(--r-sm); background: var(--paper); }
+.auth-card input:focus, .admin-form input:focus, textarea:focus, select:focus { border-color: var(--teal); }
+.langBtnAlt { border: 1.5px solid var(--line); color: var(--wine); }
+.approval-icon { font-size: 2.6rem; }
+.choice { border: 1.5px solid var(--line); }
+.choice:has(input:checked) { background: var(--rose-soft); border-color: var(--wine); }
+
+/* Forms on wide screens stay readable */
+@media (min-width: 900px) { #profile, #messages, #wellness > .card:not(.prayer-wall):not(.safety-card) { max-width: 760px; } }
+
+/* Community */
+#membersList { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s3); margin: var(--s4) 0 var(--s6); }
+@media (min-width: 560px) { #membersList { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { #membersList { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.member { display: flex; align-items: center; gap: var(--s3); margin: 0; padding: var(--s3) var(--s4); border-radius: var(--r-md); }
+.member > span { width: 46px; height: 46px; flex: 0 0 46px; display: grid; place-items: center; border-radius: 50%; background: var(--rose-soft); color: var(--wine); font-weight: 700; }
+.member small { display: block; color: var(--muted); }
+.member b { color: var(--navy); }
+.post, #posts .card, #posts > div { border-radius: var(--r-md); }
+
+/* Wellness */
+.grid { gap: var(--s3); }
+.support { border: 0; background: var(--paper); border-radius: var(--r-md); box-shadow: var(--sh-1); min-height: 140px; color: var(--ink); transition: box-shadow .2s ease, transform .12s ease; }
+.support:hover { box-shadow: var(--sh-2); }
+.support b { color: var(--navy); font-family: var(--font-display); font-weight: 500; }
+@media (min-width: 900px) { #wellness .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.safety-card { background: var(--teal-soft); box-shadow: none; }
+.safety-card a { color: var(--wine-d); }
+.prayer-wall { border-radius: var(--r-md); }
+.app-status { border: 0; border-radius: var(--r-md); box-shadow: var(--sh-2); }
+
+/* Notifications, modal, lightbox */
+.notif-panel { border: 0; border-radius: var(--r-md); box-shadow: var(--sh-2); background: var(--paper); }
+.modalCard { border-radius: var(--r-lg); background: var(--paper); box-shadow: var(--sh-2); }
+#modal .x { color: var(--navy); }
+
+/* Admin: clean and quiet */
+.admin-item, .admin-form { background: var(--paper); border: 0; border-radius: var(--r-md); box-shadow: var(--sh-1); }
+.admin-item h3 { font-family: var(--font-display); font-weight: 500; color: var(--navy); }
+.admin-item .actions button { border: 1.5px solid var(--line); color: var(--navy); }
+.admin-item .actions .danger { color: var(--danger); border-color: #e7c4c4; }
+.badge.live { background: var(--teal-soft); color: #1b5559; }
+.ai-banner { background: var(--gold-soft); border: 0; border-radius: var(--r-md); }
+.pending-banner { border-radius: var(--r-md); }
+.nav-badge { background: var(--coral); color: #fff; }
