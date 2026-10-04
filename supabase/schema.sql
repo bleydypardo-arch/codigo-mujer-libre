@@ -810,3 +810,138 @@ end $$;
 drop trigger if exists profiles_protect_owner on public.profiles;
 create trigger profiles_protect_owner before insert or update of role on public.profiles
   for each row execute function public.protect_owner();
+
+-- ============================================================================
+-- 14. EVENT CHAT + COMMUNITY UPGRADE (photos, comments, ❤️ reactions)
+--     Safe to run more than once. Everything requires an approved member.
+-- ============================================================================
+
+-- Community, chat and comments show FIRST NAME only (same as the member list today).
+create or replace function public.stamp_first_name() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  select coalesce(nullif(trim(first_name), ''), 'Member') into new.author_name
+    from public.profiles where id = new.user_id;
+  if new.author_name is null then new.author_name := 'Member'; end if;
+  return new;
+end $$;
+
+-- 14a. EVENT CHAT — members marked GOING (and admins) can read and write.
+create table if not exists public.event_messages (
+  id          uuid primary key default gen_random_uuid(),
+  plan_id     uuid not null references public.plans(id) on delete cascade,
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  author_name text not null default '',
+  body        text not null check (char_length(body) between 1 and 500),
+  created_at  timestamptz not null default now()
+);
+create index if not exists event_messages_plan_idx on public.event_messages (plan_id, created_at);
+
+create or replace function public.can_chat_event(pid uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.is_approved()
+     and exists (select 1 from public.plans p where p.id = pid and (p.published or public.is_admin()))
+     and (public.is_admin()
+          or exists (select 1 from public.responses r
+                     where r.plan_id = pid and r.user_id = auth.uid() and r.status = 'going'))
+$$;
+
+drop trigger if exists event_messages_author on public.event_messages;
+create trigger event_messages_author before insert on public.event_messages
+  for each row execute function public.stamp_first_name();
+
+alter table public.event_messages enable row level security;
+drop policy if exists "echat read"   on public.event_messages;
+drop policy if exists "echat insert" on public.event_messages;
+drop policy if exists "echat delete" on public.event_messages;
+create policy "echat read" on public.event_messages
+  for select to authenticated using (public.can_chat_event(plan_id));
+create policy "echat insert" on public.event_messages
+  for insert to authenticated with check (user_id = auth.uid() and public.can_chat_event(plan_id));
+create policy "echat delete" on public.event_messages
+  for delete to authenticated
+  using (public.is_admin() or (user_id = auth.uid() and public.is_approved()));
+
+-- 14b. COMMUNITY posts: optional PRIVATE photo, names stamped by the database
+alter table public.community_posts add column if not exists photo_path text not null default '';
+alter table public.community_posts drop constraint if exists community_posts_body_check;
+alter table public.community_posts drop constraint if exists community_posts_body_or_photo;
+alter table public.community_posts add constraint community_posts_body_or_photo
+  check (char_length(body) <= 1000 and (char_length(body) > 0 or photo_path <> ''));
+alter table public.community_posts drop constraint if exists community_posts_photo_own_folder;
+alter table public.community_posts add constraint community_posts_photo_own_folder
+  check (photo_path = '' or photo_path like user_id::text || '/%');
+
+drop trigger if exists community_posts_author on public.community_posts;
+create trigger community_posts_author before insert on public.community_posts
+  for each row execute function public.stamp_first_name();
+
+create table if not exists public.community_comments (
+  id          uuid primary key default gen_random_uuid(),
+  post_id     uuid not null references public.community_posts(id) on delete cascade,
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  author_name text not null default '',
+  body        text not null check (char_length(body) between 1 and 500),
+  created_at  timestamptz not null default now()
+);
+create index if not exists community_comments_post_idx on public.community_comments (post_id, created_at);
+drop trigger if exists community_comments_author on public.community_comments;
+create trigger community_comments_author before insert on public.community_comments
+  for each row execute function public.stamp_first_name();
+
+create table if not exists public.community_reactions (
+  post_id     uuid not null references public.community_posts(id) on delete cascade,
+  user_id     uuid not null default auth.uid() references public.profiles(id) on delete cascade,
+  created_at  timestamptz not null default now(),
+  primary key (post_id, user_id)               -- one ❤️ per member per post
+);
+
+alter table public.community_comments  enable row level security;
+alter table public.community_reactions enable row level security;
+drop policy if exists "ccomment read"   on public.community_comments;
+drop policy if exists "ccomment insert" on public.community_comments;
+drop policy if exists "ccomment delete" on public.community_comments;
+create policy "ccomment read" on public.community_comments
+  for select to authenticated using (public.is_approved());
+create policy "ccomment insert" on public.community_comments
+  for insert to authenticated with check (user_id = auth.uid() and public.is_approved());
+create policy "ccomment delete" on public.community_comments
+  for delete to authenticated
+  using (public.is_admin() or (user_id = auth.uid() and public.is_approved()));
+drop policy if exists "creact read"   on public.community_reactions;
+drop policy if exists "creact insert" on public.community_reactions;
+drop policy if exists "creact delete" on public.community_reactions;
+create policy "creact read" on public.community_reactions
+  for select to authenticated using (public.is_approved());
+create policy "creact insert" on public.community_reactions
+  for insert to authenticated with check (user_id = auth.uid() and public.is_approved());
+create policy "creact delete" on public.community_reactions
+  for delete to authenticated using (user_id = auth.uid() and public.is_approved());
+
+-- 14c. PRIVATE bucket for community photos (one folder per member)
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('community', 'community', false, 5242880, array['image/jpeg','image/png','image/webp'])
+on conflict (id) do update
+  set public = false, file_size_limit = 5242880,
+      allowed_mime_types = array['image/jpeg','image/png','image/webp'];
+
+drop policy if exists "community files read"   on storage.objects;
+drop policy if exists "community files insert" on storage.objects;
+drop policy if exists "community files delete" on storage.objects;
+create policy "community files read" on storage.objects
+  for select to authenticated using (bucket_id = 'community' and public.is_approved());
+create policy "community files insert" on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'community' and public.is_approved()
+              and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "community files delete" on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'community'
+         and (public.is_admin() or (public.is_approved() and (storage.foldername(name))[1] = auth.uid()::text)));
+
+-- 14d. Permissions
+revoke all on function public.can_chat_event(uuid) from public, anon;
+grant execute on function public.can_chat_event(uuid) to authenticated;
+grant select, insert, delete on public.event_messages     to authenticated;
+grant select, insert, delete on public.community_comments to authenticated;
+grant select, insert, delete on public.community_reactions to authenticated;

@@ -718,6 +718,10 @@ function planCard(p) {
     card.appendChild(el("div", { class: "resp-row" },
       respondButton(p, "interested"), respondButton(p, "going")));
   }
+  if (p.kind === "event" && window.CMLSocial) {
+    const chat = window.CMLSocial.chatBlock(p, mine.get(p.id));
+    if (chat) card.appendChild(chat);
+  }
   return card;
 }
 function byDate(a, b) {
@@ -844,19 +848,24 @@ function renderPosts() {
   if (!container) return;
   container.replaceChildren();
   if (!posts.length) return appendParagraph(container, t("noPosts"), "meta");
+  const S = window.CMLSocial;
   posts.forEach(post => {
     const card = el("div", { class: "card" },
-      el("b", { text: post.author_name || "" }),
-      el("p", { class: "saved-text", text: post.body }));
+      el("b", { text: post.author_name || "" }));
+    if (post.body) card.appendChild(el("p", { class: "saved-text", text: post.body }));
+    const photo = S && S.photoNode(post);
+    if (photo) card.appendChild(photo);
     const date = new Date(post.created_at);
     if (!Number.isNaN(date.getTime())) {
       card.appendChild(el("time", { class: "meta", datetime: date.toISOString(), text: date.toLocaleString(loc()) }));
     }
+    let del = null;
     if (session && (post.user_id === session.user.id || isAdmin())) {
-      const del = el("button", { type: "button", class: "link-danger", text: t("postDelete") });
-      del.addEventListener("click", () => deletePost(post.id));
-      card.appendChild(del);
+      del = el("button", { type: "button", class: "link-danger", text: t("postDelete") });
+      del.addEventListener("click", () => deletePost(post));
     }
+    if (S) card.appendChild(S.postFooter(post, del));
+    else if (del) card.appendChild(del);
     container.appendChild(card);
   });
 }
@@ -867,32 +876,47 @@ async function loadMembers() {
 }
 async function loadPosts() {
   const { data, error } = await db.from("community_posts")
-    .select("id,user_id,author_name,body,created_at").order("created_at", { ascending: false }).limit(50);
+    .select("id,user_id,author_name,body,photo_path,created_at").order("created_at", { ascending: false }).limit(50);
   if (error) throw error;
   posts = data || [];
+  if (window.CMLSocial) { try { await window.CMLSocial.loadExtras(posts); } catch { /* extras are optional */ } }
 }
 async function addPost() {
   const field = byId("postText");
   if (!field || !session) return;
   const text = field.value.trim();
-  if (!text) {
+  const S = window.CMLSocial;
+  const file = S ? S.takePhoto() : null;
+  if (!text && !file) {
     announce("requiredPost");
     field.focus();
     return;
   }
-  const { error } = await db.from("community_posts").insert({
-    user_id: session.user.id, author_name: profile ? profile.first_name : "", body: text.slice(0, 1000)
-  });
-  if (error) return announce("postFail");
+  const button = byId("postBtn");
+  button.disabled = true;
+  let photoPath = "";
+  try {
+    if (file) photoPath = await S.uploadPhoto(file);
+    const { error } = await db.from("community_posts").insert({
+      user_id: session.user.id, author_name: profile ? profile.first_name : "", body: text.slice(0, 1000), photo_path: photoPath
+    });
+    if (error) { if (photoPath) await S.removePhoto(photoPath); throw error; }
+  } catch {
+    button.disabled = false;
+    return announce(file ? "photoFail" : "postFail");
+  }
+  button.disabled = false;
   field.value = "";
+  if (S) S.clearChosen();
   try { await loadPosts(); } catch { /* ignore */ }
   renderPosts();
   announce("postSaved");
 }
-async function deletePost(id) {
-  const { error } = await db.from("community_posts").delete().eq("id", id);
+async function deletePost(post) {
+  const { error } = await db.from("community_posts").delete().eq("id", post.id);
   if (error) return announce("postFail");
-  posts = posts.filter(p => p.id !== id);
+  if (post.photo_path && window.CMLSocial) await window.CMLSocial.removePhoto(post.photo_path);
+  posts = posts.filter(p => p.id !== post.id);
   renderPosts();
   announce("postDeleted");
 }
