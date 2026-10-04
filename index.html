@@ -98,11 +98,14 @@
   </div>
 
   <div class="header-actions">
+    <button id="bellBtn" type="button" class="bell" aria-label="Avisos" data-i18n-aria="ntBell" aria-expanded="false">🔔<span id="bellBadge" class="bell-badge" hidden></span></button>
     <button id="profileBtn" type="button" aria-label="Mi perfil" data-i18n-aria="profBtn">👤</button>
     <button id="langBtn" type="button" aria-label="Switch to English">EN</button>
     <button id="logoutBtn" type="button" data-i18n="logout">Salir</button>
   </div>
 </header>
+
+<div id="notifPanel" class="notif-panel" role="dialog" aria-modal="false" hidden></div>
 
 <main>
   <p id="storageNotice" class="note" role="status" hidden></p>
@@ -564,5 +567,6 @@
   <script src="profile.js"></script>
   <script src="faith.js"></script>
   <script src="home.js"></script>
+  <script src="notify.js"></script>
 </body>
 </html>

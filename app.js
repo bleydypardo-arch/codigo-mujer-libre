@@ -1302,7 +1302,7 @@ function initialize() {
     isAdmin, isSuper, announce,
     refreshPublic: async () => { if (session) await loadAll(); },
     showPage, signOut: () => db.auth.signOut(), setLanguage,
-    homeData: () => ({ plans, counts, mine }), respond,
+    homeData: () => ({ plans, counts, mine, posts }), respond,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
       setLanguage(currentLanguage, false);

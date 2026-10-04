@@ -1240,3 +1240,15 @@ grant select, insert, delete on public.prayer_responses to authenticated;
 alter table public.plans drop constraint if exists plans_kind_check;
 alter table public.plans add constraint plans_kind_check
   check (kind in ('event','trip','home','wellness','weekend'));
+
+-- ============================================================================
+-- 19. NOTIFICATIONS: per-member on/off choices + "last looked" time (no new tables).
+--     Reminders themselves are worked out in the app from data it already reads, so nothing extra
+--     is stored about what a member does. Members can only change their own row.
+--     Safe to run more than once.
+-- ============================================================================
+alter table public.profiles add column if not exists notif_seen_at timestamptz;
+alter table public.profiles add column if not exists notif_prefs   jsonb not null default '{}'::jsonb;
+alter table public.profiles drop constraint if exists profiles_notif_prefs_check;
+alter table public.profiles add constraint profiles_notif_prefs_check
+  check (jsonb_typeof(notif_prefs) = 'object' and pg_column_size(notif_prefs) < 512);
