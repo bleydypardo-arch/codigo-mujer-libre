@@ -1074,3 +1074,74 @@ grant execute on function public.poll_results()     to authenticated;
 grant select, insert, update, delete on public.polls        to authenticated;
 grant select, insert, update, delete on public.poll_options to authenticated;
 grant select, insert, delete         on public.poll_votes   to authenticated;
+
+-- ============================================================================
+-- 16. PROFILES & CELEBRATIONS: profile photo (private), optional birthday (month + day ONLY —
+--     the year is never stored, so age can never be shown), preferred language.
+--     Safe to run more than once.
+-- ============================================================================
+alter table public.profiles add column if not exists avatar_path text;
+alter table public.profiles add column if not exists birth_month smallint;
+alter table public.profiles add column if not exists birth_day   smallint;
+alter table public.profiles add column if not exists pref_lang   text;
+
+alter table public.profiles drop constraint if exists profiles_birth_check;
+alter table public.profiles add constraint profiles_birth_check check (
+  (birth_month is null and birth_day is null)
+  or (birth_month between 1 and 12 and birth_day between 1 and 31
+      and birth_day <= (case birth_month when 2 then 29 when 4 then 30 when 6 then 30 when 9 then 30 when 11 then 30 else 31 end)));
+alter table public.profiles drop constraint if exists profiles_pref_lang_check;
+alter table public.profiles add constraint profiles_pref_lang_check check (pref_lang is null or pref_lang in ('es','en'));
+-- a member's photo must live in her own folder of the private bucket
+alter table public.profiles drop constraint if exists profiles_avatar_own_folder;
+alter table public.profiles add constraint profiles_avatar_own_folder check (
+  avatar_path is null or avatar_path like (id::text || '/%'));
+
+-- Private bucket: only approved members can see profile photos (signed links), each member writes only her own folder.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('avatars', 'avatars', false, 2097152, array['image/jpeg','image/png','image/webp'])
+on conflict (id) do update
+  set public = false, file_size_limit = 2097152,
+      allowed_mime_types = array['image/jpeg','image/png','image/webp'];
+
+drop policy if exists "avatars read"   on storage.objects;
+drop policy if exists "avatars insert" on storage.objects;
+drop policy if exists "avatars delete" on storage.objects;
+create policy "avatars read" on storage.objects
+  for select to authenticated using (bucket_id = 'avatars' and public.is_approved());
+create policy "avatars insert" on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'avatars' and public.is_approved() and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "avatars delete" on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'avatars'
+         and (public.is_admin() or (public.is_approved() and (storage.foldername(name))[1] = auth.uid()::text)));
+
+-- Upcoming birthdays for the Home screen: first name + date + photo path. NEVER the year or age.
+-- "Today" is New York time (the community is in Orlando).
+create or replace function public.upcoming_birthdays(within_days int default 14)
+returns table (user_id uuid, first_name text, avatar_path text, birth_month smallint, birth_day smallint,
+               next_on date, days_until int)
+language sql stable security definer set search_path = public as $$
+  with t as (select (now() at time zone 'America/New_York')::date as today),
+  c as (
+    select p.id, p.first_name, p.avatar_path, p.birth_month, p.birth_day,
+           case when p.birth_month = 2 and p.birth_day = 29 then 3 else p.birth_month end as m,
+           case when p.birth_month = 2 and p.birth_day = 29 then 1 else p.birth_day end as d,
+           t.today
+    from public.profiles p, t
+    where public.is_approved() and p.birth_month is not null and p.first_name <> ''
+      and (p.approved or p.role in ('admin','super_admin'))
+  ),
+  n as (
+    select c.*, make_date(extract(year from c.today)::int, c.m, c.d) as this_year from c
+  )
+  select id, first_name, avatar_path, birth_month, birth_day,
+         (case when this_year >= today then this_year else make_date(extract(year from today)::int + 1, m, d) end),
+         ((case when this_year >= today then this_year else make_date(extract(year from today)::int + 1, m, d) end) - today)::int
+  from n
+  where ((case when this_year >= today then this_year else make_date(extract(year from today)::int + 1, m, d) end) - today) <= greatest(0, least(within_days, 366))
+  order by 7, first_name
+$$;
+revoke all on function public.upcoming_birthdays(int) from public, anon;
+grant execute on function public.upcoming_birthdays(int) to authenticated;

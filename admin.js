@@ -108,6 +108,25 @@ function button(text, cls, handler) {
 }
 function loadingNode() { return el("p", { class: "small-note", text: a("loading") }); }
 
+// ---------- birthday -> celebration (a DRAFT event the admin reviews and publishes) ----------
+async function celebrate(person) {
+  const now = new Date(), y = now.getFullYear();
+  const mk = yr => new Date(yr, person.birth_month - 1, person.birth_day);
+  let d = mk(y); if (d < new Date(y, now.getMonth(), now.getDate())) d = mk(y + 1);
+  if (d.getMonth() !== person.birth_month - 1) d = new Date(d.getFullYear(), person.birth_month - 1, 28);   // Feb 29 in a common year
+  const iso = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  const n = person.first_name;
+  const r = await C.db.from("plans").insert({
+    kind: "event", code: "Social", published: false, event_date: iso,
+    title_es: C.t("bdEventTitleEs")(n), title_en: C.t("bdEventTitleEn")(n)
+  }).select().single();
+  if (r.error) return toast(C.t("bdFail"));
+  toast(C.t("bdCreated"));
+  C.showPage("admin", false);
+  tab = "plans"; editing = { kind: "event", row: r.data }; render();
+}
+window.CMLAdmin = { celebrate };
+
 // ---------- pending approvals: badge on the Admin button + banner ----------
 async function pendingCount() {
   const r = await C.db.from("profiles").select("id", { count: "exact", head: true }).eq("approved", false).eq("rejected", false).eq("role", "member");
@@ -453,6 +472,7 @@ async function usersView() {
         u.company ? el("p", { class: "small-note", text: a("company") + ": " + u.company }) : null,
         u.city ? el("p", { class: "small-note", text: a("city") + ": " + u.city }) : null,
         labels ? el("p", { class: "small-note", text: a("interests") + ": " + labels }) : null,
+        u.birth_month ? el("p", { class: "small-note", text: C.t("bdAdminLine") + ": " + new Date(2000, u.birth_month - 1, u.birth_day).toLocaleDateString(C.loc(), { month: "long", day: "numeric" }) }) : null,
         el("p", { class: "small-note", text: a("joined") + ": " + new Date(u.created_at).toLocaleDateString(C.loc()) }));
       if (u.role === "member") {
         const setApproval = async ok => {
@@ -469,6 +489,9 @@ async function usersView() {
         }));
         else if (!u.rejected) acts.appendChild(button(a("reject"), "danger", () => setApproval(false)));
         item.appendChild(acts);
+      }
+      if (u.birth_month && (u.approved || u.role !== "member")) {
+        item.appendChild(el("div", { class: "actions" }, button(C.t("bdCelebrate"), "", () => celebrate(u))));
       }
       if (C.isSuper() && u.id !== me && u.role !== "super_admin") {
         const makeAdmin = u.role !== "admin";
