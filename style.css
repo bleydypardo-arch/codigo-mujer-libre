@@ -180,3 +180,9 @@ body.lb-open { overflow: hidden; }
 .pending-banner { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: #fff3e0; border: 1px solid #f0c987; border-radius: 16px; padding: 10px 14px; margin: 10px 0; font-weight: bold; color: #6b4a12; }
 .pending-banner[hidden] { display: none; }
 .pending-banner .primary { min-height: 44px; }
+.approval-body { text-align: center; padding: 18px 4px 6px; }
+.approval-icon { font-size: 44px; line-height: 1; margin-bottom: 8px; }
+.approval-body h1 { font: 28px/1.15 Georgia, serif; margin: 6px 0 12px; }
+.approval-body p { line-height: 1.5; color: #4a4245; margin: 0 0 18px; }
+.approval-body .link-btn { background: none; border: 0; min-height: 44px; font: inherit; font-weight: bold; color: #80525a; margin-top: 8px; }
+#approvalGate[hidden] { display: none !important; }

@@ -214,6 +214,11 @@ Object.assign(translations.es, {
   loginBtn: "Entrar",
   signupBtn: "Crear mi cuenta",
   logout: "Salir",
+  pendTitle: "Bienvenida a Código Mujer Libre.",
+  pendBody: "Tu membresía está pendiente de aprobación. Te avisaremos cuando tengas acceso.",
+  pendCheck: "Revisar de nuevo", pendStill: "Todavía pendiente. Te avisaremos cuando tengas acceso.",
+  rejTitle: "Tu solicitud no fue aprobada",
+  rejBody: "Por ahora no pudimos aprobar tu membresía. Si crees que es un error, escribe a la administradora de tu grupo.",
   authWorking: "Un momento…",
   authCheckEmail: "Cuenta creada. Revisa tu correo para confirmarla y luego entra.",
   authBadLogin: "Correo o contraseña incorrectos.",
@@ -280,6 +285,11 @@ Object.assign(translations.en, {
   loginBtn: "Log in",
   signupBtn: "Create my account",
   logout: "Log out",
+  pendTitle: "Welcome to Código Mujer Libre.",
+  pendBody: "Your membership is waiting for approval. We'll let you know when you're in.",
+  pendCheck: "Check again", pendStill: "Still waiting. We'll let you know when you're in.",
+  rejTitle: "Your request wasn't approved",
+  rejBody: "We couldn't approve your membership right now. If you think this is a mistake, please contact your group's administrator.",
   authWorking: "One moment…",
   authCheckEmail: "Account created. Check your email to confirm it, then log in.",
   authBadLogin: "Incorrect email or password.",
@@ -412,6 +422,7 @@ const byId = id => document.getElementById(id);
 const t = key => translations[currentLanguage][key] || "";
 const loc = () => (currentLanguage === "es" ? "es-US" : "en-US");
 const isAdmin = () => !!profile && (profile.role === "admin" || profile.role === "super_admin");
+const isPending = () => !!profile && profile.role === "member" && !profile.approved;
 const isSuper = () => !!profile && profile.role === "super_admin";
 
 const codeLabels = {
@@ -513,7 +524,7 @@ function setLanguage(language, persist = true) {
       else element.textContent = value;
     });
   });
-  ["langBtn", "authLang"].forEach(id => {
+  ["langBtn", "authLang", "pendLang"].forEach(id => {
     const button = byId(id);
     if (button) {
       button.textContent = currentLanguage === "es" ? "EN" : "ES";
@@ -1027,13 +1038,37 @@ function renderInterestChoices() {
     return el("label", { class: "choice" }, input, " " + t(codeLabels[code]));
   }));
 }
+function showApproval() {
+  byId("authGate").hidden = true;
+  byId("appShell").hidden = true;
+  byId("approvalGate").hidden = false;
+  const rej = !!profile && !!profile.rejected;
+  byId("approvalTitle").textContent = t(rej ? "rejTitle" : "pendTitle");
+  byId("approvalText").textContent = t(rej ? "rejBody" : "pendBody");
+  byId("approvalTitle").dataset.i18n = rej ? "rejTitle" : "pendTitle";
+  byId("approvalText").dataset.i18n = rej ? "rejBody" : "pendBody";
+  byId("pendCheck").hidden = rej;
+}
+async function recheckApproval() {
+  if (!session || !profile || !isPending() || profile.rejected) return;
+  const fresh = await fetchProfile();
+  if (!fresh || !session) return;
+  if (fresh.approved || fresh.role !== "member") return applySession(session);
+  profile = fresh;
+  if (fresh.rejected) return showApproval();
+  const fb = byId("approvalFeedback");
+  fb.textContent = t("pendStill"); fb.hidden = false;
+  clearTimeout(recheckApproval.t); recheckApproval.t = setTimeout(() => { fb.hidden = true; }, 6000);
+}
 function showGate(ready) {
+  byId("approvalGate").hidden = true;
   byId("authGate").hidden = false;
   byId("appShell").hidden = true;
   byId("authLoading").hidden = !!ready;
   byId("authForms").hidden = !ready;
 }
 function showApp() {
+  byId("approvalGate").hidden = true;
   byId("authGate").hidden = true;
   byId("appShell").hidden = false;
 }
@@ -1067,6 +1102,13 @@ async function applySession(s) {
     return;
   }
   byId("navAdmin").hidden = !isAdmin();
+  if (isPending()) {
+    // Not approved yet (or not approved at all): nothing private is loaded or shown.
+    plans = []; counts.clear(); mine.clear(); posts = []; myMessages = []; members = [];
+    showApproval();
+    document.dispatchEvent(new CustomEvent("cml:session", { detail: { admin: false, super: false, pending: true } }));
+    return;
+  }
   showApp();
   showPage("home", false);
   await loadAll();
@@ -1174,6 +1216,10 @@ function initialize() {
   byId("langBtn")?.addEventListener("click", toggleLanguage);
   byId("authLang")?.addEventListener("click", toggleLanguage);
   byId("logoutBtn")?.addEventListener("click", () => { db.auth.signOut(); });
+  byId("pendLogout")?.addEventListener("click", () => { db.auth.signOut(); });
+  byId("pendLang")?.addEventListener("click", toggleLanguage);
+  byId("pendCheck")?.addEventListener("click", recheckApproval);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) recheckApproval(); });
   byId("tabLogin")?.addEventListener("click", () => setAuthTab("login"));
   byId("tabSignup")?.addEventListener("click", () => setAuthTab("signup"));
   byId("loginForm")?.addEventListener("submit", handleLogin);
