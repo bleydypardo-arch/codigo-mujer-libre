@@ -375,12 +375,17 @@ Object.assign(translations.es, {
   justNow: "Ahora mismo", minsAgo: n => "Hace " + n + " min",
   noMessages: "Tu buzón privado", noMessagesText: "Aquí verás los mensajes que le envíes a la administradora y sus respuestas. Solo ella puede leerlos.",
   msgAnswered: "Respondido",
-  catsLabel: "¿Qué te apetece?", cat_social: "Happy hours y social", cat_dining: "Restaurantes", cat_events: "Eventos",
-  catDesc_social: "Brindis, terrazas, noches", catDesc_dining: "Brunch, cenas, cafés", catDesc_events: "Conciertos, mercados, festivales",
+  catsLabel: "¿Qué te apetece?", cat_social: "Happy hours y social", cat_dining: "Restaurantes y comida", cat_events: "Eventos y planes",
+  catDesc_social: "Brindis, terrazas, noches", catDesc_dining: "Brunch, cenas, cafés", catDesc_events: "Conciertos, mercados, festivales, exposiciones",
   catCount: n => n === 1 ? "1 plan" : n + " planes",
   catEmpty_social: "Pronto habrá nuevos happy hours", catEmpty_dining: "Pronto recomendaremos restaurantes", catEmpty_events: "Pronto habrá nuevos eventos",
   catEmptyText: "¿Conoces un lugar o un plan que valga la pena? Recomiéndalo y lo compartimos con la comunidad.", catSuggest: "Recomendar un lugar o plan",
-  rich_included: "Qué incluye", rich_excluded: "No incluye", rich_stay: "Alojamiento", rich_transport: "Transporte",
+  grp_about: "Sobre este plan", grp_price: "Precio y pago", grp_included: "Qué incluye", grp_itinerary: "Itinerario", grp_attend: "Para asistir",
+  grp_important: "Importante", grp_contact: "Detalles y contacto", rich_price: "Precio", rich_about: "Descripción", rich_meeting: "Punto de encuentro / salida",
+  rich_dates: "Fechas", rich_deposit: "Depósito", rich_payment: "Pagos e instrucciones", rich_promo: "Promoción", rich_meals: "Comidas",
+  rich_instructions: "Instrucciones", rich_passport: "Pasaporte y documentos", rich_contact_name: "Persona de contacto", rich_contact: "Contacto",
+  wellOffer: "Ver oferta o reservar",
+  rich_included: "Incluye", rich_excluded: "No incluye", rich_stay: "Alojamiento", rich_transport: "Transporte",
   rich_itinerary: "Itinerario", rich_activities: "Actividades", rich_dress: "Qué ponerse", rich_bring: "Qué llevar",
   rich_requirements: "Requisitos", rich_notes: "Importante", rich_links: "Enlaces", openPhoto: "Ver foto",
   bookInfo: "Reservar o más información",
@@ -410,12 +415,17 @@ Object.assign(translations.en, {
   justNow: "Just now", minsAgo: n => n + " min ago",
   noMessages: "Your private inbox", noMessagesText: "Here you'll see the messages you send to the administrator and her replies. Only she can read them.",
   msgAnswered: "Answered",
-  catsLabel: "What are you in the mood for?", cat_social: "Happy hours & social", cat_dining: "Restaurants", cat_events: "Events",
-  catDesc_social: "Drinks, rooftops, nights out", catDesc_dining: "Brunch, dinners, cafés", catDesc_events: "Concerts, markets, festivals",
+  catsLabel: "What are you in the mood for?", cat_social: "Happy hours & social", cat_dining: "Restaurants & food", cat_events: "Events & things to do",
+  catDesc_social: "Drinks, rooftops, nights out", catDesc_dining: "Brunch, dinners, cafés", catDesc_events: "Concerts, markets, festivals, exhibitions",
   catCount: n => n === 1 ? "1 plan" : n + " plans",
   catEmpty_social: "New happy hours are coming soon", catEmpty_dining: "Restaurant picks are coming soon", catEmpty_events: "New events are coming soon",
   catEmptyText: "Know a place or plan worth sharing? Recommend it and we'll share it with the community.", catSuggest: "Recommend a place or plan",
-  rich_included: "What's included", rich_excluded: "Not included", rich_stay: "Accommodation", rich_transport: "Transportation",
+  grp_about: "About this plan", grp_price: "Price & payment", grp_included: "What's included", grp_itinerary: "Itinerary", grp_attend: "To attend",
+  grp_important: "Important", grp_contact: "Details & contact", rich_price: "Price", rich_about: "Description", rich_meeting: "Meeting / departure point",
+  rich_dates: "Dates", rich_deposit: "Deposit", rich_payment: "Payments & instructions", rich_promo: "Promotion", rich_meals: "Meals",
+  rich_instructions: "Instructions", rich_passport: "Passport & documents", rich_contact_name: "Contact person", rich_contact: "Contact",
+  wellOffer: "See offer or book",
+  rich_included: "Includes", rich_excluded: "Not included", rich_stay: "Accommodation", rich_transport: "Transportation",
   rich_itinerary: "Itinerary", rich_activities: "Activities", rich_dress: "What to wear", rich_bring: "What to bring",
   rich_requirements: "Requirements", rich_notes: "Important", rich_links: "Links", openPhoto: "View photo",
   bookInfo: "Book or more information",
@@ -608,6 +618,20 @@ function setLanguage(language, persist = true) {
   document.dispatchEvent(new CustomEvent("cml:lang"));
 }
 
+// ---- Admin-editable texts (settings key "copy" = { key: { es, en } }) for a SAFE list of content texts only.
+// Defaults stay in the code; an empty field means "use the default". Never touches structure or security.
+const COPY_KEYS = ["heroTitle", "heroCta", "eventsTitle", "eventsIntro", "yourSpace", "wellnessIntro", "supTitle", "supIntro",
+  "communityTitle", "communityIntro", "travelTitle", "travelLead", "travelIntro", "travelBadge", "maTag", "maIntro", "wcQ", "wcSub"];
+const copyDefaults = { es: {}, en: {} };
+function applyCopy() {
+  const copy = settings.copy && typeof settings.copy === "object" ? settings.copy : {};
+  ["es", "en"].forEach(lang => COPY_KEYS.forEach(key => {
+    if (!(key in copyDefaults[lang]) && translations[lang][key] !== undefined) copyDefaults[lang][key] = translations[lang][key];
+    const v = copy[key] && typeof copy[key][lang] === "string" ? copy[key][lang].trim() : "";
+    if (v) translations[lang][key] = v;
+    else if (key in copyDefaults[lang]) translations[lang][key] = copyDefaults[lang][key];
+  }));
+}
 function renderAll() {
   renderHero();
   renderQuote();
@@ -667,7 +691,7 @@ function renderHero() {
   if (greet) {
     const h = new Date().getHours();
     const first = profile && profile.first_name ? profile.first_name : "";
-    greet.textContent = tf(h < 12 ? "greetMorning" : h < 19 ? "greetAfternoon" : "greetEvening", first);
+    greet.textContent = tf(h >= 5 && h < 12 ? "greetMorning" : h >= 12 && h < 19 ? "greetAfternoon" : "greetEvening", first);
   }
   const img = byId("heroImg");
   if (!img) return;
@@ -676,7 +700,9 @@ function renderHero() {
     img.addEventListener("error", () => { img.hidden = true; });
     img.addEventListener("load", () => { img.hidden = false; });
   }
-  const custom = settings.hero_image && safeUrl(settings.hero_image.url);
+  // The redesigned editorial hero has its own admin-managed photo ("hero_photo"). The older "hero_image"
+  // setting (used by the previous design) is left untouched in the database but no longer shown here.
+  const custom = settings.hero_photo && safeUrl(settings.hero_photo.url);
   const wanted = custom || DEFAULT_HERO;
   if (img.getAttribute("src") !== wanted) img.setAttribute("src", wanted);
 }
@@ -914,9 +940,15 @@ function eventCard(p, mini) {
 }
 // ---- Rich experience details. Stored INSIDE the plan's existing "details" text (so they keep the plans
 // table's member-only security) as "CML:" + JSON. Plain-text details from before keep working as they were.
-const RICH_SECTIONS = [
-  ["included", "✓"], ["excluded", "✕"], ["stay", "🏨"], ["transport", "🚐"], ["itinerary", "🗓"],
-  ["activities", "✨"], ["dress", "👗"], ["bring", "👜"], ["requirements", "📝"], ["notes", "❗"]
+// Detail page groups (same information architecture for events, experiences and wellness offers).
+const RICH_GROUPS = [
+  ["about", "✦", ["about", "meeting", "dates"]],
+  ["price", "◇", ["deposit", "payment", "promo"]],
+  ["included", "✓", ["included", "excluded", "stay", "meals", "transport"]],
+  ["itinerary", "🗓", ["itinerary"]],
+  ["attend", "👜", ["activities", "dress", "bring", "instructions"]],
+  ["important", "!", ["requirements", "passport", "notes"]],
+  ["contact", "✉", ["contact_name", "contact"]]
 ];
 function richOf(p) {
   const raw = String((p && p.details) || "");
@@ -945,41 +977,59 @@ function openImage(src) {
   document.addEventListener("keydown", function esc(e) { if (e.key === "Escape") { done(); document.removeEventListener("keydown", esc); } });
   document.body.appendChild(lightbox); close.focus();
 }
-function richBlock(p, x) {
-  const wrap = el("div", { class: "rich" });
-  const gallery = (Array.isArray(x.gallery) ? x.gallery : []).map(safeUrl).filter(Boolean).slice(0, 12);
-  if (gallery.length) {
-    wrap.appendChild(el("div", { class: "rich-gallery" }, ...gallery.map(src => {
-      const b = el("button", { type: "button", class: "rich-ph", "aria-label": t("openPhoto") }, el("img", { src, alt: "", loading: "lazy" }));
-      b.addEventListener("click", () => openImage(src));
-      return b;
-    })));
-  }
-  RICH_SECTIONS.forEach(([key, icon]) => {
-    const text = richText(x, key);
-    if (!text) return;
-    const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-    const body = lines.length > 1
-      ? el(key === "itinerary" ? "ol" : "ul", { class: "rich-list" + (key === "itinerary" ? " timeline" : "") }, ...lines.map(l => el("li", { text: l.replace(/^[-•·]\s*/, "") })))
-      : el("p", { class: "saved-text", text });
-    wrap.appendChild(el("section", { class: "rich-sec rich-" + key },
-      el("h3", { class: "sheet-h" }, el("span", { class: "rich-ic", "aria-hidden": "true", text: icon }), t("rich_" + key)), body));
+function richLines(text, key) {
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+  return lines.length > 1
+    ? el(key === "itinerary" ? "ol" : "ul", { class: "rich-list" + (key === "itinerary" ? " timeline" : "") }, ...lines.map(l => el("li", { text: l.replace(/^[-•·]\s*/, "") })))
+    : el("p", { class: "saved-text", text });
+}
+// Builds the detail sections. Only filled-in parts appear, so a picnic never looks like a trip form.
+function richSections(p, x) {
+  const out = [];
+  const desc = pick(p, "desc");
+  RICH_GROUPS.forEach(([g, icon, keys]) => {
+    const parts = keys.map(k => [k, x ? richText(x, k) : ""]).filter(([, v]) => v);
+    const extra = [];
+    if (g === "about" && desc) extra.push(el("p", { class: "saved-text", text: desc }));
+    if (g === "price" && p.price && (parts.length || p.kind === "trip")) extra.push(el("p", { class: "rich-price", text: t("rich_price") + ": " + p.price }));
+    if (g === "contact" && x) {
+      if (x.text) extra.push(el("p", { class: "saved-text", text: x.text }));
+      const links = (Array.isArray(x.links) ? x.links : []).filter(l => l && safeUrl(l.url));
+      if (links.length) extra.push(el("div", { class: "rich-links" }, ...links.map(l => el("a", { class: "link-btn", href: safeUrl(l.url), target: "_blank", rel: "noopener noreferrer", text: (l.label || safeUrl(l.url).replace(/^https?:\/\//, "").slice(0, 40)) + " ↗" }))));
+    }
+    if (g === "contact" && !x && p.details) extra.push(el("p", { class: "saved-text", text: p.details }));
+    if (!parts.length && !extra.length) return;
+    const showLabels = parts.length > 1 || (g !== "about" && extra.length && parts.length) || ["meeting", "dates", "deposit", "payment", "promo", "excluded", "stay", "meals", "transport", "passport", "contact_name"].includes(parts[0] && parts[0][0]);
+    const sec = el("section", { class: "rich-sec rich-" + g + (g === "important" ? " rich-notes" : "") },
+      el("h3", { class: "sheet-h" }, el("span", { class: "rich-ic", "aria-hidden": "true", text: icon }), t("grp_" + g)), ...extra);
+    parts.forEach(([k, v]) => {
+      if (showLabels) sec.appendChild(el("b", { class: "rich-sub", text: t("rich_" + k) }));
+      sec.appendChild(richLines(v, k));
+    });
+    out.push(sec);
   });
-  if (x.text) wrap.appendChild(el("section", { class: "rich-sec" }, el("h3", { class: "sheet-h", text: t("moreDetails") }), el("p", { class: "saved-text", text: x.text })));
-  const links = (Array.isArray(x.links) ? x.links : []).filter(l => l && safeUrl(l.url));
-  if (links.length) {
-    wrap.appendChild(el("section", { class: "rich-sec" }, el("h3", { class: "sheet-h", text: t("rich_links") }),
-      el("div", { class: "rich-links" }, ...links.map(l => el("a", { class: "link-btn", href: safeUrl(l.url), target: "_blank", rel: "noopener noreferrer", text: (l.label || safeUrl(l.url).replace(/^https?:\/\//, "").slice(0, 40)) + " ↗" })))));
-  }
-  return wrap;
+  return out;
+}
+function galleryNode(x) {
+  const gallery = (x && Array.isArray(x.gallery) ? x.gallery : []).map(safeUrl).filter(Boolean).slice(0, 12);
+  if (!gallery.length) return null;
+  return el("div", { class: "rich-gallery" }, ...gallery.map(src => {
+    const b = el("button", { type: "button", class: "rich-ph", "aria-label": t("openPhoto") }, el("img", { src, alt: "", loading: "lazy" }));
+    b.addEventListener("click", () => openImage(src));
+    return b;
+  }));
 }
 function detailNode(p) {
   const box = el("div", { class: "sheet-content" });
   box.appendChild(eventMedia(p, "sheet-hero"));
   const body = el("div", { class: "sheet-main" });
+  if (p.kind === "wellness") {
+    const c = planTag(p.id).cat;
+    if (c) body.appendChild(el("small", { class: "rose sheet-k", text: t("wcat_" + c) }));
+  }
   body.appendChild(el("h2", { id: "sheetTitle", class: "sheet-title", text: pick(p, "title") || "—" }));
   const meta = [];
-  meta.push("📅 " + (p.event_date ? fmtDate(p.event_date) + (p.event_time ? " · " + p.event_time : "") : shortWhen(p)));
+  if (p.event_date || p.date_text || p.kind === "event") meta.push("📅 " + (p.event_date ? fmtDate(p.event_date) + (p.event_time ? " · " + p.event_time : "") : shortWhen(p)));
   if (p.location) meta.push("📍 " + p.location);
   if (p.price) meta.push("💲 " + p.price);
   meta.forEach(l => body.appendChild(el("p", { class: "meta-line", text: l })));
@@ -989,23 +1039,21 @@ function detailNode(p) {
   if (rs.cap) facts.push(rs.full ? t("factFull") : tf("factSpots", rs.cap, rs.left));
   if (rs.by) facts.push(rs.closed ? t("factClosed") : tf("factBy", dateFromStr(rs.by).toLocaleDateString(loc(), { day: "numeric", month: "short" })));
   if (facts.length) body.appendChild(el("div", { class: "rich-facts" }, ...facts.map(f => el("span", { class: "rich-fact", text: f }))));
-  body.appendChild(el("h3", { class: "sheet-h", text: t("attendanceTitle") }));
-  body.appendChild(avatarStack(p.id, 8));
-  body.appendChild(el("div", { class: "resp-row" }, respondButton(p, "interested"), respondButton(p, "going")));
-  const description = pick(p, "desc");
-  if (description) {
-    body.appendChild(el("h3", { class: "sheet-h", text: t("aboutEvent") }));
-    body.appendChild(el("p", { class: "saved-text", text: description }));
+  if (p.kind === "event" || p.kind === "trip") {
+    body.appendChild(el("h3", { class: "sheet-h", text: t("attendanceTitle") }));
+    body.appendChild(avatarStack(p.id, 8));
+    body.appendChild(el("div", { class: "resp-row" }, respondButton(p, "interested"), respondButton(p, "going")));
   }
-  if (rich) body.appendChild(richBlock(p, rich));
+  const gal = galleryNode(rich);
+  const secs = richSections(p, rich);
+  if (secs.length && secs[0].classList.contains("rich-about")) body.appendChild(secs.shift());
+  if (gal) body.appendChild(gal);
+  secs.forEach(sc => body.appendChild(sc));
   const url = safeUrl(p.url);
-  if (url) body.appendChild(el("a", { class: rich ? "primary rich-book" : "link-btn", href: url, target: "_blank", rel: "noopener noreferrer", text: (rich ? t("bookInfo") : t("moreInfo")) + " ↗" }));
+  if (url) body.appendChild(el("a", { class: "primary rich-book", href: url, target: "_blank", rel: "noopener noreferrer", text: t(p.kind === "wellness" ? "wellOffer" : rich ? "bookInfo" : "moreInfo") + " ↗" }));
   if (p.location) mapBlock(body, p.location);
-  if (p.details && !rich) {
-    body.appendChild(el("details", { class: "more" }, el("summary", { text: t("moreDetails") }), el("p", { class: "saved-text", text: p.details })));
-  }
   if (window.CMLPolls) { const polls = window.CMLPolls.planBlock(p); if (polls) body.appendChild(polls); }
-  if (window.CMLSocial) { const chat = window.CMLSocial.chatBlock(p, mine.get(p.id)); if (chat) body.appendChild(chat); }
+  if (window.CMLSocial && (p.kind === "event" || p.kind === "trip")) { const chat = window.CMLSocial.chatBlock(p, mine.get(p.id)); if (chat) body.appendChild(chat); }
   box.appendChild(body);
   return box;
 }
@@ -1292,7 +1340,8 @@ async function loadPosts() {
   const { data, error } = await db.from("community_posts")
     .select("id,user_id,author_name,body,photo_path,created_at").order("created_at", { ascending: false }).limit(50);
   if (error) throw error;
-  posts = data || [];
+  // obvious developer test posts ("TEST …" in capitals at the very start) are hidden from the feed; nothing is deleted
+  posts = (data || []).filter(x => !/^\s*TEST\b/.test(x.body || "") && !/^\s*test\s*$/i.test(x.body || ""));
   if (window.CMLSocial) { try { await window.CMLSocial.loadExtras(posts); } catch { /* extras are optional */ } }
   await loadPostAvatars();
 }
@@ -1599,7 +1648,8 @@ async function loadAll() {
   if (!session || session.user.id !== uid) return;
   if (window.CMLPolls) { try { await window.CMLPolls.reload(); } catch { /* polls are optional */ } }
   if (!session || session.user.id !== uid) return;
-  renderAll();
+  applyCopy();
+  setLanguage(currentLanguage, false);   // re-applies texts (incl. admin-edited ones) and re-renders everything
 }
 
 async function handleLogin(event) {
@@ -1729,7 +1779,7 @@ function initialize() {
     refreshPublic: async () => { if (session) await loadAll(); },
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,
-    setting: key => settings[key], isTestContent, TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, openModal, byDate,
+    setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, openModal, byDate,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
       setLanguage(currentLanguage, false);

@@ -5,13 +5,22 @@
 const S = {
   es: {
     pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada",
-    tabs: { plans: "Planes y eventos", trips: "Viajes y Experiencias", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imágenes y mensaje", matcha: "Rincón Matcha" },
-    groups: { content: "Contenido", people: "Comunidad", tools: "Herramientas" },
+    tabs: { plans: "Planes y eventos", trips: "Viajes y Experiencias", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imágenes y textos", matcha: "Rincón Matcha", trips: "Viajes y Experiencias" },
+    groups: { content: "Contenido", people: "Comunidad", tools: "Ajustes y medios" },
+    secImages: "Imágenes", secTexts: "Textos de la app", imgLogoTitle: "Logo de la marca", imgLogoHelp: "Aparece en el encabezado. Usa un archivo cuadrado (PNG o SVG con fondo transparente). Si lo quitas, vuelve el logo aprobado.",
+    imgPagesTitle: "Fotos de entrada de cada sección (opcional)", imgPagesHelp: "Si agregas una foto, aparece detrás del título de esa sección con un velo suave para que el texto se lea bien.",
+    page_events: "Planes y Eventos", page_wellness: "Bienestar", page_support: "Aquí para ti (Apoyo)", page_community: "Comunidad", page_messages: "Mensajes", page_travel: "Viajes y Experiencias",
+    copyTitle: "Títulos y frases", copyHelp: "Cambia el texto en español y en inglés. Deja un campo vacío para usar el texto original (lo ves en gris).",
+    copy_heroTitle: "Inicio · frase principal", copy_heroCta: "Inicio · botón", copy_eventsTitle: "Eventos · título", copy_eventsIntro: "Eventos · introducción",
+    copy_yourSpace: "Bienestar · título", copy_wellnessIntro: "Bienestar · introducción", copy_supTitle: "Apoyo · título", copy_supIntro: "Apoyo · introducción",
+    copy_communityTitle: "Comunidad · título", copy_communityIntro: "Comunidad · introducción", copy_travelTitle: "Viajes · título", copy_travelLead: "Viajes · frase destacada",
+    copy_travelIntro: "Viajes · introducción", copy_travelBadge: "Viajes · etiqueta", copy_maTag: "Rincón Matcha · lema", copy_maIntro: "Rincón Matcha · introducción",
+    copy_wcQ: "Tu código · pregunta", copy_wcSub: "Tu código · subtítulo",
     imgTravelTitle: "Imagen de Viajes y Experiencias", imgTravelHelp: "Se usa en la portada de Viajes (si el viaje no tiene foto) y en los accesos a Viajes desde Inicio y Eventos.",
     imgFounderTitle: "Foto de la fundadora (Nuestra esencia)", imgFounderHelp: "Aparece en la página «Nuestra esencia». Mejor una foto vertical o cuadrada.",
     imgDefault: "Quitar y usar la predeterminada",
     imgMatchaTitle: "Imagen de Matcha y Arte", imgMatchaHelp: "Aparece en la tarjeta de Inicio y en la página de la colección.",
-    fType: "Tipo de plan (filtros de Eventos)", fTypeAuto: "Automático (según el código)", fType_social: "Happy hour y social", fType_dining: "Restaurante", fType_events: "Evento (conciertos, mercados, festivales…)",
+    fType: "Tipo de plan (filtros de Eventos)", fTypeAuto: "Automático (según el código)", fType_social: "Happy hour y social", fType_dining: "Restaurante y comida", fType_events: "Evento o plan (conciertos, mercados, festivales, exposiciones, concursos…)",
     fWcat: "Categoría de bienestar", fWcatNone: "— Sin categoría —", fMatcha: "Incluir en la colección «Matcha y Arte»",
     fUrlOffer: "Enlace de la oferta o reserva (https://…)",
     imgRemove: "Quitar imagen", fTripType: "Tipo de experiencia", fTripTypeHelp: "Define en qué tipo aparece en Viajes y Experiencias.",
@@ -22,11 +31,16 @@ const S = {
     tripIntro: "Cada experiencia tiene su propia página: agrega solo los detalles que apliquen (un picnic no necesita hotel).",
     wellIntro: "Experiencias de bienestar para «Descubre bienestar»: gimnasios, pilates, yoga, spas, masajes, faciales, retiros, comida sana, talleres u ofertas.",
     rfTitle: "Página de la experiencia (opcional)", rfHelp: "Completa solo lo que aplique. Las secciones vacías no se muestran.",
-    rg_essentials: "Lo esencial: cupo, fecha límite y enlaces", rg_includes: "Qué incluye / no incluye", rg_logistics: "Viaje y logística",
-    rg_attend: "Para asistir", rg_important: "Notas importantes", rg_gallery: "Galería de fotos",
+    rg_essentials: "Cupo, fecha límite, enlaces y notas de contacto", rg_includes: "Qué incluye (hotel, comidas, transporte…)", rg_logistics: "Viaje y logística",
+    rg_attend: "Para asistir", rg_important: "Importante (requisitos, pasaporte, notas)", rg_gallery: "Galería de fotos y flyers",
+    rg_about: "Sobre este plan (descripción completa, punto de encuentro, fechas)", rg_price: "Precio y pago (depósito, calendario de pagos)", rg_itinerary: "Itinerario por día",
+    rg_contact: "Detalles y contacto", rg_promo: "Promoción u oferta", rg_flyer: "Flyer o fotos promocionales",
+    rf_about: "Descripción completa", rf_meeting: "Punto de encuentro / salida", rf_dates: "Fechas (texto)", rf_deposit: "Depósito", rf_payment: "Pagos e instrucciones (sin pagos dentro de la app)",
+    rf_meals: "Comidas", rf_passport: "Pasaporte y documentos", rf_contact_name: "Persona de contacto", rf_contact: "Datos de contacto (teléfono, correo, WhatsApp)",
+    rf_promo: "Promoción / oferta", rf_instructions: "Instrucciones",
     rfCapacity: "Cupo (número de lugares)", rfRsvpBy: "Confirmar antes de", rfLinks: "Enlaces adicionales", rfLinksHelp: "Uno por línea: Etiqueta | https://…",
     rfAddPhoto: "+ Agregar foto", rfGalleryHelp: "Fotos adicionales del lugar o de experiencias anteriores.",
-    rf_included: "Qué incluye", rf_excluded: "No incluye", rf_stay: "Alojamiento / hotel", rf_transport: "Transporte", rf_itinerary: "Itinerario (una línea por momento)",
+    rf_included: "Incluye", rf_excluded: "No incluye", rf_stay: "Alojamiento / hotel", rf_transport: "Transporte", rf_itinerary: "Itinerario (una línea por momento)",
     rf_activities: "Actividades", rf_dress: "Qué ponerse", rf_bring: "Qué llevar", rf_requirements: "Requisitos", rf_notes: "Importante", testFlag: "⚠ Parece contenido de prueba (contiene «test»): no se muestra en la app. Cámbiale el título o elimínalo.",
     loading: "Cargando…", loadFail: "No se pudo cargar. Inténtalo de nuevo.",
     newItem: "+ Nuevo", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Ocultar", live: "Publicado", draft: "Borrador",
@@ -35,7 +49,7 @@ const S = {
     counts: (i, g) => "❤️ " + i + " · ✓ " + g,
     empty: "Todavía no hay nada aquí.",
     fCode: "Código / categoría", fNone: "— Sin código —", fTitleEs: "Título (español)", fTitleEn: "Título (inglés)",
-    fDescEs: "Descripción (español)", fDescEn: "Descripción (inglés)", fDate: "Fecha", fDateHelp: "El mes se calcula solo a partir de la fecha. Déjala vacía si aún no hay fecha.", aiToWeekend: "Agregar a ideas de fin de semana", fDateWeekend: "Fin de semana (fecha del sábado; se oculta sola al pasar)",
+    fDescEs: "Descripción (español)", fDescEn: "Descripción (inglés)", fShortEs: "Descripción corta (español)", fShortEn: "Descripción corta (inglés)", fDate: "Fecha", fDateHelp: "El mes se calcula solo a partir de la fecha. Déjala vacía si aún no hay fecha.", aiToWeekend: "Agregar a ideas de fin de semana", fDateWeekend: "Fin de semana (fecha del sábado; se oculta sola al pasar)",
     fTime: "Hora (ej. 7:00 PM)", fDateText: "Fechas tentativas (ej. mayo, o 15–17 de mayo)", fLocationEvent: "Lugar", fLocationTrip: "Destino",
     fPriceEvent: "Precio aproximado", fPriceTrip: "Presupuesto aproximado", fUrl: "Enlace externo (https://…)", fDetails: "Más detalles / contacto",
     fImage: "Imagen", fImageUrl: "o pega la dirección de una imagen", uploading: "Subiendo imagen…", imageFail: "No se pudo subir la imagen (usa JPG, PNG o WebP).",
@@ -54,18 +68,27 @@ const S = {
     makeAdmin: "Hacer administradora", removeAdmin: "Quitar administradora", roleSaved: "Rol actualizado.", joined: "Se unió",
     company: "Empresa", city: "Ciudad", interests: "Intereses",
     reply: "Respuesta", sendReply: "Guardar respuesta", replySaved: "Respuesta guardada.", from: "De",
-    heroTitle: "Imagen principal (portada)", heroHelp: "Sube una foto. Se ajusta sola a celular y computadora.", heroDefault: "Usar la imagen original",
+    heroTitle: "Foto de portada de Inicio", heroHelp: "Una foto horizontal de estilo de vida. El saludo («Buenos días, …») aparece encima con un velo suave; se recorta sola en celular y computadora.", heroDefault: "Usar la imagen original",
     quoteTitle: "Mensaje de hoy", quoteEs: "Mensaje (español)", quoteEn: "Mensaje (inglés)"
   },
   en: {
     pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated",
-    tabs: { plans: "Plans & events", trips: "Travel & Experiences", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Images & message", matcha: "Matcha Corner" },
-    groups: { content: "Content", people: "Community", tools: "Tools" },
+    tabs: { plans: "Plans & events", trips: "Travel & Experiences", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Images & texts", matcha: "Matcha Corner", trips: "Travel & Experiences" },
+    groups: { content: "Content", people: "Community", tools: "Settings & media" },
+    secImages: "Images", secTexts: "App texts", imgLogoTitle: "Brand logo", imgLogoHelp: "Shown in the header. Use a square file (PNG or SVG with a transparent background). Remove it to return to the approved logo.",
+    imgPagesTitle: "Section entrance photos (optional)", imgPagesHelp: "When you add a photo it appears behind that section's title with a soft veil so the text stays readable.",
+    page_events: "Plans & Events", page_wellness: "Wellness", page_support: "Here for you (Support)", page_community: "Community", page_messages: "Messages", page_travel: "Travel & Experiences",
+    copyTitle: "Titles & phrases", copyHelp: "Change the Spanish and English text. Leave a field empty to use the original text (shown in grey).",
+    copy_heroTitle: "Home · main phrase", copy_heroCta: "Home · button", copy_eventsTitle: "Events · title", copy_eventsIntro: "Events · intro",
+    copy_yourSpace: "Wellness · title", copy_wellnessIntro: "Wellness · intro", copy_supTitle: "Support · title", copy_supIntro: "Support · intro",
+    copy_communityTitle: "Community · title", copy_communityIntro: "Community · intro", copy_travelTitle: "Travel · title", copy_travelLead: "Travel · highlight",
+    copy_travelIntro: "Travel · intro", copy_travelBadge: "Travel · badge", copy_maTag: "Matcha corner · tagline", copy_maIntro: "Matcha corner · intro",
+    copy_wcQ: "Your code · question", copy_wcSub: "Your code · subtitle",
     imgTravelTitle: "Travel & Experiences image", imgTravelHelp: "Used on the Travel cover (when the trip has no photo) and on the Travel entry points on Home and Events.",
     imgFounderTitle: "Founder photo (Our essence)", imgFounderHelp: "Shown on the “Our essence” page. A portrait or square photo works best.",
     imgDefault: "Remove and use the default",
     imgMatchaTitle: "Matcha & Art image", imgMatchaHelp: "Shown on the Home card and on the collection page.",
-    fType: "Plan type (Events filters)", fTypeAuto: "Automatic (from the code)", fType_social: "Happy hour & social", fType_dining: "Restaurant", fType_events: "Event (concerts, markets, festivals…)",
+    fType: "Plan type (Events filters)", fTypeAuto: "Automatic (from the code)", fType_social: "Happy hour & social", fType_dining: "Restaurant & food", fType_events: "Event or thing to do (concerts, markets, festivals, exhibitions, contests…)",
     fWcat: "Wellness category", fWcatNone: "— No category —", fMatcha: "Include in the “Matcha & Art” collection",
     fUrlOffer: "Offer or booking link (https://…)",
     imgRemove: "Remove image", fTripType: "Experience type", fTripTypeHelp: "Sets which type it appears under in Travel & Experiences.",
@@ -76,11 +99,16 @@ const S = {
     tripIntro: "Each experience gets its own page: add only the details that apply (a picnic doesn't need a hotel).",
     wellIntro: "Wellness experiences for “Discover wellness”: gyms, Pilates, yoga, spas, massages, facials, retreats, healthy food, workshops or offers.",
     rfTitle: "Experience page (optional)", rfHelp: "Fill in only what applies. Empty sections are not shown.",
-    rg_essentials: "Essentials: capacity, deadline and links", rg_includes: "What's included / not included", rg_logistics: "Travel & logistics",
-    rg_attend: "To attend", rg_important: "Important notes", rg_gallery: "Photo gallery",
+    rg_essentials: "Capacity, deadline, links and contact notes", rg_includes: "What's included (hotel, meals, transport…)", rg_logistics: "Travel & logistics",
+    rg_attend: "To attend", rg_important: "Important (requirements, passport, notes)", rg_gallery: "Photo gallery & flyers",
+    rg_about: "About this plan (full description, meeting point, dates)", rg_price: "Price & payment (deposit, schedule)", rg_itinerary: "Day-by-day itinerary",
+    rg_contact: "Details & contact", rg_promo: "Promotion or offer", rg_flyer: "Flyer or promotional photos",
+    rf_about: "Full description", rf_meeting: "Meeting / departure point", rf_dates: "Dates (text)", rf_deposit: "Deposit", rf_payment: "Payments & instructions (no payments inside the app)",
+    rf_meals: "Meals", rf_passport: "Passport & documents", rf_contact_name: "Contact person", rf_contact: "Contact details (phone, email, WhatsApp)",
+    rf_promo: "Promotion / offer", rf_instructions: "Instructions",
     rfCapacity: "Capacity (number of spots)", rfRsvpBy: "Confirm by", rfLinks: "Additional links", rfLinksHelp: "One per line: Label | https://…",
     rfAddPhoto: "+ Add photo", rfGalleryHelp: "Extra photos of the place or of past experiences.",
-    rf_included: "What's included", rf_excluded: "Not included", rf_stay: "Accommodation / hotel", rf_transport: "Transportation", rf_itinerary: "Itinerary (one line per moment)",
+    rf_included: "Includes", rf_excluded: "Not included", rf_stay: "Accommodation / hotel", rf_transport: "Transportation", rf_itinerary: "Itinerary (one line per moment)",
     rf_activities: "Activities", rf_dress: "What to wear", rf_bring: "What to bring", rf_requirements: "Requirements", rf_notes: "Important", testFlag: "⚠ Looks like test content (contains “test”): it is not shown in the app. Rename or delete it.",
     loading: "Loading…", loadFail: "Could not load. Please try again.",
     newItem: "+ New", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Hide", live: "Published", draft: "Draft",
@@ -89,7 +117,7 @@ const S = {
     counts: (i, g) => "❤️ " + i + " · ✓ " + g,
     empty: "Nothing here yet.",
     fCode: "Código / category", fNone: "— No code —", fTitleEs: "Title (Spanish)", fTitleEn: "Title (English)",
-    fDescEs: "Description (Spanish)", fDescEn: "Description (English)", fDate: "Date", fDateHelp: "The month is worked out from the date. Leave empty if there is no date yet.", aiToWeekend: "Add to weekend ideas", fDateWeekend: "Weekend (Saturday's date; hides itself afterwards)",
+    fDescEs: "Description (Spanish)", fDescEn: "Description (English)", fShortEs: "Short description (Spanish)", fShortEn: "Short description (English)", fDate: "Date", fDateHelp: "The month is worked out from the date. Leave empty if there is no date yet.", aiToWeekend: "Add to weekend ideas", fDateWeekend: "Weekend (Saturday's date; hides itself afterwards)",
     fTime: "Time (e.g. 7:00 PM)", fDateText: "Tentative dates (e.g. May, or May 15–17)", fLocationEvent: "Location", fLocationTrip: "Destination",
     fPriceEvent: "Approximate price", fPriceTrip: "Approximate budget", fUrl: "External link (https://…)", fDetails: "More details / contact",
     fImage: "Image", fImageUrl: "or paste an image address", uploading: "Uploading image…", imageFail: "Could not upload the image (use JPG, PNG or WebP).",
@@ -108,7 +136,7 @@ const S = {
     makeAdmin: "Make administrator", removeAdmin: "Remove administrator", roleSaved: "Role updated.", joined: "Joined",
     company: "Company", city: "City", interests: "Interests",
     reply: "Reply", sendReply: "Save reply", replySaved: "Reply saved.", from: "From",
-    heroTitle: "Main (cover) image", heroHelp: "Upload a photo. It fits phones and computers automatically.", heroDefault: "Use the original image",
+    heroTitle: "Home cover photo", heroHelp: "A landscape lifestyle photo. The greeting (“Good morning, …”) sits on it with a soft veil; it crops itself for phones and computers.", heroDefault: "Use the original image",
     quoteTitle: "Today's message", quoteEs: "Message (Spanish)", quoteEn: "Message (English)"
   }
 };
@@ -117,7 +145,7 @@ const KINDS = {
   event:    { tab: "plans",    fields: ["code", "title", "desc", "date", "time", "location", "price", "url", "details", "image"] },
   trip:     { tab: "trips",    fields: ["code", "title", "desc", "date_text", "location", "price", "url", "details", "image"] },
   home:     { tab: "home",     fields: ["title", "desc", "image"] },
-  wellness: { tab: "wellness", fields: ["title", "desc", "location", "price", "url", "details", "image"] },
+  wellness: { tab: "wellness", fields: ["title", "desc", "date", "time", "location", "price", "url", "details", "image"] },
   weekend:  { tab: "weekend",  fields: ["code", "title", "desc", "date", "location", "url"] },
   // Rincón Matcha & Arte items are ordinary "home" plans tagged {matcha, mtype, featured, city} (no new table)
   matcha:   { tab: "matcha",   fields: ["title", "desc", "location", "url", "image"], dbKind: "home" }
@@ -126,9 +154,9 @@ const TAB_KIND = { plans: "event", trips: "trip", weekend: "weekend", home: "hom
 const TABS = ["plans", "trips", "weekend", "home", "wellness", "matcha", "community", "memories", "polls", "messages", "users", "ai", "settings"];
 // Visual grouping only: every tab (and what it can do) is exactly the same as before.
 const GROUPS = [
-  ["content", ["plans", "trips", "weekend", "home", "wellness", "matcha", "polls", "settings"]],
+  ["content", ["plans", "weekend", "trips", "wellness", "matcha", "home", "polls"]],
   ["people", ["users", "messages", "community", "memories"]],
-  ["tools", ["ai"]]
+  ["tools", ["settings", "ai"]]
 ];
 const CODES = ["Social", "Wellness", "Faith", "Adventure", "Family", "Connection", "Support", "Recharge"];
 const EVENT_TYPES = ["social", "dining", "events"];
@@ -136,13 +164,15 @@ const WCATS = ["spa", "beauty", "fitness", "movement", "mind", "retreat", "food"
 const TRIP_TYPES = ["trip", "retreat", "party", "dining", "nature"];
 const TRIP_TYPE_KEY = { trip: "expTrip", retreat: "expRetreat", party: "expParty", dining: "expDining", nature: "expNature" };
 const MTYPES = ["spot", "place", "recipe", "offer"];
-const RICH = [
-  ["essentials", []],
-  ["includes", ["included", "excluded"]],
-  ["logistics", ["stay", "transport", "itinerary"]],
-  ["attend", ["activities", "dress", "bring", "requirements"]],
-  ["important", ["notes"]]
-];
+// Editor groups mirror the member detail page: Sobre este plan · Precio · Qué incluye · Itinerario · Importante · Detalles y contacto
+const RICH_BY_KIND = {
+  trip: [["about", ["about", "meeting", "dates"]], ["price", ["deposit", "payment"]], ["includes", ["included", "excluded", "stay", "meals", "transport"]],
+         ["itinerary", ["itinerary"]], ["attend", ["activities", "dress", "bring"]], ["important", ["requirements", "passport", "notes"]],
+         ["contact", ["contact_name", "contact"]], ["essentials", []]],
+  event: [["about", ["about", "meeting"]], ["includes", ["included", "excluded", "meals"]], ["attend", ["activities", "dress", "bring"]],
+          ["important", ["requirements", "notes"]], ["price", ["deposit", "payment"]], ["contact", ["contact_name", "contact"]], ["essentials", []]],
+  wellness: [["about", ["about"]], ["promo", ["promo"]], ["attend", ["instructions"]], ["important", ["notes"]], ["contact", ["contact_name", "contact"]], ["essentials", []]]
+};
 const looksLikeTest = (...texts) => texts.some(x => /\btest(ing)?\b/i.test(String(x || "")));
 // Category / collection tags live in the existing settings table (key "plan_tags"), admin-only write.
 // One entry of a small map kept in the settings table (plan_tags, poll_places). Reads fresh, merges, writes.
@@ -449,7 +479,7 @@ function richFields(kind, details) {
   (Array.isArray(x.gallery) ? x.gallery : []).forEach(addPicker);
   const addBtn = button(a("rfAddPhoto"), "secondary", () => addPicker(""));
   const has = keys => keys.some(k => (x.es && x.es[k]) || (x.en && x.en[k]));
-  const groups = RICH.map(([g, keys]) => {
+  const groups = RICH_BY_KIND[kind].map(([g, keys]) => {
     const det = el("details", { class: "rf-group" }, el("summary", { text: a("rg_" + g) }));
     if (g === "essentials") {
       det.append(el("div", { class: "two-col" }, el("label", {}, a("rfCapacity"), cap), el("label", {}, a("rfRsvpBy"), by)),
@@ -458,11 +488,11 @@ function richFields(kind, details) {
       det.open = !!(x.capacity || x.rsvp_by || (x.links && x.links.length) || x.text);
     } else {
       keys.forEach(k => det.appendChild(pair(k)));
-      det.open = has(keys) || (kind === "trip" && g === "logistics");
+      det.open = has(keys) || (g === "about") || (kind === "trip" && (g === "includes" || g === "itinerary"));
     }
     return det;
   });
-  const galGroup = el("details", { class: "rf-group" }, el("summary", { text: a("rg_gallery") }), el("p", { class: "small-note", text: a("rfGalleryHelp") }), gal, addBtn);
+  const galGroup = el("details", { class: "rf-group" }, el("summary", { text: a(kind === "wellness" ? "rg_flyer" : "rg_gallery") }), el("p", { class: "small-note", text: a("rfGalleryHelp") }), gal, addBtn);
   galGroup.open = pickers.length > 0;
   const node = el("fieldset", { class: "rich-editor" }, el("legend", { text: a("rfTitle") }), el("p", { class: "small-note", text: a("rfHelp") }), ...groups, galGroup);
   const value = () => {
@@ -532,10 +562,12 @@ function formView() {
     matchaBox = el("input", { type: "checkbox" }); matchaBox.checked = !!oldTag.matcha;
     form.appendChild(el("label", { class: "check" }, matchaBox, a("fMatcha")));
   }
-  form.appendChild(field(a("fTitleEs"), text("title_es", d.title_es, { maxlength: 140 })));
-  form.appendChild(field(a("fTitleEn"), text("title_en", d.title_en, { maxlength: 140 })));
-  form.appendChild(field(a("fDescEs"), area("desc_es", d.desc_es)));
-  form.appendChild(field(a("fDescEn"), area("desc_en", d.desc_en)));
+  // Spanish and English side by side, so it's always clear which text matches which
+  form.appendChild(el("div", { class: "lang-pairs" },
+    el("div", { class: "lang-col" }, el("b", { class: "lang-h", text: "ESPAÑOL" }),
+      field(a("fTitleEs"), text("title_es", d.title_es, { maxlength: 140 })), field(a(kind === "trip" || kind === "event" || kind === "wellness" ? "fShortEs" : "fDescEs"), area("desc_es", d.desc_es))),
+    el("div", { class: "lang-col" }, el("b", { class: "lang-h", text: "ENGLISH" }),
+      field(a("fTitleEn"), text("title_en", d.title_en, { maxlength: 140 })), field(a(kind === "trip" || kind === "event" || kind === "wellness" ? "fShortEn" : "fDescEn"), area("desc_en", d.desc_en)))));
   if (cfg.fields.includes("date")) form.appendChild(field(kind === "weekend" ? a("fDateWeekend") : a("fDate"), add("event_date", el("input", { type: "date", value: d.event_date || "" })), kind === "weekend" ? null : a("fDateHelp")));
   if (cfg.fields.includes("time")) form.appendChild(field(a("fTime"), text("event_time", d.event_time, { maxlength: 60 })));
   if (cfg.fields.includes("date_text")) form.appendChild(field(a("fDateText"), text("date_text", d.date_text, { maxlength: 80 })));
@@ -547,7 +579,7 @@ function formView() {
   // Rich experience details (events + experiences). Saved inside the existing "details" text, so nothing changes
   // in the database; an item with only plain text keeps plain text exactly as before.
   let richEditor = null;
-  if (kind === "event" || kind === "trip") richEditor = richFields(kind, d.details);
+  if (kind === "event" || kind === "trip" || kind === "wellness") richEditor = richFields(kind, d.details);
   if (richEditor) form.appendChild(richEditor.node);
   else if (cfg.fields.includes("details")) form.appendChild(field(a("fDetails"), area("details", d.details)));
   const picker = cfg.fields.includes("image") ? imagePicker(d.image_url) : null;
@@ -738,26 +770,15 @@ async function settingsView() {
   data.forEach(r => { cfg[r.key] = r.value; });
   const wrap = el("div");
 
-  const hero = imagePicker((cfg.hero_image && cfg.hero_image.url) || "");
-  const heroForm = el("div", { class: "admin-form" },
-    el("h3", { text: a("heroTitle") }), el("p", { class: "small-note", text: a("heroHelp") }), hero.node,
-    el("div", { class: "admin-bar" },
-      button(a("save"), "primary", async () => {
-        if (hero.value && !C.safeUrl(hero.value)) return toast(a("badUrl"));
-        if (!hero.value) return toast(a("saveFail"));
-        const r = await C.db.from("settings").upsert({ key: "hero_image", value: { url: hero.value }, updated_at: new Date().toISOString() }, { onConflict: "key" });
-        if (r.error) return toast(a("saveFail"));
-        await C.refreshPublic(); toast(a("saved"));
-      }),
-      button(a("heroDefault"), "secondary", async () => {
-        const r = await C.db.from("settings").delete().eq("key", "hero_image");
-        if (r.error) return toast(a("saveFail"));
-        hero.value = ""; await C.refreshPublic(); toast(a("saved"));
-      })));
-  wrap.appendChild(heroForm);
+  wrap.appendChild(el("h3", { class: "admin-sec-h", text: a("secImages") }));
+  wrap.appendChild(imageSetting(cfg, "hero_photo", a("heroTitle"), a("heroHelp")));
   wrap.appendChild(imageSetting(cfg, "travel_image", a("imgTravelTitle"), a("imgTravelHelp")));
   wrap.appendChild(imageSetting(cfg, "founder_photo", a("imgFounderTitle"), a("imgFounderHelp")));
   wrap.appendChild(imageSetting(cfg, "matcha_image", a("imgMatchaTitle"), a("imgMatchaHelp")));
+  wrap.appendChild(pageImagesSetting(cfg));
+  wrap.appendChild(imageSetting(cfg, "brand_logo", a("imgLogoTitle"), a("imgLogoHelp")));
+  wrap.appendChild(el("h3", { class: "admin-sec-h", text: a("secTexts") }));
+  wrap.appendChild(copyEditor(cfg));
 
   const q = cfg.daily_quote || {};
   const qEs = el("textarea"); qEs.value = q.es || "";
@@ -790,6 +811,45 @@ function imageSetting(cfg, key, title, help) {
         if (r.error) return toast(a("saveFail"));
         pick.value = ""; await C.refreshPublic(); toast(a("saved"));
       })));
+}
+
+// Section entrance photos (optional). Map in settings key "page_images" { page: url }.
+const PAGES_WITH_IMAGE = ["events", "wellness", "support", "community", "messages", "travel"];
+function pageImagesSetting(cfg) {
+  const map = cfg.page_images || {};
+  const box = el("div", { class: "admin-form" }, el("h3", { text: a("imgPagesTitle") }), el("p", { class: "small-note", text: a("imgPagesHelp") }));
+  PAGES_WITH_IMAGE.forEach(page => {
+    const pk = imagePicker(map[page] || "");
+    box.appendChild(el("details", { class: "rf-group" }, el("summary", { text: a("page_" + page) + (map[page] ? " ✓" : "") }), pk.node,
+      el("div", { class: "admin-bar" },
+        button(a("save"), "primary", async () => {
+          if (pk.value && !C.safeUrl(pk.value)) return toast(a("badUrl"));
+          try { await setMapEntry("page_images", page, pk.value || null); } catch { return toast(a("saveFail")); }
+          await C.refreshPublic(); toast(a("saved"));
+        }))));
+  });
+  return box;
+}
+// Editable texts: a safe, fixed list of content texts, Spanish and English side by side.
+function copyEditor(cfg) {
+  const copy = cfg.copy || {};
+  const rows = (C.COPY_KEYS || []).map(key => {
+    const es = el("textarea", { rows: 2, placeholder: C.copyDefault("es", key) || "" }); es.value = (copy[key] && copy[key].es) || "";
+    const en = el("textarea", { rows: 2, placeholder: C.copyDefault("en", key) || "" }); en.value = (copy[key] && copy[key].en) || "";
+    return { key, es, en, node: el("div", { class: "rf-pair copy-row" }, el("b", { text: a("copy_" + key) }),
+      el("div", { class: "two-col" }, el("label", {}, el("small", { text: "Español" }), es), el("label", {}, el("small", { text: "English" }), en))) };
+  });
+  return el("div", { class: "admin-form" }, el("h3", { text: a("copyTitle") }), el("p", { class: "small-note", text: a("copyHelp") }),
+    ...rows.map(r => r.node),
+    el("div", { class: "admin-bar" }, button(a("save"), "primary", async () => {
+      const value = {};
+      rows.forEach(r => { const es = r.es.value.trim(), en = r.en.value.trim(); if (es || en) value[r.key] = { es, en }; });
+      const w = Object.keys(value).length
+        ? await C.db.from("settings").upsert({ key: "copy", value, updated_at: new Date().toISOString() }, { onConflict: "key" })
+        : await C.db.from("settings").delete().eq("key", "copy");
+      if (w.error) return toast(a("saveFail"));
+      await C.refreshPublic(); toast(a("saved"));
+    })));
 }
 
 // ---------- AI assistant (calls the secure Edge Function; no secret key in the browser) ----------

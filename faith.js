@@ -74,7 +74,8 @@ async function load() {
   if (!host || !C || !C.session()) return;
   const r = await C.db.rpc("prayer_wall", { max_rows: 50 });
   if (r.error) { rows = []; loaded = false; paint(true); return; }
-  rows = r.data || []; loaded = true; paint();
+  // obvious developer test entries ("TEST …" at the very start, in capitals) are hidden; nothing is deleted
+  rows = (r.data || []).filter(x => !/^\s*TEST\b/.test(x.body || "") && !/^\s*test\s*$/i.test(x.body || "")); loaded = true; paint();
 }
 function paint(failed) {
   const host = document.getElementById("prayerWall");

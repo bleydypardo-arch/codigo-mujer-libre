@@ -9,7 +9,7 @@ let C = null;
 
 const ES = {
   wdLabel: "DESCUBRE BIENESTAR", wdTitle: "Experiencias para cuidarte", wdAll: "Todo",
-  wdOffer: "Ver oferta o reservar", wdEmptyTitle: "Pronto compartiremos experiencias de bienestar",
+  wdOffer: "Ver oferta o reservar", wdMore: "Ver detalles", wdEmptyTitle: "Pronto compartiremos experiencias de bienestar",
   wdEmptyText: "Spas, masajes, yoga, retiros y lugares para cuidarte. ¿Conoces uno especial? Recomiéndalo.",
   wdRecommend: "Recomendar un lugar",
   wuLabel: "PRÓXIMOS PLANES DE BIENESTAR",
@@ -45,7 +45,7 @@ const ES = {
 };
 const EN = {
   wdLabel: "DISCOVER WELLNESS", wdTitle: "Experiences to take care of yourself", wdAll: "All",
-  wdOffer: "See offer or book", wdEmptyTitle: "Wellness experiences are coming soon",
+  wdOffer: "See offer or book", wdMore: "See details", wdEmptyTitle: "Wellness experiences are coming soon",
   wdEmptyText: "Spas, massages, yoga, retreats and places to take care of yourself. Know a special one? Recommend it.",
   wdRecommend: "Recommend a place",
   wuLabel: "UPCOMING WELLNESS PLANS",
@@ -114,10 +114,19 @@ function wellCard(p) {
     el("b", { class: "wd-title", text: C.pick(p, "title") || "—" }),
     meta ? el("small", { class: "meta-line", text: "📍 " + meta }) : null,
     C.pick(p, "desc") ? el("p", { class: "wd-desc", text: C.pick(p, "desc") }) : null);
+  const x = C.richOf ? C.richOf(p) : null;
+  const promo = x ? ((x[C.lang()] && x[C.lang()].promo) || (x.es && x.es.promo) || (x.en && x.en.promo) || "") : "";
+  if (promo) body.insertBefore(el("span", { class: "wd-promo", text: "✦ " + promo.split("\n")[0].slice(0, 80) }), body.children[1] || null);
+  if (p.event_date) body.insertBefore(el("small", { class: "meta-line", text: "📅 " + C.fmtDate(p.event_date) + (p.event_time ? " · " + p.event_time : "") }), body.children[1] || null);
+  const acts = el("div", { class: "wd-acts" });
+  const more = btn(t("wdMore") + " →", "link-btn wd-more", () => C.openDetail(p.id, more));
+  acts.appendChild(more);
   const url = C.safeUrl(p.url);
-  if (url) body.appendChild(el("a", { class: "link-btn wd-cta", href: url, target: "_blank", rel: "noopener noreferrer", text: t("wdOffer") + " ↗" }));
-  if (p.details) body.appendChild(el("details", { class: "more" }, el("summary", { text: C.t("moreDetails") }), el("p", { class: "saved-text", text: p.details })));
-  return el("article", { class: "wd-card" }, media, body);
+  if (url) acts.appendChild(el("a", { class: "link-btn wd-cta", href: url, target: "_blank", rel: "noopener noreferrer", text: t("wdOffer") + " ↗" }));
+  body.appendChild(acts);
+  const card = el("article", { class: "wd-card" }, media, body);
+  media.addEventListener("click", () => C.openDetail(p.id, more));
+  return card;
 }
 function renderWellness() {
   const host = document.getElementById("wellDiscover"), up = document.getElementById("wellUpcoming");
@@ -286,8 +295,13 @@ function openMeetForm(place, city) {
 function meetForm() {
   const d = meetDraft || {};
   const inp = (id, type, val, ph, extra) => el("input", Object.assign({ id, type, value: val || "", placeholder: ph || "" }, extra || {}));
-  const place = inp("meetPlace", "text", d.place, t("maPlacePh"), { maxlength: 80 });
-  const city = inp("meetCity", "text", d.city, t("maCityPh"), { maxlength: 40 });
+  // Light suggestions from places/cities the community already uses; any other text is still accepted.
+  const known = C.homeData().plans.filter(p => C.planTag(p.id).matcha || p.kind === "event");
+  const placeSet = [...new Set([...cornerItems().map(p => C.pick(p, "title")), ...(C.homeData().posts || []).map(parseMeetup).filter(Boolean).map(m => m.place)].filter(Boolean))].slice(0, 30);
+  const citySet = [...new Set(["Orlando", "Boston", "Miami", ...known.map(cityOf), ...(C.homeData().posts || []).map(parseMeetup).filter(Boolean).map(m => m.city)].filter(Boolean))].slice(0, 30);
+  const dl = (id, list) => el("datalist", { id }, ...list.map(v => el("option", { value: v })));
+  const place = inp("meetPlace", "text", d.place, t("maPlacePh"), { maxlength: 80, list: "meetPlaceList", autocomplete: "off" });
+  const city = inp("meetCity", "text", d.city, t("maCityPh"), { maxlength: 40, list: "meetCityList", autocomplete: "off" });
   const date = inp("meetDate", "date", d.date || todayStr(), "", { min: todayStr() });
   const time = inp("meetTime", "time", d.time || "16:30", "");
   const note = inp("meetNote", "text", d.note, t("maNotePh"), { maxlength: 140 });
@@ -298,7 +312,7 @@ function meetForm() {
     el("label", {}, el("span", { text: t("maPlace") }), place),
     el("div", { class: "two-col" }, el("label", {}, el("span", { text: t("maCity") }), city), el("label", {}, el("span", { text: t("maDate") }), date)),
     el("div", { class: "two-col" }, el("label", {}, el("span", { text: t("maTime") }), time), el("label", {}, el("span", { text: t("maNote") }), note)),
-    fb, el("div", { class: "meet-form-acts" }, send, cancel));
+    fb, el("div", { class: "meet-form-acts" }, send, cancel), dl("meetPlaceList", placeSet), dl("meetCityList", citySet));
   form.addEventListener("submit", async e => {
     e.preventDefault();
     const P = place.value.trim(), Y = city.value.trim();

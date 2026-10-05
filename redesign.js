@@ -16,12 +16,14 @@ const ES = {
   quickLabel: "Accesos rápidos", travelShort: "Viajes", backLabel: "Volver",
   immerseTitle: "Sumérgete a una experiencia", immerseSub: "Viajes · Retiros · Fiestas · Gastronomía · Actividades únicas para nuestra comunidad.",
   travelTitle: "Viajes y Experiencias", travelTeaser: "Vota y vive las grandes experiencias de la comunidad",
-  travelIntro: "Descubre, vota y vive experiencias únicas con nuestra comunidad.",
   travelTypesLabel: "TIPOS DE EXPERIENCIA",
   travelNote: "Organizamos alrededor de dos grandes experiencias oficiales al año. Cuando abramos una votación, aparecerá aquí.",
   expTrip: "Viaje grupal", expRetreat: "Retiro de bienestar", expParty: "Fiesta temática", expDining: "Experiencia gastronómica", expNature: "Aventura / Naturaleza",
   travelEmpty: "Pronto anunciaremos la próxima gran experiencia.",
   travelNote: "Organizamos alrededor de dos grandes experiencias oficiales al año. Toca un tipo para ver lo que viene.",
+  travelKicker: "EXPERIENCIAS CÓDIGO", travelLead: "Dos experiencias inolvidables al año. Una comunidad.",
+  travelIntro: "Dos veces al año salimos de la pantalla para vivir juntas algo extraordinario.",
+  travelBadge: "2 experiencias insignia al año", travelBadge2: "Descubre · Conecta · Viaja · Vive", travelCta: "Ver la próxima experiencia",
   tripsLabel: "EXPERIENCIAS", tripCount: n => n === 1 ? "1 experiencia" : n + " experiencias", tripSoonShort: "Próximamente",
   travelPollKicker: "VOTEMOS JUNTAS", travelPollTitle: "¿A dónde vamos ahora?", travelPollIntro: "Elige tu favorito. Después de votar verás cómo va la comunidad.",
   tripIdeaLabel: "TU IDEA", tripIdeaTitle: "¿A dónde te gustaría ir?", tripIdeaText: "Sugiere nuestro próximo destino o experiencia. La administradora lo usará al planear la próxima experiencia oficial.",
@@ -41,12 +43,14 @@ const EN = {
   quickLabel: "Shortcuts", travelShort: "Travel", backLabel: "Back",
   immerseTitle: "Immerse yourself in an experience", immerseSub: "Trips · Retreats · Parties · Dining · Unique activities for our community.",
   travelTitle: "Travel & Experiences", travelTeaser: "Vote on and live the community's big experiences",
-  travelIntro: "Discover, vote on and live unique experiences with our community.",
   travelTypesLabel: "TYPES OF EXPERIENCE",
   travelNote: "We organize about two major official experiences a year. When a vote opens, it will appear here.",
   expTrip: "Group trip", expRetreat: "Wellness retreat", expParty: "Themed celebration", expDining: "Dining experience", expNature: "Adventure & Nature",
   travelEmpty: "We'll announce the next big experience soon.",
   travelNote: "We organize about two major official experiences a year. Tap a type to see what's coming.",
+  travelKicker: "CÓDIGO EXPERIENCES", travelLead: "Two unforgettable experiences a year. One community.",
+  travelIntro: "Twice a year, we step beyond the screen to live something extraordinary together.",
+  travelBadge: "2 signature experiences a year", travelBadge2: "Discover · Connect · Travel · Live", travelCta: "See the next experience",
   tripsLabel: "EXPERIENCES", tripCount: n => n === 1 ? "1 experience" : n + " experiences", tripSoonShort: "Coming soon",
   travelPollKicker: "LET'S VOTE TOGETHER", travelPollTitle: "Where should we go next?", travelPollIntro: "Pick your favorite. After voting you'll see how the community is leaning.",
   tripIdeaLabel: "YOUR IDEA", tripIdeaTitle: "Where would you love to go?", tripIdeaText: "Suggest our next destination or experience. The administrator will use it when planning the next official experience.",
@@ -172,8 +176,16 @@ function paintTravel() {
       ? window.CMLPolls.placedBlock("travel", C.t("travelPollKicker"), C.t("travelPollTitle"), C.t("travelPollIntro")) : null;
     pollsHost.replaceChildren(...(block ? [block] : []));
   }
+  // campaign CTA → the next official experience
+  const next = trips.find(p => p.event_date && p.event_date >= C.todayStr()) || trips[0];
+  const cta = document.getElementById("travelCta");
+  if (cta) {
+    cta.hidden = !next;
+    if (!cta.dataset.wired) { cta.dataset.wired = "1"; cta.addEventListener("click", () => { const n = cta._next; if (n) C.openDetail(n.id, cta); }); }
+    cta._next = next || null;
+  }
   if (!hero) return;
-  const pickTrip = trips.find(p => C.safeUrl(p.image_url)) || trips[0];
+  const pickTrip = next || trips.find(p => C.safeUrl(p.image_url));
   if (!pickTrip) { hero.hidden = true; hero.replaceChildren(); return; }
   const img = C.safeUrl(pickTrip.image_url) || settingUrl("travel_image");
   const btn = C.el("button", { type: "button", class: "trip-hero" + (img ? "" : " no-img") },
@@ -223,6 +235,18 @@ function travelImage() {
 }
 function paintEditorial() {
   if (!C) return;
+  // section entrance photos (admin, optional); Travel always has a campaign photo
+  const pages = (C.setting && C.setting("page_images")) || {};
+  document.querySelectorAll(".page-head[data-page-image]").forEach(h => {
+    const key = h.getAttribute("data-page-image");
+    const url = C.safeUrl(pages[key] || "") || (key === "travel" ? travelImage() : "");
+    const media = h.querySelector(".ph-media");
+    h.classList.toggle("has-photo", !!url);
+    if (media) media.style.backgroundImage = url ? 'url("' + url.replace(/"/g, "%22") + '")' : "";
+  });
+  // brand logo (admin, optional) → falls back to the approved logo
+  const logo = settingUrl("brand_logo") || "logo-cml.svg";
+  document.querySelectorAll("img.brand-mark, .auth-brand img, .approval-logo").forEach(img => { if (img.getAttribute("src") !== logo) img.setAttribute("src", logo); });
   const src = travelImage();
   document.querySelectorAll("img[data-editorial=travel]").forEach(img => { if (img.getAttribute("src") !== src) { img.hidden = false; img.setAttribute("src", src); } });
   const box = document.querySelector("#essence .ess-photo");
