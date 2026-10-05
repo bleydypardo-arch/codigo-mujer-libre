@@ -256,7 +256,7 @@ function renderMatchaHome() {
   const next = matchaPlans().find(p => p.kind === "event" || p.kind === "weekend");
   const sub = meet ? t("maNextMeet", meet.m.place, meetWhen(meet.m)) : next ? t("maNext", C.pick(next, "title")) + (next.event_date ? " · " + shortWhen(next) : "") : t("maHomeSub");
   const card = el("button", { type: "button", class: "matcha-card", "data-go": "matcha" },
-    el("span", { class: "matcha-img" }, imgNode(matchaImage())),
+    el("span", { class: "matcha-img" }, imgNode(matchaImage()), el("span", { class: "ma-foam", "aria-hidden": "true" })),
     el("span", { class: "matcha-txt" },
       el("small", { class: "rose", text: t("maName").toUpperCase() }),
       el("b", { text: t("maTag") }),
@@ -355,7 +355,7 @@ function renderMatchaPage() {
   const cityRow = cities.length > 1 ? el("div", { class: "chips ma-cities", role: "group", "aria-label": t("maCity") },
     ...["all", ...cities].map(c => { const b = btn(c === "all" ? t("maAllCities") : c, "chip" + (maCity === c ? " selected" : ""), () => { maCity = c; renderMatchaPage(); }); b.setAttribute("aria-pressed", String(maCity === c)); return b; })) : null;
   hero.replaceChildren(
-    el("div", { class: "ma-hero-img" }, imgNode(matchaImage())),
+    el("div", { class: "ma-hero-img" }, imgNode(matchaImage()), el("span", { class: "ma-foam", "aria-hidden": "true" })),
     el("div", { class: "ma-hero-txt" },
       el("small", { class: "rose", text: t("maKicker") }),
       el("h1", { text: t("maName") }),
