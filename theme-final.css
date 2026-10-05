@@ -1351,3 +1351,64 @@ nav button.active .ni { color: var(--cml-rose-d); }
 .sheet-content.is-trip .sheet-k { letter-spacing: .14em; text-transform: uppercase; color: var(--cml-gold-ink); }
 .sheet-content.is-trip .rich-sec { border-top: 1px solid #F0E2DE; padding-top: 6px; }
 .sheet-content.is-wellness .sheet-hero.ev-ph { background: linear-gradient(135deg, #DDEBD9, #F3F7F1); }
+
+/* =====================================================================
+   FINAL VISUAL POLISH — motion lives on the CONTAINERS, so any image an
+   admin uploads later inherits it automatically.
+   ===================================================================== */
+/* 1. CÓDIGO EXPERIENCES: larger gold with a visible moving shimmer */
+.ph-travel .ph-kicker [data-i18n="travelKicker"], .hx-brand small {
+  background: linear-gradient(100deg, #C9A169 0%, #F6E7C6 18%, #FFFBF0 26%, #DBC19F 38%, #B8955F 55%, #F6E7C6 72%, #FFF8E8 80%, #C9A169 100%);
+  background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: cmlShimmer 3.6s linear infinite; filter: drop-shadow(0 1px 8px rgba(246, 231, 198, .35)); }
+.ph-travel .ph-kicker [data-i18n="travelKicker"] { font-size: 13.5px; font-weight: 700; letter-spacing: .28em; }
+.hx-brand small { font-size: 13px; letter-spacing: .3em; }
+.hx-brand b { font-size: 30px; animation-duration: 4.5s; }
+@keyframes cmlShimmer { 0% { background-position: 125% 0; } 100% { background-position: -125% 0; } }
+@media (min-width: 720px) { .ph-travel .ph-kicker [data-i18n="travelKicker"] { font-size: 16px; } .hx-brand small { font-size: 14px; } .hx-brand b { font-size: 34px; } }
+
+/* 2. Travel stage: continuous cinematic movement on the image container + drifting light */
+.ph-travel .ph-media { animation: cmlStageDrift 28s ease-in-out infinite alternate; transform-origin: 60% 40%; }
+@keyframes cmlStageDrift { 0% { transform: scale(1) translate3d(0, 0, 0); } 50% { transform: scale(1.05) translate3d(-1.2%, -.8%, 0); } 100% { transform: scale(1.08) translate3d(1%, -1.5%, 0); } }
+.ph-travel .ph-media::after { content: ""; position: absolute; inset: -20%; z-index: 2; pointer-events: none; mix-blend-mode: soft-light;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 236, 200, .45) 48%, rgba(255, 246, 226, .2) 53%, transparent 65%);
+  animation: cmlLightSweep 11s ease-in-out infinite; }
+@keyframes cmlLightSweep { 0%, 15% { transform: translateX(-60%); opacity: 0; } 30% { opacity: 1; } 75% { opacity: .8; } 100% { transform: translateX(60%); opacity: 0; } }
+.ph-travel .ph-media > * { will-change: transform, opacity; }
+
+/* 3. Matcha & Art: cinematic image movement + soft rising steam (any image inside the container) */
+.matcha-img, .ma-hero-img { position: relative; overflow: hidden; }
+.matcha-img > img, .ma-hero-img > img { animation: cmlMatchaPan 20s ease-in-out infinite alternate; transform-origin: 50% 60%; will-change: transform; }
+@keyframes cmlMatchaPan { 0% { transform: scale(1.03) translate3d(0, 0, 0); } 100% { transform: scale(1.13) translate3d(-2%, -2.5%, 0); } }
+.matcha-img::before, .ma-hero-img::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 85%; z-index: 2; pointer-events: none;
+  background:
+    radial-gradient(18% 30% at 38% 80%, rgba(255, 255, 255, .55), transparent 70%),
+    radial-gradient(14% 26% at 52% 85%, rgba(255, 255, 255, .45), transparent 70%),
+    radial-gradient(16% 28% at 64% 82%, rgba(255, 250, 240, .5), transparent 70%);
+  filter: blur(10px); animation: cmlSteam 6.5s ease-out infinite; }
+.ma-hero-img::after, .matcha-img::after { animation: none; }
+@keyframes cmlSteam { 0% { transform: translateY(18%) scaleY(.8); opacity: 0; } 25% { opacity: .9; } 70% { opacity: .45; } 100% { transform: translateY(-38%) scaleY(1.25) skewX(-6deg); opacity: 0; } }
+.ma-hero-img { box-shadow: inset 0 -40px 60px -30px rgba(79, 107, 75, .35); }
+.matcha-card { transition: transform .35s ease, box-shadow .35s ease; }
+.matcha-card:hover { transform: translateY(-3px); }
+
+/* 4. Quick entries (Wellness, Community, Events, Travel, Here for you): lift, glow, tap */
+.quick-btn { position: relative; overflow: hidden; transition: transform .3s cubic-bezier(.2, .8, .2, 1), box-shadow .3s ease, border-color .3s ease, background .3s ease; }
+.quick-btn::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(120% 90% at 50% 0%, rgba(219, 193, 159, .28), transparent 60%); opacity: 0; transition: opacity .3s ease; }
+.quick-btn .ci { transition: transform .35s cubic-bezier(.3, 1.4, .5, 1); }
+.quick-btn:hover, .quick-btn:focus-visible { transform: translateY(-4px) scale(1.03); border-color: #E3C6A0; background: #fff;
+  box-shadow: 0 12px 24px rgba(184, 95, 104, .18), 0 0 0 3px rgba(219, 193, 159, .25); }
+.quick-btn:hover::after, .quick-btn:focus-visible::after { opacity: 1; }
+.quick-btn:hover .ci, .quick-btn:focus-visible .ci { transform: translateY(-2px) scale(1.12); }
+.quick-btn:active { transform: translateY(-1px) scale(.97); box-shadow: 0 4px 10px rgba(184, 95, 104, .2), 0 0 0 4px rgba(184, 95, 104, .18); transition-duration: .1s; }
+.quick-support:hover, .quick-support:focus-visible { background: #FBEDEB; box-shadow: 0 12px 24px rgba(163, 51, 63, .22), 0 0 0 3px rgba(184, 95, 104, .22); }
+
+/* 5. "Tu Código de Hoy" title: more presence (same place, same behavior) */
+.code-card .code-kicker { font-size: 14.5px; font-weight: 700; letter-spacing: .2em;
+  background-image: linear-gradient(90deg, #F6E7C6, #E9CF9E 25%, #FFF7E6 45%, #DBC19F 65%, #F6E7C6);
+  filter: drop-shadow(0 1px 10px rgba(246, 231, 198, .3)) drop-shadow(0 1px 1px rgba(40, 6, 14, .4)); }
+.code-card .code-kicker::after { content: ""; display: block; width: 44px; height: 2px; margin-top: 8px; border-radius: 2px; background: linear-gradient(90deg, #DBC19F, rgba(219, 193, 159, 0)); }
+@media (min-width: 720px) { .code-card .code-kicker { font-size: 16px; } }
+.ph-travel .ph-kicker [data-i18n="travelKicker"], .hx-brand small {
+  background-image: linear-gradient(100deg, #E9CF9E 0%, #F6E7C6 20%, #FFFDF5 30%, #F1DDB8 42%, #DBC19F 58%, #F6E7C6 72%, #FFFBF0 82%, #E9CF9E 100%); }
