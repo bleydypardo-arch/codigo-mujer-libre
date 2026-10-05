@@ -463,6 +463,62 @@ Object.assign(translations.en, {
   previewBanner: "PREVIEW · this is how members will see it. Not saved yet.", previewNoRsvp: "Response buttons turn on once it is published."
 });
 
+// New member joining: welcome (QR / #unete) → 2-step application → waiting (approved Oct 2026)
+Object.assign(translations.es, {
+  welKick: "BIENVENIDA", welTitle1: "Bienvenida a", welLead: "Una comunidad creada para conectar, vivir y crecer juntas.",
+  welPill1: "Planes reales", welPill2: "Bienestar", welPill3: "Experiencias", welJoin: "Únete a la comunidad", welLogin: "Ya soy miembro · Entrar",
+  welNote: "Membresía por solicitud · cada mujer es aprobada personalmente",
+  loginToJoin: "¿Aún no eres miembro? Únete a la comunidad", joinToLogin: "Ya tengo cuenta · Entrar", joinBack: "← Volver", joinNext: "Continuar →",
+  joinStepOf: n => "Paso " + n + " de 2",
+  join1Title: "Cuéntanos sobre ti", join1Sub: "Solo lo necesario para conocerte y darte la bienvenida.",
+  join2Title: "Conozcámonos", join2Sub: "Tres preguntas cortitas. No hay respuestas correctas.",
+  joinCity: "Ciudad o zona", joinPhone: "Teléfono", joinWa: "¿Podemos escribirte por WhatsApp?", yes: "Sí", no: "No",
+  joinBday: "Tu cumpleaños", optional: "(opcional)", month: "Mes", day: "Día",
+  joinBdayHint: "🎂 Solo el día y el mes, para celebrarte. Nunca pedimos el año.", joinPassword: "Crea una contraseña",
+  joinQ1: "1 · ¿Qué te gustaría vivir aquí?", joinQ1s: "Elige las que quieras.",
+  joinQ2: "2 · ¿Cómo llegaste a Código Mujer Libre?", heard_friend: "Una amiga me invitó", heard_event: "Un evento", heard_social: "Redes sociales", heard_other: "Otro",
+  joinInvited: "¿Quién te invitó?", joinQ3: "3 · Cuéntanos algo que te haga sonreír", joinQ3ph: "Un buen café con amigas, bailar, una tarde de playa…",
+  guideTitle: "Nuestro código", guide1b: "Respeto y cariño.", guide1: "Aquí todas somos bienvenidas.", guide2b: "Lo que se comparte aquí, se queda aquí.",
+  guide3b: "Sin ventas ni spam", guide3: "entre miembros.", guide4b: "Aparece y participa:", guide4: "esta comunidad la hacemos juntas.",
+  guideAccept: "Acepto las normas de la comunidad", signupBtn: "Enviar mi solicitud",
+  joinMissing1: "Completa tu nombre, apellido, ciudad, teléfono, correo y contraseña.", joinWaNeed: "Cuéntanos si podemos escribirte por WhatsApp.",
+  joinPhoneBad: "Revisa tu número de teléfono.", joinEmailBad: "Revisa tu correo electrónico.", joinBdayBoth: "Elige el mes y el día de tu cumpleaños (o deja ambos vacíos).",
+  joinHeardNeed: "Cuéntanos cómo llegaste a Código Mujer Libre.", joinGuideNeed: "Para enviar tu solicitud, acepta las normas de la comunidad.",
+  thanksTitle: n => "¡Gracias, " + n + "!", thanksBody: "Tu solicitud llegó a nuestro equipo. La revisamos con cariño y te escribiremos por WhatsApp o correo en cuanto estés dentro.",
+  thanksConfirm: "Antes, confirma tu correo con el enlace que te enviamos a", thanksLogin: "Ya lo confirmé · Entrar",
+  pendThanks: n => n ? "¡Gracias, " + n + "!" : "¡Gracias!", pendBody2: "Tu solicitud llegó a nuestro equipo. La revisamos con cariño y te escribiremos por WhatsApp o correo en cuanto estés dentro.",
+  tl1: "Solicitud enviada", tl2: "La estamos revisando", tl2s: "Normalmente en 1 a 3 días", tl3: "¡Bienvenida a la comunidad!", tl3s: "Entrarás con este mismo correo",
+  pendCheck: "Revisar mi estado", pendStory: "Mientras tanto: conoce Nuestra Historia\u00a0→",
+  pendStill: "Todavía la estamos revisando. Te escribiremos por WhatsApp o correo en cuanto estés dentro."
+});
+Object.assign(translations.en, {
+  welKick: "WELCOME", welTitle1: "Welcome to", welLead: "A community created to connect, live and grow together.",
+  welPill1: "Real plans", welPill2: "Wellness", welPill3: "Experiences", welJoin: "Join the community", welLogin: "Already a member · Log in",
+  welNote: "Membership by application · every woman is personally approved",
+  loginToJoin: "Not a member yet? Join the community", joinToLogin: "I already have an account · Log in", joinBack: "← Back", joinNext: "Continue →",
+  joinStepOf: n => "Step " + n + " of 2",
+  join1Title: "Tell us about you", join1Sub: "Just what we need to get to know you and welcome you.",
+  join2Title: "Let's get to know each other", join2Sub: "Three quick questions. There are no wrong answers.",
+  joinCity: "City or area", joinPhone: "Phone", joinWa: "May we message you on WhatsApp?", yes: "Yes", no: "No",
+  joinBday: "Your birthday", optional: "(optional)", month: "Month", day: "Day",
+  joinBdayHint: "🎂 Just the day and month, so we can celebrate you. We never ask for the year.", joinPassword: "Create a password",
+  joinQ1: "1 · What would you love to experience here?", joinQ1s: "Choose as many as you like.",
+  joinQ2: "2 · How did you find Código Mujer Libre?", heard_friend: "A friend invited me", heard_event: "An event", heard_social: "Social media", heard_other: "Other",
+  joinInvited: "Who invited you?", joinQ3: "3 · Tell us something that makes you smile", joinQ3ph: "A good coffee with friends, dancing, an afternoon at the beach…",
+  guideTitle: "Our code", guide1b: "Respect and kindness.", guide1: "Everyone is welcome here.", guide2b: "What's shared here, stays here.",
+  guide3b: "No selling or spam", guide3: "between members.", guide4b: "Show up and take part:", guide4: "we build this community together.",
+  guideAccept: "I accept the community guidelines", signupBtn: "Send my application",
+  joinMissing1: "Please fill in your first name, last name, city, phone, email and password.", joinWaNeed: "Let us know if we may message you on WhatsApp.",
+  joinPhoneBad: "Please check your phone number.", joinEmailBad: "Please check your email address.", joinBdayBoth: "Choose both the month and day of your birthday (or leave both empty).",
+  joinHeardNeed: "Tell us how you found Código Mujer Libre.", joinGuideNeed: "To send your application, please accept the community guidelines.",
+  thanksTitle: n => "Thank you, " + n + "!", thanksBody: "Your application has reached our team. We'll review it with care and message you on WhatsApp or by email as soon as you're in.",
+  thanksConfirm: "First, confirm your email with the link we sent to", thanksLogin: "I've confirmed it · Log in",
+  pendThanks: n => n ? "Thank you, " + n + "!" : "Thank you!", pendBody2: "Your application has reached our team. We'll review it with care and message you on WhatsApp or by email as soon as you're in.",
+  tl1: "Application sent", tl2: "We're reviewing it", tl2s: "Usually within 1 to 3 days", tl3: "Welcome to the community!", tl3s: "You'll log in with this same email",
+  pendCheck: "Check my status", pendStory: "Meanwhile: read Our Story\u00a0→",
+  pendStill: "We're still reviewing it. We'll message you on WhatsApp or by email as soon as you're in."
+});
+
 
 // (Sample cards were removed: empty sections now show an honest empty state instead of placeholder plans.)
 const DEFAULT_HERO = "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=88";
@@ -629,7 +685,7 @@ function setLanguage(language, persist = true) {
       else element.textContent = value;
     });
   });
-  ["langBtn", "authLang", "pendLang"].forEach(id => {
+  ["langBtn", "authLang", "pendLang", "welLang"].forEach(id => {
     const button = byId(id);
     if (button) {
       button.textContent = currentLanguage === "es" ? "EN" : "ES";
@@ -1607,15 +1663,71 @@ function showFeedback(id, key) {
   node.textContent = key ? t(key) : "";
   node.dataset.key = key || "";
 }
+// Signed-out views: "welcome" (first visit / QR), "login", or "signup" (the 2-step membership application).
 function setAuthTab(which) {
-  const login = which === "login";
+  const view = which === "signup" ? "join" : which === "welcome" ? "welcome" : "login";
+  const login = view === "login";
+  const welcome = byId("authWelcome"), card = byId("authCard");
+  if (welcome) welcome.hidden = view !== "welcome";
+  if (card) card.hidden = view === "welcome";
+  byId("authGate").classList.toggle("is-welcome", view === "welcome");
   byId("loginForm").hidden = !login;
-  byId("signupForm").hidden = login;
+  byId("signupForm").hidden = view !== "join";
+  if (byId("authIntro")) byId("authIntro").hidden = view === "join";
+  if (byId("authTabs")) byId("authTabs").hidden = view === "join";
+  if (byId("joinThanks")) byId("joinThanks").hidden = true;
   byId("tabLogin").classList.toggle("active", login);
   byId("tabSignup").classList.toggle("active", !login);
   byId("tabLogin").setAttribute("aria-selected", String(login));
   byId("tabSignup").setAttribute("aria-selected", String(!login));
   showFeedback("loginFeedback", ""); showFeedback("signupFeedback", "");
+  if (view === "join") joinStep(1);
+  if (view === "welcome") paintOrchid("welOrchid");
+}
+let joinAt = 1;
+function joinStep(n) {
+  joinAt = n === 2 ? 2 : 1;
+  byId("joinStep1").hidden = joinAt !== 1; byId("joinStep2").hidden = joinAt !== 2;
+  byId("joinActions1").hidden = joinAt !== 1; byId("joinActions2").hidden = joinAt !== 2;
+  byId("joinStepLabel").textContent = tf("joinStepOf", joinAt);
+  byId("joinBarFill").style.width = (joinAt * 50) + "%";
+  const title = byId("joinTitle"), sub = byId("joinSub");
+  title.dataset.i18n = "join" + joinAt + "Title"; title.textContent = t(title.dataset.i18n);
+  sub.dataset.i18n = "join" + joinAt + "Sub"; sub.textContent = t(sub.dataset.i18n);
+  showFeedback("signupFeedback", "");
+}
+function paintOrchid(id) {
+  const host = byId(id);
+  if (!host || host.dataset.done) return;
+  if (window.CMLCode && window.CMLCode.orchidSVG) { host.innerHTML = window.CMLCode.orchidSVG("orchid"); host.dataset.done = "1"; }
+}
+function fillBirthdaySelects() {
+  const m = byId("suBMonth"), d = byId("suBDay");
+  if (!m || !d) return;
+  const mv = m.value, dv = d.value;
+  m.replaceChildren(el("option", { value: "", text: t("month") }), ...Array.from({ length: 12 }, (_, i) =>
+    el("option", { value: String(i + 1), text: new Date(2000, i, 1).toLocaleDateString(loc(), { month: "long" }).replace(/^./, c => c.toUpperCase()) })));
+  d.replaceChildren(el("option", { value: "", text: t("day") }), ...Array.from({ length: 31 }, (_, i) => el("option", { value: String(i + 1), text: String(i + 1) })));
+  m.value = mv; d.value = dv;
+}
+const joinVal = id => (byId(id) ? byId(id).value.trim() : "");
+const radioVal = name => { const r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : ""; };
+function joinCheck1() {
+  if (!joinVal("suFirst") || !joinVal("suLast") || !joinVal("suCity") || !joinVal("suPhone") || !joinVal("suEmail") || !byId("suPassword").value) return "joinMissing1";
+  if (joinVal("suPhone").replace(/\D/g, "").length < 7) return "joinPhoneBad";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(joinVal("suEmail"))) return "joinEmailBad";
+  if (byId("suPassword").value.length < 8) return "authShortPassword";
+  if (!radioVal("suWa")) return "joinWaNeed";
+  if (!!joinVal("suBMonth") !== !!joinVal("suBDay")) return "joinBdayBoth";
+  const bm = Number(joinVal("suBMonth")), bd = Number(joinVal("suBDay"));
+  if (bm && bd > [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][bm - 1]) return "joinBdayBoth";
+  return "";
+}
+function joinNext() {
+  const problem = joinCheck1();
+  if (problem) return showFeedback("signupFeedback", problem);
+  joinStep(2);
+  requestAnimationFrame(() => { byId("joinTitle").focus({ preventScroll: true }); byId("authGate").scrollTo ? byId("authGate").scrollTo({ top: 0 }) : null; window.scrollTo({ top: 0 }); });
 }
 function renderInterestChoices() {
   const box = byId("suInterests");
@@ -1632,11 +1744,18 @@ function showApproval() {
   byId("appShell").hidden = true;
   byId("approvalGate").hidden = false;
   const rej = !!profile && !!profile.rejected;
-  byId("approvalTitle").textContent = t(rej ? "rejTitle" : "pendTitle");
-  byId("approvalText").textContent = t(rej ? "rejBody" : "pendBody");
-  byId("approvalTitle").dataset.i18n = rej ? "rejTitle" : "pendTitle";
-  byId("approvalText").dataset.i18n = rej ? "rejBody" : "pendBody";
+  const title = byId("approvalTitle"), text = byId("approvalText");
+  title.removeAttribute("data-i18n"); text.removeAttribute("data-i18n");
+  title.textContent = rej ? t("rejTitle") : tf("pendThanks", (profile && profile.first_name) || "");
+  text.textContent = t(rej ? "rejBody" : "pendBody2");
   byId("pendCheck").hidden = rej;
+  if (byId("pendSteps")) byId("pendSteps").hidden = rej;
+  if (byId("pendStory")) byId("pendStory").hidden = rej;
+  const sent = byId("pendSentAt");
+  if (sent) sent.textContent = profile && profile.created_at ? new Date(profile.created_at).toLocaleString(loc(), { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "";
+  const icon = byId("pendOrchid");
+  if (icon && !rej) { icon.textContent = ""; delete icon.dataset.done; paintOrchid("pendOrchid"); if (!icon.innerHTML) icon.textContent = "🌸"; }
+  else if (icon && rej) { icon.dataset.done = ""; icon.textContent = "🌸"; }
 }
 async function recheckApproval() {
   if (!session || !profile || !isPending() || profile.rejected) return;
@@ -1655,7 +1774,12 @@ function showGate(ready) {
   byId("appShell").hidden = true;
   byId("authLoading").hidden = !!ready;
   byId("authForms").hidden = !ready;
+  if (byId("authCard")) byId("authCard").hidden = false;
+  if (byId("authWelcome")) byId("authWelcome").hidden = true;
+  byId("authGate").classList.remove("is-welcome");
+  if (ready) setAuthTab(/^#(unete|join)$/i.test(location.hash) ? "signup" : authStart);
 }
+let authStart = "welcome";
 function showApp() {
   byId("approvalGate").hidden = true;
   byId("authGate").hidden = true;
@@ -1759,12 +1883,13 @@ async function handleLogin(event) {
 async function handleSignup(event) {
   event.preventDefault();
   showFeedback("signupFeedback", "");
-  const first = byId("suFirst").value.trim();
-  const last = byId("suLast").value.trim();
-  const email = byId("suEmail").value.trim();
+  if (joinAt === 1) return joinNext();          // Enter on step 1 = Continue
+  const step1 = joinCheck1();
+  if (step1) { joinStep(1); return showFeedback("signupFeedback", step1); }
+  if (!radioVal("suHeard")) return showFeedback("signupFeedback", "joinHeardNeed");
+  if (!byId("suGuide").checked) return showFeedback("signupFeedback", "joinGuideNeed");
+  const first = joinVal("suFirst"), last = joinVal("suLast"), email = joinVal("suEmail");
   const password = byId("suPassword").value;
-  if (!first || !last || !email) return showFeedback("signupFeedback", "authMissing");
-  if (password.length < 8) return showFeedback("signupFeedback", "authShortPassword");
   const interests = [...byId("suInterests").querySelectorAll("input:checked")].map(i => i.value);
   const button = byId("signupBtn");
   button.disabled = true;
@@ -1772,9 +1897,13 @@ async function handleSignup(event) {
     const { data, error } = await db.auth.signUp({
       email, password,
       options: {
+        // The membership application travels with the account; the database saves it on the new
+        // member's profile (see supabase/migration_join_application.sql). Birthday: month + day only.
         data: {
-          first_name: first, last_name: last,
-          company: byId("suCompany").value.trim(), city: byId("suCity").value.trim(), interests
+          first_name: first, last_name: last, city: joinVal("suCity"), interests,
+          phone: joinVal("suPhone").slice(0, 30), whatsapp: radioVal("suWa") === "true",
+          birth_month: joinVal("suBMonth") || null, birth_day: joinVal("suBDay") || null,
+          application: { heard: radioVal("suHeard"), invited_by: joinVal("suInvited").slice(0, 80), smile: joinVal("suSmile").slice(0, 300), guidelines: true, lang: currentLanguage }
         },
         emailRedirectTo: window.location.origin + window.location.pathname
       }
@@ -1790,10 +1919,15 @@ async function handleSignup(event) {
     if (data.session) {
       if (!session) applySession(data.session);
     } else {
-      setAuthTab("login");
+      // Email confirmation is on: thank her, explain the confirmation, then she logs in.
+      byId("signupForm").hidden = true;
+      const box = byId("joinThanks");
+      box.hidden = false; box.dataset.name = first; box.dataset.email = email;
+      byId("thanksTitle").textContent = tf("thanksTitle", first);
+      byId("thanksEmail").textContent = email;
+      paintOrchid("thanksOrchid");
       byId("loginEmail").value = email;
-      showFeedback("loginFeedback", "authCheckEmail");
-      byId("loginFeedback").classList.add("ok");
+      requestAnimationFrame(() => byId("thanksTitle").focus({ preventScroll: true }));
     }
   } catch {
     showFeedback("signupFeedback", "authError");
@@ -1812,6 +1946,22 @@ function initialize() {
   byId("logoutBtn")?.addEventListener("click", () => { db.auth.signOut(); });
   byId("pendLogout")?.addEventListener("click", () => { db.auth.signOut(); });
   byId("pendLang")?.addEventListener("click", toggleLanguage);
+  byId("welLang")?.addEventListener("click", toggleLanguage);
+  byId("joinBtn")?.addEventListener("click", () => setAuthTab("signup"));
+  byId("welLogin")?.addEventListener("click", () => setAuthTab("login"));
+  byId("loginToJoin")?.addEventListener("click", () => setAuthTab("signup"));
+  byId("joinToLogin")?.addEventListener("click", () => setAuthTab("login"));
+  byId("joinNext")?.addEventListener("click", joinNext);
+  byId("joinBack")?.addEventListener("click", () => joinStep(1));
+  byId("thanksLogin")?.addEventListener("click", () => { const e = byId("joinThanks").dataset.email || ""; setAuthTab("login"); byId("loginEmail").value = e; byId("loginPassword").focus(); });
+  window.addEventListener("hashchange", () => { if (!session && /^#(unete|join)$/i.test(location.hash) && !byId("authGate").hidden) setAuthTab("signup"); });
+  document.addEventListener("cml:lang", () => {
+    fillBirthdaySelects();
+    if (!byId("approvalGate").hidden) showApproval();
+    if (!byId("signupForm").hidden) joinStep(joinAt);
+    const th = byId("joinThanks"); if (th && !th.hidden) byId("thanksTitle").textContent = tf("thanksTitle", th.dataset.name || "");
+  });
+  fillBirthdaySelects();
   byId("pendCheck")?.addEventListener("click", recheckApproval);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) recheckApproval(); });
   byId("tabLogin")?.addEventListener("click", () => setAuthTab("login"));

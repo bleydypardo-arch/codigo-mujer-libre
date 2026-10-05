@@ -17,7 +17,7 @@ const S = {
     copy_travelIntro: "Viajes · introducción", copy_travelBadge: "Viajes · etiqueta", copy_maTag: "Rincón Matcha · lema", copy_maIntro: "Rincón Matcha · introducción",
     copy_wcQ: "Tu código · pregunta", copy_wcSub: "Tu código · subtítulo",
     imgTravelTitle: "Imagen de Viajes y Experiencias", imgTravelHelp: "Se usa en la portada de Viajes (si el viaje no tiene foto) y en los accesos a Viajes desde Inicio y Eventos.",
-    imgFounderTitle: "Foto de la fundadora (Nuestra esencia)", imgFounderHelp: "Aparece en la página «Nuestra esencia». Mejor una foto vertical o cuadrada.",
+    imgFounderTitle: "Foto de la fundadora", imgFounderHelp: "Aparece en «Nuestra Historia». Mejor una foto vertical o cuadrada. Sube una nueva cuando quieras cambiarla.",
     imgDefault: "Quitar y usar la predeterminada",
     imgMatchaTitle: "Imagen de Matcha y Arte", imgMatchaHelp: "Aparece en la tarjeta de Inicio y en la página de la colección.",
     fType: "Tipo de plan (filtros de Eventos)", fTypeAuto: "Automático (según el código)", fType_social: "Happy hour y social", fType_dining: "Restaurante y comida", fType_events: "Evento o plan (conciertos, mercados, festivales, exposiciones, concursos…)",
@@ -85,7 +85,7 @@ const S = {
     copy_travelIntro: "Travel · intro", copy_travelBadge: "Travel · badge", copy_maTag: "Matcha corner · tagline", copy_maIntro: "Matcha corner · intro",
     copy_wcQ: "Your code · question", copy_wcSub: "Your code · subtitle",
     imgTravelTitle: "Travel & Experiences image", imgTravelHelp: "Used on the Travel cover (when the trip has no photo) and on the Travel entry points on Home and Events.",
-    imgFounderTitle: "Founder photo (Our essence)", imgFounderHelp: "Shown on the “Our essence” page. A portrait or square photo works best.",
+    imgFounderTitle: "Founder photo", imgFounderHelp: "Shown on “Our Story”. A portrait or square photo works best. Upload a new one anytime to change it.",
     imgDefault: "Remove and use the default",
     imgMatchaTitle: "Matcha & Art image", imgMatchaHelp: "Shown on the Home card and on the collection page.",
     fType: "Plan type (Events filters)", fTypeAuto: "Automatic (from the code)", fType_social: "Happy hour & social", fType_dining: "Restaurant & food", fType_events: "Event or thing to do (concerts, markets, festivals, exhibitions, contests…)",
@@ -180,6 +180,27 @@ Object.assign(S.en, {
   daysTitle: "Day-by-day itinerary (structured)", dayAdd: "+ Add a moment", dayRemove: "Remove", dayDay: "Day (e.g. Day 1)", dayDate: "Date", dayTime: "Time",
   dayAct: "Activity", dayDesc: "Description", preview: "👁 Preview", previewNeed: "Write at least one title to preview."
 });
+
+// Nuestra Historia editor + Miembros / Solicitudes review (approved Oct 2026)
+Object.assign(S.es, {
+  secStory: "Nuestra Historia", storyEdTitle: "Textos de Nuestra Historia", storyEdHelp: "Escribe en español y en inglés. Deja un campo vacío para usar el texto original (lo ves en gris). Un renglón en blanco separa párrafos.",
+  sf_name: "Nombre de la fundadora", sf_role: "Cargo", sf_who: "Quién la creó", sf_why: "Por qué nació", sf_vision: "Visión", sf_mission: "Misión", storyOpen: "Ver la página →",
+  f_requests: "Solicitudes", f_members: "Miembros", f_all: "Todas", noRequests: "No hay solicitudes pendientes. 🌸",
+  appPhone: "Teléfono", appEmail: "Correo", appBday: "Cumpleaños", appWants: "Quiere vivir", appHeard: "Llegó por", appGuide: "Normas", appSmile: "Algo que la hace sonreír",
+  appWa: "Escribir por WhatsApp", appNoWa: "Prefiere no recibir WhatsApp", appGuideOk: d => "✓ Aceptadas el " + d, appOld: "Se registró antes de la nueva solicitud: sin respuestas.",
+  heard_friend: "Una amiga", heard_event: "Un evento", heard_social: "Redes sociales", heard_other: "Otro", appInvited: "invitada por",
+  appView: "Ver solicitud", appHide: "Ocultar solicitud", appWait: "¿Aún no decides? Déjala en Solicitudes y vuelve cuando quieras.", ago: d => d
+});
+Object.assign(S.en, {
+  secStory: "Our Story", storyEdTitle: "Our Story texts", storyEdHelp: "Write in Spanish and English. Leave a field empty to use the original text (shown in grey). A blank line separates paragraphs.",
+  sf_name: "Founder's name", sf_role: "Role", sf_who: "Who created it", sf_why: "Why it was born", sf_vision: "Vision", sf_mission: "Mission", storyOpen: "View the page →",
+  f_requests: "Requests", f_members: "Members", f_all: "All", noRequests: "No pending requests. 🌸",
+  appPhone: "Phone", appEmail: "Email", appBday: "Birthday", appWants: "Wants to experience", appHeard: "Found us via", appGuide: "Guidelines", appSmile: "Something that makes her smile",
+  appWa: "Message on WhatsApp", appNoWa: "Prefers no WhatsApp", appGuideOk: d => "✓ Accepted on " + d, appOld: "Joined before the new application: no answers.",
+  heard_friend: "A friend", heard_event: "An event", heard_social: "Social media", heard_other: "Other", appInvited: "invited by",
+  appView: "View application", appHide: "Hide application", appWait: "Not sure yet? Leave her in Requests and come back anytime.", ago: d => d
+});
+S.es.tabs.users = "Miembros";
 
 const KINDS = {
   event:    { tab: "plans",    fields: ["code", "title", "desc", "date", "time", "location", "price", "url", "details", "image"] },
@@ -337,7 +358,7 @@ function render() {
     if (usersChip && n) usersChip.appendChild(el("span", { class: "tab-badge", "aria-label": String(n), text: String(n) }));
     if (!n || tab === "users") { banner.hidden = true; return; }
     banner.hidden = false;
-    banner.replaceChildren(el("span", { text: "⏳ " + a("pendingBanner")(n) }), button(a("reviewNow"), "primary", () => { tab = "users"; editing = null; render(); }));
+    banner.replaceChildren(el("span", { text: "⏳ " + a("pendingBanner")(n) }), button(a("reviewNow"), "primary", () => { tab = "users"; usersFilter = "requests"; editing = null; render(); }));
   });
   const fill = node => { if (token === renderToken) body.replaceChildren(node); };
   const fail = () => fill(el("p", { class: "form-feedback", text: a("loadFail") }));
@@ -841,38 +862,88 @@ async function messagesView() {
 }
 
 // ---------- members ----------
+// ---------- Miembros: requests (with the application answers), members, everyone ----------
+let usersFilter = "";
+const isRequest = u => u.role === "member" && !u.approved && !u.rejected;
+function applicationNode(u) {
+  const app = u.application && typeof u.application === "object" ? u.application : {};
+  const rows = [];
+  const row = (label, ...val) => rows.push(el("dt", { text: label }), el("dd", {}, ...val));
+  if (u.phone) {
+    const digits = String(u.phone).replace(/\D/g, "");
+    row(a("appPhone"), el("span", { text: u.phone }),
+      u.whatsapp === true && digits.length >= 7 ? el("a", { class: "app-wa", href: "https://wa.me/" + digits, target: "_blank", rel: "noopener noreferrer", text: "💬 " + a("appWa") })
+        : u.whatsapp === false ? el("small", { class: "app-nowa", text: a("appNoWa") }) : null);
+  }
+  if (u.email) row(a("appEmail"), el("a", { href: "mailto:" + u.email, text: u.email }));
+  if (u.birth_month && u.birth_day) row(a("appBday"), el("span", { text: new Date(2000, u.birth_month - 1, u.birth_day).toLocaleDateString(C.loc(), { month: "long", day: "numeric" }) }));
+  const wants = (u.interests || []).map(c => C.codeLabels[c] ? C.t(C.codeLabels[c]) : c).join(" · ");
+  if (wants) row(a("appWants"), el("span", { text: wants }));
+  if (app.heard) row(a("appHeard"), el("span", { text: a("heard_" + app.heard) + (app.invited_by ? " — " + a("appInvited") + " " : "") }), app.invited_by ? el("b", { text: app.invited_by }) : null);
+  else if (app.invited_by) row(a("appHeard"), el("b", { text: app.invited_by }));
+  if (app.guidelines) row(a("appGuide"), el("span", { text: a("appGuideOk")(app.guidelines_at ? new Date(app.guidelines_at).toLocaleDateString(C.loc(), { day: "numeric", month: "short", year: "numeric" }) : "") }));
+  const box = el("div", { class: "app-answers" });
+  if (rows.length) box.appendChild(el("dl", { class: "app-dl" }, ...rows));
+  if (app.smile) box.append(el("p", { class: "app-qh", text: a("appSmile") }), el("blockquote", { class: "app-quote", text: "“" + app.smile + "”" }));
+  const hasAnswers = !!(u.phone || app.heard || app.smile || app.guidelines);
+  if (!hasAnswers && isRequest(u)) box.appendChild(el("p", { class: "small-note", text: a("appOld") }));
+  return { box, hasAnswers };
+}
 async function usersView() {
   const { data, error } = await C.db.from("profiles").select("*").order("created_at", { ascending: false });
   if (error) throw error;
   const me = C.session().user.id;
-  const wrap = el("div");
+  const requests = data.filter(isRequest);
+  if (!["requests", "members", "all"].includes(usersFilter)) usersFilter = requests.length ? "requests" : "members";
+  const wrap = el("div", { class: "members-admin" });
   const list = el("div");
   const search = el("input", { type: "search", placeholder: a("search"), "aria-label": a("search") });
+  const chip = (key, label, n) => {
+    const b = el("button", { type: "button", class: "chip member-filter" + (usersFilter === key ? " selected" : ""), "aria-pressed": String(usersFilter === key), "data-filter": key },
+      label, n ? el("span", { class: "tab-badge", text: String(n) }) : null);
+    b.addEventListener("click", () => { usersFilter = key; wrap.querySelectorAll(".member-filter").forEach(x => { const on = x.dataset.filter === key; x.classList.toggle("selected", on); x.setAttribute("aria-pressed", String(on)); }); paint(); });
+    return b;
+  };
   wrap.appendChild(el("div", { class: "admin-bar" }, el("b", { text: a("userCount")(data.length) })));
+  wrap.appendChild(el("div", { class: "chips member-filters", role: "group" }, chip("requests", a("f_requests"), requests.length), chip("members", a("f_members")), chip("all", a("f_all"))));
   wrap.appendChild(search);
   wrap.appendChild(list);
   const paint = () => {
     const q = search.value.trim().toLowerCase();
-    list.replaceChildren(...data.filter(u => !q || [u.first_name, u.last_name, u.email, u.company, u.city].join(" ").toLowerCase().includes(q)).map(u => {
-      const labels = (u.interests || []).map(c => C.codeLabels[c] ? C.t(C.codeLabels[c]) : c).join(" · ");
-      const item = el("div", { class: "admin-item" },
-        el("span", { class: "badge" + (u.role !== "member" ? " live" : ""), text: a("role")[u.role] || u.role }),
-        u.role === "member" ? el("span", { class: "badge" + (u.approved ? " live" : ""), text: " " + (u.approved ? a("approvedBadge") : (u.rejected ? a("rejectedBadge") : a("pendingBadge"))) }) : null,
-        el("h3", { text: (u.first_name + " " + u.last_name).trim() || "—" }),
-        el("p", { class: "small-note", text: u.email }),
-        u.company ? el("p", { class: "small-note", text: a("company") + ": " + u.company }) : null,
-        u.city ? el("p", { class: "small-note", text: a("city") + ": " + u.city }) : null,
-        labels ? el("p", { class: "small-note", text: a("interests") + ": " + labels }) : null,
-        u.birth_month ? el("p", { class: "small-note", text: C.t("bdAdminLine") + ": " + new Date(2000, u.birth_month - 1, u.birth_day).toLocaleDateString(C.loc(), { month: "long", day: "numeric" }) }) : null,
-        el("p", { class: "small-note", text: a("joined") + ": " + new Date(u.created_at).toLocaleDateString(C.loc()) }));
+    const shown = data.filter(u => usersFilter === "requests" ? isRequest(u) : usersFilter === "members" ? (u.approved || u.role !== "member") : true)
+      .filter(u => !q || [u.first_name, u.last_name, u.email, u.company, u.city, u.phone].join(" ").toLowerCase().includes(q));
+    if (!shown.length) { list.replaceChildren(el("p", { class: "small-note empty-requests", text: usersFilter === "requests" ? a("noRequests") : a("empty") })); return; }
+    list.replaceChildren(...shown.map(u => {
+      const name = [u.first_name, u.last_name].filter(Boolean).join(" ").trim() || "—";
+      const req = isRequest(u);
+      const meta = [u.city, new Date(u.created_at).toLocaleDateString(C.loc(), { day: "numeric", month: "short", year: "numeric" })].filter(Boolean).join(" · ");
+      const item = el("div", { class: "admin-item member-card" + (req ? " is-request" : "") },
+        el("div", { class: "mc-head" },
+          el("span", { class: "mc-av", "aria-hidden": "true", text: (u.first_name || "?").trim().charAt(0).toUpperCase() }),
+          el("span", { class: "mc-id" }, el("h3", { text: name }), el("small", { text: meta })),
+          el("span", { class: "mc-badges" },
+            el("span", { class: "badge" + (u.role !== "member" ? " live" : ""), text: a("role")[u.role] || u.role }),
+            u.role === "member" ? el("span", { class: "badge" + (u.approved ? " live" : "") + (req ? " pending" : ""), text: " " + (u.approved ? a("approvedBadge") : (u.rejected ? a("rejectedBadge") : a("pendingBadge"))) }) : null)));
+      const { box, hasAnswers } = applicationNode(u);
+      if (req) item.appendChild(box);
+      else if (hasAnswers) {
+        box.hidden = true;
+        const tg = button(a("appView"), "link-btn app-toggle", () => { box.hidden = !box.hidden; tg.textContent = box.hidden ? a("appView") : a("appHide"); });
+        item.append(tg, box);
+      } else {
+        if (u.company) item.appendChild(el("p", { class: "small-note", text: a("company") + ": " + u.company }));
+        const labels = (u.interests || []).map(c => C.codeLabels[c] ? C.t(C.codeLabels[c]) : c).join(" · ");
+        if (labels) item.appendChild(el("p", { class: "small-note", text: a("interests") + ": " + labels }));
+        item.appendChild(el("p", { class: "small-note", text: u.email }));
+      }
       if (u.role === "member") {
         const setApproval = async ok => {
           const r = ok ? await C.db.rpc("approve_member", { target: u.id, ok: true }) : await C.db.rpc("reject_member", { target: u.id });
           if (r.error) return toast(a("saveFail"));
           toast(a("approvalSaved")); pendingCount(); render();
         };
-        const acts = el("div", { class: "actions" });
-        if (!u.approved) acts.appendChild(button(a("approve"), "", () => setApproval(true)));
+        const acts = el("div", { class: "actions" + (req ? " mc-decide" : "") });
+        if (!u.approved) acts.appendChild(button((req ? "✓ " : "") + a("approve"), req ? "primary mc-approve" : "", () => setApproval(true)));
         if (u.approved) acts.appendChild(button(a("unapprove"), "danger", async () => {
           const r = await C.db.rpc("approve_member", { target: u.id, ok: false });
           if (r.error) return toast(a("saveFail"));
@@ -880,6 +951,7 @@ async function usersView() {
         }));
         else if (!u.rejected) acts.appendChild(button(a("reject"), "danger", () => setApproval(false)));
         item.appendChild(acts);
+        if (req) item.appendChild(el("p", { class: "mc-wait", text: a("appWait") }));
       }
       if (u.birth_month && (u.approved || u.role !== "member")) {
         item.appendChild(el("div", { class: "actions" }, button(C.t("bdCelebrate"), "", () => celebrate(u))));
@@ -909,10 +981,12 @@ async function settingsView() {
   data.forEach(r => { cfg[r.key] = r.value; });
   const wrap = el("div");
 
+  wrap.appendChild(el("h3", { class: "admin-sec-h", id: "adminStory", text: a("secStory") }));
+  wrap.appendChild(imageSetting(cfg, "founder_photo", a("imgFounderTitle"), a("imgFounderHelp")));
+  wrap.appendChild(storyEditor(cfg));
   wrap.appendChild(el("h3", { class: "admin-sec-h", text: a("secImages") }));
   wrap.appendChild(imageSetting(cfg, "hero_photo", a("heroTitle"), a("heroHelp")));
   wrap.appendChild(imageSetting(cfg, "travel_image", a("imgTravelTitle"), a("imgTravelHelp")));
-  wrap.appendChild(imageSetting(cfg, "founder_photo", a("imgFounderTitle"), a("imgFounderHelp")));
   wrap.appendChild(imageSetting(cfg, "matcha_image", a("imgMatchaTitle"), a("imgMatchaHelp")));
   wrap.appendChild(pageImagesSetting(cfg));
   wrap.appendChild(imageSetting(cfg, "brand_logo", a("imgLogoTitle"), a("imgLogoHelp")));
@@ -989,6 +1063,33 @@ function copyEditor(cfg) {
       if (w.error) return toast(a("saveFail"));
       await C.refreshPublic(); toast(a("saved"));
     })));
+}
+
+// Nuestra Historia texts: settings key "story" { name|role|who|why|vision|mission: { es, en } } (only this editor writes it)
+function storyEditor(cfg) {
+  const story = cfg.story || {};
+  const def = (window.CMLStory && window.CMLStory.defaults) || { es: {}, en: {} };
+  const keys = (window.CMLStory && window.CMLStory.KEYS) || ["name", "role", "who", "why", "vision", "mission"];
+  const rows = keys.map(key => {
+    const long = !["name", "role"].includes(key);
+    const es = el("textarea", { rows: long ? 4 : 1, placeholder: def.es[key] || "", "aria-label": a("sf_" + key) + " (ES)", "data-story": key + "-es" }); es.value = (story[key] && story[key].es) || "";
+    const en = el("textarea", { rows: long ? 4 : 1, placeholder: def.en[key] || "", "aria-label": a("sf_" + key) + " (EN)", "data-story": key + "-en" }); en.value = (story[key] && story[key].en) || "";
+    return { key, es, en, node: el("div", { class: "rf-pair copy-row" }, el("b", { text: a("sf_" + key) }),
+      el("div", { class: "two-col" }, el("label", {}, el("small", { text: "Español" }), es), el("label", {}, el("small", { text: "English" }), en))) };
+  });
+  return el("div", { class: "admin-form story-editor" }, el("h3", { text: a("storyEdTitle") }), el("p", { class: "small-note", text: a("storyEdHelp") }),
+    ...rows.map(r => r.node),
+    el("div", { class: "admin-bar" },
+      button(a("save"), "primary", async () => {
+        const value = {};
+        rows.forEach(r => { const es = r.es.value.trim(), en = r.en.value.trim(); if (es || en) value[r.key] = { es, en }; });
+        const w = Object.keys(value).length
+          ? await C.db.from("settings").upsert({ key: "story", value, updated_at: new Date().toISOString() }, { onConflict: "key" })
+          : await C.db.from("settings").delete().eq("key", "story");
+        if (w.error) return toast(a("saveFail"));
+        await C.refreshPublic(); toast(a("saved"));
+      }),
+      button(a("storyOpen"), "secondary", () => C.showPage("essence"))));
 }
 
 // ---------- AI assistant (calls the secure Edge Function; no secret key in the browser) ----------

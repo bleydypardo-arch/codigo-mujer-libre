@@ -182,7 +182,7 @@ function init() {
   C = window.CML;
   if (!C) return;
   C.addStrings(ES, EN);
-  window.CMLCode = { render, get: getCode };
+  window.CMLCode = { render, get: getCode, orchidSVG };
   document.addEventListener("cml:render", render);
   document.addEventListener("cml:lang", render);
   document.addEventListener("cml:session", () => { memo = ""; render(); });

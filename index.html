@@ -17,7 +17,7 @@
 
 <body>
 
-<!-- ESPERANDO APROBACIÓN: membresía pendiente o no aprobada -->
+<!-- ESPERANDO APROBACIÓN: solicitud enviada (pendiente) o no aprobada -->
 <div id="approvalGate" class="auth-gate" hidden>
   <div class="auth-card approval-card">
     <div class="auth-top">
@@ -29,19 +29,48 @@
       <button id="pendLang" type="button" class="langBtnAlt" aria-label="Switch to English">EN</button>
     </div>
     <div class="approval-body" role="status" aria-live="polite">
-      <div class="approval-icon" aria-hidden="true">🌸</div>
+      <div class="approval-icon join-orchid" id="pendOrchid" aria-hidden="true">🌸</div>
       <h1 id="approvalTitle" data-i18n="pendTitle">Bienvenida a Código Mujer Libre.</h1>
       <p id="approvalText" data-i18n="pendBody">Tu membresía está pendiente de aprobación. Te avisaremos cuando tengas acceso.</p>
+      <ol class="join-steps-tl" id="pendSteps">
+        <li class="ok"><span class="tl-dot" aria-hidden="true">✓</span><span><b data-i18n="tl1">Solicitud enviada</b><small id="pendSentAt"></small></span></li>
+        <li class="now"><span class="tl-dot" aria-hidden="true">2</span><span><b data-i18n="tl2">La estamos revisando</b><small data-i18n="tl2s">Normalmente en 1 a 3 días</small></span></li>
+        <li><span class="tl-dot" aria-hidden="true">3</span><span><b data-i18n="tl3">¡Bienvenida a la comunidad!</b><small data-i18n="tl3s">Entrarás con este mismo correo</small></span></li>
+      </ol>
       <p class="form-feedback" id="approvalFeedback" role="alert" hidden></p>
-      <button type="button" class="primary wide" id="pendCheck" data-i18n="pendCheck">Revisar de nuevo</button>
+      <button type="button" class="primary wide" id="pendCheck" data-i18n="pendCheck">Revisar mi estado</button>
+      <button type="button" class="link-btn join-story-link" id="pendStory" data-i18n="pendStory">Mientras tanto: conoce Nuestra Historia →</button>
       <button type="button" class="link-btn" id="pendLogout" data-i18n="logout">Salir</button>
     </div>
+    <div class="story-overlay" id="pendStoryBox" hidden></div>
   </div>
 </div>
 
-<!-- ACCESO: registro / entrar -->
+<!-- ACCESO: bienvenida (QR / #unete) → solicitud en 2 pasos, o entrar -->
 <div id="authGate" class="auth-gate" hidden>
-  <div class="auth-card">
+
+  <section id="authWelcome" class="join-welcome" hidden aria-labelledby="welTitle">
+    <div class="jw-top">
+      <div class="auth-brand jw-brand">
+        <img src="logo-cml.svg" alt="" width="46" height="46">
+        <div><b>Código Mujer Libre</b>
+        <small data-i18n="tagline">Conecta · Vive · Crece</small></div>
+      </div>
+      <button id="welLang" type="button" class="langBtnAlt jw-lang" aria-label="Switch to English">EN</button>
+    </div>
+    <div class="jw-orchid" id="welOrchid" aria-hidden="true"></div>
+    <div class="jw-body">
+      <small class="jw-kick" data-i18n="welKick">BIENVENIDA</small>
+      <h1 id="welTitle"><span data-i18n="welTitle1">Bienvenida a</span><br><em>Código Mujer Libre</em></h1>
+      <p class="jw-lead" data-i18n="welLead">Una comunidad creada para conectar, vivir y crecer juntas.</p>
+      <p class="jw-pills"><span data-i18n="welPill1">Planes reales</span><i aria-hidden="true">◆</i><span data-i18n="welPill2">Bienestar</span><i aria-hidden="true">◆</i><span data-i18n="welPill3">Experiencias</span></p>
+      <button type="button" class="jw-join" id="joinBtn" data-i18n="welJoin">Únete a la comunidad</button>
+      <button type="button" class="jw-login" id="welLogin" data-i18n="welLogin">Ya soy miembro · Entrar</button>
+      <p class="jw-note" data-i18n="welNote">Membresía por solicitud · cada mujer es aprobada personalmente</p>
+    </div>
+  </section>
+
+  <div class="auth-card" id="authCard">
     <div class="auth-top">
       <div class="auth-brand">
         <img src="logo-cml.svg" alt="" width="46" height="46">
@@ -54,10 +83,12 @@
     <p id="authLoading" class="note" data-i18n="loading">Cargando…</p>
 
     <div id="authForms" hidden>
-      <small class="rose" data-i18n="authLabel">BIENVENIDA</small>
-      <h1 data-i18n="authTitle">Tu comunidad para conectar, salir y crecer.</h1>
+      <div class="auth-intro" id="authIntro">
+        <small class="rose" data-i18n="authLabel">BIENVENIDA</small>
+        <h1 data-i18n="authTitle">Tu comunidad para conectar, salir y crecer.</h1>
+      </div>
 
-      <div class="auth-tabs" role="tablist">
+      <div class="auth-tabs" role="tablist" id="authTabs">
         <button type="button" role="tab" id="tabLogin" class="auth-tab active" aria-selected="true" data-i18n="loginTab">Entrar</button>
         <button type="button" role="tab" id="tabSignup" class="auth-tab" aria-selected="false" data-i18n="signupTab">Crear cuenta</button>
       </div>
@@ -69,32 +100,105 @@
           <input id="loginPassword" type="password" autocomplete="current-password" required></label>
         <p class="form-feedback" id="loginFeedback" role="alert" hidden></p>
         <button type="submit" class="primary wide" id="loginBtn" data-i18n="loginBtn">Entrar</button>
+        <button type="button" class="link-btn join-switch" id="loginToJoin" data-i18n="loginToJoin">¿Aún no eres miembro? Únete a la comunidad</button>
       </form>
 
-      <form id="signupForm" hidden novalidate>
-        <div class="two-col">
-          <label><span data-i18n="firstName">Nombre</span>
-            <input id="suFirst" autocomplete="given-name" maxlength="60" required></label>
-          <label><span data-i18n="lastName">Apellido</span>
-            <input id="suLast" autocomplete="family-name" maxlength="60" required></label>
+      <!-- SOLICITUD DE MEMBRESÍA (2 pasos) -->
+      <form id="signupForm" class="join-form" hidden novalidate>
+        <div class="join-head">
+          <p class="join-progress"><span id="joinStepLabel">Paso 1 de 2</span><span class="join-bar" aria-hidden="true"><span id="joinBarFill"></span></span></p>
+          <h2 id="joinTitle" tabindex="-1" data-i18n="join1Title">Cuéntanos sobre ti</h2>
+          <p id="joinSub" class="join-sub" data-i18n="join1Sub">Solo lo necesario para conocerte y darte la bienvenida.</p>
         </div>
-        <label><span data-i18n="email">Correo electrónico</span>
-          <input id="suEmail" type="email" autocomplete="email" required></label>
-        <label><span data-i18n="password">Contraseña</span>
-          <input id="suPassword" type="password" autocomplete="new-password" minlength="8" required>
-          <small class="meta" data-i18n="passwordHint">Mínimo 8 caracteres.</small></label>
-        <label><span data-i18n="company">Empresa u organización (opcional)</span>
-          <input id="suCompany" autocomplete="organization" maxlength="120"></label>
-        <label><span data-i18n="city">Ciudad o zona (opcional)</span>
-          <input id="suCity" autocomplete="address-level2" maxlength="80"></label>
-        <fieldset>
-          <legend data-i18n="interestsLegend">¿Qué te interesa?</legend>
-          <p class="meta" data-i18n="interestsHelp">Elige las que quieras. Corresponden a nuestros códigos.</p>
-          <div class="choice-grid" id="suInterests"></div>
-        </fieldset>
+
+        <div id="joinStep1" class="join-step">
+          <div class="join-card">
+            <div class="two-col">
+              <label><span data-i18n="firstName">Nombre</span>
+                <input id="suFirst" autocomplete="given-name" maxlength="60" required></label>
+              <label><span data-i18n="lastName">Apellido</span>
+                <input id="suLast" autocomplete="family-name" maxlength="60" required></label>
+            </div>
+            <label><span data-i18n="joinCity">Ciudad o zona</span>
+              <input id="suCity" autocomplete="address-level2" maxlength="80" required></label>
+            <label><span data-i18n="joinPhone">Teléfono</span>
+              <input id="suPhone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" required></label>
+            <fieldset class="join-seg">
+              <legend data-i18n="joinWa">¿Podemos escribirte por WhatsApp?</legend>
+              <label class="seg-opt"><input type="radio" name="suWa" value="true"><span data-i18n="yes">Sí</span></label>
+              <label class="seg-opt"><input type="radio" name="suWa" value="false"><span data-i18n="no">No</span></label>
+            </fieldset>
+            <fieldset class="join-bday">
+              <legend><span data-i18n="joinBday">Tu cumpleaños</span> <small data-i18n="optional">(opcional)</small></legend>
+              <div class="two-col">
+                <label><span class="sr-only" data-i18n="month">Mes</span><select id="suBMonth"></select></label>
+                <label><span class="sr-only" data-i18n="day">Día</span><select id="suBDay"></select></label>
+              </div>
+              <p class="join-hint" data-i18n="joinBdayHint">🎂 Solo el día y el mes, para celebrarte. Nunca pedimos el año.</p>
+            </fieldset>
+          </div>
+          <div class="join-card">
+            <label><span data-i18n="email">Correo electrónico</span>
+              <input id="suEmail" type="email" autocomplete="email" required></label>
+            <label><span data-i18n="joinPassword">Crea una contraseña</span>
+              <input id="suPassword" type="password" autocomplete="new-password" minlength="8" required>
+              <small class="meta" data-i18n="passwordHint">Mínimo 8 caracteres.</small></label>
+          </div>
+        </div>
+
+        <div id="joinStep2" class="join-step" hidden>
+          <fieldset class="join-card">
+            <legend class="join-q" data-i18n="joinQ1">1 · ¿Qué te gustaría vivir aquí?</legend>
+            <p class="join-qs" data-i18n="joinQ1s">Elige las que quieras.</p>
+            <div class="choice-grid join-chips" id="suInterests"></div>
+          </fieldset>
+          <fieldset class="join-card">
+            <legend class="join-q" data-i18n="joinQ2">2 · ¿Cómo llegaste a Código Mujer Libre?</legend>
+            <div class="join-chips join-heard">
+              <label class="choice"><input type="radio" name="suHeard" value="friend"> <span data-i18n="heard_friend">Una amiga me invitó</span></label>
+              <label class="choice"><input type="radio" name="suHeard" value="event"> <span data-i18n="heard_event">Un evento</span></label>
+              <label class="choice"><input type="radio" name="suHeard" value="social"> <span data-i18n="heard_social">Redes sociales</span></label>
+              <label class="choice"><input type="radio" name="suHeard" value="other"> <span data-i18n="heard_other">Otro</span></label>
+            </div>
+            <label><span data-i18n="joinInvited">¿Quién te invitó?</span> <small data-i18n="optional">(opcional)</small>
+              <input id="suInvited" maxlength="80" autocomplete="off"></label>
+          </fieldset>
+          <fieldset class="join-card">
+            <legend class="join-q"><span data-i18n="joinQ3">3 · Cuéntanos algo que te haga sonreír</span> <small data-i18n="optional">(opcional)</small></legend>
+            <label><span class="sr-only" data-i18n="joinQ3">3 · Cuéntanos algo que te haga sonreír</span>
+              <textarea id="suSmile" rows="2" maxlength="300" data-i18n-placeholder="joinQ3ph" placeholder="Un buen café con amigas, bailar, una tarde de playa…"></textarea></label>
+          </fieldset>
+          <div class="join-card join-guide">
+            <p class="jg-h"><span aria-hidden="true">◆</span> <span data-i18n="guideTitle">Nuestro código</span></p>
+            <ul>
+              <li><b data-i18n="guide1b">Respeto y cariño.</b> <span data-i18n="guide1">Aquí todas somos bienvenidas.</span></li>
+              <li><b data-i18n="guide2b">Lo que se comparte aquí, se queda aquí.</b></li>
+              <li><b data-i18n="guide3b">Sin ventas ni spam</b> <span data-i18n="guide3">entre miembros.</span></li>
+              <li><b data-i18n="guide4b">Aparece y participa:</b> <span data-i18n="guide4">esta comunidad la hacemos juntas.</span></li>
+            </ul>
+            <label class="check join-accept"><input type="checkbox" id="suGuide"> <span data-i18n="guideAccept">Acepto las normas de la comunidad</span></label>
+          </div>
+        </div>
+
         <p class="form-feedback" id="signupFeedback" role="alert" hidden></p>
-        <button type="submit" class="primary wide" id="signupBtn" data-i18n="signupBtn">Crear mi cuenta</button>
+        <div class="join-actions" id="joinActions1">
+          <button type="button" class="primary wide" id="joinNext" data-i18n="joinNext">Continuar →</button>
+          <button type="button" class="link-btn join-switch" id="joinToLogin" data-i18n="joinToLogin">Ya tengo cuenta · Entrar</button>
+        </div>
+        <div class="join-actions" id="joinActions2" hidden>
+          <button type="submit" class="primary wide join-submit" id="signupBtn" data-i18n="signupBtn">Enviar mi solicitud</button>
+          <button type="button" class="link-btn join-switch" id="joinBack" data-i18n="joinBack">← Volver</button>
+        </div>
       </form>
+
+      <!-- Gracias (cuando Supabase pide confirmar el correo antes de entrar) -->
+      <div id="joinThanks" class="join-thanks" hidden role="status" aria-live="polite">
+        <div class="join-orchid" id="thanksOrchid" aria-hidden="true"></div>
+        <h2 id="thanksTitle" tabindex="-1"></h2>
+        <p data-i18n="thanksBody">Tu solicitud llegó a nuestro equipo. La revisamos con cariño y te escribiremos por WhatsApp o correo en cuanto estés dentro.</p>
+        <p class="join-confirm"><span data-i18n="thanksConfirm">Antes, confirma tu correo con el enlace que te enviamos a</span> <b id="thanksEmail"></b>.</p>
+        <button type="button" class="primary wide" id="thanksLogin" data-i18n="thanksLogin">Ya lo confirmé · Entrar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -338,21 +442,10 @@
   <!-- NUESTRA ESENCIA (opened from Mi perfil; static bilingual text) -->
   <section id="essence" class="page">
 
-    <div class="page-back"><button type="button" class="back-btn" data-go="profile" aria-label="Volver" data-i18n-aria="backLabel"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>
+    <div class="page-back"><button type="button" class="back-btn" data-go="home" aria-label="Volver" data-i18n-aria="backLabel"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>
 
-    <h1 data-i18n="essTitle">Nuestra esencia</h1>
-
-    <div class="card essence-card">
-      <div class="ess-photo" role="img" aria-label="Foto de la fundadora" data-i18n-aria="essPhoto">
-        <svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c.8-4 4-6 8-6s7.2 2 8 6"/></svg>
-      </div>
-      <span class="ess-rule" aria-hidden="true"></span>
-      <h2 class="ess-q" data-i18n="essQ">¿Por qué nació Código Mujer Libre?</h2>
-      <p data-i18n="essP1">Creé Código Mujer Libre porque muchas veces las mujeres pasamos la vida cuidando, resolviendo, trabajando y pensando en todos los demás, mientras nos dejamos para el final.</p>
-      <p data-i18n="essP2">Este es un espacio para recordarnos que nosotras también importamos. Para encontrar un poco más de equilibrio entre nuestra vida cotidiana, nuestro bienestar, nuestra vida espiritual, nuestras amistades y esos momentos que simplemente nos hacen sentir bien.</p>
-      <p class="ess-hi" data-i18n="essP3">No se trata de hacer más. Se trata de vivir mejor, conectar, disfrutar y también hacer espacio para nosotras.</p>
-      <p class="ess-sign"><span class="ess-love" data-i18n="essLove">Con cariño,</span><span class="ess-name">Jazz</span><span class="ess-role" data-i18n="essRole">Fundadora, Código Mujer Libre</span></p>
-    </div>
+    <!-- NUESTRA HISTORIA: built by story.js from the owner's text (Admin → Imágenes y textos) + founder photo -->
+    <div id="storyRoot" class="story-root"></div>
 
   </section>
 
@@ -646,6 +739,11 @@
     </small>
   </button>
 
+  <button type="button" data-page="essence" id="navStory">
+    <svg class="ni" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5zM12 6.5V19"/></svg>
+    <small data-i18n="navStory">Historia</small>
+  </button>
+
   <button type="button" data-page="admin" id="navAdmin" hidden>
     <svg class="ni" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.2M12 18.3v2.2M3.5 12h2.2M18.3 12h2.2M6 6l1.6 1.6M16.4 16.4 18 18M18 6l-1.6 1.6M7.6 16.4 6 18"/></svg>
     <small data-i18n="adminNav">Admin</small>
@@ -704,5 +802,6 @@
   <script src="discover.js"></script>
   <script src="code.js"></script>
   <script src="experiences.js"></script>
+  <script src="story.js"></script>
 </body>
 </html>
