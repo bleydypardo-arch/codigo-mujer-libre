@@ -147,16 +147,42 @@
       <button type="button" class="code-flip" id="codeFlip" aria-pressed="false" aria-label="Tu código de hoy" data-i18n-aria="codeFlipAria">
         <span class="code-inner">
           <span class="code-face code-front" id="codeFront">
+            <span class="code-sheen" aria-hidden="true"></span>
             <span class="code-top">
-              <svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-              <span data-i18n="codeToday">TU CÓDIGO DE HOY</span>
+              <span class="code-kicker" data-i18n="codeToday">TU CÓDIGO DE HOY</span>
               <span class="code-date" id="codeDate"></span>
             </span>
-            <span class="code-aff" id="codeAff"></span>
-            <svg class="code-art" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path id="codeArt" d=""/></svg>
+            <span class="code-body">
+              <span class="code-aff" id="codeAff"></span>
+              <span class="code-medal-wrap" aria-hidden="true">
+              <svg class="code-medal" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                <defs>
+                  <linearGradient id="mdGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6E7C6"/><stop offset=".35" stop-color="#DBC19F"/><stop offset=".6" stop-color="#9C7B4E"/><stop offset=".85" stop-color="#EAD4AA"/><stop offset="1" stop-color="#B8955F"/></linearGradient>
+                  <radialGradient id="mdRose" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#E7A0AA"/><stop offset=".55" stop-color="#B85F68"/><stop offset="1" stop-color="#8A3A47"/></radialGradient>
+                  <radialGradient id="mdWine" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#A44B5A"/><stop offset=".6" stop-color="#6E2433"/><stop offset="1" stop-color="#43141F"/></radialGradient>
+                  <radialGradient id="mdAmber" cx=".38" cy=".32" r=".8"><stop offset="0" stop-color="#F0D9AE"/><stop offset=".55" stop-color="#C9A169"/><stop offset="1" stop-color="#8E6A3B"/></radialGradient>
+                  <linearGradient id="mdShine" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+                  <clipPath id="mdClip"><circle cx="60" cy="60" r="42"/></clipPath>
+                </defs>
+                <g class="md-ring"><circle cx="60" cy="60" r="56" fill="none" stroke="url(#mdGold)" stroke-width="1.4" stroke-dasharray="1.5 5.5" stroke-linecap="round"/>
+                  <circle cx="60" cy="4" r="2.4" fill="#F6E7C6"/><circle cx="60" cy="116" r="1.6" fill="#DBC19F"/></g>
+                <circle class="md-halo" cx="60" cy="60" r="50" fill="none" stroke="#F6E7C6" stroke-opacity=".5" stroke-width="1"/>
+                <circle cx="60" cy="60" r="47" fill="url(#mdGold)"/>
+                <g clip-path="url(#mdClip)">
+                  <circle cx="60" cy="60" r="42" fill="url(#mdRose)"/>
+                  <circle class="md-wine" cx="60" cy="60" r="42" fill="url(#mdWine)"/>
+                  <circle class="md-amber" cx="60" cy="60" r="42" fill="url(#mdAmber)"/>
+                  <g transform="rotate(24 60 60)"><rect class="md-shine" x="-40" y="-10" width="26" height="140" fill="url(#mdShine)"/></g>
+                </g>
+                <circle cx="60" cy="60" r="42" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width=".8"/>
+                <path class="md-c" d="M80.5 41 A28 28 0 1 0 80.5 79" fill="none" stroke="url(#mdGold)" stroke-width="5" stroke-linecap="round"/>
+                <g class="md-qr" fill="#F6E7C6"><rect x="83" y="49" width="4" height="4" rx=".8"/><rect x="89" y="49" width="4" height="4" rx=".8" opacity=".6"/><rect x="83" y="55" width="4" height="4" rx=".8" opacity=".6"/><rect x="89" y="55" width="4" height="4" rx=".8"/><rect x="83" y="61" width="4" height="4" rx=".8"/><rect x="86" y="67" width="4" height="4" rx=".8" opacity=".6"/></g>
+                <g class="md-sym" transform="translate(47 47) scale(1.08)"><path id="codeArt" d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z"/></g>
+              </svg>
+              </span>
+            </span>
             <span class="code-foot">
-              <span data-i18n="codeTap">Toca para descubrir tu mensaje</span>
-              <span class="code-dot" aria-hidden="true"><svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="M20 11a8 8 0 0 0-14.5-4.5M4 3.5V7h3.5M4 13a8 8 0 0 0 14.5 4.5M20 20.5V17h-3.5"/></svg></span>
+              <span class="code-cta"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg><span data-i18n="codeTap">Toca para descubrir tu mensaje</span></span>
             </span>
           </span>
           <span class="code-face code-back" id="codeBack">
@@ -184,6 +210,9 @@
     </div>
 
     <div id="homeCodeWeek" class="card wc-card" hidden></div>
+
+    <!-- CÓDIGO EXPERIENCES teaser: the next official experience (experiences.js) -->
+    <section id="homeExperience" class="hx-card" hidden aria-label="Código Experiences"></section>
 
     <div id="homeChecklist" class="card home-checklist" hidden></div>
 
@@ -253,11 +282,11 @@
     <header class="page-head ph-travel" data-page-image="travel">
       <div class="ph-media" aria-hidden="true"></div>
       <div class="ph-text">
-        <span class="ph-kicker"><span class="ph-ic"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 3 3 10.5l7 2.5 2.5 7zM21 3 10 13"/></svg></span><span data-i18n="travelKicker">EXPERIENCIAS CÓDIGO</span></span>
+        <span class="ph-kicker"><span class="ph-ic"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 3 3 10.5l7 2.5 2.5 7zM21 3 10 13"/></svg></span><span data-i18n="travelKicker">CÓDIGO EXPERIENCES</span></span>
         <h1 data-i18n="travelTitle">Viajes y Experiencias</h1>
         <p class="ph-intro" data-i18n="travelIntro">Dos veces al año salimos de la pantalla para vivir juntas algo extraordinario.</p>
         <p class="tc-lead" data-i18n="travelLead">Dos experiencias inolvidables al año. Una comunidad.</p>
-        <div class="tc-badges"><span class="tc-badge" data-i18n="travelBadge">2 experiencias insignia al año</span><span class="tc-badge" data-i18n="travelBadge2">Descubre · Conecta · Viaja · Vive</span></div>
+        <p class="tc-promise"><span data-i18n="travelBadge">2 experiencias insignia al año</span><i aria-hidden="true">◆</i><span data-i18n="travelBadge2">Descubre · Conecta · Viaja · Vive</span></p>
         <button type="button" class="tc-cta" id="travelCta" hidden data-i18n="travelCta">Ver la próxima experiencia</button>
       </div>
       <svg class="ph-art" viewBox="0 0 120 120" aria-hidden="true" focusable="false"><path d="M20 112C40 80 52 52 98 14M58 66c-10-2-18-10-20-20 10 2 18 10 20 20zM70 50c2-10 10-17 20-19-2 10-10 17-20 19zM44 86c-10 0-18-6-21-15 10 0 18 6 21 15zM82 34c-4-7-3-15 2-21 4 7 3 15-2 21z"/><circle cx="99" cy="13" r="3"/></svg>
@@ -674,5 +703,6 @@
   <script src="redesign.js"></script>
   <script src="discover.js"></script>
   <script src="code.js"></script>
+  <script src="experiences.js"></script>
 </body>
 </html>

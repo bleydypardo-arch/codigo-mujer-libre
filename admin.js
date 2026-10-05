@@ -51,7 +51,7 @@ const S = {
     fCode: "Código / categoría", fNone: "— Sin código —", fTitleEs: "Título (español)", fTitleEn: "Título (inglés)",
     fDescEs: "Descripción (español)", fDescEn: "Descripción (inglés)", fShortEs: "Descripción corta (español)", fShortEn: "Descripción corta (inglés)", fDate: "Fecha", fDateHelp: "El mes se calcula solo a partir de la fecha. Déjala vacía si aún no hay fecha.", aiToWeekend: "Agregar a ideas de fin de semana", fDateWeekend: "Fin de semana (fecha del sábado; se oculta sola al pasar)",
     fTime: "Hora (ej. 7:00 PM)", fDateText: "Fechas tentativas (ej. mayo, o 15–17 de mayo)", fLocationEvent: "Lugar", fLocationTrip: "Destino",
-    fPriceEvent: "Precio aproximado", fPriceTrip: "Presupuesto aproximado", fUrl: "Enlace externo (https://…)", fDetails: "Más detalles / contacto",
+    fPriceEvent: "Precio aproximado", fPriceTrip: "Precio total", fUrl: "Enlace externo (https://…)", fDetails: "Más detalles / contacto",
     fImage: "Imagen", fImageUrl: "o pega la dirección de una imagen", uploading: "Subiendo imagen…", imageFail: "No se pudo subir la imagen (usa JPG, PNG o WebP).",
     fPublished: "Publicado (visible para las mujeres)", save: "Guardar", cancel: "Cancelar",
     needTitle: "Escribe un título (en español o en inglés).", badUrl: "El enlace debe empezar con https:// o http://",
@@ -119,7 +119,7 @@ const S = {
     fCode: "Código / category", fNone: "— No code —", fTitleEs: "Title (Spanish)", fTitleEn: "Title (English)",
     fDescEs: "Description (Spanish)", fDescEn: "Description (English)", fShortEs: "Short description (Spanish)", fShortEn: "Short description (English)", fDate: "Date", fDateHelp: "The month is worked out from the date. Leave empty if there is no date yet.", aiToWeekend: "Add to weekend ideas", fDateWeekend: "Weekend (Saturday's date; hides itself afterwards)",
     fTime: "Time (e.g. 7:00 PM)", fDateText: "Tentative dates (e.g. May, or May 15–17)", fLocationEvent: "Location", fLocationTrip: "Destination",
-    fPriceEvent: "Approximate price", fPriceTrip: "Approximate budget", fUrl: "External link (https://…)", fDetails: "More details / contact",
+    fPriceEvent: "Approximate price", fPriceTrip: "Total price", fUrl: "External link (https://…)", fDetails: "More details / contact",
     fImage: "Image", fImageUrl: "or paste an image address", uploading: "Uploading image…", imageFail: "Could not upload the image (use JPG, PNG or WebP).",
     fPublished: "Published (visible to members)", save: "Save", cancel: "Cancel",
     needTitle: "Enter a title (Spanish or English).", badUrl: "The link must start with https:// or http://",
@@ -141,9 +141,49 @@ const S = {
   }
 };
 
+// Creative pass: publishing studio labels (Wellness + Código Experiences)
+Object.assign(S.es, {
+  newWellness: "+ Agregar experiencia de bienestar", newTrip: "+ Crear experiencia Código", newEvent: "+ Nuevo plan o evento",
+  studioWell: "Estudio de Bienestar: publica spas, masajes, gimnasios, pilates, yoga, faciales, uñas, cabello, retiros, comida sana, talleres, ofertas y promociones. Las miembros verán una tarjeta con foto, categoría, precio y botón de acción.",
+  studioTrip: "Estudio de Código Experiences: crea la página completa de cada experiencia. Vista previa antes de publicar; las secciones vacías no se muestran.",
+  fStatus: "Estado de inscripción", st_auto: "— Automático (según cupo y fecha límite) —", st_open: "Inscripciones abiertas", st_waitlist: "Lista de espera", st_soldout: "Agotado", st_closed: "Cerrado",
+  fFeaturedTrip: "Experiencia destacada (aparece primero y en Inicio)", fFeaturedWell: "Código Pick (destacado, aparece primero)",
+  fWcatOther: "Nombre de la categoría (si eliges «Otro»)", fDateTrip: "Fecha de inicio", fTimeTrip: "Hora de inicio",
+  rg_brand: "Marca de la experiencia (subtítulo, estado, destacada)", rg_where: "Lugar (destino, ciudad, país, dirección)", rg_when: "Fechas y horarios (fin, encuentro, pago)",
+  rg_capacity: "Cupo y disponibilidad", rg_prep: "Preparación (qué ponerse, qué llevar, clima, empacar)", rg_requirements: "Requisitos (pasaporte, visa, edad, formularios, documentos)",
+  rg_notes: "Notas, cancelación e instrucciones", rg_wprice: "Precio, promoción y vigencia",
+  rf_subtitle: "Subtítulo", rf_price_covers: "Qué cubre el precio", rf_tickets: "Entradas", rf_tours: "Tours", rf_other_inc: "Otros (incluido)",
+  rf_packing: "Lista para empacar", rf_weather: "Clima", rf_visa: "Visa", rf_age: "Edad mínima / requisitos de edad", rf_waivers: "Formularios / exoneraciones",
+  rf_documents: "Documentos", rf_cancellation: "Política de cancelación", rf_dates_hint: "",
+  sf_city: "Ciudad", sf_country: "País", sf_address: "Dirección", sf_end_date: "Fecha de fin", sf_meeting_time: "Hora de encuentro", sf_pay_by: "Fecha límite de pago",
+  sf_pay_link: "Enlace de pago externo (https://…)", sf_spots_left: "Lugares restantes (opcional: si lo dejas vacío se calcula con «Voy»)", sf_phone: "Teléfono", sf_email: "Correo", sf_website: "Sitio web (https://…)",
+  sf_promo_price: "Precio promocional", sf_offer_until: "Oferta válida hasta",
+  daysTitle: "Itinerario por día (estructurado)", dayAdd: "+ Agregar momento", dayRemove: "Quitar", dayDay: "Día (ej. Día 1)", dayDate: "Fecha", dayTime: "Hora",
+  dayAct: "Actividad", dayDesc: "Descripción", preview: "👁 Vista previa", previewNeed: "Escribe al menos un título para la vista previa."
+});
+Object.assign(S.en, {
+  newWellness: "+ Add wellness experience", newTrip: "+ Create Código experience", newEvent: "+ New plan or event",
+  studioWell: "Wellness studio: publish spas, massages, gyms, Pilates, yoga, facials, nails, hair, retreats, healthy food, workshops, offers and promotions. Members see a photo card with category, price and an action button.",
+  studioTrip: "Código Experiences studio: build each experience's full page. Preview before publishing; empty sections are not shown.",
+  fStatus: "Registration status", st_auto: "— Automatic (from capacity and deadline) —", st_open: "Registration open", st_waitlist: "Waitlist", st_soldout: "Sold out", st_closed: "Closed",
+  fFeaturedTrip: "Featured experience (shown first and on Home)", fFeaturedWell: "Código Pick (featured, shown first)",
+  fWcatOther: "Category name (if you choose “Other”)", fDateTrip: "Start date", fTimeTrip: "Start time",
+  rg_brand: "Experience branding (subtitle, status, featured)", rg_where: "Location (destination, city, country, address)", rg_when: "Dates & times (end, meeting, payment)",
+  rg_capacity: "Capacity & availability", rg_prep: "Preparation (what to wear, bring, weather, packing)", rg_requirements: "Requirements (passport, visa, age, waivers, documents)",
+  rg_notes: "Notes, cancellation & instructions", rg_wprice: "Price, promotion & validity",
+  rf_subtitle: "Subtitle", rf_price_covers: "What the price covers", rf_tickets: "Tickets", rf_tours: "Tours", rf_other_inc: "Other (included)",
+  rf_packing: "Packing list", rf_weather: "Weather", rf_visa: "Visa", rf_age: "Age requirements", rf_waivers: "Waivers / forms",
+  rf_documents: "Documents", rf_cancellation: "Cancellation policy", rf_dates_hint: "",
+  sf_city: "City", sf_country: "Country", sf_address: "Address", sf_end_date: "End date", sf_meeting_time: "Meeting time", sf_pay_by: "Payment deadline",
+  sf_pay_link: "External payment link (https://…)", sf_spots_left: "Spots remaining (optional: leave empty to count “Going”)", sf_phone: "Phone", sf_email: "Email", sf_website: "Website (https://…)",
+  sf_promo_price: "Promotional price", sf_offer_until: "Offer valid until",
+  daysTitle: "Day-by-day itinerary (structured)", dayAdd: "+ Add a moment", dayRemove: "Remove", dayDay: "Day (e.g. Day 1)", dayDate: "Date", dayTime: "Time",
+  dayAct: "Activity", dayDesc: "Description", preview: "👁 Preview", previewNeed: "Write at least one title to preview."
+});
+
 const KINDS = {
   event:    { tab: "plans",    fields: ["code", "title", "desc", "date", "time", "location", "price", "url", "details", "image"] },
-  trip:     { tab: "trips",    fields: ["code", "title", "desc", "date_text", "location", "price", "url", "details", "image"] },
+  trip:     { tab: "trips",    fields: ["code", "title", "desc", "date", "time", "date_text", "location", "price", "url", "details", "image"] },
   home:     { tab: "home",     fields: ["title", "desc", "image"] },
   wellness: { tab: "wellness", fields: ["title", "desc", "date", "time", "location", "price", "url", "details", "image"] },
   weekend:  { tab: "weekend",  fields: ["code", "title", "desc", "date", "location", "url"] },
@@ -160,19 +200,28 @@ const GROUPS = [
 ];
 const CODES = ["Social", "Wellness", "Faith", "Adventure", "Family", "Connection", "Support", "Recharge"];
 const EVENT_TYPES = ["social", "dining", "events"];
-const WCATS = ["spa", "beauty", "fitness", "movement", "mind", "retreat", "food", "workshop", "offer"];
+const WCATS = ["spa", "massage", "facial", "skincare", "nails", "hair", "beauty", "gym", "fitness", "pilates", "yoga", "movement", "meditation", "mind", "retreat", "food", "workshop", "offer", "promo", "other"];
+const WCATS_LEGACY = ["movement", "mind"];   // older combined categories: kept for existing items, not offered for new ones
 const TRIP_TYPES = ["trip", "retreat", "party", "dining", "nature"];
 const TRIP_TYPE_KEY = { trip: "expTrip", retreat: "expRetreat", party: "expParty", dining: "expDining", nature: "expNature" };
 const MTYPES = ["spot", "place", "recipe", "offer"];
 // Editor groups mirror the member detail page: Sobre este plan · Precio · Qué incluye · Itinerario · Importante · Detalles y contacto
+// Studio sections mirror the member detail page. [group, bilingual keys, structured (single-language) fields]
 const RICH_BY_KIND = {
-  trip: [["about", ["about", "meeting", "dates"]], ["price", ["deposit", "payment"]], ["includes", ["included", "excluded", "stay", "meals", "transport"]],
-         ["itinerary", ["itinerary"]], ["attend", ["activities", "dress", "bring"]], ["important", ["requirements", "passport", "notes"]],
-         ["contact", ["contact_name", "contact"]], ["essentials", []]],
+  trip: [["brand", ["subtitle"], ["status"]], ["about", ["about", "meeting", "dates"]], ["where", [], ["city", "country", "address"]],
+         ["when", [], ["end_date", "meeting_time", "pay_by"]], ["price", ["price_covers", "deposit", "payment"], ["pay_link"]],
+         ["capacity", [], ["capacity", "spots_left", "rsvp_by"]],
+         ["includes", ["included", "stay", "transport", "meals", "tickets", "tours", "other_inc", "excluded"]],
+         ["itinerary", ["itinerary"], ["days"]], ["prep", ["activities", "dress", "bring", "weather", "packing"]],
+         ["requirements", ["requirements", "passport", "visa", "age", "waivers", "documents"]],
+         ["contact", ["contact_name", "contact"], ["phone", "email", "website"]], ["notes", ["notes", "cancellation", "instructions"]], ["essentials", []]],
   event: [["about", ["about", "meeting"]], ["includes", ["included", "excluded", "meals"]], ["attend", ["activities", "dress", "bring"]],
-          ["important", ["requirements", "notes"]], ["price", ["deposit", "payment"]], ["contact", ["contact_name", "contact"]], ["essentials", []]],
-  wellness: [["about", ["about"]], ["promo", ["promo"]], ["attend", ["instructions"]], ["important", ["notes"]], ["contact", ["contact_name", "contact"]], ["essentials", []]]
+          ["important", ["requirements", "notes"]], ["price", ["deposit", "payment"]], ["contact", ["contact_name", "contact"], ["phone", "email", "website"]], ["essentials", []]],
+  wellness: [["about", ["about"]], ["wprice", ["promo"], ["promo_price", "offer_until"]], ["where", [], ["city", "address"]], ["attend", ["instructions"]],
+             ["important", ["notes"]], ["contact", ["contact_name", "contact"], ["phone", "email", "website"]], ["essentials", []]]
 };
+const STRUCT = { city: "text", country: "text", address: "text", end_date: "date", meeting_time: "text", pay_by: "date", pay_link: "url",
+  spots_left: "number", phone: "tel", email: "email", website: "url", promo_price: "text", offer_until: "date", status: "status", capacity: "number", rsvp_by: "date" };
 const looksLikeTest = (...texts) => texts.some(x => /\btest(ing)?\b/i.test(String(x || "")));
 // Category / collection tags live in the existing settings table (key "plan_tags"), admin-only write.
 // One entry of a small map kept in the settings table (plan_tags, poll_places). Reads fresh, merges, writes.
@@ -187,7 +236,7 @@ async function setMapEntry(key, id, value) {
 }
 async function saveTag(planId, tag) {
   const clean = {};
-  ["cat", "mtype", "city"].forEach(k => { if (tag[k]) clean[k] = tag[k]; });
+  ["cat", "mtype", "city", "label"].forEach(k => { if (tag[k]) clean[k] = tag[k]; });
   if (tag.matcha) clean.matcha = true;
   if (tag.featured) clean.featured = true;
   await setMapEntry("plan_tags", planId, clean);
@@ -245,7 +294,13 @@ function openTab(key) {
   C.showPage("admin", false);
   tab = key; editing = null; render();
 }
-window.CMLAdmin = { celebrate, openTab, setMapEntry: (key, id, value) => (C && C.isAdmin() ? setMapEntry(key, id, value) : Promise.reject(new Error("admin"))) };
+// Opens the create form directly (used by the admin-only "+ Agregar…" shortcuts on Wellness and Travel).
+function openNew(kind) {
+  if (!C || !C.isAdmin() || !KINDS[kind]) return;
+  C.showPage("admin", false);
+  tab = KINDS[kind].tab; editing = { kind, row: null }; render();
+}
+window.CMLAdmin = { celebrate, openTab, openNew, setMapEntry: (key, id, value) => (C && C.isAdmin() ? setMapEntry(key, id, value) : Promise.reject(new Error("admin"))) };
 
 // ---------- pending approvals: badge on the Admin button + banner ----------
 async function pendingCount() {
@@ -314,9 +369,10 @@ async function listView(kind) {
   const rows = kind === "matcha" ? data.filter(isCorner) : kind === "home" ? data.filter(r => !isCorner(r)) : data;
   const wrap = el("div");
   if (kind === "matcha") wrap.appendChild(el("p", { class: "small-note", text: a("matchaIntro") }));
-  if (kind === "trip") wrap.appendChild(el("p", { class: "small-note", text: a("tripIntro") }));
-  if (kind === "wellness") wrap.appendChild(el("p", { class: "small-note", text: a("wellIntro") }));
-  wrap.appendChild(el("div", { class: "admin-bar" }, button(a("newItem"), "primary", () => { editing = { kind, row: null }; render(); })));
+  if (kind === "trip") wrap.appendChild(el("p", { class: "small-note studio-intro", text: a("studioTrip") }));
+  if (kind === "wellness") wrap.appendChild(el("p", { class: "small-note studio-intro", text: a("studioWell") }));
+  const newLabel = kind === "wellness" ? a("newWellness") : kind === "trip" ? a("newTrip") : kind === "event" ? a("newEvent") : a("newItem");
+  wrap.appendChild(el("div", { class: "admin-bar" }, button(newLabel, "primary studio-new", () => { editing = { kind, row: null }; render(); })));
   if (!rows.length) wrap.appendChild(el("p", { class: "small-note", text: a("empty") }));
 
   let tally = new Map();
@@ -341,7 +397,8 @@ function planItem(kind, row, c, memIds) {
     row.code && C.codeLabels[row.code] ? el("span", { class: "badge", text: " " + C.t(C.codeLabels[row.code]) }) : null,
     (() => { const tg = C.planTag ? C.planTag(row.id) : {}; const bits = [];
       if (kind === "event" && EVENT_TYPES.includes(tg.cat)) bits.push(a("fType_" + tg.cat).split(" (")[0]);
-      if (kind === "wellness" && WCATS.includes(tg.cat)) bits.push(C.t("wcat_" + tg.cat));
+      if (kind === "wellness" && WCATS.includes(tg.cat)) bits.push(tg.cat === "other" && tg.label ? tg.label : C.t("wcat_" + tg.cat));
+      if ((kind === "wellness" || kind === "trip") && tg.featured) bits.push("✦ " + (kind === "trip" ? a("fFeaturedTrip").split(" (")[0] : "Código Pick"));
       if (kind === "trip") bits.push(C.t(TRIP_TYPE_KEY[TRIP_TYPES.includes(tg.cat) ? tg.cat : "trip"]));
       if (kind === "matcha") { bits.push(a("mtype_" + (MTYPES.includes(tg.mtype) ? tg.mtype : "spot"))); if (tg.featured) bits.push("★ " + a("fFeatured")); if (tg.city) bits.push("📍 " + tg.city); }
       else if (tg.matcha) bits.push("🍵 " + C.t("maName"));
@@ -454,20 +511,57 @@ function parseRich(details) {
 }
 function richFields(kind, details) {
   const x = parseRich(details);
-  const inputs = {};
+  const isNew = !String(details || "").trim();
+  const inputs = {}, struct = {};
   const pair = key => {
     const es = el("textarea", { rows: 3, "aria-label": a("rf_" + key) + " (ES)" }); es.value = (x.es && x.es[key]) || "";
     const en = el("textarea", { rows: 3, "aria-label": a("rf_" + key) + " (EN)" }); en.value = (x.en && x.en[key]) || "";
+    if (key === "subtitle") { es.rows = 1; en.rows = 1; }
     inputs[key] = { es, en };
     return el("div", { class: "rf-pair" }, el("b", { text: a("rf_" + key) }),
       el("div", { class: "two-col" }, el("label", {}, el("small", { text: "Español" }), es), el("label", {}, el("small", { text: "English" }), en)));
   };
+  const sfLabel = k => (k === "capacity" ? a("rfCapacity") : k === "rsvp_by" ? a("rfRsvpBy") : k === "status" ? a("fStatus") : a("sf_" + k));
+  const structField = k => {
+    const type = STRUCT[k];
+    let inp;
+    if (type === "status") {
+      inp = el("select", {}, el("option", { value: "", text: a("st_auto") }), ["open", "waitlist", "soldout", "closed"].map(v => el("option", { value: v, text: a("st_" + v) })));
+      inp.value = x.status || "";
+    } else {
+      inp = el("input", { type: type === "number" ? "number" : type, value: x[k] === undefined || x[k] === null ? "" : String(x[k]) });
+      if (type === "number") { inp.min = "0"; inp.max = "5000"; }
+      if (type === "url") { inp.placeholder = "https://…"; inp.inputMode = "url"; }
+      if (type === "text") inp.maxLength = 160;
+    }
+    inp.setAttribute("data-sf", k);
+    struct[k] = inp;
+    return el("label", {}, sfLabel(k), inp);
+  };
+  // structured itinerary rows
+  const days = el("div", { class: "rf-days" });
+  const dayRows = [];
+  const addDay = r => {
+    r = r || {};
+    const f = (type, v, ph) => { const i = el("input", { type, value: v || "" }); if (ph) i.placeholder = ph; return i; };
+    const io = { day: f("text", r.day, a("dayDay")), date: f("date", r.date), time: f("text", r.time, "9:00"),
+      act_es: f("text", r.es && r.es.act), act_en: f("text", r.en && r.en.act),
+      desc_es: el("textarea", { rows: 2 }), desc_en: el("textarea", { rows: 2 }) };
+    io.desc_es.value = (r.es && r.es.desc) || ""; io.desc_en.value = (r.en && r.en.desc) || "";
+    const row = el("div", { class: "rf-day" },
+      el("div", { class: "rf-day-top" }, el("label", {}, a("dayDay"), io.day), el("label", {}, a("dayDate"), io.date), el("label", {}, a("dayTime"), io.time)),
+      el("div", { class: "two-col" },
+        el("label", {}, el("small", { text: a("dayAct") + " · Español" }), io.act_es), el("label", {}, el("small", { text: a("dayAct") + " · English" }), io.act_en)),
+      el("div", { class: "two-col" },
+        el("label", {}, el("small", { text: a("dayDesc") + " · Español" }), io.desc_es), el("label", {}, el("small", { text: a("dayDesc") + " · English" }), io.desc_en)));
+    const entry = { io, row };
+    row.appendChild(button(a("dayRemove"), "link-btn rf-day-remove", () => { row.remove(); dayRows.splice(dayRows.indexOf(entry), 1); }));
+    dayRows.push(entry); days.appendChild(row);
+  };
+  (Array.isArray(x.days) ? x.days : []).forEach(addDay);
   const text = el("textarea", { rows: 3 }); text.value = x.text || "";
-  const cap = el("input", { type: "number", min: "0", max: "5000", value: x.capacity || "" });
-  const by = el("input", { type: "date", value: x.rsvp_by || "" });
   const links = el("textarea", { rows: 2, placeholder: "Itinerario completo | https://…" });
   links.value = (Array.isArray(x.links) ? x.links : []).map(l => (l.label ? l.label + " | " : "") + l.url).join("\n");
-  // gallery: list of image pickers
   const gal = el("div", { class: "rf-gallery" });
   const pickers = [];
   const addPicker = url => {
@@ -479,36 +573,59 @@ function richFields(kind, details) {
   (Array.isArray(x.gallery) ? x.gallery : []).forEach(addPicker);
   const addBtn = button(a("rfAddPhoto"), "secondary", () => addPicker(""));
   const has = keys => keys.some(k => (x.es && x.es[k]) || (x.en && x.en[k]));
-  const groups = RICH_BY_KIND[kind].map(([g, keys]) => {
-    const det = el("details", { class: "rf-group" }, el("summary", { text: a("rg_" + g) }));
+  const used = new Set();
+  RICH_BY_KIND[kind].forEach(([, , st]) => (st || []).forEach(k => used.add(k)));
+  const groups = RICH_BY_KIND[kind].map(([g, keys, st]) => {
+    st = st || [];
+    const det = el("details", { class: "rf-group rf-" + g }, el("summary", { text: a("rg_" + g) }));
     if (g === "essentials") {
-      det.append(el("div", { class: "two-col" }, el("label", {}, a("rfCapacity"), cap), el("label", {}, a("rfRsvpBy"), by)),
-        el("label", {}, a("rfLinks"), links, el("small", { class: "small-note", text: a("rfLinksHelp") })),
+      const cap = used.has("capacity") ? null : structField("capacity"), by = used.has("rsvp_by") ? null : structField("rsvp_by");
+      if (cap || by) det.append(el("div", { class: "two-col" }, cap ? cap : null, by ? by : null));
+      det.append(el("label", {}, a("rfLinks"), links, el("small", { class: "small-note", text: a("rfLinksHelp") })),
         el("label", {}, a("fDetails"), text));
-      det.open = !!(x.capacity || x.rsvp_by || (x.links && x.links.length) || x.text);
-    } else {
-      keys.forEach(k => det.appendChild(pair(k)));
-      det.open = has(keys) || (g === "about") || (kind === "trip" && (g === "includes" || g === "itinerary"));
+      det.open = !!((!used.has("capacity") && (x.capacity || x.rsvp_by)) || (x.links && x.links.length) || x.text);
+      return det;
     }
+    keys.forEach(k => det.appendChild(pair(k)));
+    const flat = st.filter(k => k !== "days");
+    if (flat.length) det.appendChild(el("div", { class: "rf-struct" }, ...flat.map(structField)));
+    if (st.includes("days")) det.append(el("b", { class: "rf-days-h", text: a("daysTitle") }), days, button(a("dayAdd"), "secondary rf-day-add", () => addDay()));
+    det.open = has(keys) || st.some(k => k !== "days" && x[k] !== undefined && x[k] !== "") || (st.includes("days") && dayRows.length > 0)
+      || g === "about" || g === "brand" || (kind === "trip" && ["where", "when", "price", "includes", "itinerary"].includes(g)) || (kind === "wellness" && g === "wprice")
+      || (isNew && (kind === "trip" || kind === "wellness"));   // a new studio item opens every section
     return det;
   });
-  const galGroup = el("details", { class: "rf-group" }, el("summary", { text: a(kind === "wellness" ? "rg_flyer" : "rg_gallery") }), el("p", { class: "small-note", text: a("rfGalleryHelp") }), gal, addBtn);
+  const galGroup = el("details", { class: "rf-group rf-gallery-g" }, el("summary", { text: a(kind === "wellness" ? "rg_flyer" : "rg_gallery") }), el("p", { class: "small-note", text: a("rfGalleryHelp") }), gal, addBtn);
   galGroup.open = pickers.length > 0;
   const node = el("fieldset", { class: "rich-editor" }, el("legend", { text: a("rfTitle") }), el("p", { class: "small-note", text: a("rfHelp") }), ...groups, galGroup);
+  const bad = () => ["pay_link", "website"].filter(k => struct[k] && struct[k].value.trim() && !C.safeUrl(struct[k].value.trim()));
   const value = () => {
     const out = { v: 1, es: {}, en: {} };
     Object.entries(inputs).forEach(([k, io]) => { if (io.es.value.trim()) out.es[k] = io.es.value.trim(); if (io.en.value.trim()) out.en[k] = io.en.value.trim(); });
-    if (Number(cap.value) > 0) out.capacity = Math.round(Number(cap.value));
-    if (by.value) out.rsvp_by = by.value;
+    Object.entries(struct).forEach(([k, inp]) => {
+      const v = inp.value.trim();
+      if (!v) return;
+      if (k === "capacity") { if (Number(v) > 0) out.capacity = Math.round(Number(v)); return; }
+      if (k === "spots_left") { if (Number(v) >= 0) out.spots_left = Math.round(Number(v)); return; }
+      if ((k === "pay_link" || k === "website") && !C.safeUrl(v)) return;
+      out[k] = v.slice(0, 300);
+    });
+    const D = dayRows.map(({ io }) => {
+      const r = {};
+      ["day", "date", "time"].forEach(k => { if (io[k].value.trim()) r[k] = io[k].value.trim(); });
+      ["es", "en"].forEach(l => { const o = {}; if (io["act_" + l].value.trim()) o.act = io["act_" + l].value.trim(); if (io["desc_" + l].value.trim()) o.desc = io["desc_" + l].value.trim(); if (Object.keys(o).length) r[l] = o; });
+      return r;
+    }).filter(r => Object.keys(r).length);
+    if (D.length) out.days = D;
     const L = links.value.split("\n").map(l => l.trim()).filter(Boolean).map(l => { const i = l.lastIndexOf("|"); return i >= 0 ? { label: l.slice(0, i).trim(), url: l.slice(i + 1).trim() } : { label: "", url: l }; }).filter(l => C.safeUrl(l.url));
     if (L.length) out.links = L;
     const G = pickers.map(p => p.pk.value).filter(u => C.safeUrl(u));
     if (G.length) out.gallery = G;
     if (text.value.trim()) out.text = text.value.trim();
-    const rich = Object.keys(out.es).length || Object.keys(out.en).length || out.capacity || out.rsvp_by || out.links || out.gallery;
+    const rich = Object.keys(out).some(k => !["v", "es", "en", "text"].includes(k)) || Object.keys(out.es).length || Object.keys(out.en).length;
     return rich ? "CML:" + JSON.stringify(out) : (out.text || "");   // plain text stays plain text
   };
-  return { node, value };
+  return { node, value, bad };
 }
 
 // ---------- the create / edit form ----------
@@ -539,10 +656,17 @@ function formView() {
     if (kind === "event") form.appendChild(field(a("fType"), typeSel));
     else typeSel = null;
   }
+  let labelIn = null, featBox = null;
   if (kind === "wellness") {
-    typeSel = el("select", {}, el("option", { value: "", text: a("fWcatNone") }), WCATS.map(k => el("option", { value: k, text: C.t("wcat_" + k) })));
+    const offered = WCATS.filter(k => !WCATS_LEGACY.includes(k) || oldTag.cat === k);
+    typeSel = el("select", {}, el("option", { value: "", text: a("fWcatNone") }), offered.map(k => el("option", { value: k, text: C.t("wcat_" + k) })));
     typeSel.value = WCATS.includes(oldTag.cat) ? oldTag.cat : "";
+    labelIn = el("input", { type: "text", maxlength: 40, value: oldTag.label || "", placeholder: "Reiki, sauna, coaching…" });
+    const labelField = field(a("fWcatOther"), labelIn);
+    const syncOther = () => { labelField.hidden = typeSel.value !== "other"; };
+    typeSel.addEventListener("change", syncOther); syncOther();
     form.appendChild(field(a("fWcat"), typeSel));
+    form.appendChild(labelField);
   }
   if (kind === "trip") {
     typeSel = el("select", {}, TRIP_TYPES.map(k => el("option", { value: k, text: C.t(TRIP_TYPE_KEY[k]) })));
@@ -558,6 +682,10 @@ function formView() {
     form.appendChild(el("label", { class: "check" }, featuredBox, a("fFeatured")));
     cityIn = el("input", { type: "text", maxlength: 40, value: oldTag.city || "", placeholder: "Orlando, Boston…" });
   }
+  if (kind === "trip" || kind === "wellness") {
+    featBox = el("input", { type: "checkbox" }); featBox.checked = !!oldTag.featured;
+    form.appendChild(el("label", { class: "check studio-feature" }, featBox, a(kind === "trip" ? "fFeaturedTrip" : "fFeaturedWell")));
+  }
   if (kind === "event" || kind === "weekend" || kind === "wellness") {
     matchaBox = el("input", { type: "checkbox" }); matchaBox.checked = !!oldTag.matcha;
     form.appendChild(el("label", { class: "check" }, matchaBox, a("fMatcha")));
@@ -568,8 +696,8 @@ function formView() {
       field(a("fTitleEs"), text("title_es", d.title_es, { maxlength: 140 })), field(a(kind === "trip" || kind === "event" || kind === "wellness" ? "fShortEs" : "fDescEs"), area("desc_es", d.desc_es))),
     el("div", { class: "lang-col" }, el("b", { class: "lang-h", text: "ENGLISH" }),
       field(a("fTitleEn"), text("title_en", d.title_en, { maxlength: 140 })), field(a(kind === "trip" || kind === "event" || kind === "wellness" ? "fShortEn" : "fDescEn"), area("desc_en", d.desc_en)))));
-  if (cfg.fields.includes("date")) form.appendChild(field(kind === "weekend" ? a("fDateWeekend") : a("fDate"), add("event_date", el("input", { type: "date", value: d.event_date || "" })), kind === "weekend" ? null : a("fDateHelp")));
-  if (cfg.fields.includes("time")) form.appendChild(field(a("fTime"), text("event_time", d.event_time, { maxlength: 60 })));
+  if (cfg.fields.includes("date")) form.appendChild(field(kind === "weekend" ? a("fDateWeekend") : kind === "trip" ? a("fDateTrip") : a("fDate"), add("event_date", el("input", { type: "date", value: d.event_date || "" })), kind === "weekend" ? null : a("fDateHelp")));
+  if (cfg.fields.includes("time")) form.appendChild(field(kind === "trip" ? a("fTimeTrip") : a("fTime"), text("event_time", d.event_time, { maxlength: 60 })));
   if (cfg.fields.includes("date_text")) form.appendChild(field(a("fDateText"), text("date_text", d.date_text, { maxlength: 80 })));
   if (cfg.fields.includes("location")) form.appendChild(field(kind === "trip" ? a("fLocationTrip") : a("fLocationEvent"), text("location", d.location, { maxlength: 200 })));
   if (cfg.fields.includes("price")) form.appendChild(field(kind === "trip" ? a("fPriceTrip") : a("fPriceEvent"), text("price", d.price, { maxlength: 80 })));
@@ -616,7 +744,26 @@ function formView() {
   const fail = key => { feedback.hidden = false; feedback.textContent = a(key); };
 
   const saveBtn = el("button", { type: "submit", class: "primary", text: a("save") });
-  form.appendChild(el("div", { class: "admin-bar" }, saveBtn,
+  const val0 = k => (inputs[k] ? inputs[k].value.trim() : "");
+  const buildPayload = () => ({
+    kind: cfg.dbKind || kind, code: cfg.fields.includes("code") && val0("code") ? val0("code") : null,
+    title_es: val0("title_es"), title_en: val0("title_en"), desc_es: val0("desc_es"), desc_en: val0("desc_en"),
+    event_date: cfg.fields.includes("date") && val0("event_date") ? val0("event_date") : null,
+    event_time: val0("event_time"), date_text: val0("date_text"), location: val0("location"), price: val0("price"),
+    url: val0("url"), details: richEditor ? richEditor.value() : val0("details"), image_url: picker ? picker.value : "", published: published.checked
+  });
+  const buildTag = () => kind === "matcha"
+    ? { matcha: true, mtype: mtypeSel.value, featured: featuredBox.checked, city: cityIn.value.trim() }
+    : { cat: typeSel ? (kind === "trip" && typeSel.value === "trip" ? "" : typeSel.value) : "", matcha: !!(matchaBox && matchaBox.checked),
+        featured: !!(featBox && featBox.checked), label: labelIn && typeSel && typeSel.value === "other" ? labelIn.value.trim() : "" };
+  const previewBtn = (kind === "event" || kind === "trip" || kind === "wellness") && C.openPreview
+    ? button(a("preview"), "secondary studio-preview", () => {
+        feedback.hidden = true;
+        if (!val0("title_es") && !val0("title_en")) return fail("previewNeed");
+        const tg = buildTag(); if (kind === "trip" && !tg.cat) tg.cat = "trip";
+        C.openPreview(buildPayload(), tg);
+      }) : null;
+  form.appendChild(el("div", { class: "admin-bar" }, saveBtn, previewBtn,
     button(a("cancel"), "secondary", () => { editing = null; render(); })));
 
   form.addEventListener("submit", async event => {
@@ -625,23 +772,15 @@ function formView() {
     const val = k => (inputs[k] ? inputs[k].value.trim() : "");
     if (!val("title_es") && !val("title_en")) return fail("needTitle");
     const url = val("url"), image = picker ? picker.value : "";
-    if ((url && !C.safeUrl(url)) || (image && !C.safeUrl(image))) return fail("badUrl");
+    if ((url && !C.safeUrl(url)) || (image && !C.safeUrl(image)) || (richEditor && richEditor.bad && richEditor.bad().length)) return fail("badUrl");
     if (ai && published.checked && !reviewed.checked) return fail("aiNeedReview");
-    const payload = {
-      kind: cfg.dbKind || kind, code: cfg.fields.includes("code") && val("code") ? val("code") : null,
-      title_es: val("title_es"), title_en: val("title_en"), desc_es: val("desc_es"), desc_en: val("desc_en"),
-      event_date: cfg.fields.includes("date") && val("event_date") ? val("event_date") : null,
-      event_time: val("event_time"), date_text: val("date_text"), location: val("location"), price: val("price"),
-      url, details: richEditor ? richEditor.value() : val("details"), image_url: image, published: published.checked
-    };
+    const payload = buildPayload();
     saveBtn.disabled = true;
     const res = row ? await C.db.from("plans").update(payload).eq("id", row.id)
                     : await C.db.from("plans").insert(payload).select("id").single();
     if (res.error) { saveBtn.disabled = false; console.error(res.error); return fail("saveFail"); }
     const id = row ? row.id : (res.data && res.data.id);
-    const tag = kind === "matcha"
-      ? { matcha: true, mtype: mtypeSel.value, featured: featuredBox.checked, city: cityIn.value.trim() }
-      : { cat: typeSel ? (kind === "trip" && typeSel.value === "trip" ? "" : typeSel.value) : "", matcha: !!(matchaBox && matchaBox.checked) };
+    const tag = buildTag();
     const same = JSON.stringify(Object.assign({}, oldTag)) === JSON.stringify(Object.fromEntries(Object.entries(tag).filter(([, v]) => v)));
     if (id && !same) {
       try { await saveTag(id, tag); } catch (e) { console.error(e); saveBtn.disabled = false; return fail("saveFail"); }

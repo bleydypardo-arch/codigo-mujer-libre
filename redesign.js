@@ -21,7 +21,7 @@ const ES = {
   expTrip: "Viaje grupal", expRetreat: "Retiro de bienestar", expParty: "Fiesta temática", expDining: "Experiencia gastronómica", expNature: "Aventura / Naturaleza",
   travelEmpty: "Pronto anunciaremos la próxima gran experiencia.",
   travelNote: "Organizamos alrededor de dos grandes experiencias oficiales al año. Toca un tipo para ver lo que viene.",
-  travelKicker: "EXPERIENCIAS CÓDIGO", travelLead: "Dos experiencias inolvidables al año. Una comunidad.",
+  travelKicker: "CÓDIGO EXPERIENCES", travelLead: "Dos experiencias inolvidables al año. Una comunidad.",
   travelIntro: "Dos veces al año salimos de la pantalla para vivir juntas algo extraordinario.",
   travelBadge: "2 experiencias insignia al año", travelBadge2: "Descubre · Conecta · Viaja · Vive", travelCta: "Ver la próxima experiencia",
   tripsLabel: "EXPERIENCIAS", tripCount: n => n === 1 ? "1 experiencia" : n + " experiencias", tripSoonShort: "Próximamente",
@@ -121,7 +121,26 @@ function wireFlip() {
     const on = !box.classList.contains("is-flipped");
     box.classList.toggle("is-flipped", on);
     btn.setAttribute("aria-pressed", String(on));
+    if (on) burst(box);
   });
+}
+// a short gold/rose burst when the message is revealed (skipped with reduced motion)
+function burst(box) {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const old = box.querySelector(".code-burst"); if (old) old.remove();
+  const wrap = C.el("span", { class: "code-burst", "aria-hidden": "true" });
+  const colors = ["#F6E7C6", "#DBC19F", "#E7A0AA", "#B85F68", "#fff"];
+  for (let i = 0; i < 18; i++) {
+    const a = (i / 18) * Math.PI * 2 + Math.random() * .3, d = 70 + Math.random() * 70;
+    const s = C.el("i");
+    s.style.setProperty("--dx", Math.round(Math.cos(a) * d) + "px");
+    s.style.setProperty("--dy", Math.round(Math.sin(a) * d * .7) + "px");
+    s.style.setProperty("--c", colors[i % colors.length]);
+    s.style.animationDelay = (Math.random() * 120) + "ms";
+    wrap.appendChild(s);
+  }
+  box.appendChild(wrap);
+  setTimeout(() => wrap.remove(), 1400);
 }
 
 // ---------- [data-go] shortcuts and back buttons (existing showPage) ----------
@@ -184,21 +203,9 @@ function paintTravel() {
     if (!cta.dataset.wired) { cta.dataset.wired = "1"; cta.addEventListener("click", () => { const n = cta._next; if (n) C.openDetail(n.id, cta); }); }
     cta._next = next || null;
   }
-  if (!hero) return;
-  const pickTrip = next || trips.find(p => C.safeUrl(p.image_url));
-  if (!pickTrip) { hero.hidden = true; hero.replaceChildren(); return; }
-  const img = C.safeUrl(pickTrip.image_url) || settingUrl("travel_image");
-  const btn = C.el("button", { type: "button", class: "trip-hero" + (img ? "" : " no-img") },
-    img ? C.el("img", { src: img, alt: "", loading: "lazy" }) : null,
-    C.el("span", { class: "trip-fade", "aria-hidden": "true" }),
-    C.el("span", { class: "trip-txt" },
-      C.el("span", { class: "trip-k", text: C.t("nextTrip") + " · " + C.t(TYPE_KEY[C.tripTypeOf(pickTrip)]) }),
-      C.el("span", { class: "trip-t", text: C.pick(pickTrip, "title") || "—" }),
-      pickTrip.location || pickTrip.date_text ? C.el("span", { class: "trip-s", text: [pickTrip.location, pickTrip.date_text].filter(Boolean).join(" · ") }) : null),
-    C.el("span", { class: "trip-go", "aria-hidden": "true", text: "›" }));
-  btn.addEventListener("click", () => C.openDetail(pickTrip.id, btn));
-  hero.replaceChildren(btn);
-  hero.hidden = false;
+  // cinematic stage + "two a year" story + admin shortcuts (experiences.js)
+  if (window.CMLExp) window.CMLExp.paintTravelPage();
+  else if (hero) hero.hidden = true;
 }
 // "¿A dónde te gustaría ir?" → a private idea message to the administrator (existing messages table, type 'idea')
 function wireTripIdea() {

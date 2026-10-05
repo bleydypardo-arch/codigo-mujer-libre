@@ -13,9 +13,11 @@ const ES = {
   wdEmptyText: "Spas, masajes, yoga, retiros y lugares para cuidarte. ¿Conoces uno especial? Recomiéndalo.",
   wdRecommend: "Recomendar un lugar",
   wuLabel: "PRÓXIMOS PLANES DE BIENESTAR",
-  wcat_spa: "Spa, masajes y faciales", wcat_beauty: "Belleza y cuidado", wcat_movement: "Yoga y movimiento", wcat_mind: "Meditación y fe",
+  wcat_spa: "Spa y relajación", wcat_beauty: "Belleza y cuidado", wcat_movement: "Yoga y movimiento", wcat_mind: "Meditación y fe",
   wcat_retreat: "Retiros", wcat_food: "Alimentación sana", wcat_workshop: "Talleres",
-  wcat_fitness: "Gimnasio, pilates y fitness", wcat_offer: "Ofertas y promociones",
+  wcat_fitness: "Fitness", wcat_offer: "Ofertas especiales",
+  wcat_massage: "Masajes", wcat_facial: "Faciales", wcat_skincare: "Cuidado de la piel", wcat_nails: "Uñas", wcat_hair: "Cabello",
+  wcat_gym: "Gimnasios", wcat_pilates: "Pilates", wcat_yoga: "Yoga", wcat_meditation: "Meditación", wcat_promo: "Promociones", wcat_other: "Otro",
   supLabel: "APOYO", supTitle: "Aquí estamos para ti", supIntro: "Habla en privado, pide oración o comparte una necesidad. No estás sola.",
   supLinkTitle: "¿Necesitas apoyo?", supLinkSub: "Habla en privado, pide oración o encuentra ayuda inmediata.",
   memTestFlag: "⚠ Parece contenido de prueba (contiene «test»): no se muestra en la app. Ábrelo para cambiarle el título o eliminarlo.",
@@ -49,9 +51,11 @@ const EN = {
   wdEmptyText: "Spas, massages, yoga, retreats and places to take care of yourself. Know a special one? Recommend it.",
   wdRecommend: "Recommend a place",
   wuLabel: "UPCOMING WELLNESS PLANS",
-  wcat_spa: "Spa, massage & facials", wcat_beauty: "Beauty & self-care", wcat_movement: "Yoga & movement", wcat_mind: "Meditation & faith",
+  wcat_spa: "Spa & relaxation", wcat_beauty: "Beauty & self-care", wcat_movement: "Yoga & movement", wcat_mind: "Meditation & faith",
   wcat_retreat: "Retreats", wcat_food: "Healthy food", wcat_workshop: "Workshops",
-  wcat_fitness: "Gym, Pilates & fitness", wcat_offer: "Offers & promotions",
+  wcat_fitness: "Fitness", wcat_offer: "Special offers",
+  wcat_massage: "Massages", wcat_facial: "Facials", wcat_skincare: "Skincare", wcat_nails: "Nails", wcat_hair: "Hair",
+  wcat_gym: "Gyms", wcat_pilates: "Pilates", wcat_yoga: "Yoga", wcat_meditation: "Meditation", wcat_promo: "Promotions", wcat_other: "Other",
   supLabel: "SUPPORT", supTitle: "We're here for you", supIntro: "Talk privately, ask for prayer or share a need. You're not alone.",
   supLinkTitle: "Need support?", supLinkSub: "Talk privately, ask for prayer or find immediate help.",
   memTestFlag: "⚠ Looks like test content (contains “test”): it is not shown in the app. Open it to rename or delete it.",
@@ -81,7 +85,8 @@ const EN = {
 };
 const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "function" ? v(...args) : (v || key); };
 const el = (...a) => C.el(...a);
-const WCATS = ["spa", "beauty", "fitness", "movement", "mind", "retreat", "food", "workshop", "offer"];
+const WCATS = ["spa", "massage", "facial", "skincare", "nails", "hair", "beauty", "gym", "fitness", "pilates", "yoga", "movement", "meditation", "mind", "retreat", "food", "workshop", "offer", "promo", "other"];
+const catLabel = tag => (tag.cat === "other" && tag.label ? tag.label : t("wcat_" + tag.cat));
 const MATCHA_DEFAULT = "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=900&q=80";
 const MATCHA_RE = /^\s*🍵\s*Matcha/i;
 const DAY = 86400000;
@@ -100,32 +105,39 @@ function emptyBox(icon, title, text, action) {
 // ---------- Wellness discovery ----------
 let wcat = "all";
 function wellCard(p) {
+  // photo card: category · Código Pick · title · where · short description · price / promo · clear action
   const tag = C.planTag(p.id);
-  const img = C.safeUrl(p.image_url);
-  const media = el("div", { class: "wd-media" + (img ? "" : " tone-Wellness") });
+  const x = (C.richOf && C.richOf(p)) || {};
+  const img = C.safeUrl(p.image_url) || (Array.isArray(x.gallery) ? x.gallery.map(C.safeUrl).find(Boolean) : "") || "";
+  const card = el("article", { class: "wd-card wd-photo" + (tag.featured ? " is-pick" : "") });
+  const more = btn(t("wellSee") + " →", "link-btn wd-more", () => C.openDetail(p.id, more));
+  const media = el("button", { type: "button", class: "wd-media" + (img ? "" : " tone-Wellness"), "aria-label": (C.pick(p, "title") || "—") + " · " + t("wellSee") });
   if (img) {
     const i = el("img", { src: img, alt: "", loading: "lazy" });
     i.addEventListener("error", () => { i.remove(); media.classList.add("tone-Wellness"); });
     media.appendChild(i);
   } else media.appendChild(el("span", { class: "wd-ph", "aria-hidden": "true", text: "🌿" }));
-  if (WCATS.includes(tag.cat)) media.appendChild(el("span", { class: "ev-badge", text: t("wcat_" + tag.cat) }));
-  const meta = [p.location, p.price].filter(Boolean).join(" · ");
-  const body = el("div", { class: "wd-body" },
-    el("b", { class: "wd-title", text: C.pick(p, "title") || "—" }),
-    meta ? el("small", { class: "meta-line", text: "📍 " + meta }) : null,
-    C.pick(p, "desc") ? el("p", { class: "wd-desc", text: C.pick(p, "desc") }) : null);
-  const x = C.richOf ? C.richOf(p) : null;
-  const promo = x ? ((x[C.lang()] && x[C.lang()].promo) || (x.es && x.es.promo) || (x.en && x.en.promo) || "") : "";
-  if (promo) body.insertBefore(el("span", { class: "wd-promo", text: "✦ " + promo.split("\n")[0].slice(0, 80) }), body.children[1] || null);
-  if (p.event_date) body.insertBefore(el("small", { class: "meta-line", text: "📅 " + C.fmtDate(p.event_date) + (p.event_time ? " · " + p.event_time : "") }), body.children[1] || null);
-  const acts = el("div", { class: "wd-acts" });
-  const more = btn(t("wdMore") + " →", "link-btn wd-more", () => C.openDetail(p.id, more));
-  acts.appendChild(more);
-  const url = C.safeUrl(p.url);
-  if (url) acts.appendChild(el("a", { class: "link-btn wd-cta", href: url, target: "_blank", rel: "noopener noreferrer", text: t("wdOffer") + " ↗" }));
-  body.appendChild(acts);
-  const card = el("article", { class: "wd-card" }, media, body);
+  media.appendChild(el("span", { class: "wd-veil", "aria-hidden": "true" }));
+  if (WCATS.includes(tag.cat)) media.appendChild(el("span", { class: "ev-badge wd-cat", text: catLabel(tag) }));
+  if (tag.featured) media.appendChild(el("span", { class: "pick-badge wd-pick", text: "✦ " + t("wellPick") }));
   media.addEventListener("click", () => C.openDetail(p.id, more));
+  const promo = C.richText ? C.richText(x, "promo") : "";
+  const where = [p.location, x.city].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(", ");
+  const body = el("div", { class: "wd-body" });
+  if (promo) body.appendChild(el("span", { class: "wd-promo", text: "✦ " + promo.split("\n")[0].slice(0, 80) }));
+  body.appendChild(el("b", { class: "wd-title", text: C.pick(p, "title") || "—" }));
+  if (where) body.appendChild(el("small", { class: "meta-line wd-where", text: "📍 " + where }));
+  if (p.event_date) body.appendChild(el("small", { class: "meta-line", text: "📅 " + C.fmtDate(p.event_date) + (p.event_time ? " · " + p.event_time : "") }));
+  if (C.pick(p, "desc")) body.appendChild(el("p", { class: "wd-desc", text: C.pick(p, "desc") }));
+  if (p.price || x.promo_price) body.appendChild(el("p", { class: "wd-price" },
+    p.price && x.promo_price ? el("s", { text: p.price }) : null,
+    el("b", { text: x.promo_price || p.price }),
+    x.offer_until ? el("small", { text: t("wellUntil", C.fmtDate(x.offer_until)) }) : null));
+  const acts = el("div", { class: "wd-acts" }, more);
+  const url = C.safeUrl(p.url);
+  if (url) acts.appendChild(el("a", { class: "primary wd-cta", href: url, target: "_blank", rel: "noopener noreferrer", text: t("wellBook") + " ↗" }));
+  body.appendChild(acts);
+  card.append(media, body);
   return card;
 }
 function renderWellness() {
@@ -143,7 +155,8 @@ function renderWellness() {
     row.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", String(b.classList.contains("selected"))));
     nodes.push(row);
   }
-  const shown = items.filter(p => wcat === "all" || C.planTag(p.id).cat === wcat);
+  const shown = items.filter(p => wcat === "all" || C.planTag(p.id).cat === wcat)
+    .sort((a, b) => (C.planTag(b.id).featured ? 1 : 0) - (C.planTag(a.id).featured ? 1 : 0));
   if (shown.length) nodes.push(el("div", { class: "wd-list" }, ...shown.map(wellCard)));
   else nodes.push(emptyBox("🌿", t("wdEmptyTitle"), t("wdEmptyText"), btn(t("wdRecommend"), "secondary", () => C.openModal("idea"))));
   host.hidden = false;

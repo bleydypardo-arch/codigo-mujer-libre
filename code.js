@@ -18,7 +18,7 @@ const ICON = {
 };
 const ES = {
   wcLabel: "TU CÓDIGO", wcQ: "¿Cuál es tu código esta semana?", wcSub: "Elige lo que quieres vivir más estos días y te mostramos por dónde empezar.",
-  wcYour: "Tu código esta semana", wcChange: "Cambiar", wcBrand: "Cada mujer tiene su código. Cambia cuando tú cambias.",
+  wcYour: "Tu código esta semana", wcChange: "Cambiar mi código", wcPickHint: "Toca uno. Puedes cambiarlo cuando quieras.", wcBrand: "Cada mujer tiene su código. Cambia cuando tú cambias.",
   wcName_Social: "Social", wcName_Wellness: "Bienestar", wcName_Connection: "Conexión", wcName_Adventure: "Aventura",
   wcName_Faith: "Fe", wcName_Family: "Familia", wcName_Recharge: "Recargar", wcName_Support: "Apoyo",
   wcMsg_Social: "Esta semana es para salir, reír y compartir con otras mujeres.",
@@ -35,7 +35,7 @@ const ES = {
 };
 const EN = {
   wcLabel: "YOUR CODE", wcQ: "What's your code this week?", wcSub: "Choose what you want more of these days and we'll show you where to start.",
-  wcYour: "Your code this week", wcChange: "Change", wcBrand: "Every woman has her code. It changes when you do.",
+  wcYour: "Your code this week", wcChange: "Change my code", wcPickHint: "Tap one. You can change it anytime.", wcBrand: "Every woman has her code. It changes when you do.",
   wcName_Social: "Social", wcName_Wellness: "Wellness", wcName_Connection: "Connection", wcName_Adventure: "Adventure",
   wcName_Faith: "Faith", wcName_Family: "Family", wcName_Recharge: "Recharge", wcName_Support: "Support",
   wcMsg_Social: "This week is for going out, laughing and sharing with other women.",
@@ -50,6 +50,47 @@ const EN = {
   wcGo_wellness: "Wellness", wcGo_travel: "Travel & Experiences", wcGo_prayer: "Prayer wall", wcGo_support: "Here for you",
   wcGo_talk: "Talk privately", wcGo_daily: "Your code for today", wcGo_decide: "Let's decide together"
 };
+// Signature orchid (phalaenopsis-inspired), drawn inline so it can float, sway and shift color. Unique gradient ids per copy.
+let __oid = 0;
+function orchidSVG(cls) {
+  const p = "or" + (++__oid) + "_";
+  const mx = d => d.replace(/(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)/g, (m, x, y) => (200 - parseFloat(x)) + " " + y);
+  const petalL = "M99 96 C90 70 70 42 42 40 C14 40 4 70 12 96 C20 122 52 128 76 118 C88 112 96 104 99 100Z";
+  const sepalTop = "M100 92 C80 76 74 42 100 16 C126 42 120 76 100 92Z";
+  const sepalL = "M99 104 C80 116 56 140 52 170 C60 178 74 174 84 162 C96 146 102 124 102 108Z";
+  const lobeL = "M96 108 C84 100 72 106 74 118 C76 126 86 126 94 118Z";
+  const lip = "M100 106 C90 108 82 118 86 130 C89 139 95 146 100 152 C105 146 111 139 114 130 C118 118 110 108 100 106Z";
+  const veins = side => {
+    const v = ["M98 98 C80 84 56 70 34 66", "M98 98 C78 96 52 96 26 92", "M98 100 C80 106 58 112 38 114", "M98 96 C84 78 66 58 50 50"];
+    return v.map(d => '<path d="' + (side ? mx(d) : d) + '"/>').join("");
+  };
+  return '<svg class="' + (cls || "orchid") + '" viewBox="0 0 200 200" aria-hidden="true" focusable="false">' +
+  '<defs>' +
+  '<radialGradient id="' + p + 'pt" cx="100" cy="98" r="96" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFF8EF"/><stop offset=".22" stop-color="#FCE1E8"/><stop offset=".55" stop-color="#F4A9C2"/><stop offset=".85" stop-color="#E06A98"/><stop offset="1" stop-color="#C94C82"/></radialGradient>' +
+  '<radialGradient id="' + p + 'sp" cx="100" cy="98" r="90" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFF4EC"/><stop offset=".35" stop-color="#F8C9D7"/><stop offset=".8" stop-color="#E585A8"/><stop offset="1" stop-color="#CF5A8C"/></radialGradient>' +
+  '<linearGradient id="' + p + 'lp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D23C78"/><stop offset=".6" stop-color="#A8205A"/><stop offset="1" stop-color="#7E1744"/></linearGradient>' +
+  '<radialGradient id="' + p + 'th" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#FFE7A8"/><stop offset=".6" stop-color="#E8B85C"/><stop offset="1" stop-color="#C9923E"/></radialGradient>' +
+  '<radialGradient id="' + p + 'gl" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE9EF" stop-opacity=".9"/><stop offset="1" stop-color="#FFE9EF" stop-opacity="0"/></radialGradient>' +
+  '</defs>' +
+  '<circle class="or-glow" cx="100" cy="100" r="96" fill="url(#' + p + 'gl)"/>' +
+  '<g class="or-bloom">' +
+  '<g fill="url(#' + p + 'sp)" stroke="#fff" stroke-opacity=".55" stroke-width=".8">' +
+  '<path d="' + sepalTop + '"/><path d="' + sepalL + '"/><path d="' + mx(sepalL) + '"/></g>' +
+  '<g fill="url(#' + p + 'pt)" stroke="#fff" stroke-opacity=".6" stroke-width=".8"><path d="' + petalL + '"/><path d="' + mx(petalL) + '"/></g>' +
+  '<g fill="none" stroke="#B83A72" stroke-opacity=".22" stroke-width=".7" stroke-linecap="round">' + veins(false) + veins(true) +
+  '<path d="M100 88 L100 30"/><path d="M100 108 L62 166"/><path d="M100 108 L138 166"/></g>' +
+  '<g fill="url(#' + p + 'lp)"><path d="' + lobeL + '"/><path d="' + mx(lobeL) + '"/><path d="' + lip + '"/></g>' +
+  '<path d="M95 150 C90 156 86 158 82 157 M105 150 C110 156 114 158 118 157" fill="none" stroke="#A8205A" stroke-width="1.6" stroke-linecap="round"/>' +
+  '<ellipse cx="100" cy="117" rx="7.5" ry="9" fill="url(#' + p + 'th)"/>' +
+  '<g fill="#B0264F" opacity=".75"><circle cx="97" cy="114" r="1"/><circle cx="103" cy="114" r="1"/><circle cx="100" cy="120" r="1"/><circle cx="96" cy="121" r=".8"/><circle cx="104" cy="121" r=".8"/></g>' +
+  '<ellipse cx="100" cy="101" rx="5.5" ry="7.5" fill="#FFF5E6" stroke="#E8C98F" stroke-width=".8"/>' +
+  '<ellipse cx="100" cy="97" rx="2.6" ry="2.2" fill="#F0CF86"/>' +
+  '</g>' +
+  '<g class="or-spark" fill="#E9CF9E"><path d="M168 40l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path d="M34 160l1.4 4 4 1.4-4 1.4-1.4 4-1.4-4-4-1.4 4-1.4z"/></g>' +
+  '</svg>';
+}
+function orchid(cls) { const s = el("span", { class: "wc-orchid " + (cls || ""), "aria-hidden": "true" }); s.innerHTML = orchidSVG("orchid"); return s; }
+
 const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "function" ? v(...args) : (v || key); };
 const el = (...a) => C.el(...a);
 
@@ -68,6 +109,7 @@ function svg(code, cls) {
   s.innerHTML = '<svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="' + ICON[code] + '"/></svg>';
   return s;
 }
+function svgPath(d, cls) { const s = el("span", { class: cls, "aria-hidden": "true" }); s.innerHTML = '<svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="' + d + '"/></svg>'; return s; }
 function upcomingWith(code) {
   const today = C.todayStr();
   return C.homeData().plans.filter(p => p.kind === "event" && p.code === code && (!p.event_date || p.event_date >= today)).length;
@@ -106,11 +148,19 @@ function render() {
     }));
     host.className = "card wc-card";
     host.replaceChildren(
-      el("div", { class: "wc-head" }, el("small", { class: "rose", text: t("wcLabel") }), el("h2", { text: t("wcQ") }), el("p", { class: "small-note", text: t("wcSub") })),
-      grid);
+      el("div", { class: "wc-top" },
+        el("div", { class: "wc-head" }, el("small", { class: "rose", text: t("wcLabel") }), el("h2", { text: t("wcQ") }), el("p", { class: "small-note", text: t("wcSub") })),
+        orchid("is-float")),
+      grid,
+      el("p", { class: "wc-hint", text: t("wcPickHint") }));
     return;
   }
-  const change = el("button", { type: "button", class: "link-btn wc-change", text: t("wcChange") });
+  // the orchid IS the change control: a living flower + a clear pill label
+  const change = el("button", { type: "button", class: "wc-change", "aria-label": t("wcChange") },
+    orchid("is-live"),
+    el("span", { class: "wc-change-pill" },
+      svgPath("M20 11a8 8 0 0 0-14.5-4.5M4 3.5V7h3.5M4 13a8 8 0 0 0 14.5 4.5M20 20.5V17h-3.5", "wc-change-ic"),
+      el("span", { text: t("wcChange") })));
   change.addEventListener("click", () => { setCode(""); render(); const f = host.querySelector(".wc-pick"); if (f) f.focus({ preventScroll: true }); });
   host.className = "card wc-card is-chosen wc-" + chosen.toLowerCase();
   host.replaceChildren(

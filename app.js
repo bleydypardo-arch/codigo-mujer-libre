@@ -441,6 +441,28 @@ Object.assign(translations.en, {
   wellnessLabel: "WELLNESS", yourSpace: "Care for yourself, your way", wellnessIntro: "Choose how you want to feel today and discover experiences to take care of yourself."
 });
 
+// Creative pass: experience studio fields (bilingual)
+Object.assign(translations.es, {
+  rich_price_covers: "Qué cubre el precio", rich_tickets: "Entradas", rich_tours: "Tours", rich_other_inc: "Otros",
+  rich_packing: "Lista para empacar", rich_weather: "Clima", rich_visa: "Visa", rich_age: "Edad", rich_waivers: "Formularios / exoneraciones",
+  rich_documents: "Documentos", rich_cancellation: "Política de cancelación", rich_promo_price: "Precio promocional", rich_pay_by: "Fecha límite de pago",
+  rich_subtitle: "Subtítulo", rich_days: "Día a día", payLink: "Pagar o reservar", callLabel: "Llamar", emailLabel: "Escribir", webLabel: "Sitio web",
+  meetAt: "Encuentro", offerUntil: d => "Oferta válida hasta el " + d, payBy: d => "Pago antes del " + d,
+  st_open: "Inscripciones abiertas", st_waitlist: "Lista de espera", st_soldout: "Agotado", st_closed: "Inscripciones cerradas",
+  pickBadge: "Código Pick", featuredExp: "Experiencia destacada", spotsLeft: n => n === 1 ? "Queda 1 lugar" : "Quedan " + n + " lugares",
+  previewBanner: "VISTA PREVIA · así lo verán las miembros. Aún no está guardado.", previewNoRsvp: "Los botones de respuesta se activan al publicar."
+});
+Object.assign(translations.en, {
+  rich_price_covers: "What the price covers", rich_tickets: "Tickets", rich_tours: "Tours", rich_other_inc: "Other",
+  rich_packing: "Packing list", rich_weather: "Weather", rich_visa: "Visa", rich_age: "Age", rich_waivers: "Waivers / forms",
+  rich_documents: "Documents", rich_cancellation: "Cancellation policy", rich_promo_price: "Promo price", rich_pay_by: "Payment deadline",
+  rich_subtitle: "Subtitle", rich_days: "Day by day", payLink: "Pay or book", callLabel: "Call", emailLabel: "Email", webLabel: "Website",
+  meetAt: "Meet at", offerUntil: d => "Offer valid until " + d, payBy: d => "Pay by " + d,
+  st_open: "Registration open", st_waitlist: "Waitlist", st_soldout: "Sold out", st_closed: "Registration closed",
+  pickBadge: "Código Pick", featuredExp: "Featured experience", spotsLeft: n => n === 1 ? "1 spot left" : n + " spots left",
+  previewBanner: "PREVIEW · this is how members will see it. Not saved yet.", previewNoRsvp: "Response buttons turn on once it is published."
+});
+
 
 // (Sample cards were removed: empty sections now show an honest empty state instead of placeholder plans.)
 const DEFAULT_HERO = "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=88";
@@ -719,7 +741,8 @@ function renderQuote() {
 // ---- Plan tags: category / collection chosen by the admin, kept in the existing settings table
 // (key "plan_tags" → { planId: { cat, matcha } }). Untagged events fall back to their code.
 const isTestContent = (...texts) => texts.some(x => /\btest(ing)?\b/i.test(String(x || "")));
-function planTag(id) { const all = settings.plan_tags; return (all && typeof all === "object" && all[id]) || {}; }
+let previewPlan = null, previewTag = null;   // admin "Vista previa": an unsaved plan shown in the detail sheet
+function planTag(id) { if (previewPlan && id === previewPlan.id) return previewTag || {}; const all = settings.plan_tags; return (all && typeof all === "object" && all[id]) || {}; }
 const EVENT_CATS = ["social", "dining", "events"];
 function eventCategory(p) {
   const cat = planTag(p.id).cat;
@@ -943,11 +966,11 @@ function eventCard(p, mini) {
 // Detail page groups (same information architecture for events, experiences and wellness offers).
 const RICH_GROUPS = [
   ["about", "✦", ["about", "meeting", "dates"]],
-  ["price", "◇", ["deposit", "payment", "promo"]],
-  ["included", "✓", ["included", "excluded", "stay", "meals", "transport"]],
+  ["price", "◇", ["price_covers", "deposit", "payment", "promo"]],
+  ["included", "✓", ["included", "stay", "transport", "meals", "tickets", "tours", "other_inc", "excluded"]],
   ["itinerary", "🗓", ["itinerary"]],
-  ["attend", "👜", ["activities", "dress", "bring", "instructions"]],
-  ["important", "!", ["requirements", "passport", "notes"]],
+  ["attend", "👜", ["activities", "dress", "bring", "packing", "weather", "instructions"]],
+  ["important", "!", ["requirements", "passport", "visa", "age", "waivers", "documents", "cancellation", "notes"]],
   ["contact", "✉", ["contact_name", "contact"]]
 ];
 function richOf(p) {
@@ -964,8 +987,11 @@ function rsvpState(p) {
   const x = richOf(p) || {};
   const going = (counts.get(p.id) || {}).going || 0;
   const cap = Number(x.capacity) > 0 ? Number(x.capacity) : 0;
-  const closed = !!(x.rsvp_by && x.rsvp_by < todayStr());
-  return { cap, going, left: cap ? Math.max(0, cap - going) : null, full: cap > 0 && going >= cap, closed, by: x.rsvp_by || "" };
+  const status = ["open", "waitlist", "soldout", "closed"].includes(x.status) ? x.status : "";
+  const closed = status === "closed" || !!(x.rsvp_by && x.rsvp_by < todayStr());
+  const manual = x.spots_left !== undefined && x.spots_left !== "" && Number(x.spots_left) >= 0 ? Number(x.spots_left) : null;
+  const left = manual !== null ? manual : (cap ? Math.max(0, cap - going) : null);
+  return { cap, going, left, full: status === "soldout" || (cap > 0 && going >= cap) || manual === 0, closed, waitlist: status === "waitlist", status, by: x.rsvp_by || "" };
 }
 let lightbox = null;
 function openImage(src) {
@@ -991,15 +1017,21 @@ function richSections(p, x) {
     const parts = keys.map(k => [k, x ? richText(x, k) : ""]).filter(([, v]) => v);
     const extra = [];
     if (g === "about" && desc) extra.push(el("p", { class: "saved-text", text: desc }));
-    if (g === "price" && p.price && (parts.length || p.kind === "trip")) extra.push(el("p", { class: "rich-price", text: t("rich_price") + ": " + p.price }));
+    if (g === "price" && p.price && (parts.length || p.kind === "trip" || (x && (x.pay_link || x.pay_by)))) extra.push(el("p", { class: "rich-price", text: t("rich_price") + ": " + p.price }));
+    if (g === "price" && x && x.promo_price) extra.push(el("p", { class: "rich-price rich-promo-price", text: t("rich_promo_price") + ": " + x.promo_price }));
+    if (g === "price" && x && x.pay_by) extra.push(el("p", { class: "rich-paydate", text: tf("payBy", fmtDate(x.pay_by)) }));
+    if (g === "price" && x && safeUrl(x.pay_link)) extra.push(el("a", { class: "primary rich-pay", href: safeUrl(x.pay_link), target: "_blank", rel: "noopener noreferrer", text: t("payLink") + " ↗" }));
+    if (g === "itinerary" && x && Array.isArray(x.days) && x.days.length) extra.push(daysNode(x.days));
     if (g === "contact" && x) {
       if (x.text) extra.push(el("p", { class: "saved-text", text: x.text }));
       const links = (Array.isArray(x.links) ? x.links : []).filter(l => l && safeUrl(l.url));
       if (links.length) extra.push(el("div", { class: "rich-links" }, ...links.map(l => el("a", { class: "link-btn", href: safeUrl(l.url), target: "_blank", rel: "noopener noreferrer", text: (l.label || safeUrl(l.url).replace(/^https?:\/\//, "").slice(0, 40)) + " ↗" }))));
+      const reach = contactLinks(x);
+      if (reach) extra.push(reach);
     }
     if (g === "contact" && !x && p.details) extra.push(el("p", { class: "saved-text", text: p.details }));
     if (!parts.length && !extra.length) return;
-    const showLabels = parts.length > 1 || (g !== "about" && extra.length && parts.length) || ["meeting", "dates", "deposit", "payment", "promo", "excluded", "stay", "meals", "transport", "passport", "contact_name"].includes(parts[0] && parts[0][0]);
+    const showLabels = parts.length > 1 || (g !== "about" && extra.length && parts.length) || ["meeting", "dates", "deposit", "payment", "promo", "excluded", "stay", "meals", "transport", "passport", "contact_name", "price_covers", "tickets", "tours", "other_inc", "packing", "weather", "visa", "age", "waivers", "documents", "cancellation"].includes(parts[0] && parts[0][0]);
     const sec = el("section", { class: "rich-sec rich-" + g + (g === "important" ? " rich-notes" : "") },
       el("h3", { class: "sheet-h" }, el("span", { class: "rich-ic", "aria-hidden": "true", text: icon }), t("grp_" + g)), ...extra);
     parts.forEach(([k, v]) => {
@@ -1010,6 +1042,29 @@ function richSections(p, x) {
   });
   return out;
 }
+// structured itinerary rows {day, date, time, es:{act,desc}, en:{act,desc}}
+function daysNode(days) {
+  const L = currentLanguage, O = L === "es" ? "en" : "es";
+  const txt = (r, k) => String((r[L] && r[L][k]) || (r[O] && r[O][k]) || "").trim();
+  return el("ol", { class: "rich-days" }, ...days.slice(0, 40).map(r => {
+    const when = [r.day, r.date ? fmtDate(r.date) : "", r.time].filter(Boolean).join(" · ");
+    return el("li", {}, when ? el("small", { class: "rd-when", text: when }) : null,
+      txt(r, "act") ? el("b", { class: "rd-act", text: txt(r, "act") }) : null,
+      txt(r, "desc") ? el("p", { class: "rd-desc", text: txt(r, "desc") }) : null);
+  }));
+}
+// phone / email / website (only well-formed values become links)
+function contactLinks(x) {
+  const out = [];
+  const tel = String(x.phone || "").replace(/[^\d+]/g, "");
+  if (tel.length >= 7) out.push(el("a", { class: "link-btn", href: "tel:" + tel, text: "☎ " + t("callLabel") + " · " + x.phone }));
+  const mail = String(x.email || "").trim();
+  if (/^[^\s@<>"]+@[^\s@<>"]+\.[a-z]{2,}$/i.test(mail)) out.push(el("a", { class: "link-btn", href: "mailto:" + mail, text: "✉ " + mail }));
+  const web = safeUrl(x.website);
+  if (web) out.push(el("a", { class: "link-btn", href: web, target: "_blank", rel: "noopener noreferrer", text: "↗ " + t("webLabel") }));
+  return out.length ? el("div", { class: "rich-links rich-reach" }, ...out) : null;
+}
+const STATUS_KEYS = ["open", "waitlist", "soldout", "closed"];
 function galleryNode(x) {
   const gallery = (x && Array.isArray(x.gallery) ? x.gallery : []).map(safeUrl).filter(Boolean).slice(0, 12);
   if (!gallery.length) return null;
@@ -1020,26 +1075,44 @@ function galleryNode(x) {
   }));
 }
 function detailNode(p) {
-  const box = el("div", { class: "sheet-content" });
+  const box = el("div", { class: "sheet-content is-" + p.kind });
   box.appendChild(eventMedia(p, "sheet-hero"));
   const body = el("div", { class: "sheet-main" });
-  if (p.kind === "wellness") {
-    const c = planTag(p.id).cat;
-    if (c) body.appendChild(el("small", { class: "rose sheet-k", text: t("wcat_" + c) }));
-  }
-  body.appendChild(el("h2", { id: "sheetTitle", class: "sheet-title", text: pick(p, "title") || "—" }));
-  const meta = [];
-  if (p.event_date || p.date_text || p.kind === "event") meta.push("📅 " + (p.event_date ? fmtDate(p.event_date) + (p.event_time ? " · " + p.event_time : "") : shortWhen(p)));
-  if (p.location) meta.push("📍 " + p.location);
-  if (p.price) meta.push("💲 " + p.price);
-  meta.forEach(l => body.appendChild(el("p", { class: "meta-line", text: l })));
+  const isPreview = !!(previewPlan && p.id === previewPlan.id);
+  if (isPreview) body.appendChild(el("p", { class: "preview-banner", role: "note", text: t("previewBanner") }));
   const rich = richOf(p);
+  const tag = planTag(p.id);
+  const kick = [];
+  if (p.kind === "wellness" && tag.cat) kick.push(tag.cat === "other" && tag.label ? tag.label : t("wcat_" + tag.cat));
+  if (p.kind === "trip" && window.CMLExp) kick.push(t(window.CMLExp.typeKey(tripTypeOf(p))));
+  if (kick.length || tag.featured) body.appendChild(el("div", { class: "sheet-kick" },
+    kick.length ? el("small", { class: "rose sheet-k", text: kick.join(" · ") }) : null,
+    tag.featured ? el("span", { class: "pick-badge", text: "✦ " + t(p.kind === "trip" ? "featuredExp" : "pickBadge") }) : null));
+  body.appendChild(el("h2", { id: "sheetTitle", class: "sheet-title", text: pick(p, "title") || "—" }));
+  const sub = rich ? richText(rich, "subtitle") : "";
+  if (sub) body.appendChild(el("p", { class: "sheet-sub", text: sub }));
+  const meta = [];
+  if (p.event_date || p.date_text || p.kind === "event") {
+    const end = rich && rich.end_date && rich.end_date !== p.event_date ? " – " + fmtDate(rich.end_date) : "";
+    meta.push("📅 " + (p.event_date ? fmtDate(p.event_date) + end + (p.event_time ? " · " + p.event_time : "") : shortWhen(p)) + (p.event_date && p.date_text && p.kind === "trip" ? " · " + p.date_text : ""));
+  }
+  if (rich && rich.meeting_time) meta.push("🕘 " + t("meetAt") + ": " + rich.meeting_time);
+  const place = [p.location, rich && rich.city, rich && rich.country].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(", ");
+  if (place) meta.push("📍 " + place);
+  if (rich && rich.address) meta.push("🏠 " + rich.address);
+  if (p.price) meta.push("💲 " + p.price + (rich && rich.promo_price ? "  →  " + rich.promo_price : ""));
+  else if (rich && rich.promo_price) meta.push("💲 " + rich.promo_price);
+  meta.forEach(l => body.appendChild(el("p", { class: "meta-line", text: l })));
   const rs = rsvpState(p);
   const facts = [];
+  if (rs.status) facts.push(t("st_" + rs.status));
+  if (rich && rich.offer_until) facts.push(tf("offerUntil", fmtDate(rich.offer_until)));
   if (rs.cap) facts.push(rs.full ? t("factFull") : tf("factSpots", rs.cap, rs.left));
   if (rs.by) facts.push(rs.closed ? t("factClosed") : tf("factBy", dateFromStr(rs.by).toLocaleDateString(loc(), { day: "numeric", month: "short" })));
+  if (rs.left !== null && !rs.cap && !rs.full) facts.push(tf("spotsLeft", rs.left));
   if (facts.length) body.appendChild(el("div", { class: "rich-facts" }, ...facts.map(f => el("span", { class: "rich-fact", text: f }))));
-  if (p.kind === "event" || p.kind === "trip") {
+  if (isPreview && (p.kind === "event" || p.kind === "trip")) body.appendChild(el("p", { class: "small-note", text: t("previewNoRsvp") }));
+  else if (p.kind === "event" || p.kind === "trip") {
     body.appendChild(el("h3", { class: "sheet-h", text: t("attendanceTitle") }));
     body.appendChild(avatarStack(p.id, 8));
     body.appendChild(el("div", { class: "resp-row" }, respondButton(p, "interested"), respondButton(p, "going")));
@@ -1051,6 +1124,7 @@ function detailNode(p) {
   secs.forEach(sc => body.appendChild(sc));
   const url = safeUrl(p.url);
   if (url) body.appendChild(el("a", { class: "primary rich-book", href: url, target: "_blank", rel: "noopener noreferrer", text: t(p.kind === "wellness" ? "wellOffer" : rich ? "bookInfo" : "moreInfo") + " ↗" }));
+  if (isPreview) { box.appendChild(body); return box; }
   if (p.location) mapBlock(body, p.location);
   if (window.CMLPolls) { const polls = window.CMLPolls.planBlock(p); if (polls) body.appendChild(polls); }
   if (window.CMLSocial && (p.kind === "event" || p.kind === "trip")) { const chat = window.CMLSocial.chatBlock(p, mine.get(p.id)); if (chat) body.appendChild(chat); }
@@ -1060,7 +1134,7 @@ function detailNode(p) {
 function paintSheet(keepScroll) {
   const sheet = byId("eventSheet"), host = byId("sheetBody");
   if (!sheet || !host || !sheetPlanId) return;
-  const p = plans.find(x => x.id === sheetPlanId);
+  const p = previewPlan && sheetPlanId === previewPlan.id ? previewPlan : plans.find(x => x.id === sheetPlanId);
   if (!p) return closeDetail();
   const panel = sheet.querySelector(".sheet-panel");
   const top = keepScroll ? panel.scrollTop : 0;
@@ -1069,7 +1143,8 @@ function paintSheet(keepScroll) {
 }
 function openDetail(planId, trigger) {
   const sheet = byId("eventSheet");
-  if (!sheet || !plans.some(p => p.id === planId)) return;
+  if (!sheet || !(plans.some(p => p.id === planId) || (previewPlan && previewPlan.id === planId))) return;
+  if (!previewPlan || planId !== previewPlan.id) { previewPlan = null; previewTag = null; }
   sheetPlanId = planId; sheetTrigger = trigger || document.activeElement;
   sheet.hidden = false;
   document.body.classList.add("sheet-open");
@@ -1083,7 +1158,7 @@ function closeDetail() {
   sheet.classList.remove("show"); sheet.hidden = true;
   document.body.classList.remove("sheet-open");
   byId("sheetBody")?.replaceChildren();
-  const back = sheetTrigger; sheetPlanId = null; sheetTrigger = null;
+  const back = sheetTrigger; sheetPlanId = null; sheetTrigger = null; previewPlan = null; previewTag = null;
   if (back && back.isConnected) back.focus({ preventScroll: true });
 }
 function wireSheet() {
@@ -1178,6 +1253,12 @@ function renderEvents() {
   } else list.replaceChildren(...shown.map(p => eventCard(p)));
   restoreFocus();
 }
+// Admin "Vista previa": shows an unsaved plan in the real detail sheet (no RSVP, no chat, nothing is written)
+function openPreview(obj, tag) {
+  previewPlan = Object.assign({ id: "__preview" }, obj, { id: "__preview" });
+  previewTag = tag || {};
+  openDetail("__preview", document.activeElement);
+}
 // Travel & Experiences: type chosen by the admin (plan_tags), default "trip" (group trip).
 const TRIP_TYPES = ["trip", "retreat", "party", "dining", "nature"];
 let tripType = "all";
@@ -1194,6 +1275,7 @@ function renderTrips() {
     list.replaceChildren(emptyState("✈️", t(tripType === "all" ? "tripsSoon" : "tripsSoonType"), t("tripsSoonText"), sug));
   } else list.replaceChildren(...shown.map(p => {
     // compact experience card; the full experience page (details, polls, trip chat) opens in the detail sheet
+    if (window.CMLExp) return window.CMLExp.campaignCard(p);
     const card = eventCard(p);
     card.classList.add("trip-card");
     const more = card.querySelector(".ev-more");
@@ -1779,7 +1861,7 @@ function initialize() {
     refreshPublic: async () => { if (session) await loadAll(); },
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,
-    setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, openModal, byDate,
+    setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
       setLanguage(currentLanguage, false);
