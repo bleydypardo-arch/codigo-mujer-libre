@@ -20,7 +20,13 @@ const ES = {
   travelTypesLabel: "TIPOS DE EXPERIENCIA",
   travelNote: "Organizamos alrededor de dos grandes experiencias oficiales al año. Cuando abramos una votación, aparecerá aquí.",
   expTrip: "Viaje grupal", expRetreat: "Retiro de bienestar", expParty: "Fiesta temática", expDining: "Experiencia gastronómica", expNature: "Aventura / Naturaleza",
-  travelEmpty: "Pronto anunciaremos la próxima gran experiencia.", travelManage: "Gestionar experiencias", nextTrip: "Próximo viaje",
+  travelEmpty: "Pronto anunciaremos la próxima gran experiencia.",
+  travelNote: "Organizamos alrededor de dos grandes experiencias oficiales al año. Toca un tipo para ver lo que viene.",
+  tripsLabel: "EXPERIENCIAS", tripCount: n => n === 1 ? "1 experiencia" : n + " experiencias", tripSoonShort: "Próximamente",
+  travelPollKicker: "VOTEMOS JUNTAS", travelPollTitle: "¿A dónde vamos ahora?", travelPollIntro: "Elige tu favorito. Después de votar verás cómo va la comunidad.",
+  tripIdeaLabel: "TU IDEA", tripIdeaTitle: "¿A dónde te gustaría ir?", tripIdeaText: "Sugiere nuestro próximo destino o experiencia. La administradora lo usará al planear la próxima experiencia oficial.",
+  tripIdeaPh: "Ej.: Tulum, Bahamas, un retiro en la montaña…", tripIdeaSend: "Enviar idea", tripIdeaPrefix: "Destino sugerido",
+  tripIdeaThanks: "¡Gracias! Tu idea llegó a la administradora.", tripIdeaFail: "No se pudo enviar. Inténtalo de nuevo.", travelManage: "Gestionar experiencias", nextTrip: "Próximo viaje",
   essTitle: "Nuestra esencia", essPhoto: "Foto de la fundadora", essQ: "¿Por qué nació Código Mujer Libre?",
   essP1: "Creé Código Mujer Libre porque muchas veces las mujeres pasamos la vida cuidando, resolviendo, trabajando y pensando en todos los demás, mientras nos dejamos para el final.",
   essP2: "Este es un espacio para recordarnos que nosotras también importamos. Para encontrar un poco más de equilibrio entre nuestra vida cotidiana, nuestro bienestar, nuestra vida espiritual, nuestras amistades y esos momentos que simplemente nos hacen sentir bien.",
@@ -39,7 +45,13 @@ const EN = {
   travelTypesLabel: "TYPES OF EXPERIENCE",
   travelNote: "We organize about two major official experiences a year. When a vote opens, it will appear here.",
   expTrip: "Group trip", expRetreat: "Wellness retreat", expParty: "Themed celebration", expDining: "Dining experience", expNature: "Adventure & Nature",
-  travelEmpty: "We'll announce the next big experience soon.", travelManage: "Manage experiences", nextTrip: "Next trip",
+  travelEmpty: "We'll announce the next big experience soon.",
+  travelNote: "We organize about two major official experiences a year. Tap a type to see what's coming.",
+  tripsLabel: "EXPERIENCES", tripCount: n => n === 1 ? "1 experience" : n + " experiences", tripSoonShort: "Coming soon",
+  travelPollKicker: "LET'S VOTE TOGETHER", travelPollTitle: "Where should we go next?", travelPollIntro: "Pick your favorite. After voting you'll see how the community is leaning.",
+  tripIdeaLabel: "YOUR IDEA", tripIdeaTitle: "Where would you love to go?", tripIdeaText: "Suggest our next destination or experience. The administrator will use it when planning the next official experience.",
+  tripIdeaPh: "e.g. Tulum, the Bahamas, a mountain retreat…", tripIdeaSend: "Send idea", tripIdeaPrefix: "Suggested destination",
+  tripIdeaThanks: "Thank you! Your idea reached the administrator.", tripIdeaFail: "Could not send. Please try again.", travelManage: "Manage experiences", nextTrip: "Next trip",
   essTitle: "Our essence", essPhoto: "Founder photo", essQ: "Why was Código Mujer Libre born?",
   essP1: "I created Código Mujer Libre because so often we women spend our lives caring for others, solving problems, working and thinking about everyone else, while leaving ourselves for last.",
   essP2: "This is a space to remind us that we matter too. A place to find a little more balance between our everyday life, our well-being, our spiritual life, our friendships and those moments that simply make us feel good.",
@@ -125,14 +137,41 @@ function wireGo() {
 }
 
 // ---------- Viajes y Experiencias ----------
+const TYPE_KEY = { trip: "expTrip", retreat: "expRetreat", party: "expParty", dining: "expDining", nature: "expNature" };
 function paintTravel() {
   if (!C) return;
-  const hero = document.getElementById("travelHero"), block = document.getElementById("tripsBlock");
-  const empty = document.getElementById("travelEmpty"), manage = document.getElementById("travelManage");
+  const hero = document.getElementById("travelHero");
+  const manage = document.getElementById("travelManage"), sug = document.getElementById("travelSuggest");
   const signedIn = !!C.session();
-  const trips = signedIn ? C.homeData().plans.filter(p => p.kind === "trip") : [];
+  const trips = signedIn ? C.homeData().plans.filter(p => p.kind === "trip").sort(C.byDate) : [];
   if (manage) manage.hidden = !(signedIn && C.isAdmin() && window.CMLAdmin && window.CMLAdmin.openTab);
-  if (empty) empty.hidden = !signedIn || trips.length > 0;
+  if (sug) sug.hidden = !signedIn;
+  // type tiles: real filters with counts (an empty type shows a "coming soon" state, never a dead tile)
+  const current = C.tripType ? C.tripType() : "all";
+  document.querySelectorAll("#travelTypes .trip-type").forEach(b => {
+    const k = b.getAttribute("data-type");
+    const n = trips.filter(p => C.tripTypeOf(p) === k).length;
+    const on = current === k;
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
+    const nNode = b.querySelector(".trip-type-n");
+    if (nNode) nNode.textContent = n ? C.t("tripCount")(n) : C.t("tripSoonShort");
+    if (!b.dataset.wired) {
+      b.dataset.wired = "1";
+      b.addEventListener("click", () => {
+        const next = (C.tripType() === b.getAttribute("data-type")) ? "all" : b.getAttribute("data-type");
+        C.setTripType(next); paintTravel();
+        const list = document.getElementById("tripsBlock");
+        if (list && window.matchMedia("(max-width: 1023px)").matches) list.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+  });
+  // destination / experience polls (existing polls, placed on Travel by the admin)
+  const pollsHost = document.getElementById("travelPolls");
+  if (pollsHost) {
+    const block = window.CMLPolls && window.CMLPolls.placedBlock
+      ? window.CMLPolls.placedBlock("travel", C.t("travelPollKicker"), C.t("travelPollTitle"), C.t("travelPollIntro")) : null;
+    pollsHost.replaceChildren(...(block ? [block] : []));
+  }
   if (!hero) return;
   const pickTrip = trips.find(p => C.safeUrl(p.image_url)) || trips[0];
   if (!pickTrip) { hero.hidden = true; hero.replaceChildren(); return; }
@@ -141,13 +180,32 @@ function paintTravel() {
     img ? C.el("img", { src: img, alt: "", loading: "lazy" }) : null,
     C.el("span", { class: "trip-fade", "aria-hidden": "true" }),
     C.el("span", { class: "trip-txt" },
-      C.el("span", { class: "trip-k", text: C.t("nextTrip") }),
+      C.el("span", { class: "trip-k", text: C.t("nextTrip") + " · " + C.t(TYPE_KEY[C.tripTypeOf(pickTrip)]) }),
       C.el("span", { class: "trip-t", text: C.pick(pickTrip, "title") || "—" }),
       pickTrip.location || pickTrip.date_text ? C.el("span", { class: "trip-s", text: [pickTrip.location, pickTrip.date_text].filter(Boolean).join(" · ") }) : null),
     C.el("span", { class: "trip-go", "aria-hidden": "true", text: "›" }));
-  btn.addEventListener("click", () => { if (block && !block.hidden) block.scrollIntoView({ behavior: "smooth", block: "start" }); });
+  btn.addEventListener("click", () => C.openDetail(pickTrip.id, btn));
   hero.replaceChildren(btn);
   hero.hidden = false;
+}
+// "¿A dónde te gustaría ir?" → a private idea message to the administrator (existing messages table, type 'idea')
+function wireTripIdea() {
+  const form = document.getElementById("travelSuggest");
+  if (!form || form.dataset.wired) return;
+  form.dataset.wired = "1";
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const input = document.getElementById("tripIdea"), fb = document.getElementById("tripIdeaFb"), b = document.getElementById("tripIdeaBtn");
+    const text = input.value.trim();
+    if (!text || !C.session()) { input.focus(); return; }
+    b.disabled = true;
+    const r = await C.db.from("messages").insert({ user_id: C.session().user.id, type: "idea", body: "✈️ " + C.t("tripIdeaPrefix") + ": " + text.slice(0, 120) });
+    b.disabled = false;
+    fb.hidden = false;
+    fb.classList.toggle("ok", !r.error);
+    fb.textContent = r.error ? C.t("tripIdeaFail") : C.t("tripIdeaThanks");
+    if (!r.error) input.value = "";
+  });
 }
 
 // ---------- editorial images (admin-editable through the existing settings table) ----------
@@ -290,12 +348,13 @@ function init() {
   C = window.CML;
   if (!C) return;
   window.CMLRedesign = { essenceLink, paintTravel, compose, travelImage };
+  wireTripIdea();
   C.addStrings(ES, EN);
   wireFlip(); wireGo(); wireMoods();
   renderCode(); paintMood();
   document.addEventListener("cml:lang", () => { renderCode(); paintMood(); paintTravel(); });
   document.addEventListener("cml:session", () => { mood = null; paintMood(); renderCode(); paintTravel(); paintEditorial(); });
-  document.addEventListener("cml:render", () => { paintEditorial(); if (document.getElementById("travel")?.classList.contains("active")) paintTravel(); });
+  document.addEventListener("cml:render", () => { paintEditorial(); paintTravel(); });
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
 })();

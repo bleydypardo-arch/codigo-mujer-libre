@@ -380,6 +380,19 @@ Object.assign(translations.es, {
   catCount: n => n === 1 ? "1 plan" : n + " planes",
   catEmpty_social: "Pronto habrá nuevos happy hours", catEmpty_dining: "Pronto recomendaremos restaurantes", catEmpty_events: "Pronto habrá nuevos eventos",
   catEmptyText: "¿Conoces un lugar o un plan que valga la pena? Recomiéndalo y lo compartimos con la comunidad.", catSuggest: "Recomendar un lugar o plan",
+  rich_included: "Qué incluye", rich_excluded: "No incluye", rich_stay: "Alojamiento", rich_transport: "Transporte",
+  rich_itinerary: "Itinerario", rich_activities: "Actividades", rich_dress: "Qué ponerse", rich_bring: "Qué llevar",
+  rich_requirements: "Requisitos", rich_notes: "Importante", rich_links: "Enlaces", openPhoto: "Ver foto",
+  bookInfo: "Reservar o más información",
+  factSpots: (c, l) => c + " lugares · " + (l === 1 ? "queda 1" : "quedan " + l), factFull: "Cupo completo · márcate «Me interesa» por si se libera un lugar",
+  factBy: d => "Confirma antes del " + d, factClosed: "Confirmaciones cerradas",
+  codeFiltering: c => "Tu código: " + c, codeClear: "Quitar filtro de código",
+  catEmpty_social: "Nada planeado todavía ✨", catEmpty_dining: "Nada planeado todavía ✨", catEmpty_events: "Nada planeado todavía ✨",
+  catEmptyText: "¿Conoces un buen lugar o un plan que valga la pena? Recomiéndalo y lo compartimos con la comunidad.",
+  tripsSoon: "La próxima gran experiencia se anunciará pronto", tripsSoonType: "Próximamente ✨",
+  tripsSoonText: "Estamos preparando experiencias de este tipo. Cuéntanos a dónde te gustaría ir.",
+  tripSuggestCta: "Sugerir un destino", tripOpen: "Ver la experiencia",
+  meetLabel: "¿MATCHA?", meetIn: "Me apunto", meetInOn: "✓ Me apunto", meetCount: n => n === 1 ? "1 se apunta" : n + " se apuntan",
   wellnessLabel: "BIENESTAR", yourSpace: "Cuídate a tu manera", wellnessIntro: "Elige cómo quieres sentirte hoy y descubre experiencias para cuidarte."
 });
 Object.assign(translations.en, {
@@ -402,6 +415,19 @@ Object.assign(translations.en, {
   catCount: n => n === 1 ? "1 plan" : n + " plans",
   catEmpty_social: "New happy hours are coming soon", catEmpty_dining: "Restaurant picks are coming soon", catEmpty_events: "New events are coming soon",
   catEmptyText: "Know a place or plan worth sharing? Recommend it and we'll share it with the community.", catSuggest: "Recommend a place or plan",
+  rich_included: "What's included", rich_excluded: "Not included", rich_stay: "Accommodation", rich_transport: "Transportation",
+  rich_itinerary: "Itinerary", rich_activities: "Activities", rich_dress: "What to wear", rich_bring: "What to bring",
+  rich_requirements: "Requirements", rich_notes: "Important", rich_links: "Links", openPhoto: "View photo",
+  bookInfo: "Book or more information",
+  factSpots: (c, l) => c + " spots · " + l + " left", factFull: "Fully booked · tap “Interested” in case a spot opens up",
+  factBy: d => "Confirm by " + d, factClosed: "RSVPs closed",
+  codeFiltering: c => "Your code: " + c, codeClear: "Remove code filter",
+  catEmpty_social: "Nothing planned yet ✨", catEmpty_dining: "Nothing planned yet ✨", catEmpty_events: "Nothing planned yet ✨",
+  catEmptyText: "Know a great place or a plan worth sharing? Recommend it and we'll share it with the community.",
+  tripsSoon: "The next big experience will be announced soon", tripsSoonType: "Coming soon ✨",
+  tripsSoonText: "We're preparing experiences like this. Tell us where you'd love to go.",
+  tripSuggestCta: "Suggest a destination", tripOpen: "See the experience",
+  meetLabel: "MATCHA?", meetIn: "I'm in", meetInOn: "✓ I'm in", meetCount: n => n === 1 ? "1 is in" : n + " are in",
   wellnessLabel: "WELLNESS", yourSpace: "Care for yourself, your way", wellnessIntro: "Choose how you want to feel today and discover experiences to take care of yourself."
 });
 
@@ -676,6 +702,7 @@ function eventCategory(p) {
 }
 const upcomingEvents = () => { const today = todayStr(); return plans.filter(p => p.kind === "event" && (!p.event_date || p.event_date >= today)); };
 let catSel = "all";
+let codeSel = "";          // set from "¿Cuál es tu código esta semana?" on Home
 const CAT_ICON = {
   social: "M8 3h8l-1 7a3 3 0 0 1-6 0zM12 13v6M8.5 21h7",
   dining: "M7 3v8a2 2 0 0 0 2 2v8M7 3v5M11 3v5M17 3c-1.7 1-3 3-3 6v4h3v8",
@@ -704,7 +731,7 @@ function renderFeatured() {
   const container = byId("featured");
   if (!container) return;
   const block = byId("featuredBlock");
-  const items = session ? plans.filter(p => p.kind === "home") : [];
+  const items = session ? plans.filter(p => p.kind === "home" && !planTag(p.id).matcha) : [];   // matcha items live in the Corner
   if (block) block.hidden = !items.length;
   container.replaceChildren(...items.map(p => {
     const card = planCard(p);
@@ -739,6 +766,10 @@ function respondButton(plan, status, attr = "data-resp") {
     "aria-pressed": String(active),
     [attr]: plan.id + ":" + status
   }, icon + " " + label + " · " + (c[status] || 0));
+  if (status === "going" && !active) {
+    const rs = rsvpState(plan);
+    if (rs.closed || rs.full) { button.disabled = true; button.title = t(rs.closed ? "factClosed" : "factFull"); }
+  }
   button.addEventListener("click", () => respond(plan.id, status));
   return button;
 }
@@ -808,7 +839,7 @@ function planCard(p) {
     }));
   }
   if (p.location) mapBlock(card, p.location);
-  if (p.details) {
+  if (p.details && !richOf(p)) {
     card.appendChild(el("details", { class: "more" },
       el("summary", { text: t("moreDetails") }),
       el("p", { class: "saved-text", text: p.details })));
@@ -881,6 +912,67 @@ function eventCard(p, mini) {
   card.appendChild(body);
   return card;
 }
+// ---- Rich experience details. Stored INSIDE the plan's existing "details" text (so they keep the plans
+// table's member-only security) as "CML:" + JSON. Plain-text details from before keep working as they were.
+const RICH_SECTIONS = [
+  ["included", "✓"], ["excluded", "✕"], ["stay", "🏨"], ["transport", "🚐"], ["itinerary", "🗓"],
+  ["activities", "✨"], ["dress", "👗"], ["bring", "👜"], ["requirements", "📝"], ["notes", "❗"]
+];
+function richOf(p) {
+  const raw = String((p && p.details) || "");
+  if (!raw.startsWith("CML:")) return null;
+  try { const x = JSON.parse(raw.slice(4)); return x && typeof x === "object" ? x : null; } catch { return null; }
+}
+function richText(x, key) {
+  const own = x[currentLanguage] && x[currentLanguage][key], other = x[currentLanguage === "es" ? "en" : "es"] && x[currentLanguage === "es" ? "en" : "es"][key];
+  return String((own && own.trim()) ? own : (other || "")).trim();
+}
+// RSVP rules shown to members (capacity / deadline). Soft rules in the app: they guide, the admin decides.
+function rsvpState(p) {
+  const x = richOf(p) || {};
+  const going = (counts.get(p.id) || {}).going || 0;
+  const cap = Number(x.capacity) > 0 ? Number(x.capacity) : 0;
+  const closed = !!(x.rsvp_by && x.rsvp_by < todayStr());
+  return { cap, going, left: cap ? Math.max(0, cap - going) : null, full: cap > 0 && going >= cap, closed, by: x.rsvp_by || "" };
+}
+let lightbox = null;
+function openImage(src) {
+  if (lightbox) lightbox.remove();
+  const close = el("button", { type: "button", class: "lb-close", "aria-label": t("closeLabel"), text: "×" });
+  lightbox = el("div", { class: "cml-lightbox", role: "dialog", "aria-modal": "true" }, el("img", { src, alt: "" }), close);
+  const done = () => { if (lightbox) { lightbox.remove(); lightbox = null; } };
+  lightbox.addEventListener("click", e => { if (e.target === lightbox || e.target === close) done(); });
+  document.addEventListener("keydown", function esc(e) { if (e.key === "Escape") { done(); document.removeEventListener("keydown", esc); } });
+  document.body.appendChild(lightbox); close.focus();
+}
+function richBlock(p, x) {
+  const wrap = el("div", { class: "rich" });
+  const gallery = (Array.isArray(x.gallery) ? x.gallery : []).map(safeUrl).filter(Boolean).slice(0, 12);
+  if (gallery.length) {
+    wrap.appendChild(el("div", { class: "rich-gallery" }, ...gallery.map(src => {
+      const b = el("button", { type: "button", class: "rich-ph", "aria-label": t("openPhoto") }, el("img", { src, alt: "", loading: "lazy" }));
+      b.addEventListener("click", () => openImage(src));
+      return b;
+    })));
+  }
+  RICH_SECTIONS.forEach(([key, icon]) => {
+    const text = richText(x, key);
+    if (!text) return;
+    const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+    const body = lines.length > 1
+      ? el(key === "itinerary" ? "ol" : "ul", { class: "rich-list" + (key === "itinerary" ? " timeline" : "") }, ...lines.map(l => el("li", { text: l.replace(/^[-•·]\s*/, "") })))
+      : el("p", { class: "saved-text", text });
+    wrap.appendChild(el("section", { class: "rich-sec rich-" + key },
+      el("h3", { class: "sheet-h" }, el("span", { class: "rich-ic", "aria-hidden": "true", text: icon }), t("rich_" + key)), body));
+  });
+  if (x.text) wrap.appendChild(el("section", { class: "rich-sec" }, el("h3", { class: "sheet-h", text: t("moreDetails") }), el("p", { class: "saved-text", text: x.text })));
+  const links = (Array.isArray(x.links) ? x.links : []).filter(l => l && safeUrl(l.url));
+  if (links.length) {
+    wrap.appendChild(el("section", { class: "rich-sec" }, el("h3", { class: "sheet-h", text: t("rich_links") }),
+      el("div", { class: "rich-links" }, ...links.map(l => el("a", { class: "link-btn", href: safeUrl(l.url), target: "_blank", rel: "noopener noreferrer", text: (l.label || safeUrl(l.url).replace(/^https?:\/\//, "").slice(0, 40)) + " ↗" })))));
+  }
+  return wrap;
+}
 function detailNode(p) {
   const box = el("div", { class: "sheet-content" });
   box.appendChild(eventMedia(p, "sheet-hero"));
@@ -891,6 +983,12 @@ function detailNode(p) {
   if (p.location) meta.push("📍 " + p.location);
   if (p.price) meta.push("💲 " + p.price);
   meta.forEach(l => body.appendChild(el("p", { class: "meta-line", text: l })));
+  const rich = richOf(p);
+  const rs = rsvpState(p);
+  const facts = [];
+  if (rs.cap) facts.push(rs.full ? t("factFull") : tf("factSpots", rs.cap, rs.left));
+  if (rs.by) facts.push(rs.closed ? t("factClosed") : tf("factBy", dateFromStr(rs.by).toLocaleDateString(loc(), { day: "numeric", month: "short" })));
+  if (facts.length) body.appendChild(el("div", { class: "rich-facts" }, ...facts.map(f => el("span", { class: "rich-fact", text: f }))));
   body.appendChild(el("h3", { class: "sheet-h", text: t("attendanceTitle") }));
   body.appendChild(avatarStack(p.id, 8));
   body.appendChild(el("div", { class: "resp-row" }, respondButton(p, "interested"), respondButton(p, "going")));
@@ -899,10 +997,11 @@ function detailNode(p) {
     body.appendChild(el("h3", { class: "sheet-h", text: t("aboutEvent") }));
     body.appendChild(el("p", { class: "saved-text", text: description }));
   }
+  if (rich) body.appendChild(richBlock(p, rich));
   const url = safeUrl(p.url);
-  if (url) body.appendChild(el("a", { class: "link-btn", href: url, target: "_blank", rel: "noopener noreferrer", text: t("moreInfo") + " ↗" }));
+  if (url) body.appendChild(el("a", { class: rich ? "primary rich-book" : "link-btn", href: url, target: "_blank", rel: "noopener noreferrer", text: (rich ? t("bookInfo") : t("moreInfo")) + " ↗" }));
   if (p.location) mapBlock(body, p.location);
-  if (p.details) {
+  if (p.details && !rich) {
     body.appendChild(el("details", { class: "more" }, el("summary", { text: t("moreDetails") }), el("p", { class: "saved-text", text: p.details })));
   }
   if (window.CMLPolls) { const polls = window.CMLPolls.planBlock(p); if (polls) body.appendChild(polls); }
@@ -990,6 +1089,16 @@ function renderEvents() {
     return list.replaceChildren(emptyState("📅", t("evEmptyTitle"), t("evEmptyText"), idea));
   }
   const cat = catSel;
+  const chipHost = byId("evCodeChip");
+  if (chipHost) {
+    chipHost.hidden = !codeSel;
+    chipHost.replaceChildren();
+    if (codeSel) {
+      const x = el("button", { type: "button", class: "code-chip-x", "aria-label": t("codeClear"), text: "×" });
+      x.addEventListener("click", () => { codeSel = ""; renderEvents(); });
+      chipHost.append(el("span", { text: tf("codeFiltering", t(codeLabels[codeSel])) }), x);
+    }
+  }
   const months = [...new Set(events.filter(p => p.event_date).map(p => monthKey(p.event_date)))].sort();
   const hasTbd = events.some(p => !p.event_date);
   const options = ["all", ...months, ...(hasTbd ? ["tbd"] : [])];
@@ -1007,26 +1116,42 @@ function renderEvents() {
     }));
   }
   const shown = events.filter(p =>
-    (cat === "all" || eventCategory(p) === cat) && (monthSel === "all" ||
+    (!codeSel || p.code === codeSel) && (cat === "all" || eventCategory(p) === cat) && (monthSel === "all" ||
     (monthSel === "tbd" ? !p.event_date : p.event_date && monthKey(p.event_date) === monthSel)));
   if (!shown.length) {
     const all = el("button", { type: "button", class: "secondary", text: t("evShowAll") });
-    all.addEventListener("click", () => { monthSel = "all"; catSel = "all"; renderEvents(); });
+    all.addEventListener("click", () => { monthSel = "all"; catSel = "all"; codeSel = ""; renderEvents(); });
     const idea = el("button", { type: "button", class: "link-btn", text: t("catSuggest") });
     idea.addEventListener("click", () => openModal("idea"));
-    const empty = cat !== "all" && monthSel === "all"
+    const empty = cat !== "all" && monthSel === "all" && !codeSel
       ? emptyState("✨", t("catEmpty_" + cat), t("catEmptyText"), el("div", { class: "empty-acts" }, idea, all))
       : emptyState("🔎", t("evNoMatch"), "", all);
     list.replaceChildren(empty);
   } else list.replaceChildren(...shown.map(p => eventCard(p)));
   restoreFocus();
 }
+// Travel & Experiences: type chosen by the admin (plan_tags), default "trip" (group trip).
+const TRIP_TYPES = ["trip", "retreat", "party", "dining", "nature"];
+let tripType = "all";
+const tripTypeOf = p => (TRIP_TYPES.includes(planTag(p.id).cat) ? planTag(p.id).cat : "trip");
 function renderTrips() {
   const block = byId("tripsBlock"), list = byId("tripsList");
   if (!block || !list) return;
   const trips = plans.filter(p => p.kind === "trip").sort(byDate);
-  block.hidden = !trips.length;
-  list.replaceChildren(...trips.map(planCard));
+  block.hidden = !session;
+  const shown = trips.filter(p => tripType === "all" || tripTypeOf(p) === tripType);
+  if (!shown.length) {
+    const sug = el("button", { type: "button", class: "secondary", text: t("tripSuggestCta") });
+    sug.addEventListener("click", () => { const f = byId("tripIdea"); if (f) { f.scrollIntoView({ behavior: "smooth", block: "center" }); f.focus({ preventScroll: true }); } });
+    list.replaceChildren(emptyState("✈️", t(tripType === "all" ? "tripsSoon" : "tripsSoonType"), t("tripsSoonText"), sug));
+  } else list.replaceChildren(...shown.map(p => {
+    // compact experience card; the full experience page (details, polls, trip chat) opens in the detail sheet
+    const card = eventCard(p);
+    card.classList.add("trip-card");
+    const more = card.querySelector(".ev-more");
+    if (more) more.textContent = t("tripOpen") + " →";
+    return card;
+  }));
   restoreFocus();
 }
 function renderWellnessCards() { if (window.CMLDiscover) window.CMLDiscover.render(); }
@@ -1143,7 +1268,9 @@ function renderPosts() {
         el("span", { class: "post-who" },
           el("b", { text: name }),
           okDate ? el("time", { class: "meta", datetime: date.toISOString(), text: postWhen(date) }) : null)));
-    if (post.body) card.appendChild(el("p", { class: "saved-text", text: post.body }));
+    const meet = window.CMLDiscover && window.CMLDiscover.meetupNode ? window.CMLDiscover.meetupNode(post) : null;
+    if (meet) card.appendChild(meet);
+    else if (post.body) card.appendChild(el("p", { class: "saved-text", text: post.body }));
     const photo = S && S.photoNode(post);
     if (photo) card.appendChild(photo);
     let del = null;
@@ -1602,7 +1729,7 @@ function initialize() {
     refreshPublic: async () => { if (session) await loadAll(); },
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,
-    setting: key => settings[key], isTestContent, planTag, eventCategory, eventCard, openModal, byDate,
+    setting: key => settings[key], isTestContent, TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, openModal, byDate,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
       setLanguage(currentLanguage, false);

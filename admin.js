@@ -5,7 +5,7 @@
 const S = {
   es: {
     pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada",
-    tabs: { plans: "Planes y eventos", trips: "Viajes y Experiencias", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imágenes y mensaje" },
+    tabs: { plans: "Planes y eventos", trips: "Viajes y Experiencias", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imágenes y mensaje", matcha: "Rincón Matcha" },
     groups: { content: "Contenido", people: "Comunidad", tools: "Herramientas" },
     imgTravelTitle: "Imagen de Viajes y Experiencias", imgTravelHelp: "Se usa en la portada de Viajes (si el viaje no tiene foto) y en los accesos a Viajes desde Inicio y Eventos.",
     imgFounderTitle: "Foto de la fundadora (Nuestra esencia)", imgFounderHelp: "Aparece en la página «Nuestra esencia». Mejor una foto vertical o cuadrada.",
@@ -13,7 +13,21 @@ const S = {
     imgMatchaTitle: "Imagen de Matcha y Arte", imgMatchaHelp: "Aparece en la tarjeta de Inicio y en la página de la colección.",
     fType: "Tipo de plan (filtros de Eventos)", fTypeAuto: "Automático (según el código)", fType_social: "Happy hour y social", fType_dining: "Restaurante", fType_events: "Evento (conciertos, mercados, festivales…)",
     fWcat: "Categoría de bienestar", fWcatNone: "— Sin categoría —", fMatcha: "Incluir en la colección «Matcha y Arte»",
-    fUrlOffer: "Enlace de la oferta o reserva (https://…)", testFlag: "⚠ Parece contenido de prueba (contiene «test»): no se muestra en la app. Cámbiale el título o elimínalo.",
+    fUrlOffer: "Enlace de la oferta o reserva (https://…)",
+    imgRemove: "Quitar imagen", fTripType: "Tipo de experiencia", fTripTypeHelp: "Define en qué tipo aparece en Viajes y Experiencias.",
+    fMtype: "Tipo de contenido", mtype_spot: "Café o salón de té", mtype_place: "Lugar creativo / taller", mtype_recipe: "Receta o video", mtype_offer: "Oferta especial / colaboración",
+    fFeatured: "Matcha de la semana (destacado)", fCity: "Ciudad", fCityHelp: "Permite filtrar por ciudad (Orlando, Boston, Miami…).",
+    fUrlMatcha: "Enlace (receta, video, web o reserva)", fUrlBook: "Enlace de reserva o más información (https://…)",
+    matchaIntro: "Contenido del Rincón Matcha & Arte: cafés, salones de té, lugares creativos, recetas y ofertas. Para eventos, márcalos con «Incluir en Matcha y Arte» en Planes y eventos.",
+    tripIntro: "Cada experiencia tiene su propia página: agrega solo los detalles que apliquen (un picnic no necesita hotel).",
+    wellIntro: "Experiencias de bienestar para «Descubre bienestar»: gimnasios, pilates, yoga, spas, masajes, faciales, retiros, comida sana, talleres u ofertas.",
+    rfTitle: "Página de la experiencia (opcional)", rfHelp: "Completa solo lo que aplique. Las secciones vacías no se muestran.",
+    rg_essentials: "Lo esencial: cupo, fecha límite y enlaces", rg_includes: "Qué incluye / no incluye", rg_logistics: "Viaje y logística",
+    rg_attend: "Para asistir", rg_important: "Notas importantes", rg_gallery: "Galería de fotos",
+    rfCapacity: "Cupo (número de lugares)", rfRsvpBy: "Confirmar antes de", rfLinks: "Enlaces adicionales", rfLinksHelp: "Uno por línea: Etiqueta | https://…",
+    rfAddPhoto: "+ Agregar foto", rfGalleryHelp: "Fotos adicionales del lugar o de experiencias anteriores.",
+    rf_included: "Qué incluye", rf_excluded: "No incluye", rf_stay: "Alojamiento / hotel", rf_transport: "Transporte", rf_itinerary: "Itinerario (una línea por momento)",
+    rf_activities: "Actividades", rf_dress: "Qué ponerse", rf_bring: "Qué llevar", rf_requirements: "Requisitos", rf_notes: "Importante", testFlag: "⚠ Parece contenido de prueba (contiene «test»): no se muestra en la app. Cámbiale el título o elimínalo.",
     loading: "Cargando…", loadFail: "No se pudo cargar. Inténtalo de nuevo.",
     newItem: "+ Nuevo", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Ocultar", live: "Publicado", draft: "Borrador",
     confirmDelete: "¿Eliminar esto de forma permanente?", saved: "Guardado.", deleted: "Eliminado.", saveFail: "No se pudo guardar.",
@@ -45,7 +59,7 @@ const S = {
   },
   en: {
     pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated",
-    tabs: { plans: "Plans & events", trips: "Travel & Experiences", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Images & message" },
+    tabs: { plans: "Plans & events", trips: "Travel & Experiences", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Images & message", matcha: "Matcha Corner" },
     groups: { content: "Content", people: "Community", tools: "Tools" },
     imgTravelTitle: "Travel & Experiences image", imgTravelHelp: "Used on the Travel cover (when the trip has no photo) and on the Travel entry points on Home and Events.",
     imgFounderTitle: "Founder photo (Our essence)", imgFounderHelp: "Shown on the “Our essence” page. A portrait or square photo works best.",
@@ -53,7 +67,21 @@ const S = {
     imgMatchaTitle: "Matcha & Art image", imgMatchaHelp: "Shown on the Home card and on the collection page.",
     fType: "Plan type (Events filters)", fTypeAuto: "Automatic (from the code)", fType_social: "Happy hour & social", fType_dining: "Restaurant", fType_events: "Event (concerts, markets, festivals…)",
     fWcat: "Wellness category", fWcatNone: "— No category —", fMatcha: "Include in the “Matcha & Art” collection",
-    fUrlOffer: "Offer or booking link (https://…)", testFlag: "⚠ Looks like test content (contains “test”): it is not shown in the app. Rename or delete it.",
+    fUrlOffer: "Offer or booking link (https://…)",
+    imgRemove: "Remove image", fTripType: "Experience type", fTripTypeHelp: "Sets which type it appears under in Travel & Experiences.",
+    fMtype: "Content type", mtype_spot: "Café or tea room", mtype_place: "Creative place / workshop", mtype_recipe: "Recipe or video", mtype_offer: "Special offer / collaboration",
+    fFeatured: "Matcha of the week (featured)", fCity: "City", fCityHelp: "Lets members filter by city (Orlando, Boston, Miami…).",
+    fUrlMatcha: "Link (recipe, video, website or booking)", fUrlBook: "Booking or information link (https://…)",
+    matchaIntro: "Content for the Matcha & Art Corner: cafés, tea rooms, creative places, recipes and offers. For events, tick “Include in Matcha & Art” in Plans & events.",
+    tripIntro: "Each experience gets its own page: add only the details that apply (a picnic doesn't need a hotel).",
+    wellIntro: "Wellness experiences for “Discover wellness”: gyms, Pilates, yoga, spas, massages, facials, retreats, healthy food, workshops or offers.",
+    rfTitle: "Experience page (optional)", rfHelp: "Fill in only what applies. Empty sections are not shown.",
+    rg_essentials: "Essentials: capacity, deadline and links", rg_includes: "What's included / not included", rg_logistics: "Travel & logistics",
+    rg_attend: "To attend", rg_important: "Important notes", rg_gallery: "Photo gallery",
+    rfCapacity: "Capacity (number of spots)", rfRsvpBy: "Confirm by", rfLinks: "Additional links", rfLinksHelp: "One per line: Label | https://…",
+    rfAddPhoto: "+ Add photo", rfGalleryHelp: "Extra photos of the place or of past experiences.",
+    rf_included: "What's included", rf_excluded: "Not included", rf_stay: "Accommodation / hotel", rf_transport: "Transportation", rf_itinerary: "Itinerary (one line per moment)",
+    rf_activities: "Activities", rf_dress: "What to wear", rf_bring: "What to bring", rf_requirements: "Requirements", rf_notes: "Important", testFlag: "⚠ Looks like test content (contains “test”): it is not shown in the app. Rename or delete it.",
     loading: "Loading…", loadFail: "Could not load. Please try again.",
     newItem: "+ New", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Hide", live: "Published", draft: "Draft",
     confirmDelete: "Delete this permanently?", saved: "Saved.", deleted: "Deleted.", saveFail: "Could not save.",
@@ -90,31 +118,49 @@ const KINDS = {
   trip:     { tab: "trips",    fields: ["code", "title", "desc", "date_text", "location", "price", "url", "details", "image"] },
   home:     { tab: "home",     fields: ["title", "desc", "image"] },
   wellness: { tab: "wellness", fields: ["title", "desc", "location", "price", "url", "details", "image"] },
-  weekend:  { tab: "weekend",  fields: ["code", "title", "desc", "date", "location", "url"] }
+  weekend:  { tab: "weekend",  fields: ["code", "title", "desc", "date", "location", "url"] },
+  // Rincón Matcha & Arte items are ordinary "home" plans tagged {matcha, mtype, featured, city} (no new table)
+  matcha:   { tab: "matcha",   fields: ["title", "desc", "location", "url", "image"], dbKind: "home" }
 };
-const TAB_KIND = { plans: "event", trips: "trip", weekend: "weekend", home: "home", wellness: "wellness" };
-const TABS = ["plans", "trips", "weekend", "home", "wellness", "community", "memories", "polls", "messages", "users", "ai", "settings"];
+const TAB_KIND = { plans: "event", trips: "trip", weekend: "weekend", home: "home", wellness: "wellness", matcha: "matcha" };
+const TABS = ["plans", "trips", "weekend", "home", "wellness", "matcha", "community", "memories", "polls", "messages", "users", "ai", "settings"];
 // Visual grouping only: every tab (and what it can do) is exactly the same as before.
 const GROUPS = [
-  ["content", ["plans", "trips", "weekend", "home", "wellness", "polls", "settings"]],
+  ["content", ["plans", "trips", "weekend", "home", "wellness", "matcha", "polls", "settings"]],
   ["people", ["users", "messages", "community", "memories"]],
   ["tools", ["ai"]]
 ];
 const CODES = ["Social", "Wellness", "Faith", "Adventure", "Family", "Connection", "Support", "Recharge"];
 const EVENT_TYPES = ["social", "dining", "events"];
-const WCATS = ["spa", "beauty", "movement", "mind", "retreat", "food", "workshop"];
+const WCATS = ["spa", "beauty", "fitness", "movement", "mind", "retreat", "food", "workshop", "offer"];
+const TRIP_TYPES = ["trip", "retreat", "party", "dining", "nature"];
+const TRIP_TYPE_KEY = { trip: "expTrip", retreat: "expRetreat", party: "expParty", dining: "expDining", nature: "expNature" };
+const MTYPES = ["spot", "place", "recipe", "offer"];
+const RICH = [
+  ["essentials", []],
+  ["includes", ["included", "excluded"]],
+  ["logistics", ["stay", "transport", "itinerary"]],
+  ["attend", ["activities", "dress", "bring", "requirements"]],
+  ["important", ["notes"]]
+];
 const looksLikeTest = (...texts) => texts.some(x => /\btest(ing)?\b/i.test(String(x || "")));
 // Category / collection tags live in the existing settings table (key "plan_tags"), admin-only write.
-async function saveTag(planId, tag) {
-  const r = await C.db.from("settings").select("key,value").eq("key", "plan_tags").maybeSingle();
+// One entry of a small map kept in the settings table (plan_tags, poll_places). Reads fresh, merges, writes.
+async function setMapEntry(key, id, value) {
+  const r = await C.db.from("settings").select("key,value").eq("key", key).maybeSingle();
   if (r.error) throw r.error;
   const all = Object.assign({}, (r.data && r.data.value) || {});
-  const clean = {};
-  if (tag.cat) clean.cat = tag.cat;
-  if (tag.matcha) clean.matcha = true;
-  if (Object.keys(clean).length) all[planId] = clean; else delete all[planId];
-  const w = await C.db.from("settings").upsert({ key: "plan_tags", value: all, updated_at: new Date().toISOString() }, { onConflict: "key" });
+  if (value === null || value === undefined || value === "" || (typeof value === "object" && !Object.keys(value).length)) delete all[id];
+  else all[id] = value;
+  const w = await C.db.from("settings").upsert({ key, value: all, updated_at: new Date().toISOString() }, { onConflict: "key" });
   if (w.error) throw w.error;
+}
+async function saveTag(planId, tag) {
+  const clean = {};
+  ["cat", "mtype", "city"].forEach(k => { if (tag[k]) clean[k] = tag[k]; });
+  if (tag.matcha) clean.matcha = true;
+  if (tag.featured) clean.featured = true;
+  await setMapEntry("plan_tags", planId, clean);
 }
 
 let C = null;
@@ -169,7 +215,7 @@ function openTab(key) {
   C.showPage("admin", false);
   tab = key; editing = null; render();
 }
-window.CMLAdmin = { celebrate, openTab };
+window.CMLAdmin = { celebrate, openTab, setMapEntry: (key, id, value) => (C && C.isAdmin() ? setMapEntry(key, id, value) : Promise.reject(new Error("admin"))) };
 
 // ---------- pending approvals: badge on the Admin button + banner ----------
 async function pendingCount() {
@@ -229,14 +275,19 @@ function render() {
 
 // ---------- plans / trips / home / wellness ----------
 async function listView(kind) {
-  const q = C.db.from("plans").select("*").eq("kind", kind);
+  const q = C.db.from("plans").select("*").eq("kind", KINDS[kind].dbKind || kind);
   const { data, error } = (kind === "event" || kind === "trip" || kind === "weekend")
     ? await q.order("event_date", { ascending: false, nullsFirst: true })
     : await q.order("created_at", { ascending: false });
   if (error) throw error;
+  const isCorner = r => !!(C.planTag && C.planTag(r.id).matcha);
+  const rows = kind === "matcha" ? data.filter(isCorner) : kind === "home" ? data.filter(r => !isCorner(r)) : data;
   const wrap = el("div");
+  if (kind === "matcha") wrap.appendChild(el("p", { class: "small-note", text: a("matchaIntro") }));
+  if (kind === "trip") wrap.appendChild(el("p", { class: "small-note", text: a("tripIntro") }));
+  if (kind === "wellness") wrap.appendChild(el("p", { class: "small-note", text: a("wellIntro") }));
   wrap.appendChild(el("div", { class: "admin-bar" }, button(a("newItem"), "primary", () => { editing = { kind, row: null }; render(); })));
-  if (!data.length) wrap.appendChild(el("p", { class: "small-note", text: a("empty") }));
+  if (!rows.length) wrap.appendChild(el("p", { class: "small-note", text: a("empty") }));
 
   let tally = new Map();
   if (kind === "event" || kind === "trip" || kind === "weekend") {
@@ -249,7 +300,7 @@ async function listView(kind) {
   }
   let memIds = null;
   if (kind === "event" && window.CMLMem) { try { memIds = await window.CMLMem.planMemoryIds(); } catch { memIds = null; } }
-  data.forEach(row => wrap.appendChild(planItem(kind, row, tally.get(row.id) || { i: 0, g: 0 }, memIds)));
+  rows.forEach(row => wrap.appendChild(planItem(kind, row, tally.get(row.id) || { i: 0, g: 0 }, memIds)));
   return wrap;
 }
 function planItem(kind, row, c, memIds) {
@@ -261,7 +312,9 @@ function planItem(kind, row, c, memIds) {
     (() => { const tg = C.planTag ? C.planTag(row.id) : {}; const bits = [];
       if (kind === "event" && EVENT_TYPES.includes(tg.cat)) bits.push(a("fType_" + tg.cat).split(" (")[0]);
       if (kind === "wellness" && WCATS.includes(tg.cat)) bits.push(C.t("wcat_" + tg.cat));
-      if (tg.matcha) bits.push("🍵 " + C.t("maName"));
+      if (kind === "trip") bits.push(C.t(TRIP_TYPE_KEY[TRIP_TYPES.includes(tg.cat) ? tg.cat : "trip"]));
+      if (kind === "matcha") { bits.push(a("mtype_" + (MTYPES.includes(tg.mtype) ? tg.mtype : "spot"))); if (tg.featured) bits.push("★ " + a("fFeatured")); if (tg.city) bits.push("📍 " + tg.city); }
+      else if (tg.matcha) bits.push("🍵 " + C.t("maName"));
       return bits.length ? el("span", { class: "badge", text: bits.join(" · ") }) : null; })(),
     el("h3", { text: title }),
     looksLikeTest(row.title_es, row.title_en) ? el("p", { class: "test-flag", text: a("testFlag") }) : null,
@@ -357,9 +410,75 @@ function imagePicker(initial) {
     catch (e) { console.error(e); status.textContent = a("imageFail"); }
   });
   sync();
+  const clear = button(a("imgRemove"), "link-btn img-remove", () => { urlInput.value = ""; sync(); });
   const node = el("div", {}, fileInput, preview, status,
-    el("label", {}, a("fImageUrl"), urlInput));
+    el("label", {}, a("fImageUrl"), urlInput), clear);
   return { node, get value() { return urlInput.value.trim(); }, set value(v) { urlInput.value = v; sync(); } };
+}
+
+// ---------- rich experience details editor ----------
+function parseRich(details) {
+  const raw = String(details || "");
+  if (raw.startsWith("CML:")) { try { return JSON.parse(raw.slice(4)) || {}; } catch { return {}; } }
+  return { text: raw };
+}
+function richFields(kind, details) {
+  const x = parseRich(details);
+  const inputs = {};
+  const pair = key => {
+    const es = el("textarea", { rows: 3, "aria-label": a("rf_" + key) + " (ES)" }); es.value = (x.es && x.es[key]) || "";
+    const en = el("textarea", { rows: 3, "aria-label": a("rf_" + key) + " (EN)" }); en.value = (x.en && x.en[key]) || "";
+    inputs[key] = { es, en };
+    return el("div", { class: "rf-pair" }, el("b", { text: a("rf_" + key) }),
+      el("div", { class: "two-col" }, el("label", {}, el("small", { text: "Español" }), es), el("label", {}, el("small", { text: "English" }), en)));
+  };
+  const text = el("textarea", { rows: 3 }); text.value = x.text || "";
+  const cap = el("input", { type: "number", min: "0", max: "5000", value: x.capacity || "" });
+  const by = el("input", { type: "date", value: x.rsvp_by || "" });
+  const links = el("textarea", { rows: 2, placeholder: "Itinerario completo | https://…" });
+  links.value = (Array.isArray(x.links) ? x.links : []).map(l => (l.label ? l.label + " | " : "") + l.url).join("\n");
+  // gallery: list of image pickers
+  const gal = el("div", { class: "rf-gallery" });
+  const pickers = [];
+  const addPicker = url => {
+    const pk = imagePicker(url || "");
+    const row = el("div", { class: "rf-gal-item" }, pk.node);
+    pickers.push({ pk, row });
+    gal.appendChild(row);
+  };
+  (Array.isArray(x.gallery) ? x.gallery : []).forEach(addPicker);
+  const addBtn = button(a("rfAddPhoto"), "secondary", () => addPicker(""));
+  const has = keys => keys.some(k => (x.es && x.es[k]) || (x.en && x.en[k]));
+  const groups = RICH.map(([g, keys]) => {
+    const det = el("details", { class: "rf-group" }, el("summary", { text: a("rg_" + g) }));
+    if (g === "essentials") {
+      det.append(el("div", { class: "two-col" }, el("label", {}, a("rfCapacity"), cap), el("label", {}, a("rfRsvpBy"), by)),
+        el("label", {}, a("rfLinks"), links, el("small", { class: "small-note", text: a("rfLinksHelp") })),
+        el("label", {}, a("fDetails"), text));
+      det.open = !!(x.capacity || x.rsvp_by || (x.links && x.links.length) || x.text);
+    } else {
+      keys.forEach(k => det.appendChild(pair(k)));
+      det.open = has(keys) || (kind === "trip" && g === "logistics");
+    }
+    return det;
+  });
+  const galGroup = el("details", { class: "rf-group" }, el("summary", { text: a("rg_gallery") }), el("p", { class: "small-note", text: a("rfGalleryHelp") }), gal, addBtn);
+  galGroup.open = pickers.length > 0;
+  const node = el("fieldset", { class: "rich-editor" }, el("legend", { text: a("rfTitle") }), el("p", { class: "small-note", text: a("rfHelp") }), ...groups, galGroup);
+  const value = () => {
+    const out = { v: 1, es: {}, en: {} };
+    Object.entries(inputs).forEach(([k, io]) => { if (io.es.value.trim()) out.es[k] = io.es.value.trim(); if (io.en.value.trim()) out.en[k] = io.en.value.trim(); });
+    if (Number(cap.value) > 0) out.capacity = Math.round(Number(cap.value));
+    if (by.value) out.rsvp_by = by.value;
+    const L = links.value.split("\n").map(l => l.trim()).filter(Boolean).map(l => { const i = l.lastIndexOf("|"); return i >= 0 ? { label: l.slice(0, i).trim(), url: l.slice(i + 1).trim() } : { label: "", url: l }; }).filter(l => C.safeUrl(l.url));
+    if (L.length) out.links = L;
+    const G = pickers.map(p => p.pk.value).filter(u => C.safeUrl(u));
+    if (G.length) out.gallery = G;
+    if (text.value.trim()) out.text = text.value.trim();
+    const rich = Object.keys(out.es).length || Object.keys(out.en).length || out.capacity || out.rsvp_by || out.links || out.gallery;
+    return rich ? "CML:" + JSON.stringify(out) : (out.text || "");   // plain text stays plain text
+  };
+  return { node, value };
 }
 
 // ---------- the create / edit form ----------
@@ -395,6 +514,20 @@ function formView() {
     typeSel.value = WCATS.includes(oldTag.cat) ? oldTag.cat : "";
     form.appendChild(field(a("fWcat"), typeSel));
   }
+  if (kind === "trip") {
+    typeSel = el("select", {}, TRIP_TYPES.map(k => el("option", { value: k, text: C.t(TRIP_TYPE_KEY[k]) })));
+    typeSel.value = TRIP_TYPES.includes(oldTag.cat) ? oldTag.cat : "trip";
+    form.appendChild(field(a("fTripType"), typeSel, a("fTripTypeHelp")));
+  }
+  let mtypeSel = null, featuredBox = null, cityIn = null;
+  if (kind === "matcha") {
+    mtypeSel = el("select", {}, MTYPES.map(k => el("option", { value: k, text: a("mtype_" + k) })));
+    mtypeSel.value = MTYPES.includes(oldTag.mtype) ? oldTag.mtype : "spot";
+    form.appendChild(field(a("fMtype"), mtypeSel));
+    featuredBox = el("input", { type: "checkbox" }); featuredBox.checked = !!oldTag.featured;
+    form.appendChild(el("label", { class: "check" }, featuredBox, a("fFeatured")));
+    cityIn = el("input", { type: "text", maxlength: 40, value: oldTag.city || "", placeholder: "Orlando, Boston…" });
+  }
   if (kind === "event" || kind === "weekend" || kind === "wellness") {
     matchaBox = el("input", { type: "checkbox" }); matchaBox.checked = !!oldTag.matcha;
     form.appendChild(el("label", { class: "check" }, matchaBox, a("fMatcha")));
@@ -408,8 +541,15 @@ function formView() {
   if (cfg.fields.includes("date_text")) form.appendChild(field(a("fDateText"), text("date_text", d.date_text, { maxlength: 80 })));
   if (cfg.fields.includes("location")) form.appendChild(field(kind === "trip" ? a("fLocationTrip") : a("fLocationEvent"), text("location", d.location, { maxlength: 200 })));
   if (cfg.fields.includes("price")) form.appendChild(field(kind === "trip" ? a("fPriceTrip") : a("fPriceEvent"), text("price", d.price, { maxlength: 80 })));
-  if (cfg.fields.includes("url")) form.appendChild(field(kind === "wellness" ? a("fUrlOffer") : a("fUrl"), text("url", d.url, { type: "url", inputmode: "url", placeholder: "https://…" })));
-  if (cfg.fields.includes("details")) form.appendChild(field(a("fDetails"), area("details", d.details)));
+  if (cityIn) form.appendChild(field(a("fCity"), cityIn, a("fCityHelp")));
+  const urlLabel = kind === "wellness" ? a("fUrlOffer") : kind === "matcha" ? a("fUrlMatcha") : (kind === "trip" || kind === "event") ? a("fUrlBook") : a("fUrl");
+  if (cfg.fields.includes("url")) form.appendChild(field(urlLabel, text("url", d.url, { type: "url", inputmode: "url", placeholder: "https://…" })));
+  // Rich experience details (events + experiences). Saved inside the existing "details" text, so nothing changes
+  // in the database; an item with only plain text keeps plain text exactly as before.
+  let richEditor = null;
+  if (kind === "event" || kind === "trip") richEditor = richFields(kind, d.details);
+  if (richEditor) form.appendChild(richEditor.node);
+  else if (cfg.fields.includes("details")) form.appendChild(field(a("fDetails"), area("details", d.details)));
   const picker = cfg.fields.includes("image") ? imagePicker(d.image_url) : null;
   if (picker) form.appendChild(el("fieldset", {}, el("legend", { text: a("fImage") }), picker.node));
 
@@ -456,19 +596,22 @@ function formView() {
     if ((url && !C.safeUrl(url)) || (image && !C.safeUrl(image))) return fail("badUrl");
     if (ai && published.checked && !reviewed.checked) return fail("aiNeedReview");
     const payload = {
-      kind, code: cfg.fields.includes("code") && val("code") ? val("code") : null,
+      kind: cfg.dbKind || kind, code: cfg.fields.includes("code") && val("code") ? val("code") : null,
       title_es: val("title_es"), title_en: val("title_en"), desc_es: val("desc_es"), desc_en: val("desc_en"),
       event_date: cfg.fields.includes("date") && val("event_date") ? val("event_date") : null,
       event_time: val("event_time"), date_text: val("date_text"), location: val("location"), price: val("price"),
-      url, details: val("details"), image_url: image, published: published.checked
+      url, details: richEditor ? richEditor.value() : val("details"), image_url: image, published: published.checked
     };
     saveBtn.disabled = true;
     const res = row ? await C.db.from("plans").update(payload).eq("id", row.id)
                     : await C.db.from("plans").insert(payload).select("id").single();
     if (res.error) { saveBtn.disabled = false; console.error(res.error); return fail("saveFail"); }
     const id = row ? row.id : (res.data && res.data.id);
-    const tag = { cat: typeSel ? typeSel.value : "", matcha: !!(matchaBox && matchaBox.checked) };
-    if (id && (tag.cat !== (oldTag.cat || "") || tag.matcha !== !!oldTag.matcha)) {
+    const tag = kind === "matcha"
+      ? { matcha: true, mtype: mtypeSel.value, featured: featuredBox.checked, city: cityIn.value.trim() }
+      : { cat: typeSel ? (kind === "trip" && typeSel.value === "trip" ? "" : typeSel.value) : "", matcha: !!(matchaBox && matchaBox.checked) };
+    const same = JSON.stringify(Object.assign({}, oldTag)) === JSON.stringify(Object.fromEntries(Object.entries(tag).filter(([, v]) => v)));
+    if (id && !same) {
       try { await saveTag(id, tag); } catch (e) { console.error(e); saveBtn.disabled = false; return fail("saveFail"); }
     }
     saveBtn.disabled = false;

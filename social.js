@@ -106,6 +106,22 @@ async function loadExtras(posts) {
   (r.data || []).forEach(x => { (reactions.get(x.post_id) || reactions.set(x.post_id, []).get(x.post_id)).push(x.user_id); });
   (c.data || []).forEach(x => { (comments.get(x.post_id) || comments.set(x.post_id, []).get(x.post_id)).push(x); });
 }
+// Shared "♥ / Me apunto" toggle (same community_reactions table and rules as the heart on posts).
+async function toggleReaction(postId) {
+  const list = reactions.get(postId) || [];
+  const on = list.includes(uid());
+  if (on) {
+    reactions.set(postId, list.filter(u => u !== uid()));
+    const r = await C.db.from("community_reactions").delete().eq("post_id", postId).eq("user_id", uid());
+    if (r.error) { reactions.set(postId, list); return false; }
+  } else {
+    reactions.set(postId, list.concat(uid()));
+    const r = await C.db.from("community_reactions").insert({ post_id: postId });
+    if (r.error && r.error.code !== "23505") { reactions.set(postId, list); return false; }
+  }
+  return true;
+}
+const reactionInfo = postId => { const list = reactions.get(postId) || []; return { n: list.length, mine: list.includes(uid()) }; };
 function photoNode(post) {
   if (!post.photo_path) return null;
   const img = el("img", { class: "post-photo", alt: "", loading: "lazy" });
@@ -263,7 +279,7 @@ function init() {
     // only wipe on sign-out: the app loads posts BEFORE it announces a new session
     if (!C.session()) { openChats.clear(); urlCache.clear(); reactions.clear(); comments.clear(); clearChosen(); }
   });
-  window.CMLSocial = { chatBlock, loadExtras, photoNode, postFooter, uploadPhoto, removePhoto, takePhoto, clearChosen };
+  window.CMLSocial = { chatBlock, loadExtras, photoNode, postFooter, uploadPhoto, removePhoto, takePhoto, clearChosen, toggleReaction, reactionInfo };
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();

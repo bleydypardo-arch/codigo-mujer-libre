@@ -180,13 +180,10 @@
       <button type="button" class="quick-btn" data-go="community"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20c.6-3.5 3.2-5.5 6.5-5.5s5.9 2 6.5 5.5M16 4.5a3.2 3.2 0 0 1 0 6.3M18 14.6c2 .6 3.2 2.6 3.5 5.4"/></svg><span data-i18n="communityNav">Comunidad</span></button>
       <button type="button" class="quick-btn" data-go="events"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/></svg><span data-i18n="events">Eventos</span></button>
       <button type="button" class="quick-btn" data-go="travel"><svg class="ci t-sage" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 3 3 10.5l7 2.5 2.5 7zM21 3 10 13"/></svg><span data-i18n="travelShort">Viajes</span></button>
+      <button type="button" class="quick-btn quick-support" data-go="support"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20s-7-4.3-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.7 12 20 12 20z"/></svg><span data-i18n="hereForYou">Aquí para ti</span></button>
     </div>
 
-    <button type="button" class="support-strip" data-go="support">
-      <span class="support-link-ic" aria-hidden="true"><svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="M12 20s-7-4.3-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.7 12 20 12 20z"/></svg></span>
-      <span class="support-strip-txt"><b data-i18n="supStripTitle">Apoyo y oración</b><small data-i18n="supStripSub">Habla en privado, pide oración o apoyo para tu familia</small></span>
-      <span class="wrow-go" aria-hidden="true">›</span>
-    </button>
+    <div id="homeCodeWeek" class="card wc-card" hidden></div>
 
     <div id="homeChecklist" class="card home-checklist" hidden></div>
 
@@ -237,20 +234,14 @@
     </div>
     <div id="memoriesView" hidden></div>
 
+    <div id="evCodeChip" class="code-chip" hidden></div>
+
     <div id="evCats" class="ev-cats" role="group" aria-label="¿Qué te apetece?" data-i18n-aria="catsLabel" hidden></div>
 
     <div id="monthFilter" class="chips" role="group" data-i18n-aria="monthFilterLabel" aria-label="Filtrar por mes" hidden></div>
 
     <div id="eventsList" class="cards"></div>
 
-    <button type="button" class="immerse events-immerse" data-go="travel">
-      <img data-editorial="travel" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80" alt="" loading="lazy">
-      <span class="immerse-text">
-        <span class="immerse-title" data-i18n="travelTitle">Viajes y Experiencias</span>
-        <span class="immerse-sub" data-i18n="travelTeaser">Vota y vive las grandes experiencias de la comunidad</span>
-      </span>
-      <span class="round-go" aria-hidden="true"><svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="M9 6l6 6-6 6"/></svg></span>
-    </button>
 
   </section>
 
@@ -267,28 +258,42 @@
 
     <div id="travelHero" hidden></div>
 
-    <div class="card exp-types">
-      <small class="rose" data-i18n="travelTypesLabel">TIPOS DE EXPERIENCIA</small>
-      <p class="small-note" data-i18n="travelNote">Organizamos alrededor de dos grandes experiencias oficiales al año. Cuando abramos una votación, aparecerá aquí.</p>
-      <ul class="exp-list">
-        <li><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 3 3 10.5l7 2.5 2.5 7zM21 3 10 13"/></svg><span data-i18n="expTrip">Viaje grupal</span></li>
-        <li><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20c-4 0-8-2-9-6 3 0 5.5 1 7 3M12 20c4 0 8-2 9-6-3 0-5.5 1-7 3M12 20c-2.5-2-3.5-5-3.5-8 0-2.5 1.5-5 3.5-7 2 2 3.5 4.5 3.5 7 0 3-1 6-3.5 8z"/></svg><span data-i18n="expRetreat">Retiro de bienestar</span></li>
-        <li><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h14l-7 8zM12 12v8M8 20h8"/></svg><span data-i18n="expParty">Fiesta temática</span></li>
-        <li><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3v8a2 2 0 0 0 2 2v8M7 3v5M11 3v5M17 3c-1.7 1-3 3-3 6v4h3v8"/></svg><span data-i18n="expDining">Experiencia gastronómica</span></li>
-        <li><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 20 10 7l4 7 2-3 5 9z"/></svg><span data-i18n="expNature">Aventura / Naturaleza</span></li>
-      </ul>
+    <div class="travel-cols">
+      <div class="travel-main">
+        <div class="card exp-types">
+          <small class="rose" data-i18n="travelTypesLabel">TIPOS DE EXPERIENCIA</small>
+          <p class="small-note" data-i18n="travelNote">Organizamos alrededor de dos grandes experiencias oficiales al año. Toca un tipo para ver lo que viene.</p>
+          <div id="travelTypes" class="trip-types" role="group" aria-label="Tipos de experiencia" data-i18n-aria="travelTypesLabel">
+        <button type="button" class="trip-type" data-type="trip" aria-pressed="false"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 3 3 10.5l7 2.5 2.5 7zM21 3 10 13"/></svg><span class="trip-type-txt"><b data-i18n="expTrip">Viaje grupal</b><small class="trip-type-n"></small></span></button>
+        <button type="button" class="trip-type" data-type="retreat" aria-pressed="false"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20c-4 0-8-2-9-6 3 0 5.5 1 7 3M12 20c4 0 8-2 9-6-3 0-5.5 1-7 3M12 20c-2.5-2-3.5-5-3.5-8 0-2.5 1.5-5 3.5-7 2 2 3.5 4.5 3.5 7 0 3-1 6-3.5 8z"/></svg><span class="trip-type-txt"><b data-i18n="expRetreat">Retiro de bienestar</b><small class="trip-type-n"></small></span></button>
+        <button type="button" class="trip-type" data-type="party" aria-pressed="false"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 4h14l-7 8zM12 12v8M8 20h8"/></svg><span class="trip-type-txt"><b data-i18n="expParty">Fiesta temática</b><small class="trip-type-n"></small></span></button>
+        <button type="button" class="trip-type" data-type="dining" aria-pressed="false"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3v8a2 2 0 0 0 2 2v8M7 3v5M11 3v5M17 3c-1.7 1-3 3-3 6v4h3v8"/></svg><span class="trip-type-txt"><b data-i18n="expDining">Experiencia gastronómica</b><small class="trip-type-n"></small></span></button>
+        <button type="button" class="trip-type" data-type="nature" aria-pressed="false"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 20 10 7l4 7 2-3 5 9z"/></svg><span class="trip-type-txt"><b data-i18n="expNature">Aventura / Naturaleza</b><small class="trip-type-n"></small></span></button>
+          </div>
+        </div>
+
+        <div id="tripsBlock" hidden>
+          <small class="rose" data-i18n="tripsLabel">EXPERIENCIAS</small>
+          <div id="tripsList" class="cards"></div>
+        </div>
+      </div>
+
+      <div class="travel-side">
+        <div id="travelPolls"></div>
+
+        <form id="travelSuggest" class="card trip-suggest" hidden>
+          <small class="rose" data-i18n="tripIdeaLabel">TU IDEA</small>
+          <h2 data-i18n="tripIdeaTitle">¿A dónde te gustaría ir?</h2>
+          <p class="small-note" data-i18n="tripIdeaText">Sugiere nuestro próximo destino o experiencia. La administradora lo usará al planear la próxima experiencia oficial.</p>
+          <label class="sr-only" for="tripIdea" data-i18n="tripIdeaTitle">¿A dónde te gustaría ir?</label>
+          <input type="text" id="tripIdea" maxlength="120" data-i18n-placeholder="tripIdeaPh" placeholder="Ej.: Tulum, Bahamas, un retiro en la montaña…">
+          <button type="submit" class="primary" id="tripIdeaBtn" data-i18n="tripIdeaSend">Enviar idea</button>
+          <p id="tripIdeaFb" class="form-feedback ok" role="status" hidden></p>
+        </form>
+
+        <button type="button" class="secondary travel-manage" id="travelManage" hidden data-i18n="travelManage">Gestionar experiencias</button>
+      </div>
     </div>
-
-    <div id="tripsBlock" hidden>
-      <small class="rose" data-i18n="tripsLabel">FUTUROS PLANES</small>
-      <h2 data-i18n="tripsTitle">Viajes e ideas</h2>
-      <p data-i18n="tripsIntro">Ideas para más adelante. Dinos si te interesan.</p>
-      <div id="tripsList" class="cards"></div>
-    </div>
-
-    <p id="travelEmpty" class="note" data-i18n="travelEmpty" hidden>Pronto anunciaremos la próxima gran experiencia.</p>
-
-    <button type="button" class="secondary travel-manage" id="travelManage" hidden data-i18n="travelManage">Gestionar experiencias</button>
 
   </section>
 
@@ -333,11 +338,12 @@
     </p>
 
 
-    <div id="membersList"></div>
-
-    <div id="generalPolls" class="card polls general-polls" hidden></div>
-
-
+    <div class="comm-cols">
+      <div class="comm-side">
+        <div id="membersList"></div>
+        <div id="generalPolls" class="card polls general-polls" hidden></div>
+      </div>
+      <div class="comm-main">
     <div class="card">
 
       <h2 data-i18n="shareSomething">
@@ -369,6 +375,8 @@
 
     <p class="note" data-i18n="communityLocalNote">Las publicaciones las ve toda la comunidad.</p>
     <div id="posts"></div>
+      </div>
+    </div>
 
   </section>
 
@@ -451,6 +459,8 @@
 
     <p data-i18n="supIntro">Habla en privado, pide oración o comparte una necesidad. No estás sola.</p>
 
+    <div class="sup-cols">
+      <div class="sup-main">
     <div id="safetyCard" class="card safety-card"></div>
 
     <div class="grid">
@@ -518,9 +528,13 @@
 
     <div id="supFamily" class="card sup-family" hidden></div>
 
-    <div id="prayerWall" class="card prayer-wall"></div>
 
     <button type="button" class="link-btn sup-messages" data-go="messages" data-i18n="supMyMessages">Ver mis mensajes privados →</button>
+      </div>
+      <div class="sup-side">
+        <div id="prayerWall" class="card prayer-wall"></div>
+      </div>
+    </div>
 
     <p class="note" data-i18n="supportNote">
       Este espacio ofrece apoyo comunitario y no reemplaza servicios profesionales o de emergencia.
@@ -649,5 +663,6 @@
   <script src="notify.js"></script>
   <script src="redesign.js"></script>
   <script src="discover.js"></script>
+  <script src="code.js"></script>
 </body>
 </html>

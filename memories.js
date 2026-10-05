@@ -155,7 +155,8 @@ async function loadList() {
       .order("created_at", { ascending: false }).limit(400)
   ]);
   if (m.error) throw m.error;
-  list = m.data || [];
+  // memories titled "test" are development leftovers: hidden in the app (admins still open them from Admin › Memories)
+  list = (m.data || []).filter(x => !(C.isTestContent && C.isTestContent(x.title_es, x.title_en)));
   stats = new Map((s.data || []).map(r => [r.memory_id, { photos: Number(r.photos), videos: Number(r.videos), posts: Number(r.posts) }]));
   const media = med.data || [];
   const first = new Map();
@@ -795,6 +796,7 @@ async function adminView(helpers) {
     mm.hidden ? el("span", { class: "badge", text: t("memHiddenBadge") }) : null,
     mm.code ? el("span", { class: "badge", text: " " + codeText(mm.code) }) : null,
     el("h3", { text: title(mm) }),
+    C.isTestContent && C.isTestContent(mm.title_es, mm.title_en) ? el("p", { class: "test-flag", text: C.t("memTestFlag") }) : null,
     el("p", { class: "small-note", text: "📅 " + longDate(mm) + (mm.location ? " · 📍 " + mm.location : "") }),
     el("div", { class: "actions" }, btn(t("memOpen"), "", () => openMemory(mm.id))))));
   return wrap;

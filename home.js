@@ -201,7 +201,7 @@ function weekRange() {
 function openPoll(p) {
   const { plans } = C.homeData();
   const plan = p.plan_id ? plans.find(x => x.id === p.plan_id) : null;
-  if (plan && plan.kind === "trip") { go2("travel")(); scrollToNode(document.querySelector("#tripsList .poll")); return; }
+  if (plan && plan.kind === "trip") { go2("travel")(); if (C.openDetail) C.openDetail(plan.id); return; }
   if (plan && plan.kind === "event" && C.openDetail) { C.openDetail(plan.id); return; }
   C.showPage("community"); scrollToNode(document.getElementById("generalPolls"));
 }

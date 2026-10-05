@@ -7,6 +7,8 @@ let C = null;
 
 const ES = {
   pollsTitle: "Votaciones", pollsIntro: "Tu voto ayuda a decidir el próximo plan. Puedes cambiarlo mientras la votación esté abierta.",
+  pollsNoneAdmin: "No hay votaciones activas. Crea una para que la comunidad decida el próximo plan (solo tú ves este aviso).",
+  aPollPlace: "Dónde mostrarla", aPlace_community: "Comunidad · Decidamos juntas", aPlace_travel: "Viajes y Experiencias", aPlace_matcha: "Rincón Matcha & Arte",
   pollsTogether: "DECIDAMOS JUNTAS", pollsTogetherTitle: "Tu opinión cuenta", pollKicker: "VOTACIÓN",
   pollChange: "Votaste · toca otra opción para cambiar tu voto", pollChangeMulti: "Votaste · puedes marcar o quitar opciones", pollClosedRes: "Votación cerrada · resultado final",
   pollOne: "Elige una opción", pollMany: "Puedes elegir varias", pollVotes: n => n + (n === 1 ? " voto" : " votos"),
@@ -23,6 +25,8 @@ const ES = {
 };
 const EN = {
   pollsTitle: "Polls", pollsIntro: "Your vote helps decide the next plan. You can change it while the poll is open.",
+  pollsNoneAdmin: "No active polls. Create one so the community can decide the next plan (only you see this note).",
+  aPollPlace: "Where to show it", aPlace_community: "Community · Let's decide together", aPlace_travel: "Travel & Experiences", aPlace_matcha: "Matcha & Art Corner",
   pollsTogether: "LET'S DECIDE TOGETHER", pollsTogetherTitle: "Your opinion counts", pollKicker: "POLL",
   pollChange: "You voted · tap another option to change your vote", pollChangeMulti: "You voted · you can add or remove options", pollClosedRes: "Poll closed · final result",
   pollOne: "Pick one", pollMany: "Pick as many as you like", pollVotes: n => n + (n === 1 ? " vote" : " votes"),
@@ -168,15 +172,39 @@ function planBlock(plan) {
   live.add({ host, build });
   return host;
 }
-// Free-standing polls section on the Events page
+// Where a free-standing poll is shown: community (default), travel or matcha.
+// Kept in the existing settings table (key "poll_places"), written only by admins.
+const PLACES = ["community", "travel", "matcha"];
+function placeOf(p) { const m = C && C.setting ? (C.setting("poll_places") || {}) : {}; return PLACES.includes(m[p.id]) ? m[p.id] : "community"; }
+const recentPoll = p => isOpen(p) || (p.closes_at && Date.now() - new Date(p.closes_at).getTime() < 7 * 86400000);
+// Polls block for the Travel page or the Matcha corner (null when there is nothing to show)
+function placedBlock(place, kicker, title, intro) {
+  if (!C || !C.session() || !loaded) return null;
+  const list = () => polls.filter(p => !p.plan_id && placeOf(p) === place && recentPoll(p));
+  if (!list().length) return null;
+  const host = el("div", { class: "card polls general-polls placed-polls" });
+  const build = () => [el("small", { class: "rose", text: kicker }), el("h2", { text: title }), intro ? el("p", { class: "small-note", text: intro }) : null, ...list().map(pollNode)].filter(Boolean);
+  host.replaceChildren(...build());
+  live.add({ host, build });
+  return host;
+}
+// Free-standing community polls ("Decidamos juntas") on the Community page
 function paintGeneral() {
   const host = document.getElementById("generalPolls");
   if (!host) return;
-  const recent = p => isOpen(p) || (p.closes_at && Date.now() - new Date(p.closes_at).getTime() < 7 * 86400000);
-  const general = C && C.session() && loaded ? polls.filter(p => !p.plan_id && recent(p)) : [];
-  host.hidden = !general.length;
+  const general = C && C.session() && loaded ? polls.filter(p => !p.plan_id && placeOf(p) === "community" && recentPoll(p)) : [];
   for (const item of [...live]) if (item.host === host) live.delete(item);
-  if (!general.length) { host.replaceChildren(); return; }
+  if (!general.length) {
+    // Members see nothing (no dead box). Admins get a quiet shortcut to create the next decision.
+    const admin = C && C.session() && C.isAdmin() && window.CMLAdmin && window.CMLAdmin.openTab;
+    host.hidden = !admin;
+    host.classList.toggle("polls-admin-hint", !!admin);
+    if (admin) host.replaceChildren(el("small", { class: "rose", text: t("pollsTogether") }),
+      el("p", { class: "small-note", text: t("pollsNoneAdmin") }), btn(t("aPollNew"), "secondary", () => window.CMLAdmin.openTab("polls")));
+    else host.replaceChildren();
+    return;
+  }
+  host.hidden = false; host.classList.remove("polls-admin-hint");
   const build = () => [
     el("small", { class: "rose", text: t("pollsTogether") }),
     el("h2", { text: t("pollsTogetherTitle") }),
@@ -188,7 +216,7 @@ function paintGeneral() {
 }
 
 // ---------- admin ----------
-let prefillPlan = "";
+let prefillPlan = "", prefillPlace = "";
 function localToIso(v) { if (!v) return null; const d = new Date(v); return Number.isNaN(d.getTime()) ? null : d.toISOString(); }
 
 async function adminView(helpers) {
@@ -217,6 +245,12 @@ async function adminView(helpers) {
     const closes = el("input", { type: "datetime-local", id: "pollCloses" });
     const sel = el("select", { id: "pollPlan" }, el("option", { value: "", text: t("aPollNone") }),
       ...plans.map(x => el("option", { value: x.id, text: (x.kind === "trip" ? "✈️ " : "📅 ") + (C.pick(x, "title") || "—") })));
+    const place = el("select", { id: "pollPlace" }, ...PLACES.map(k => el("option", { value: k, text: t("aPlace_" + k) })));
+    if (prefillPlace && PLACES.includes(prefillPlace)) place.value = prefillPlace;
+    prefillPlace = "";
+    const placeLabel = el("label", {}, t("aPollPlace"), place);
+    const syncPlace = () => { placeLabel.hidden = !!sel.value; };
+    sel.addEventListener("change", syncPlace);
     if (prefillPlan && plans.some(x => x.id === prefillPlan)) sel.value = prefillPlan;
     prefillPlan = "";
     const fb = el("p", { class: "form-feedback", role: "alert", hidden: true });
@@ -227,6 +261,7 @@ async function adminView(helpers) {
       el("label", { class: "check" }, multi, " " + t("aPollMulti")),
       el("label", {}, t("aPollCloses"), closes),
       el("label", {}, t("aPollAttach"), sel),
+      placeLabel,
       fb,
       el("div", { class: "actions" }, save, btn(t("aPollCancel"), "", () => formHost.replaceChildren())));
     form.addEventListener("submit", async e => {
@@ -244,11 +279,15 @@ async function adminView(helpers) {
         await C.db.from("polls").delete().eq("id", ins.data.id);
         save.disabled = false; fb.textContent = t("aPollFail"); fb.hidden = false; return;
       }
+      if (!sel.value && place.value !== "community" && window.CMLAdmin && window.CMLAdmin.setMapEntry) {
+        try { await window.CMLAdmin.setMapEntry("poll_places", ins.data.id, place.value); } catch { /* shown in Community instead */ }
+      }
       toast(t("aPollSaved"));
       await C.refreshPublic();
       document.dispatchEvent(new CustomEvent("cml:lang"));
     });
     formHost.replaceChildren(form);
+    syncPlace();
     q.focus();
   }
   wrap.appendChild(el("div", { class: "admin-bar" }, btn(t("aPollNew"), "primary", openForm)));
@@ -262,7 +301,7 @@ async function adminView(helpers) {
     const n = nv.get(poll.id) || 0;
     const item = el("div", { class: "admin-item" },
       el("span", { class: "badge" + (open ? " live" : ""), text: open ? t("aPollOpen") : t("pollClosed") }),
-      el("span", { class: "badge", text: " " + (poll.plan_id ? planName(poll.plan_id) || "—" : t("aPollGeneral")) }),
+      el("span", { class: "badge", text: " " + (poll.plan_id ? planName(poll.plan_id) || "—" : t("aPlace_" + placeOf(poll))) }),
       el("h3", { text: poll.question }),
       /\btest(ing)?\b/i.test(poll.question) ? el("p", { class: "test-flag", text: t("aPollTest") }) : null,
       ...list.map(x => el("p", { class: "small-note", text: x.label + " — " + (votes.get(x.id) || 0) })),
@@ -292,7 +331,8 @@ function init() {
   document.addEventListener("cml:session", () => { if (!C.session()) clear(); });
   document.addEventListener("cml:lang", () => { paintGeneral(); repaint(); });
   window.CMLPolls = {
-    reload, planBlock, adminView, paintGeneral,
+    reload, planBlock, placedBlock, adminView, paintGeneral,
+    newFor: place => { prefillPlace = place; },
     unvoted: (hours) => polls.filter(p => isOpen(p) && p.closes_at && new Date(p.closes_at).getTime() - Date.now() <= (hours || 24) * 3600000 && !(opts.get(p.id) || []).some(o => mine.has(p.id + ":" + o.id))),
     closingSoon: (hours) => polls.filter(p => isOpen(p) && p.closes_at && new Date(p.closes_at).getTime() - Date.now() <= (hours || 48) * 3600000),
     prefill: id => { prefillPlan = id || ""; },
