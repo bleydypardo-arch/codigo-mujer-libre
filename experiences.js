@@ -12,7 +12,7 @@ const ES = {
   campCta: "Descubrir la experiencia", campInterested: n => n === 1 ? "1 mujer interesada" : n + " mujeres interesadas",
   campGoing: n => n === 1 ? "1 confirmada" : n + " confirmadas",
   homeExpK: "CÓDIGO EXPERIENCES", homeExpSoon: "Nuestra próxima gran experiencia se anunciará pronto",
-  homeExpSoonP: "Dos veces al año salimos juntas a vivir algo inolvidable. Cuéntanos a dónde te gustaría ir.",
+  homeExpSoonP: "Dos veces al año nos reunimos para vivir algo inolvidable. ¿A dónde vamos ahora?",
   homeExpAll: "Ver todas las experiencias", homeExpGo: "Descubrir la experiencia",
   typesK: "EXPLORA POR TIPO", typesNote: "Toca un tipo para ver solo esas experiencias. Toca de nuevo para ver todas.",
   wellPick: "Código Pick", wellBook: "Reservar", wellSee: "Ver experiencia", wellUntil: d => "Hasta el " + d,
@@ -26,7 +26,7 @@ const EN = {
   campCta: "Discover the experience", campInterested: n => n === 1 ? "1 woman interested" : n + " women interested",
   campGoing: n => n === 1 ? "1 confirmed" : n + " confirmed",
   homeExpK: "CÓDIGO EXPERIENCES", homeExpSoon: "Our next big experience will be announced soon",
-  homeExpSoonP: "Twice a year we go out together to live something unforgettable. Tell us where you'd love to go.",
+  homeExpSoonP: "Twice a year, we come together for something unforgettable. Where should we go next?",
   homeExpAll: "See all experiences", homeExpGo: "Discover the experience",
   typesK: "EXPLORE BY TYPE", typesNote: "Tap a type to see only those experiences. Tap again to see them all.",
   wellPick: "Código Pick", wellBook: "Book", wellSee: "See experience", wellUntil: d => "Until " + d,
@@ -198,13 +198,15 @@ function paintHome() {
   host.hidden = false;
   const p = featuredFirst(upcomingTrips())[0];
   const go = () => { if (window.CMLRedesign) window.CMLRedesign.paintTravel(); C.showPage("travel"); };
-  const brand = el("span", { class: "hx-brand" }, el("small", { text: t("expBrandK") }), el("b", { text: t("expBrand") }));
+  // same small brand signature as the Travel page header (icon + CÓDIGO EXPERIENCES)
+  const brand = el("span", { class: "hx-sig" }, el("span", { class: "hx-ic", "aria-hidden": "true" }), el("span", { class: "hx-sig-t", text: t("travelKicker") }));
+  brand.firstChild.innerHTML = '<svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="M21 3 3 10.5l7 2.5 2.5 7zM21 3 10 13"/></svg>';
   if (!p) {
     const b = el("button", { type: "button", class: "hx-cta", text: t("homeExpAll") + " →" });
     b.addEventListener("click", go);
     host.className = "hx-card is-soon";
-    host.replaceChildren(el("span", { class: "hx-bg", "aria-hidden": "true" }), el("div", { class: "hx-txt" }, brand,
-      el("h2", { class: "hx-title", text: t("homeExpSoon") }), el("p", { class: "hx-p", text: t("homeExpSoonP") }), b));
+    host.replaceChildren(el("span", { class: "hx-bg", "aria-hidden": "true" }), el("div", { class: "hx-txt hx-invite" }, brand,
+      el("h2", { class: "hx-title", text: t("homeExpSoon") }), el("span", { class: "hx-rule", "aria-hidden": "true" }), el("p", { class: "hx-p", text: t("homeExpSoonP") }), b));
     const bg = host.querySelector(".hx-bg"); bg.style.backgroundImage = 'url("' + stageImages()[0].replace(/"/g, "%22") + '")';
     return;
   }

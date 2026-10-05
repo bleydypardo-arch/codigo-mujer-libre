@@ -1464,3 +1464,27 @@ nav button.active .ni { color: var(--cml-rose-d); }
   background: linear-gradient(90deg, #4F6B4B, #7E9A6F 45%, #9C7B4E 75%, #4F6B4B); -webkit-background-clip: text; background-clip: text; }
 .matcha-txt b { font-size: 21px; color: #3E5A3B; }
 .ma-hero-txt h1 { font-weight: 500; letter-spacing: -.01em; color: #3E5A3B; }
+
+/* Home Código Experiences card: an invitation, not a copy of the Travel page (ocean motion untouched) */
+.hx-sig { display: inline-flex; align-items: center; gap: 10px; }
+.hx-ic { width: 32px; height: 32px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--cml-gold); color: #4A2E1E; box-shadow: 0 0 0 5px rgba(219, 193, 159, .16); animation: cmlIcGlow 3.2s ease-in-out infinite; }
+.hx-ic .ci { width: 16px; height: 16px; stroke-width: 1.8; }
+.hx-sig-t { font: 700 12px/1 var(--font-ui); letter-spacing: .28em;
+  background: linear-gradient(100deg, #E9CF9E 0%, #F6E7C6 20%, #FFFDF5 30%, #F1DDB8 42%, #DBC19F 58%, #F6E7C6 72%, #FFFBF0 82%, #E9CF9E 100%); background-size: 250% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent; animation: cmlShimmer 3.6s linear infinite; }
+.hx-card .hx-txt { gap: 10px; }
+.hx-card .hx-title { margin-left: 0 !important; padding-left: 0; border-left: 0; font: 400 24px/1.22 var(--font-display) !important; max-width: 17ch; color: #FFF8EE !important; text-wrap: balance; }
+.hx-card .hx-p, .hx-card .camp-status, .hx-card .hx-acts { margin-left: 0; }
+.hx-card .hx-meta { padding-left: 0; }
+/* the invitation panel (no experience announced yet) */
+.hx-card.is-soon { display: flex; align-items: center; min-height: 280px; padding: 16px; }
+.hx-card.is-soon::after { background: linear-gradient(100deg, rgba(40, 10, 18, .7) 0%, rgba(58, 18, 30, .45) 55%, rgba(58, 18, 30, .15) 100%); }
+.hx-invite { margin: 0; padding: 22px 20px 20px !important; max-width: 430px; border-radius: 20px; border: 1px solid rgba(219, 193, 159, .55);
+  background: linear-gradient(160deg, rgba(58, 18, 30, .62), rgba(40, 10, 18, .5)); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  box-shadow: 0 16px 34px rgba(20, 4, 8, .3), inset 0 1px 0 rgba(255, 255, 255, .08); }
+.hx-invite .hx-title { margin-top: 6px !important; }
+.hx-rule { display: block; width: 46px; height: 1px; background: linear-gradient(90deg, #DBC19F, rgba(219, 193, 159, 0)); }
+.hx-invite .hx-p { max-width: 34ch; font-size: 14.5px; line-height: 1.6; color: rgba(255, 246, 238, .9); }
+.hx-invite .hx-cta { margin-top: 6px; }
+@media (min-width: 720px) { .hx-card.is-soon { min-height: 320px; padding: 28px 32px; } .hx-invite { padding: 28px 30px 26px !important; } .hx-card .hx-title { font-size: 30px !important; } }
+.hx-sig-t { line-height: 1.6; padding-top: 2px; }
