@@ -1370,7 +1370,7 @@ revoke all on function public.cml_application_from_meta(jsonb) from public, anon
 --     * New role 'content_admin': can manage content + upload images, nothing else.
 --       It can NOT read members, applications, messages, responses, or change roles.
 --     * Owner (super_admin) and the existing admin keep every current permission.
---     * Owner + at most 2 additional admin accounts (admin or content_admin).
+--     * Owner + exactly ONE additional admin account (the Content Admin).
 --     * New tables: daily_codes (Your Code for Today), did_you_know.
 --     * Nothing is dropped, reset or rewritten. Existing rows are untouched.
 -- ============================================================================
@@ -1399,15 +1399,19 @@ create policy "profiles super admin update" on public.profiles
   using (public.is_super_admin())
   with check (public.is_super_admin() and (role in ('member','admin','content_admin') or id = auth.uid()));
 
--- Owner + at most 2 additional admin accounts (admin + content_admin together)
+-- Exactly two administrative accounts: the Owner + ONE additional account (the Content Admin).
+-- The app can no longer hand out the full 'admin' role; an existing 'admin' (if any) is left untouched.
 create or replace function public.limit_extra_admins() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
   if new.role in ('admin','content_admin')
      and (tg_op = 'INSERT' or old.role is distinct from new.role) then
+    if new.role = 'admin' and auth.uid() is not null then
+      raise exception 'The administrator role can no longer be granted from the app.';
+    end if;
     if (select count(*) from public.profiles
-         where role in ('admin','content_admin') and id <> new.id) >= 2 then
-      raise exception 'Only two additional admin accounts are allowed.';
+         where role in ('admin','content_admin') and id <> new.id) >= 1 then
+      raise exception 'Only one additional admin account (Content Admin) is allowed.';
     end if;
   end if;
   return new;

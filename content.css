@@ -52,3 +52,47 @@
 .tv-slot.is-soon.has-img { border-style: solid; align-items: flex-end; }
 .ac-pre > div { display: grid; gap: 4px; }
 .ac-pre > div + div { padding-top: 8px; border-top: 1px solid rgba(0,0,0,.08); }
+
+/* ---------- Home hero: final official photo ---------- */
+/* Same photo on every screen, never stretched (cover keeps its proportions). On phones the crop is
+   centred on the woman and the ocean rather than the sofa. */
+.hero img#heroImg { object-fit: cover; object-position: 72% 45%; transform-origin: 72% 50%; }
+@media (min-width: 720px) { .hero img#heroImg { object-position: 62% 42%; } }
+@media (min-width: 1024px) { .hero img#heroImg { object-position: 55% 40%; } }
+/* Very slow, barely-there drift of light (a gentle push-in); off for reduced-motion users. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero img#heroImg { animation: heroDrift 28s ease-in-out infinite alternate; }
+  @keyframes heroDrift { from { transform: scale(1); } to { transform: scale(1.035); } }
+}
+
+/* ---------- Plans & Events: no huge empty media areas ---------- */
+/* Flyers ("show the whole image") keep their natural proportions in the detail hero. */
+.sheet-hero.is-full { aspect-ratio: auto; max-height: none; background: var(--cml-bg, #FFF9F8); }
+.sheet-hero.is-full img { width: 100%; height: auto; max-height: 72vh; object-fit: contain; display: block; margin: 0 auto; }
+/* A post with no picture yet gets a compact branded banner instead of a big pale rectangle. */
+.sheet-content.is-event .sheet-hero.ev-ph, .sheet-content.is-plan .sheet-hero.ev-ph { aspect-ratio: auto; min-height: 0; height: 120px;
+  background: linear-gradient(135deg, #B85F68 0%, #9E4D56 55%, #7E3D45 100%); }
+.sheet-hero.ev-ph .ev-ph-emoji { color: #fff; opacity: .9; }
+.sheet-hero.ev-ph.is-broken { height: 120px; aspect-ratio: auto; min-height: 0; }
+
+/* ---------- Travel: Spanish category labels never overflow their cards ---------- */
+.trip-type { min-width: 0; padding: 8px 10px; gap: 8px; }
+.trip-type-txt { min-width: 0; flex: 1 1 auto; }
+.trip-type-txt b { font-size: clamp(11.5px, 3.4vw, 13px); overflow-wrap: break-word; hyphens: manual; line-height: 1.2; }
+.trip-type .ci { flex: 0 0 auto; }
+@media (max-width: 380px) { .trip-type .ci { width: 28px; height: 28px; padding: 6px; } .trip-type { padding: 8px; gap: 6px; } .trip-type-txt b { font-size: 11.5px; } }
+@media (max-width: 340px) { .trip-type .ci { display: none; } .trip-type-txt b { font-size: 11.5px; } }
+
+/* ---------- Recipe of the Month: refined gold medallion (tap to reveal) ---------- */
+.rc-front { position: relative; padding-right: 92px; }
+.rc-medal { position: absolute; top: 18px; right: 18px; width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+  background: radial-gradient(circle at 32% 28%, #FFFDF8 0%, #F6EBD4 70%, #EBD9B5 100%);
+  box-shadow: 0 6px 16px rgba(143, 107, 58, .28), inset 0 0 0 1px rgba(201, 165, 107, .55); transition: transform .35s ease, box-shadow .35s ease; overflow: hidden; }
+.rc-medal svg { width: 52px; height: 52px; }
+.rc-medal::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, .75) 50%, transparent 62%); transform: translateX(-120%); }
+.rc-flip:hover .rc-medal, .rc-flip:focus-visible .rc-medal { transform: scale(1.06); box-shadow: 0 8px 20px rgba(143, 107, 58, .38), inset 0 0 0 1px rgba(201, 165, 107, .8); }
+.rc-flip:active .rc-medal { transform: scale(.94); }
+@media (prefers-reduced-motion: no-preference) {
+  .rc-medal::after { animation: rcGlint 7s ease-in-out 1.2s infinite; }
+  @keyframes rcGlint { 0%, 70% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+}

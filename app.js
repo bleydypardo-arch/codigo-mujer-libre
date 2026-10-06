@@ -521,7 +521,7 @@ Object.assign(translations.en, {
 
 
 // (Sample cards were removed: empty sections now show an honest empty state instead of placeholder plans.)
-const DEFAULT_HERO = "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=88";
+const DEFAULT_HERO = "hero-home.jpg";
 
 // ==============================
 // Local storage (language + weekly code only)
@@ -993,11 +993,13 @@ function avatarStack(planId, max = 4) {
   return row;
 }
 function eventMedia(p, cls) {
-  const image = safeUrl(p.image_url);
+  // One post feeds the thumbnail and the detail hero: the main image, else the first gallery photo.
+  let image = safeUrl(p.image_url);
+  if (!image) { try { const g = richOf(p).gallery; image = Array.isArray(g) ? (g.map(safeUrl).find(Boolean) || "") : ""; } catch (e) { /* no gallery */ } }
   const box = el("div", { class: "ev-media " + cls + (image ? "" : " ev-ph " + toneOf(p.code)) + (image && planTag(p.id).full ? " is-full" : "") });
   if (image) {
     const img = el("img", { src: image, alt: pick(p, "title") || "", loading: "lazy" });
-    img.addEventListener("error", () => { img.remove(); box.classList.add("ev-ph", toneOf(p.code)); box.prepend(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) })); });
+    img.addEventListener("error", () => { img.remove(); box.classList.add("ev-ph", "is-broken", toneOf(p.code)); box.classList.remove("is-full"); box.dataset.img = "broken"; box.prepend(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) })); });
     box.appendChild(img);
   } else box.appendChild(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) }));
   if (p.code && codeLabels[p.code]) box.appendChild(el("span", { class: "ev-badge", text: t(codeLabels[p.code]) }));

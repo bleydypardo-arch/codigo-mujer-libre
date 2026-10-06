@@ -206,10 +206,10 @@ Object.assign(S.es, { fFull: "Mostrar la imagen completa (sin recortar)",
 Object.assign(S.en, { fFull: "Show the whole image (don't crop)",
   copy_storyT: "Travel: promise headline", copy_storyP: "Travel: promise text", copy_homeExpSoon: "Experiences: “coming soon” headline (Home)", copy_homeExpSoonP: "Experiences: “coming soon” text (Home)" });
 Object.assign(S.es, { makeContentAdmin: "Hacer administradora de contenido", removeContentAdmin: "Quitar administradora de contenido",
-  adminLimit: "Ya hay dos cuentas administradoras adicionales. Quita una primero.",
+  adminLimit: "Ya existe la cuenta adicional de administración (contenido). Quítala primero para nombrar a otra.",
   confirmContentAdmin: "Esta cuenta podrá crear, editar y publicar contenido y subir imágenes. No verá miembros, solicitudes ni mensajes privados. ¿Continuar?" });
 Object.assign(S.en, { makeContentAdmin: "Make content administrator", removeContentAdmin: "Remove content administrator",
-  adminLimit: "There are already two additional admin accounts. Remove one first.",
+  adminLimit: "The additional admin account (content) already exists. Remove it first to appoint another.",
   confirmContentAdmin: "This account will be able to create, edit and publish content and upload images. It will not see members, applications or private messages. Continue?" });
 
 const KINDS = {
@@ -988,8 +988,8 @@ async function usersView() {
       }
       if (C.isSuper() && u.id !== me && u.role !== "super_admin") {
         const acts = el("div", { class: "actions" });
-        if (u.role !== "content_admin") {
-          const makeAdmin = u.role !== "admin";
+        if (u.role === "admin") {   // legacy role: can only be removed; new admins are Content Admins
+          const makeAdmin = false;
           acts.appendChild(button(makeAdmin ? a("makeAdmin") : a("removeAdmin"), makeAdmin ? "" : "danger", async () => {
             if (makeAdmin && data.some(x => x.role === "admin")) return toast(a("adminTaken"));
             const r = await C.db.from("profiles").update({ role: makeAdmin ? "admin" : "member" }).eq("id", u.id);
@@ -999,8 +999,10 @@ async function usersView() {
         }
         if (u.role === "member" || u.role === "content_admin") {
           const makeContent = u.role === "member";
-          if (!makeContent || u.approved) acts.appendChild(button(makeContent ? a("makeContentAdmin") : a("removeContentAdmin"), makeContent ? "" : "danger", async () => {
-            if (makeContent && data.filter(x => x.role === "admin" || x.role === "content_admin").length >= 2) return toast(a("adminLimit"));
+          const seatTaken = makeContent && data.some(x => x.role === "admin" || x.role === "content_admin");
+          if (seatTaken && u.approved) acts.appendChild(el("small", { class: "ac-note", text: a("adminLimit") }));
+          else if (!makeContent || u.approved) acts.appendChild(button(makeContent ? a("makeContentAdmin") : a("removeContentAdmin"), makeContent ? "" : "danger", async () => {
+            if (makeContent && data.filter(x => x.role === "admin" || x.role === "content_admin").length >= 1) return toast(a("adminLimit"));
             if (makeContent && !window.confirm(a("confirmContentAdmin"))) return;
             const r = await C.db.from("profiles").update({ role: makeContent ? "content_admin" : "member" }).eq("id", u.id);
             if (r.error) return toast(a("saveFail"));

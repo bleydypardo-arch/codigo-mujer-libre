@@ -27,7 +27,11 @@ function recipeNode() {
   const link = C.safeUrl(r.link);
   const card = el("section", { class: "rc-card" + (flipped ? " is-flipped" : ""), "aria-label": C.t("rcK") });
   const flip = el("button", { type: "button", class: "rc-flip", "aria-pressed": String(flipped) });
+  const medal = el("span", { class: "rc-medal", "aria-hidden": "true" });
+  // Static, decorative gold seal (a single leaf line inside two fine rings); no user content goes in here.
+  medal.innerHTML = '<svg viewBox="0 0 64 64" focusable="false"><defs><linearGradient id="rcGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F3E2BE"/><stop offset=".5" stop-color="#C9A56B"/><stop offset="1" stop-color="#8F6B3A"/></linearGradient></defs><circle cx="32" cy="32" r="29" fill="none" stroke="url(#rcGold)" stroke-width="2.4"/><circle cx="32" cy="32" r="24" fill="none" stroke="url(#rcGold)" stroke-width=".8" stroke-dasharray="1.2 3"/><path d="M32 46 C32 34 36 26 44 21 C45 31 40 41 32 46 Z M32 46 C31 40 28 36 23 33" fill="none" stroke="url(#rcGold)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const front = el("span", { class: "rc-face rc-front" },
+    medal,
     el("small", { class: "rc-k", text: C.t("rcK") }),
     el("b", { class: "rc-title", text: pickLang(r, "title") }),
     pickLang(r, "teaser") ? el("span", { class: "rc-teaser", text: pickLang(r, "teaser") }) : null,
