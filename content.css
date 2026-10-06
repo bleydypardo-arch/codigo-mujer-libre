@@ -1,0 +1,122 @@
+/* New admin-managed components only (Recipe of the Month, Did You Know?, admin editors). Uses the existing tokens; no existing rule is changed. */
+.rc-card { margin: 0 0 16px; }
+.rc-flip { display: block; width: 100%; padding: 0; border: 0; background: none; font: inherit; color: var(--cml-ink); text-align: left; cursor: pointer; perspective: 1400px; }
+.rc-inner { display: grid; position: relative; transform-style: preserve-3d; transition: transform .75s cubic-bezier(.4, .1, .2, 1); }
+.rc-card.is-flipped .rc-inner { transform: rotateY(180deg); }
+.rc-face { grid-area: 1 / 1; display: flex; flex-direction: column; gap: 10px; padding: 22px 20px; border-radius: var(--r-md, 20px); border: 1px solid var(--cml-line, #eadfd6); box-shadow: var(--sh-1, 0 6px 18px rgba(0,0,0,.08)); backface-visibility: hidden; -webkit-backface-visibility: hidden; min-width: 0; }
+.rc-front { background: linear-gradient(135deg, #fff 30%, #E6EFE1 100%); justify-content: center; min-height: 190px; }
+.rc-back { background: #fff; transform: rotateY(180deg); align-items: stretch; }
+.rc-k { font: 600 11.5px/1 var(--font-ui, inherit); letter-spacing: .12em; color: var(--cml-sage-ink, #4F6B4B); }
+.rc-title { font: 400 26px/1.15 var(--font-display, serif); color: var(--cml-ink); }
+.rc-teaser { color: var(--cml-ink2); font-size: 15px; line-height: 1.5; }
+.rc-cta { margin-top: auto; font: 600 13px var(--font-ui, inherit); color: var(--cml-rose-d, #9E4D56); }
+.rc-img { display: block; width: 100%; height: auto; max-height: 70vh; object-fit: contain; border-radius: 12px; background: var(--cml-beige, #EFE6DE); }
+.rc-text { font-size: 15px; line-height: 1.55; color: var(--cml-ink); white-space: pre-line; }
+.rc-link { display: inline-block; margin-top: 10px; font-weight: 600; color: var(--cml-rose-d, #9E4D56); }
+.rc-flip:focus-visible { outline: 3px solid var(--cml-gold, #DBC19F); outline-offset: 3px; border-radius: 20px; }
+@media (prefers-reduced-motion: reduce) {
+  .rc-inner { transition: none; transform: none !important; }
+  .rc-face { transition: opacity .2s; }
+  .rc-card .rc-back { transform: none; opacity: 0; visibility: hidden; }
+  .rc-card.is-flipped .rc-back { opacity: 1; visibility: visible; }
+  .rc-card.is-flipped .rc-front { opacity: 0; visibility: hidden; }
+}
+
+.dyk-card { margin-top: 14px; padding: 16px 18px; border-radius: var(--r-md, 18px); border: 1px solid var(--cml-line, #eadfd6); background: linear-gradient(120deg, #fff 45%, #FBF3E6 100%); }
+.dyk-card[hidden] { display: none; }
+.dyk-k { display: flex; align-items: center; gap: 6px; font: 600 11.5px/1 var(--font-ui, inherit); letter-spacing: .12em; color: var(--cml-gold-ink, #9C7B4E); }
+.dyk-spark { display: inline-block; }
+.dyk-t { display: block; margin-top: 8px; font: 400 18px/1.25 var(--font-display, serif); }
+.dyk-b { margin: 6px 0 0; font-size: 14.5px; line-height: 1.55; color: var(--cml-ink); }
+.dyk-next { margin-top: 8px; padding: 0; border: 0; background: none; font: 600 13px var(--font-ui, inherit); color: var(--cml-rose-d, #9E4D56); cursor: pointer; }
+.dyk-card.dyk-in { animation: dyk-in .7s ease both; }
+.dyk-card.dyk-in .dyk-spark { animation: dyk-twinkle 1.6s ease .3s 1 both; }
+@keyframes dyk-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes dyk-twinkle { 0%, 100% { transform: scale(1); } 40% { transform: scale(1.5) rotate(20deg); } }
+@media (prefers-reduced-motion: reduce) { .dyk-card.dyk-in, .dyk-card.dyk-in .dyk-spark { animation: none; } }
+
+/* "show the whole image" (finished posts / flyers): same frame, picture fitted inside instead of cropped */
+.ev-media.is-full img, .wd-media.is-full img, .tv-slot-media.is-full img { object-fit: contain; background: var(--cml-beige, #EFE6DE); }
+
+/* Admin editors for the new content */
+.ac-list { display: grid; gap: 10px; margin-top: 12px; }
+.ac-row { display: grid; gap: 4px; padding: 12px 14px; border: 1px solid var(--cml-line, #eadfd6); border-radius: 14px; background: #fff; }
+.ac-row.is-today { border-color: var(--cml-gold, #DBC19F); box-shadow: 0 0 0 2px rgba(219, 193, 159, .35); }
+.ac-pre { display: grid; gap: 8px; margin: 10px 0; padding: 14px; border-radius: 14px; background: var(--cml-beige, #EFE6DE); }
+.ac-pre b { font: 400 18px/1.25 var(--font-display, serif); }
+.ac-pre img { max-width: 100%; height: auto; max-height: 280px; object-fit: contain; border-radius: 10px; }
+.ac-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 640px) { .ac-two { grid-template-columns: minmax(0, 1fr); } }
+
+/* admin-edited "coming soon" travel placeholder with a promo image */
+.tv-slot.is-soon.has-img { border-style: solid; align-items: flex-end; }
+.ac-pre > div { display: grid; gap: 4px; }
+.ac-pre > div + div { padding-top: 8px; border-top: 1px solid rgba(0,0,0,.08); }
+
+/* ---------- Home hero: final official photo ---------- */
+/* Same photo on every screen, never stretched (cover keeps its proportions). On phones the crop is
+   centred on the woman and the ocean rather than the sofa. */
+.hero img#heroImg { object-fit: cover; object-position: 72% 45%; transform-origin: 72% 50%; }
+@media (min-width: 720px) { .hero img#heroImg { object-position: 62% 42%; } }
+@media (min-width: 1024px) { .hero img#heroImg { object-position: 55% 40%; } }
+/* Water-only motion: a faint shimmer confined to the sea and the sun's path (never the woman, balcony or sky).
+   hero-water.js sizes .hero-water to the photo's real rendered area, so the pieces below use photo percentages. */
+.hero-water { position: absolute; z-index: 0; pointer-events: none; overflow: hidden; display: none; }
+.hero-water.on { display: block; }
+.hw-piece { position: absolute; mix-blend-mode: soft-light; opacity: .55; }
+.hw-sea-l { left: 49%; top: 42.5%; width: 16%; height: 13%; }
+.hw-sea-r { left: 79.5%; top: 41.5%; width: 20.5%; height: 31%; }
+.hw-sea-l, .hw-sea-r { -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 24%, #000 66%, transparent 100%), linear-gradient(90deg, transparent 0%, #000 28%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 24%, #000 66%, transparent 100%), linear-gradient(90deg, transparent 0%, #000 28%, #000 72%, transparent 100%);
+  -webkit-mask-composite: source-in; mask-composite: intersect; }
+.hw-lines { position: absolute; inset: -6% 0; background:
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0) 9px, rgba(255, 255, 255, .55) 11px, rgba(255, 255, 255, 0) 14px, rgba(255, 255, 255, 0) 22px),
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0) 17px, rgba(220, 240, 255, .4) 19px, rgba(255, 255, 255, 0) 22px, rgba(255, 255, 255, 0) 36px);
+  background-size: 100% 22px, 100% 36px; }
+/* the sun's reflection: soft golden glints in a narrow column under the sun */
+.hw-sun { left: 87%; top: 42%; width: 11%; height: 35%; mix-blend-mode: screen; opacity: .5;
+  -webkit-mask-image: radial-gradient(60% 70% at 50% 40%, #000 20%, transparent 78%); mask-image: radial-gradient(60% 70% at 50% 40%, #000 20%, transparent 78%); }
+.hw-sun i { position: absolute; inset: -6% 0; background:
+    repeating-linear-gradient(180deg, rgba(255, 244, 214, 0) 0, rgba(255, 244, 214, 0) 7px, rgba(255, 244, 214, .9) 9px, rgba(255, 244, 214, 0) 12px, rgba(255, 244, 214, 0) 19px);
+  background-size: 100% 19px; }
+@media (prefers-reduced-motion: no-preference) {
+  .hw-sea-l .hw-lines, .hw-sea-r .hw-lines { animation: hwLines 9s linear infinite; }
+  .hw-sea-r .hw-lines { animation-duration: 11s; animation-direction: reverse; }
+  .hw-sun i { animation: hwGlints 6.5s linear infinite; }
+  .hw-sun { animation: cmlGlint 4.2s ease-in-out infinite; }
+  @keyframes hwLines { to { background-position: 0 22px, 0 36px; } }
+  @keyframes hwGlints { to { background-position: 0 19px; } }
+}
+@media (prefers-reduced-motion: reduce) { .hero-water { display: none !important; } }
+
+/* ---------- Plans & Events: no huge empty media areas ---------- */
+/* Flyers ("show the whole image") keep their natural proportions in the detail hero. */
+.sheet-hero.is-full { aspect-ratio: auto; max-height: none; background: var(--cml-bg, #FFF9F8); }
+.sheet-hero.is-full img { width: 100%; height: auto; max-height: 72vh; object-fit: contain; display: block; margin: 0 auto; }
+/* A post with no picture yet gets a compact branded banner instead of a big pale rectangle. */
+.sheet-content.is-event .sheet-hero.ev-ph, .sheet-content.is-plan .sheet-hero.ev-ph { aspect-ratio: auto; min-height: 0; height: 120px;
+  background: linear-gradient(135deg, #B85F68 0%, #9E4D56 55%, #7E3D45 100%); }
+.sheet-hero.ev-ph .ev-ph-emoji { color: #fff; opacity: .9; }
+.sheet-hero.ev-ph.is-broken { height: 120px; aspect-ratio: auto; min-height: 0; }
+
+/* ---------- Travel: Spanish category labels never overflow their cards ---------- */
+.trip-type { min-width: 0; padding: 8px 10px; gap: 8px; }
+.trip-type-txt { min-width: 0; flex: 1 1 auto; }
+.trip-type-txt b { font-size: clamp(11.5px, 3.4vw, 13px); overflow-wrap: break-word; hyphens: manual; line-height: 1.2; }
+.trip-type .ci { flex: 0 0 auto; }
+@media (max-width: 380px) { .trip-type .ci { width: 28px; height: 28px; padding: 6px; } .trip-type { padding: 8px; gap: 6px; } .trip-type-txt b { font-size: 11.5px; } }
+@media (max-width: 340px) { .trip-type .ci { display: none; } .trip-type-txt b { font-size: 11.5px; } }
+
+/* ---------- Recipe of the Month: refined gold medallion (tap to reveal) ---------- */
+.rc-front { position: relative; padding-right: 92px; }
+.rc-medal { position: absolute; top: 18px; right: 18px; width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center;
+  background: radial-gradient(circle at 32% 28%, #FFFDF8 0%, #F6EBD4 70%, #EBD9B5 100%);
+  box-shadow: 0 6px 16px rgba(143, 107, 58, .28), inset 0 0 0 1px rgba(201, 165, 107, .55); transition: transform .35s ease, box-shadow .35s ease; overflow: hidden; }
+.rc-medal svg { width: 52px; height: 52px; }
+.rc-medal::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, .75) 50%, transparent 62%); transform: translateX(-120%); }
+.rc-flip:hover .rc-medal, .rc-flip:focus-visible .rc-medal { transform: scale(1.06); box-shadow: 0 8px 20px rgba(143, 107, 58, .38), inset 0 0 0 1px rgba(201, 165, 107, .8); }
+.rc-flip:active .rc-medal { transform: scale(.94); }
+@media (prefers-reduced-motion: no-preference) {
+  .rc-medal::after { animation: rcGlint 7s ease-in-out 1.2s infinite; }
+  @keyframes rcGlint { 0%, 70% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+}

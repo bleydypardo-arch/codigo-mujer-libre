@@ -146,10 +146,25 @@ function paintStage() {
     }, 6500);
   }
 }
-function slot(p, n) {
-  if (!p) return el("div", { class: "tv-slot is-soon" },
-    el("span", { class: "tv-num", text: n }),
-    el("span", { class: "tv-slot-txt" }, el("small", { text: t("storySoon") }), el("b", { text: t("storySoonT") })));
+// Admin-editable "coming soon" placeholders: the 1st/2nd EMPTY space uses item 1/2 (settings key "travel_slots": two items { label_*, title_*, image }); the original wording is the default
+function soonSlot(n, idx) {
+  const list = C.setting && C.setting("travel_slots");
+  const cfg = (Array.isArray(list) && list[idx]) || {};
+  const lang = C.lang(), other = lang === "es" ? "en" : "es";
+  const pk = k => String(cfg[k + "_" + lang] || cfg[k + "_" + other] || "").trim();
+  const img = C.safeUrl(cfg.image);
+  const kids = [];
+  if (img) {
+    const im = el("img", { src: img, alt: "", loading: "lazy" });
+    im.addEventListener("error", () => im.remove());
+    kids.push(el("span", { class: "tv-slot-media" }, im), el("span", { class: "tv-slot-veil", "aria-hidden": "true" }));
+  }
+  kids.push(el("span", { class: "tv-num", text: n }),
+    el("span", { class: "tv-slot-txt" }, el("small", { text: pk("label") || t("storySoon") }), el("b", { text: pk("title") || t("storySoonT") })));
+  return el("div", { class: "tv-slot is-soon" + (img ? " has-img" : "") }, ...kids);
+}
+function slot(p, n, idx) {
+  if (!p) return soonSlot(n, idx || 0);
   const b = el("button", { type: "button", class: "tv-slot" });
   b.append(media(p, "tv-slot-media"), el("span", { class: "tv-slot-veil", "aria-hidden": "true" }),
     el("span", { class: "tv-num", text: n }),
@@ -171,7 +186,7 @@ function paintStory() {
       el("small", { class: "tv-k", text: t("storyK") }),
       el("h2", { class: "tv-story-t", text: t("storyT") }),
       el("p", { class: "tv-story-p", text: t("storyP") })),
-    C.session() ? el("div", { class: "tv-two" }, slot(next[0], t("storyI")), slot(next[1], t("storyII"))) : null);
+    C.session() ? el("div", { class: "tv-two" }, slot(next[0], t("storyI"), 0), slot(next[1], t("storyII"), next[0] ? 0 : 1)) : null);
 }
 function paintTravelPage() {
   if (!C) return;
@@ -257,7 +272,7 @@ function init() {
   C = window.CML;
   if (!C) return;
   C.addStrings(ES, EN);
-  window.CMLExp = { campaignCard, paintTravelPage, paintHome, typeKey: k => TYPE_KEY[k] || "expTrip", stageImages };
+  window.CMLExp = { defaults: { es: ES, en: EN }, campaignCard, paintTravelPage, paintHome, typeKey: k => TYPE_KEY[k] || "expTrip", stageImages };
   document.addEventListener("cml:render", paintAll);
   document.addEventListener("cml:lang", () => { paintAll(); paintTravelPage(); });
   document.addEventListener("cml:session", paintAll);

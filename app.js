@@ -521,7 +521,7 @@ Object.assign(translations.en, {
 
 
 // (Sample cards were removed: empty sections now show an honest empty state instead of placeholder plans.)
-const DEFAULT_HERO = "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=88";
+const DEFAULT_HERO = "hero-home.jpg";
 
 // ==============================
 // Local storage (language + weekly code only)
@@ -584,6 +584,9 @@ const loc = () => (currentLanguage === "es" ? "es-US" : "en-US");
 const isAdmin = () => !!profile && (profile.role === "admin" || profile.role === "super_admin");
 const isPending = () => !!profile && profile.role === "member" && !profile.approved;
 const isSuper = () => !!profile && profile.role === "super_admin";
+// Content admin: manages content and images only (no members, messages or roles). isStaff = anyone who may open Admin.
+const isContentAdmin = () => !!profile && profile.role === "content_admin";
+const isStaff = () => isAdmin() || isContentAdmin();
 
 const codeLabels = {
   Social: "social", Wellness: "wellnessChip", Faith: "faith", Adventure: "adventure",
@@ -699,7 +702,8 @@ function setLanguage(language, persist = true) {
 // ---- Admin-editable texts (settings key "copy" = { key: { es, en } }) for a SAFE list of content texts only.
 // Defaults stay in the code; an empty field means "use the default". Never touches structure or security.
 const COPY_KEYS = ["heroTitle", "heroCta", "eventsTitle", "eventsIntro", "yourSpace", "wellnessIntro", "supTitle", "supIntro",
-  "communityTitle", "communityIntro", "travelTitle", "travelLead", "travelIntro", "travelBadge", "maTag", "maIntro", "wcQ", "wcSub"];
+  "communityTitle", "communityIntro", "travelTitle", "travelLead", "travelIntro", "travelBadge", "maTag", "maIntro", "wcQ", "wcSub",
+  "storyT", "storyP", "homeExpSoon", "homeExpSoonP"];
 const copyDefaults = { es: {}, en: {} };
 function applyCopy() {
   const copy = settings.copy && typeof settings.copy === "object" ? settings.copy : {};
@@ -738,7 +742,7 @@ function homeRefresh() { if (window.CMLHome) window.CMLHome.render(); }
 function showPage(pageId, focusHeading = true) {
   const selectedPage = byId(pageId);
   if (!selectedPage || !selectedPage.classList.contains("page")) return;
-  if (pageId === "admin" && !isAdmin()) return;
+  if (pageId === "admin" && !isStaff()) return;
   document.querySelectorAll(".page").forEach(page => {
     const active = page === selectedPage;
     page.classList.toggle("active", active);
@@ -790,7 +794,8 @@ function renderQuote() {
   const stored = settings.daily_quote || {};
   const own = (stored[currentLanguage] || "").trim();
   const other = (stored[currentLanguage === "es" ? "en" : "es"] || "").trim();
-  quote.textContent = own || other || t("dailyQuote");
+  const fromEntry = window.CMLDaily && window.CMLDaily.message(currentLanguage);   // Today's Message of the daily entry, when it has one
+  quote.textContent = fromEntry || own || other || t("dailyQuote");
   const edit = byId("editQuote");
   if (edit) edit.hidden = !isAdmin();
 }
@@ -988,11 +993,13 @@ function avatarStack(planId, max = 4) {
   return row;
 }
 function eventMedia(p, cls) {
-  const image = safeUrl(p.image_url);
-  const box = el("div", { class: "ev-media " + cls + (image ? "" : " ev-ph " + toneOf(p.code)) });
+  // One post feeds the thumbnail and the detail hero: the main image, else the first gallery photo.
+  let image = safeUrl(p.image_url);
+  if (!image) { try { const g = richOf(p).gallery; image = Array.isArray(g) ? (g.map(safeUrl).find(Boolean) || "") : ""; } catch (e) { /* no gallery */ } }
+  const box = el("div", { class: "ev-media " + cls + (image ? "" : " ev-ph " + toneOf(p.code)) + (image && planTag(p.id).full ? " is-full" : "") });
   if (image) {
     const img = el("img", { src: image, alt: pick(p, "title") || "", loading: "lazy" });
-    img.addEventListener("error", () => { img.remove(); box.classList.add("ev-ph", toneOf(p.code)); box.prepend(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) })); });
+    img.addEventListener("error", () => { img.remove(); box.classList.add("ev-ph", "is-broken", toneOf(p.code)); box.classList.remove("is-full"); box.dataset.img = "broken"; box.prepend(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) })); });
     box.appendChild(img);
   } else box.appendChild(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) }));
   if (p.code && codeLabels[p.code]) box.appendChild(el("span", { class: "ev-badge", text: t(codeLabels[p.code]) }));
@@ -1814,7 +1821,7 @@ async function applySession(s) {
     await db.auth.signOut();
     return;
   }
-  byId("navAdmin").hidden = !isAdmin();
+  byId("navAdmin").hidden = !isStaff();
   if (isPending()) {
     // Not approved yet (or not approved at all): nothing private is loaded or shown.
     plans = []; counts.clear(); mine.clear(); posts = []; myMessages = []; members = [];
@@ -1825,7 +1832,7 @@ async function applySession(s) {
   showApp();
   showPage("home", false);
   await loadAll();
-  document.dispatchEvent(new CustomEvent("cml:session", { detail: { admin: isAdmin(), super: isSuper() } }));
+  document.dispatchEvent(new CustomEvent("cml:session", { detail: { admin: isAdmin(), super: isSuper(), staff: isStaff(), content: isContentAdmin() } }));
 }
 async function loadAll() {
   const uid = session.user.id;
@@ -2007,7 +2014,7 @@ function initialize() {
     db, el, pick, safeUrl, fmtDate, monthLabel, todayStr, codeLabels,
     t, lang: () => currentLanguage, loc,
     session: () => session, profile: () => profile,
-    isAdmin, isSuper, announce,
+    isAdmin, isSuper, isContentAdmin, isStaff, announce,
     refreshPublic: async () => { if (session) await loadAll(); },
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,

@@ -64,7 +64,7 @@ const S = {
     aiUse: "Usar esta opción", aiNone: "No encontré opciones. Prueba con otra búsqueda.", aiVerified: "Fuente verificada", aiUnverified: "Enlace sin verificar",
     aiNotReady: "El asistente de IA todavía no está activado (falta desplegar la función o la clave).", aiLimit: "Llegaste al límite diario del asistente. Inténtalo mañana.", aiFail: "El asistente no pudo responder. Inténtalo de nuevo.",
     aiNote: "Nota", aiSource: "Fuente",
-    userCount: n => n + " usuarias registradas", search: "Buscar por nombre, correo o empresa…", role: { member: "Miembro", admin: "Administradora", super_admin: "Fundadora y propietaria" },
+    userCount: n => n + " usuarias registradas", search: "Buscar por nombre, correo o empresa…", role: { member: "Miembro", admin: "Administradora", content_admin: "Administradora de contenido", super_admin: "Fundadora y propietaria" },
     makeAdmin: "Hacer administradora", removeAdmin: "Quitar administradora", roleSaved: "Rol actualizado.", joined: "Se unió",
     company: "Empresa", city: "Ciudad", interests: "Intereses",
     reply: "Respuesta", sendReply: "Guardar respuesta", replySaved: "Respuesta guardada.", from: "De",
@@ -132,7 +132,7 @@ const S = {
     aiUse: "Use this option", aiNone: "No options found. Try a different search.", aiVerified: "Source verified", aiUnverified: "Link not verified",
     aiNotReady: "The AI assistant isn't switched on yet (the function or key still needs to be set up).", aiLimit: "You've reached the assistant's daily limit. Try again tomorrow.", aiFail: "The assistant couldn't answer. Please try again.",
     aiNote: "Note", aiSource: "Source",
-    userCount: n => n + " registered members", search: "Search by name, email or company…", role: { member: "Member", admin: "Administrator", super_admin: "Founder & Owner" },
+    userCount: n => n + " registered members", search: "Search by name, email or company…", role: { member: "Member", admin: "Administrator", content_admin: "Content administrator", super_admin: "Founder & Owner" },
     makeAdmin: "Make administrator", removeAdmin: "Remove administrator", roleSaved: "Role updated.", joined: "Joined",
     company: "Company", city: "City", interests: "Interests",
     reply: "Reply", sendReply: "Save reply", replySaved: "Reply saved.", from: "From",
@@ -201,6 +201,16 @@ Object.assign(S.en, {
   appView: "View application", appHide: "Hide application", appWait: "Not sure yet? Leave her in Requests and come back anytime.", ago: d => d
 });
 S.es.tabs.users = "Miembros";
+Object.assign(S.es, { fFull: "Mostrar la imagen completa (sin recortar)",
+  copy_storyT: "Viajes: título de la promesa", copy_storyP: "Viajes: texto de la promesa", copy_homeExpSoon: "Experiencias: titular «próximamente» (Inicio)", copy_homeExpSoonP: "Experiencias: texto «próximamente» (Inicio)" });
+Object.assign(S.en, { fFull: "Show the whole image (don't crop)",
+  copy_storyT: "Travel: promise headline", copy_storyP: "Travel: promise text", copy_homeExpSoon: "Experiences: “coming soon” headline (Home)", copy_homeExpSoonP: "Experiences: “coming soon” text (Home)" });
+Object.assign(S.es, { makeContentAdmin: "Hacer administradora de contenido", removeContentAdmin: "Quitar administradora de contenido",
+  adminLimit: "Ya existe la cuenta adicional de administración (contenido). Quítala primero para nombrar a otra.",
+  confirmContentAdmin: "Esta cuenta podrá crear, editar y publicar contenido y subir imágenes. No verá miembros, solicitudes ni mensajes privados. ¿Continuar?" });
+Object.assign(S.en, { makeContentAdmin: "Make content administrator", removeContentAdmin: "Remove content administrator",
+  adminLimit: "The additional admin account (content) already exists. Remove it first to appoint another.",
+  confirmContentAdmin: "This account will be able to create, edit and publish content and upload images. It will not see members, applications or private messages. Continue?" });
 
 const KINDS = {
   event:    { tab: "plans",    fields: ["code", "title", "desc", "date", "time", "location", "price", "url", "details", "image"] },
@@ -219,6 +229,14 @@ const GROUPS = [
   ["people", ["users", "messages", "community", "memories"]],
   ["tools", ["settings", "ai"]]
 ];
+// Content admins get only the content tabs. Full admins keep every tab exactly as before.
+const PEOPLE_TABS = ["community", "memories", "polls", "messages", "users", "ai"];
+const EXTRA = {};   // tabs added by admin-content.js: key -> { group, render, label: {es,en} }
+const allowedTabs = () => [...TABS, ...Object.keys(EXTRA)].filter(k => C.isAdmin() || !PEOPLE_TABS.includes(k));
+function groupsFor() {
+  const base = GROUPS.map(([g, keys]) => [g, g === "content" ? [...keys, ...Object.keys(EXTRA).filter(k => EXTRA[k].group === "content")] : keys]);
+  return base.map(([g, keys]) => [g, keys.filter(k => allowedTabs().includes(k))]).filter(([, keys]) => keys.length);
+}
 const CODES = ["Social", "Wellness", "Faith", "Adventure", "Family", "Connection", "Support", "Recharge"];
 const EVENT_TYPES = ["social", "dining", "events"];
 const WCATS = ["spa", "massage", "facial", "skincare", "nails", "hair", "beauty", "gym", "fitness", "pilates", "yoga", "movement", "meditation", "mind", "retreat", "food", "workshop", "offer", "promo", "other"];
@@ -259,6 +277,7 @@ async function saveTag(planId, tag) {
   const clean = {};
   ["cat", "mtype", "city", "label"].forEach(k => { if (tag[k]) clean[k] = tag[k]; });
   if (tag.matcha) clean.matcha = true;
+  if (tag.full) clean.full = true;
   if (tag.featured) clean.featured = true;
   await setMapEntry("plan_tags", planId, clean);
 }
@@ -273,10 +292,10 @@ const el = (...args) => C.el(...args);
 
 document.addEventListener("cml:session", event => {
   C = window.CML;
-  if (event.detail.admin) { tab = "plans"; editing = null; render(); }
+  if (event.detail.staff) { tab = "plans"; editing = null; render(); }
   else if (root()) root().replaceChildren();
 });
-document.addEventListener("cml:lang", () => { if (window.CML && window.CML.isAdmin()) { C = window.CML; render(); } });
+document.addEventListener("cml:lang", () => { if (window.CML && window.CML.isStaff()) { C = window.CML; render(); } });
 
 function toast(text) {
   const status = document.getElementById("appStatus");
@@ -311,17 +330,21 @@ async function celebrate(person) {
 }
 // Opens one existing admin tab (used by the "Gestionar experiencias" shortcut on Viajes y Experiencias).
 function openTab(key) {
-  if (!C || !C.isAdmin() || !TABS.includes(key)) return;
+  if (!C || !C.isStaff() || !allowedTabs().includes(key)) return;
   C.showPage("admin", false);
   tab = key; editing = null; render();
 }
 // Opens the create form directly (used by the admin-only "+ Agregar…" shortcuts on Wellness and Travel).
 function openNew(kind) {
-  if (!C || !C.isAdmin() || !KINDS[kind]) return;
+  if (!C || !C.isStaff() || !KINDS[kind]) return;
   C.showPage("admin", false);
   tab = KINDS[kind].tab; editing = { kind, row: null }; render();
 }
-window.CMLAdmin = { celebrate, openTab, openNew, setMapEntry: (key, id, value) => (C && C.isAdmin() ? setMapEntry(key, id, value) : Promise.reject(new Error("admin"))) };
+function registerTab(key, def) {
+  EXTRA[key] = def; S.es.tabs[key] = def.label.es; S.en.tabs[key] = def.label.en;
+  if (C && C.isStaff && C.isStaff() && root() && root().children.length) render();
+}
+window.CMLAdmin = { registerTab, kit: () => ({ el, button, toast, imagePicker, rerender: render, a }), celebrate, openTab, openNew, setMapEntry: (key, id, value) => (C && C.isStaff() ? setMapEntry(key, id, value) : Promise.reject(new Error("admin"))) };
 
 // ---------- pending approvals: badge on the Admin button + banner ----------
 async function pendingCount() {
@@ -339,9 +362,10 @@ async function pendingCount() {
 // ---------- rendering ----------
 function render() {
   const host = root();
-  if (!host || !C || !C.isAdmin()) return;
+  if (!host || !C || !C.isStaff()) return;
   const token = ++renderToken;
-  const tabsBar = el("div", { class: "admin-groups" }, GROUPS.map(([g, keys]) =>
+  if (!allowedTabs().includes(tab)) tab = "plans";
+  const tabsBar = el("div", { class: "admin-groups" }, groupsFor().map(([g, keys]) =>
     el("div", { class: "admin-group" },
       el("small", { class: "admin-group-label", id: "ag-" + g, text: a("groups")[g] }),
       el("div", { class: "admin-tabs", role: "tablist", "aria-labelledby": "ag-" + g }, keys.map(key => {
@@ -352,7 +376,7 @@ function render() {
   const body = el("div", { id: "adminBody" }, loadingNode());
   const banner = el("div", { class: "pending-banner", role: "status", hidden: true });
   host.replaceChildren(tabsBar, banner, body);
-  pendingCount().then(n => {
+  (C.isAdmin() ? pendingCount() : Promise.resolve(0)).then(n => {
     if (token !== renderToken) return;
     const usersChip = tabsBar.querySelector('[data-tab="users"]');
     if (usersChip && n) usersChip.appendChild(el("span", { class: "tab-badge", "aria-label": String(n), text: String(n) }));
@@ -374,6 +398,7 @@ function render() {
       else if (tab === "users") fill(await usersView());
       else if (tab === "ai") fill(aiView());
       else if (tab === "settings") fill(await settingsView());
+      else if (EXTRA[tab]) fill(await EXTRA[tab].render());
     } catch (e) { console.error(e); fail(); }
   };
   run();
@@ -707,6 +732,11 @@ function formView() {
     featBox = el("input", { type: "checkbox" }); featBox.checked = !!oldTag.featured;
     form.appendChild(el("label", { class: "check studio-feature" }, featBox, a(kind === "trip" ? "fFeaturedTrip" : "fFeaturedWell")));
   }
+  let fullBox = null;
+  if (kind === "event" || kind === "wellness") {
+    fullBox = el("input", { type: "checkbox" }); fullBox.checked = !!oldTag.full;
+    form.appendChild(el("label", { class: "check" }, fullBox, a("fFull")));
+  }
   if (kind === "event" || kind === "weekend" || kind === "wellness") {
     matchaBox = el("input", { type: "checkbox" }); matchaBox.checked = !!oldTag.matcha;
     form.appendChild(el("label", { class: "check" }, matchaBox, a("fMatcha")));
@@ -774,9 +804,9 @@ function formView() {
     url: val0("url"), details: richEditor ? richEditor.value() : val0("details"), image_url: picker ? picker.value : "", published: published.checked
   });
   const buildTag = () => kind === "matcha"
-    ? { matcha: true, mtype: mtypeSel.value, featured: featuredBox.checked, city: cityIn.value.trim() }
+    ? Object.assign({ matcha: true, mtype: mtypeSel.value, featured: featuredBox.checked, city: cityIn.value.trim() }, oldTag.full ? { full: true } : {})
     : { cat: typeSel ? (kind === "trip" && typeSel.value === "trip" ? "" : typeSel.value) : "", matcha: !!(matchaBox && matchaBox.checked),
-        featured: !!(featBox && featBox.checked), label: labelIn && typeSel && typeSel.value === "other" ? labelIn.value.trim() : "" };
+        featured: !!(featBox && featBox.checked), full: !!(fullBox && fullBox.checked), label: labelIn && typeSel && typeSel.value === "other" ? labelIn.value.trim() : "" };
   const previewBtn = (kind === "event" || kind === "trip" || kind === "wellness") && C.openPreview
     ? button(a("preview"), "secondary studio-preview", () => {
         feedback.hidden = true;
@@ -957,13 +987,29 @@ async function usersView() {
         item.appendChild(el("div", { class: "actions" }, button(C.t("bdCelebrate"), "", () => celebrate(u))));
       }
       if (C.isSuper() && u.id !== me && u.role !== "super_admin") {
-        const makeAdmin = u.role !== "admin";
-        item.appendChild(el("div", { class: "actions" }, button(makeAdmin ? a("makeAdmin") : a("removeAdmin"), makeAdmin ? "" : "danger", async () => {
-          if (makeAdmin && data.some(x => x.role === "admin")) return toast(a("adminTaken"));
-          const r = await C.db.from("profiles").update({ role: makeAdmin ? "admin" : "member" }).eq("id", u.id);
-          if (r.error) return toast(r.error.code === "23505" ? a("adminTaken") : a("saveFail"));
-          toast(a("roleSaved")); render();
-        })));
+        const acts = el("div", { class: "actions" });
+        if (u.role === "admin") {   // legacy role: can only be removed; new admins are Content Admins
+          const makeAdmin = false;
+          acts.appendChild(button(makeAdmin ? a("makeAdmin") : a("removeAdmin"), makeAdmin ? "" : "danger", async () => {
+            if (makeAdmin && data.some(x => x.role === "admin")) return toast(a("adminTaken"));
+            const r = await C.db.from("profiles").update({ role: makeAdmin ? "admin" : "member" }).eq("id", u.id);
+            if (r.error) return toast(r.error.code === "23505" ? a("adminTaken") : a("saveFail"));
+            toast(a("roleSaved")); render();
+          }));
+        }
+        if (u.role === "member" || u.role === "content_admin") {
+          const makeContent = u.role === "member";
+          const seatTaken = makeContent && data.some(x => x.role === "admin" || x.role === "content_admin");
+          if (seatTaken && u.approved) acts.appendChild(el("small", { class: "ac-note", text: a("adminLimit") }));
+          else if (!makeContent || u.approved) acts.appendChild(button(makeContent ? a("makeContentAdmin") : a("removeContentAdmin"), makeContent ? "" : "danger", async () => {
+            if (makeContent && data.filter(x => x.role === "admin" || x.role === "content_admin").length >= 1) return toast(a("adminLimit"));
+            if (makeContent && !window.confirm(a("confirmContentAdmin"))) return;
+            const r = await C.db.from("profiles").update({ role: makeContent ? "content_admin" : "member" }).eq("id", u.id);
+            if (r.error) return toast(a("saveFail"));
+            toast(a("roleSaved")); render();
+          }));
+        }
+        item.appendChild(acts);
       }
       return item;
     }));
