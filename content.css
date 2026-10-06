@@ -59,11 +59,35 @@
 .hero img#heroImg { object-fit: cover; object-position: 72% 45%; transform-origin: 72% 50%; }
 @media (min-width: 720px) { .hero img#heroImg { object-position: 62% 42%; } }
 @media (min-width: 1024px) { .hero img#heroImg { object-position: 55% 40%; } }
-/* Very slow, barely-there drift of light (a gentle push-in); off for reduced-motion users. */
+/* Water-only motion: a faint shimmer confined to the sea and the sun's path (never the woman, balcony or sky).
+   hero-water.js sizes .hero-water to the photo's real rendered area, so the pieces below use photo percentages. */
+.hero-water { position: absolute; z-index: 0; pointer-events: none; overflow: hidden; display: none; }
+.hero-water.on { display: block; }
+.hw-piece { position: absolute; mix-blend-mode: soft-light; opacity: .55; }
+.hw-sea-l { left: 49%; top: 42.5%; width: 16%; height: 13%; }
+.hw-sea-r { left: 79.5%; top: 41.5%; width: 20.5%; height: 31%; }
+.hw-sea-l, .hw-sea-r { -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 24%, #000 66%, transparent 100%), linear-gradient(90deg, transparent 0%, #000 28%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 24%, #000 66%, transparent 100%), linear-gradient(90deg, transparent 0%, #000 28%, #000 72%, transparent 100%);
+  -webkit-mask-composite: source-in; mask-composite: intersect; }
+.hw-lines { position: absolute; inset: -6% 0; background:
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0) 9px, rgba(255, 255, 255, .55) 11px, rgba(255, 255, 255, 0) 14px, rgba(255, 255, 255, 0) 22px),
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0) 17px, rgba(220, 240, 255, .4) 19px, rgba(255, 255, 255, 0) 22px, rgba(255, 255, 255, 0) 36px);
+  background-size: 100% 22px, 100% 36px; }
+/* the sun's reflection: soft golden glints in a narrow column under the sun */
+.hw-sun { left: 87%; top: 42%; width: 11%; height: 35%; mix-blend-mode: screen; opacity: .5;
+  -webkit-mask-image: radial-gradient(60% 70% at 50% 40%, #000 20%, transparent 78%); mask-image: radial-gradient(60% 70% at 50% 40%, #000 20%, transparent 78%); }
+.hw-sun i { position: absolute; inset: -6% 0; background:
+    repeating-linear-gradient(180deg, rgba(255, 244, 214, 0) 0, rgba(255, 244, 214, 0) 7px, rgba(255, 244, 214, .9) 9px, rgba(255, 244, 214, 0) 12px, rgba(255, 244, 214, 0) 19px);
+  background-size: 100% 19px; }
 @media (prefers-reduced-motion: no-preference) {
-  .hero img#heroImg { animation: heroDrift 28s ease-in-out infinite alternate; }
-  @keyframes heroDrift { from { transform: scale(1); } to { transform: scale(1.035); } }
+  .hw-sea-l .hw-lines, .hw-sea-r .hw-lines { animation: hwLines 9s linear infinite; }
+  .hw-sea-r .hw-lines { animation-duration: 11s; animation-direction: reverse; }
+  .hw-sun i { animation: hwGlints 6.5s linear infinite; }
+  .hw-sun { animation: cmlGlint 4.2s ease-in-out infinite; }
+  @keyframes hwLines { to { background-position: 0 22px, 0 36px; } }
+  @keyframes hwGlints { to { background-position: 0 19px; } }
 }
+@media (prefers-reduced-motion: reduce) { .hero-water { display: none !important; } }
 
 /* ---------- Plans & Events: no huge empty media areas ---------- */
 /* Flyers ("show the whole image") keep their natural proportions in the detail hero. */
