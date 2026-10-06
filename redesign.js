@@ -105,11 +105,16 @@ const CARDS = [
 const dayOfYear = d => Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 86400000);
 function renderCode() {
   const now = new Date();
-  const card = CARDS[dayOfYear(now) % CARDS.length];
-  const txt = card[C.lang()] || card.es;
+  const D = window.CMLDaily, hit = D && D.today();       // admin-managed entry for today (Orlando date), if any
+  const card = hit ? CARDS[hit.index % CARDS.length] : CARDS[dayOfYear(now) % CARDS.length];
+  const lang = C.lang();
+  const txt = hit ? hit.text(lang) : (card[lang] || card.es);
   const set = (id, v) => { const n = document.getElementById(id); if (n) n.textContent = v; };
   set("codeAff", txt.aff); set("codeRefl", txt.refl); set("codeVerse", "“" + txt.verse + "”"); set("codeRef", txt.ref);
-  set("codeDate", now.toLocaleDateString(C.loc(), { day: "numeric", month: "short" }));
+  const day = D ? D.orlandoToday().split("-").map(Number) : null;
+  set("codeDate", (day ? new Date(day[0], day[1] - 1, day[2]) : now).toLocaleDateString(C.loc(), { day: "numeric", month: "short" }));
+  const msg = hit && hit.msg(lang);
+  if (msg) set("dailyQuote", msg);                          // Today's Message belongs to the same entry, same language
   const art = document.getElementById("codeArt"); if (art) art.setAttribute("d", ART[card.art]);
   const box = document.getElementById("codeCard"); if (box) box.style.setProperty("--code-bg", card.bg);
 }
@@ -333,12 +338,24 @@ function paintMood() {
   document.querySelectorAll(".mood[data-mood]").forEach(b => {
     const on = b.getAttribute("data-mood") === mood;
     b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on));
+    const o = C && C.setting && (C.setting("wellness_moods") || {})[b.getAttribute("data-mood")];
+    const lbl = o && String(o["label_" + C.lang()] || o["label_" + (C.lang() === "es" ? "en" : "es")] || "").trim();
+    const span = b.querySelector("span[data-i18n]");
+    if (span) span.textContent = lbl || C.t(span.getAttribute("data-i18n"));
   });
   if (!tip || !C) return;
   if (!mood || !TIPS[mood]) { tip.hidden = true; tip.replaceChildren(); return; }
   const lang = C.lang();
-  const list = TIPS[mood][lang] || TIPS[mood].es;
-  const r = RESET[mood][lang] || RESET[mood].es;
+  let list = TIPS[mood][lang] || TIPS[mood].es;
+  let r = RESET[mood][lang] || RESET[mood].es;
+  // Admin-edited goal content (settings "wellness_moods"); any empty field keeps the built-in text
+  const ov = (C.setting && C.setting("wellness_moods") || {})[mood];
+  if (ov && typeof ov === "object") {
+    const other = lang === "es" ? "en" : "es", pk = k => String(ov[k + "_" + lang] || ov[k + "_" + other] || "").trim();
+    const lines = k => pk(k).split("\n").map(x => x.trim()).filter(Boolean);
+    if (pk("text")) list = lines("text");
+    r = Object.assign({}, r, pk("title") ? { t: pk("title") } : {}, lines("steps").length ? { steps: lines("steps") } : {}, pk("action") ? { a: pk("action") } : {});
+  }
   const close = C.el("button", { type: "button", class: "mood-close", "aria-label": C.t("closeLabel"), text: "×" });
   close.addEventListener("click", () => { mood = null; paintMood(); });
   const act = C.el("button", { type: "button", class: "secondary mood-act", text: r.a + " →" });
@@ -348,7 +365,7 @@ function paintMood() {
   art.innerHTML = '<svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="' + RESET[mood].art + '"/></svg>';
   tip.replaceChildren(
     C.el("div", { class: "mood-tip-top" }, art,
-      C.el("span", { class: "mood-chosen" }, C.el("small", { text: C.t("moodChosen") }), C.el("b", { text: C.t(MOOD_LABEL[mood]) })), close),
+      C.el("span", { class: "mood-chosen" }, C.el("small", { text: C.t("moodChosen") }), C.el("b", { text: (document.querySelector('.mood[data-mood="' + mood + '"] span') || {}).textContent || C.t(MOOD_LABEL[mood]) })), close),
     C.el("h3", { class: "mood-title", text: r.t }),
     C.el("p", { class: "mood-text", text: list[dayOfYear(new Date()) % list.length] }),
     C.el("small", { class: "mood-reset-k", text: C.t("moodReset") }),
@@ -378,7 +395,8 @@ function essenceLink() {
 function init() {
   C = window.CML;
   if (!C) return;
-  window.CMLRedesign = { essenceLink, paintTravel, compose, travelImage };
+  const moodDefaults = (k, lang) => ({ label: C.t(MOOD_LABEL[k]), title: RESET[k][lang].t, text: TIPS[k][lang].join("\n"), steps: RESET[k][lang].steps.join("\n"), action: RESET[k][lang].a });
+  window.CMLRedesign = { moodDefaults, MOODS: Object.keys(MOOD_LABEL), renderCode, essenceLink, paintTravel, compose, travelImage };
   wireTripIdea();
   C.addStrings(ES, EN);
   wireFlip(); wireGo(); wireMoods();

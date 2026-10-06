@@ -111,7 +111,7 @@ function wellCard(p) {
   const img = C.safeUrl(p.image_url) || (Array.isArray(x.gallery) ? x.gallery.map(C.safeUrl).find(Boolean) : "") || "";
   const card = el("article", { class: "wd-card wd-photo" + (tag.featured ? " is-pick" : "") });
   const more = btn(t("wellSee") + " →", "link-btn wd-more", () => C.openDetail(p.id, more));
-  const media = el("button", { type: "button", class: "wd-media" + (img ? "" : " tone-Wellness"), "aria-label": (C.pick(p, "title") || "—") + " · " + t("wellSee") });
+  const media = el("button", { type: "button", class: "wd-media" + (img ? "" : " tone-Wellness") + (img && tag.full ? " is-full" : ""), "aria-label": (C.pick(p, "title") || "—") + " · " + t("wellSee") });
   if (img) {
     const i = el("img", { src: img, alt: "", loading: "lazy" });
     i.addEventListener("error", () => { i.remove(); media.classList.add("tone-Wellness"); });
@@ -157,7 +157,8 @@ function renderWellness() {
   }
   const shown = items.filter(p => wcat === "all" || C.planTag(p.id).cat === wcat)
     .sort((a, b) => (C.planTag(b.id).featured ? 1 : 0) - (C.planTag(a.id).featured ? 1 : 0));
-  if (shown.length) nodes.push(el("div", { class: "wd-list" }, ...shown.map(wellCard)));
+  if (shown.length) nodes.push(el("div", { class: "wd-list" }, ...shown.map(wellCard)),
+    btn(t("wdRecommend"), "link-btn wd-recommend", () => C.openModal("idea")));   // always reachable, not only when the list is empty
   else nodes.push(emptyBox("🌿", t("wdEmptyTitle"), t("wdEmptyText"), btn(t("wdRecommend"), "secondary", () => C.openModal("idea"))));
   host.hidden = false;
   host.replaceChildren(...nodes);
@@ -396,6 +397,8 @@ function renderMatchaPage() {
     el("p", { class: "small-note", text: posts.length ? t("maSharesIntro") : t("maSharesEmpty") }),
     posts.length ? el("div", { class: "ma-shares" }, ...posts.map(shareCard)) : null,
     btn("🍵 " + t("maShare"), "secondary ma-share-btn", () => { if (window.CMLRedesign) window.CMLRedesign.compose(t("maPrefix")); })));
+  const rc = window.CMLFeatured && window.CMLFeatured.recipeNode();   // Recipe of the Month (only when published in Admin)
+  if (rc) colA.unshift(rc);
   body.replaceChildren(el("div", { class: "ma-col" }, ...colA), el("div", { class: "ma-col" }, ...colB));
 }
 
