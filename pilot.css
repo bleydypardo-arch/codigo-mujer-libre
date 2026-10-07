@@ -1,0 +1,24 @@
+/* Código Mujer Libre — pilot-readiness additions (quiet text links, recovery forms, reading sheet, support notice). */
+.pl-quiet { display: block; margin: 6px auto 0; font-weight: 500; font-size: 13px; color: var(--cml-ink2, #6F6865); }
+.pl-h { margin: 0 0 6px; font: 400 24px/1.2 var(--font-display, Georgia, serif); }
+.pl-p { margin: 0 0 12px; color: var(--cml-ink2, #6F6865); font-size: 14.5px; line-height: 1.5; }
+#forgotForm .primary, #recoverForm .primary { margin-top: 6px; }
+
+.legal-links { margin: 10px 0 0; font-size: 12px; color: var(--cml-ink2, #6F6865); }
+.legal-link { display: inline; padding: 0; margin: 0; border: 0; background: none; font: inherit; color: inherit; text-decoration: underline; text-underline-offset: 2px; text-decoration-color: rgba(156, 123, 78, .55); cursor: pointer; }
+.legal-link:hover { color: var(--cml-rose-d, #9E4D56); }
+.legal-link:focus-visible { outline: 2px solid var(--cml-gold, #DBC19F); outline-offset: 2px; border-radius: 3px; }
+
+/* "Aquí para ti": a narrow, quiet strip at the very bottom of the support area */
+#support .sup-notice { margin: 10px 2px 0; padding: 6px 10px; border-left: 2px solid rgba(201, 161, 105, .6); font-size: 11.5px; line-height: 1.45; color: var(--cml-ink2, #6F6865); background: rgba(252, 246, 238, .6); border-radius: 0 10px 10px 0; }
+#support .sup-notice .legal-links { display: inline; margin: 0; }
+
+/* reading sheet (Privacy / Terms) */
+.lg-back { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-end; justify-content: center; background: rgba(43, 32, 32, .45); padding: 0; }
+.lg-panel { position: relative; width: min(100%, 620px); max-height: 88dvh; overflow-y: auto; padding: 22px 22px 28px; background: #FFF9F5; color: var(--cml-ink, #292527); border-radius: 24px 24px 0 0; }
+@media (min-width: 700px) { .lg-back { align-items: center; padding: 20px; } .lg-panel { border-radius: 24px; } }
+.lg-x { float: right; border: 0; background: none; font: 600 13px var(--font-ui, inherit); color: var(--cml-rose-d, #9E4D56); cursor: pointer; padding: 6px 0 6px 10px; }
+.lg-h { margin: 0 0 2px; font: 400 26px/1.2 var(--font-display, Georgia, serif); }
+.lg-u { margin: 0 0 14px; font-size: 12px; color: var(--cml-ink2, #6F6865); }
+.lg-s { margin: 16px 0 3px; font: 600 14px var(--font-ui, inherit); }
+.lg-p { margin: 0; font-size: 14.5px; line-height: 1.6; }
