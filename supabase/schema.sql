@@ -1519,3 +1519,19 @@ create policy "dyk write" on public.did_you_know
 
 revoke all on public.daily_codes, public.did_you_know from anon;
 grant select, insert, update, delete on public.daily_codes, public.did_you_know to authenticated;
+
+-- PILOT ACCESS FIX (see migration_pilot_access.sql): content tables follow the approval gate. Keep this last so a re-run of this file keeps the fix.
+drop policy if exists "plans read published or admin" on public.plans;
+create policy "plans read published or admin" on public.plans
+  for select to authenticated
+  using (public.is_content_admin() or (published and public.is_approved()));
+
+drop policy if exists "daily_codes read" on public.daily_codes;
+create policy "daily_codes read" on public.daily_codes
+  for select to authenticated
+  using (public.is_content_admin() or (published and public.is_approved()));
+
+drop policy if exists "dyk read" on public.did_you_know;
+create policy "dyk read" on public.did_you_know
+  for select to authenticated
+  using (public.is_content_admin() or (published and public.is_approved()));

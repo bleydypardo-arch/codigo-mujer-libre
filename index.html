@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="content.css">
   <link rel="stylesheet" href="home-luxe.css">
   <link rel="stylesheet" href="flipcards.css">
+  <link rel="stylesheet" href="pilot.css">
 </head>
 
 <body>
@@ -103,7 +104,33 @@
           <input id="loginPassword" type="password" autocomplete="current-password" required></label>
         <p class="form-feedback" id="loginFeedback" role="alert" hidden></p>
         <button type="submit" class="primary wide" id="loginBtn" data-i18n="loginBtn">Entrar</button>
+        <button type="button" class="link-btn join-switch pl-quiet" id="forgotLink" data-i18n="forgotLink">¿Olvidaste tu contraseña?</button>
+        <button type="button" class="link-btn join-switch pl-quiet" id="loginResend" data-i18n="resendLink" hidden>Reenviar el correo de confirmación</button>
         <button type="button" class="link-btn join-switch" id="loginToJoin" data-i18n="loginToJoin">¿Aún no eres miembro? Únete a la comunidad</button>
+      </form>
+
+      <!-- Recuperar contraseña (la miembro pide el enlace para su propia cuenta) -->
+      <form id="forgotForm" novalidate hidden>
+        <h2 class="pl-h" data-i18n="forgotTitle">Recupera tu contraseña</h2>
+        <p class="pl-p" data-i18n="forgotIntro">Escribe tu correo y te enviaremos un enlace para elegir una contraseña nueva.</p>
+        <label><span data-i18n="email">Correo electrónico</span>
+          <input id="forgotEmail" type="email" autocomplete="email" required></label>
+        <p class="form-feedback" id="forgotFeedback" role="alert" hidden></p>
+        <button type="submit" class="primary wide" id="forgotBtn" data-i18n="forgotBtn">Enviar enlace</button>
+        <button type="button" class="link-btn join-switch" id="forgotBack" data-i18n="forgotBack">← Volver a entrar</button>
+      </form>
+
+      <!-- Elegir contraseña nueva (se abre desde el enlace del correo) -->
+      <form id="recoverForm" novalidate hidden>
+        <h2 class="pl-h" data-i18n="recoverTitle">Elige tu nueva contraseña</h2>
+        <p class="pl-p" data-i18n="recoverIntro">Usa al menos 8 caracteres.</p>
+        <label><span data-i18n="recoverNew">Contraseña nueva</span>
+          <input id="recoverPw" type="password" autocomplete="new-password" minlength="8" required></label>
+        <label><span data-i18n="recoverRepeat">Repite la contraseña</span>
+          <input id="recoverPw2" type="password" autocomplete="new-password" minlength="8" required></label>
+        <p class="form-feedback" id="recoverFeedback" role="alert" hidden></p>
+        <button type="submit" class="primary wide" id="recoverBtn" data-i18n="recoverBtn">Guardar contraseña</button>
+        <button type="button" class="link-btn join-switch" id="recoverBack" data-i18n="forgotBack" hidden>← Volver a entrar</button>
       </form>
 
       <!-- SOLICITUD DE MEMBRESÍA (2 pasos) -->
@@ -180,6 +207,7 @@
               <li><b data-i18n="guide4b">Aparece y participa:</b> <span data-i18n="guide4">esta comunidad la hacemos juntas.</span></li>
             </ul>
             <label class="check join-accept"><input type="checkbox" id="suGuide"> <span data-i18n="guideAccept">Acepto las normas de la comunidad</span></label>
+            <p class="legal-links"><button type="button" class="legal-link" data-legal="privacy" data-i18n="legalPrivacy">Privacidad</button> · <button type="button" class="legal-link" data-legal="terms" data-i18n="legalTerms">Términos</button></p>
           </div>
         </div>
 
@@ -201,6 +229,8 @@
         <p data-i18n="thanksBody">Tu solicitud llegó a nuestro equipo. La revisamos con cariño y te escribiremos por WhatsApp o correo en cuanto estés dentro.</p>
         <p class="join-confirm"><span data-i18n="thanksConfirm">Antes, confirma tu correo con el enlace que te enviamos a</span> <b id="thanksEmail"></b>.</p>
         <button type="button" class="primary wide" id="thanksLogin" data-i18n="thanksLogin">Ya lo confirmé · Entrar</button>
+        <p class="form-feedback ok" id="thanksResendFb" role="status" hidden></p>
+        <button type="button" class="link-btn join-switch pl-quiet" id="thanksResend" data-i18n="resendLink">Reenviar el correo de confirmación</button>
       </div>
     </div>
   </div>
@@ -682,6 +712,8 @@
       Este espacio ofrece apoyo comunitario y no reemplaza servicios profesionales o de emergencia.
     </p>
 
+    <p class="sup-notice" id="supNotice"><span data-i18n="supNotice">Este espacio no es un servicio de emergencia ni se atiende las 24 horas. En peligro inmediato, usa los recursos de emergencia de esta página.</span> <span class="legal-links"><button type="button" class="legal-link" data-legal="privacy" data-i18n="legalPrivacy">Privacidad</button> · <button type="button" class="legal-link" data-legal="terms" data-i18n="legalTerms">Términos</button></span></p>
+
   </section>
 
   <!-- MATCHA Y ARTE (editorial collection: tagged plans + community shares; no new backend) -->
@@ -818,5 +850,7 @@
   <script src="code.js"></script>
   <script src="experiences.js"></script>
   <script src="story.js"></script>
+  <script src="legal.js"></script>
+  <script src="pilot.js"></script>
 </body>
 </html>

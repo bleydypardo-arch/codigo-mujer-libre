@@ -7,6 +7,9 @@ const SUPABASE_URL = "https://ltuklkfymedhqncwzpks.supabase.co";
 const MAPS_KEY = "AIzaSyD7IzJRAwF9jZLESeqeNjGepo5gx5Mrifw";
 const SUPABASE_KEY = "sb_publishable_cmiZ-mhW1wBf6hQuscVp7g_P7Wg4bPh"; // publishable key: safe in the browser
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// A password-recovery link opens the app with type=recovery in the URL: that visit must NOT silently log her in;
+// pilot.js shows the "choose a new password" panel instead. (Read before supabase-js tidies the URL.)
+window.CML_RECOVERY = /(^|[#&?])(type=recovery|error_code=otp_expired)(&|$)/.test(window.location.hash + window.location.search);
 const translations = {
   es: {
     tagline: "Conecta · Vive · Crece",
@@ -2032,11 +2035,13 @@ function initialize() {
   db.auth.onAuthStateChange((event, s) => {
     // Never call Supabase inside this callback directly; defer to avoid auth deadlocks.
     setTimeout(() => {
+      if (window.CML_RECOVERY && event !== "SIGNED_OUT") return;
       if (event === "SIGNED_OUT") { if (session) applySession(null); }
       else if (event === "SIGNED_IN" && s && (!session || session.user.id !== s.user.id)) applySession(s);
     }, 0);
   });
   db.auth.getSession().then(({ data }) => {
+    if (window.CML_RECOVERY) { authStart = "login"; showGate(true); document.dispatchEvent(new Event("cml:recovery")); return; }
     if (data && data.session) applySession(data.session);
     else applySession(null);
   }).catch(() => applySession(null));
