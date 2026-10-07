@@ -28,7 +28,7 @@ const DOC = {
   },
   terms: {
     es: { title: "Términos de uso", updated: "Actualizado: octubre de 2026", s: [
-      ["Una comunidad privada", "Código Mujer Libre es un espacio privado. El acceso lo aprueba el equipo y puede retirarse si no se respetan estas normas."],
+      ["Una comunidad privada", "Código Mujer Libre es un espacio privado para mujeres de 18 años o más. El acceso lo aprueba el equipo y puede retirarse si no se respetan estas normas."],
       ["Nuestro código", "Respeto y cariño. Lo que se comparte aquí, se queda aquí. Sin ventas ni spam entre miembros. Aparece y participa."],
       ["Tu contenido", "Lo que publicas es tuyo. Al publicarlo, permites que las miembros de la comunidad lo vean dentro de la aplicación. No publiques contenido ofensivo, que dañe a otras personas o que no te pertenezca. Podemos ocultar o quitar contenido que incumpla estas normas."],
       ["Eventos y viajes", "Los planes, precios y detalles pueden cambiar. La información de pago y contacto de cada plan es solo para miembros aprobadas."],
@@ -37,7 +37,7 @@ const DOC = {
       ["Cambios", "Podemos actualizar estos términos; verás aquí la fecha más reciente."]
     ] },
     en: { title: "Terms of Use", updated: "Updated: October 2026", s: [
-      ["A private community", "Código Mujer Libre is a private space. Access is approved by the team and may be withdrawn if these rules are not respected."],
+      ["A private community", "Código Mujer Libre is a private space for women aged 18 or older. Access is approved by the team and may be withdrawn if these rules are not respected."],
       ["Our code", "Respect and warmth. What is shared here, stays here. No selling or spam between members. Show up and take part."],
       ["Your content", "What you post is yours. By posting it you allow the members of the community to see it inside the app. Do not post content that is offensive, harms other people or does not belong to you. We may hide or remove content that breaks these rules."],
       ["Events and trips", "Plans, prices and details may change. Payment and contact information for each plan is for approved members only."],
