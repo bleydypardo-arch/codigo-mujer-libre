@@ -8,13 +8,13 @@
   #home.page.active { display: flex; flex-direction: column; }
   #home .home-cols, #home .home-col { display: contents; }
 
-  /* Prescribed hierarchy: 1 hero + today's code → 2 weekly code → 3 Matcha & Art + Código Experiences → the rest */
+  /* Prescribed hierarchy: hero + today's code → quick doors → weekly code → Matcha & Art → Código Experiences → the rest */
   #home > .hero { order: 0; }
   #home > .code-card { order: 1; }
-  #homeCodeWeek { order: 2; }
-  #homeMatcha { order: 3; }
-  #homeExperience { order: 4; }
-  #home > .quick { order: 5; }
+  #home > .quick { order: 2; }
+  #homeCodeWeek { order: 3; }
+  #homeMatcha { order: 4; }
+  #homeExperience { order: 5; }
   #homeWeek { order: 6; }
   #homeUpcoming { order: 7; }
   #homeWeekend { order: 8; }
@@ -27,10 +27,9 @@
   /* even vertical rhythm: every block after the quick doors sits 22px from the last */
   #homeWeek, #homeUpcoming, #homeMatcha, #homeExperience, #homeCodeWeek, #homeDiscover,
   #homeUpdates, #homeWeekend, #homeMemory, #home .home-more, #homeChecklist { margin: 22px 0 0 !important; }
-  #homeCodeWeek { margin-top: 18px !important; }
+  #homeCodeWeek { margin-top: 16px !important; }
   /* Matcha & Art leads; Código Experiences sits right under it as its quieter partner */
   #homeExperience { margin-top: 12px !important; }
-  #home > .quick { margin-top: 22px; margin-bottom: 0; }
 }
 
 /* ---- 2. shared quiet language for the secondary blocks ---- */
