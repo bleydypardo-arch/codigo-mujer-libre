@@ -307,16 +307,33 @@ const TALK = [
   { es: ["Gratitud", "¿Por qué estás agradecida esta semana?"], en: ["Gratitude", "What are you grateful for this week?"] },
   { es: ["Algo que aprendiste", "¿Qué aprendiste este año que te gustaría compartir con otras mujeres?"], en: ["Something you learned", "What did you learn this year that you'd like to share with other women?"] }
 ];
+// The weekly question: the admin's "Let's Talk" entry (settings.talk_prompt) when published, otherwise the built-in rotation above.
+function talkItem() {
+  const lang = C.lang(), other = lang === "es" ? "en" : "es";
+  const s = C.setting && C.setting("talk_prompt");
+  if (s && typeof s === "object" && s.published) {
+    const q = String(s["body_" + lang] || s["body_" + other] || "").trim();
+    if (q) return [String(s["title_" + lang] || s["title_" + other] || "").trim(), q];
+  }
+  const week = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / (7 * DAY));
+  return TALK[((week % TALK.length) + TALK.length) % TALK.length][lang] || TALK[0].es;
+}
+let talkFlipped = false;
 function renderTalk() {
   const host = document.getElementById("homeTalk");
   if (!host) return;
   if (!C.session()) { host.hidden = true; host.replaceChildren(); return; }
-  const week = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / (7 * DAY));
-  const item = TALK[((week % TALK.length) + TALK.length) % TALK.length][C.lang()] || TALK[0].es;
+  const item = talkItem();
   const cta = el("button", { type: "button", class: "secondary talk-cta", text: "💬 " + t("talkCta") });
   cta.addEventListener("click", () => { if (window.CMLRedesign) window.CMLRedesign.compose(t("talkLabel").charAt(0) + t("talkLabel").slice(1).toLowerCase() + " · " + item[1] + "\n"); });
+  const F = window.CMLFlip;
   host.hidden = false;
-  host.replaceChildren(el("small", { class: "rose", text: t("talkLabel") }), el("h2", { text: item[0] }), el("p", { text: item[1] }), cta);
+  host.classList.add("fc-host");
+  const back = [el("small", { class: "fc-k rose", text: t("talkLabel") }), item[0] ? el("b", { class: "fc-title", text: item[0] }) : null, el("p", { class: "fc-q", text: item[1] }), cta];
+  if (!F) { host.replaceChildren(...back); return; }
+  const art = el("span", { class: "fc-art", "aria-hidden": "true" }); art.innerHTML = F.envelopeSVG();
+  host.replaceChildren(F.build({ cls: "fc-talk", label: t("talkLabel"), front: [art, el("span", { class: "fc-title", text: C.t("fcTalkFront") }), el("span", { class: "fc-hint", text: C.t("fcTalkHint") })],
+    back, flipped: talkFlipped, backLabel: C.t("fcBack"), onToggle: on => { talkFlipped = on; } }));
 }
 
 function render(fromFetch) {

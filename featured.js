@@ -4,7 +4,7 @@
 // Until the admin publishes something, each shows an elegant "coming soon" state in the same design (never a blank gap).
 (function () {
 "use strict";
-let C = null, facts = [], factOffset = 0, flipped = false;
+let C = null, facts = [], factOffset = 0, flipped = false, dykFlipped = false;
 const ES = { rcK: "RECETA DEL MES", rcTap: "Toca para descubrir la receta", rcBack: "Toca para volver", rcOpen: "Ver receta completa",
   dykK: "¿SABÍAS QUE?", dykNext: "Otro dato", dykAria: "Dato curioso",
   rcSoonT: "Muy pronto: nuestra primera receta", rcSoonP: "Cada mes compartiremos aquí una receta de matcha para disfrutar con calma.", rcSoonTag: "Muy pronto",
@@ -77,28 +77,31 @@ const live = () => facts.filter(f => f.published && (f.body_es || f.body_en)).so
 function paintDyk() {
   const host = document.getElementById("homeDyk");
   if (!host || !C) return;
-  const list = C.session() ? live() : [];
   if (!C.session()) { host.hidden = true; host.replaceChildren(); return; }
-  if (!list.length) {
-    host.hidden = false; host.classList.add("is-soon"); host.setAttribute("role", "region"); host.setAttribute("aria-label", C.t("dykAria"));
-    host.replaceChildren(el("small", { class: "dyk-k" }, el("span", { class: "dyk-spark", "aria-hidden": "true", text: "✦" }), C.t("dykK")),
-      el("p", { class: "dyk-b", text: C.t("dykSoon") }));
-    return;
-  }
-  host.classList.remove("is-soon");
+  const list = live();
+  const F = window.CMLFlip;
+  host.hidden = false;
+  host.classList.add("fc-host");
+  host.classList.toggle("is-soon", !list.length);
+  host.setAttribute("role", "region"); host.setAttribute("aria-label", C.t("dykAria"));
   const day = window.CMLDaily ? window.CMLDaily.dayNumber(window.CMLDaily.orlandoToday()) : Math.floor(Date.now() / 86400000);
-  const f = list[(day + factOffset) % list.length];
-  const next = el("button", { type: "button", class: "dyk-next", text: C.t("dykNext") });
+  const f = list.length ? list[(day + factOffset) % list.length] : null;
+  const next = el("button", { type: "button", class: "fc-act dyk-next", text: C.t("dykNext") });
   next.addEventListener("click", () => { factOffset++; paintDyk(); });
   next.hidden = list.length < 2;
-  host.hidden = false;
-  host.setAttribute("role", "region"); host.setAttribute("aria-label", C.t("dykAria"));
-  host.replaceChildren(
-    el("small", { class: "dyk-k" }, el("span", { class: "dyk-spark", "aria-hidden": "true", text: "✦" }), C.t("dykK")),
-    pickLang(f, "title") ? el("b", { class: "dyk-t", text: pickLang(f, "title") }) : null,
-    el("p", { class: "dyk-b", text: pickLang(f, "body") }),
-    next);
-  host.classList.remove("dyk-in"); void host.offsetWidth; if (!reduced()) host.classList.add("dyk-in");
+  const back = [
+    el("small", { class: "fc-k dyk-k" }, el("span", { class: "dyk-spark", "aria-hidden": "true", text: "✦" }), C.t("dykK")),
+    f && pickLang(f, "title") ? el("b", { class: "fc-title dyk-t", text: pickLang(f, "title") }) : null,
+    el("p", { class: "fc-body dyk-b", text: f ? pickLang(f, "body") : C.t("dykSoon") }),
+    next];
+  if (!F) {   // safety net: plain card if the flip component is missing
+    host.replaceChildren(...back); return;
+  }
+  const front = [
+    (() => { const s = el("span", { class: "fc-art", "aria-hidden": "true" }); s.innerHTML = F.butterflySVG(); return s; })(),
+    el("span", { class: "fc-title", text: C.t("fcDykFront") }),
+    el("span", { class: "fc-hint", text: C.t("fcDykHint") })];
+  host.replaceChildren(F.build({ cls: "fc-dyk", label: C.t("dykAria"), front, back, flipped: dykFlipped, backLabel: C.t("fcBack"), onToggle: on => { dykFlipped = on; } }));
 }
 async function loadFacts() {
   if (!C || !C.session()) { facts = []; paintDyk(); return; }
@@ -113,7 +116,7 @@ function init() {
   C = window.CML; if (!C) return;
   C.addStrings(ES, EN);
   window.CMLFeatured = { recipeNode, paintDyk, loadFacts };
-  document.addEventListener("cml:session", () => { flipped = false; factOffset = 0; loadFacts(); });
+  document.addEventListener("cml:session", () => { flipped = false; dykFlipped = false; factOffset = 0; loadFacts(); });
   document.addEventListener("cml:lang", paintDyk);
   document.addEventListener("cml:render", paintDyk);
   if (C.session()) loadFacts();

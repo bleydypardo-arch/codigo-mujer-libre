@@ -5,7 +5,7 @@
 "use strict";
 const T = {
   es: {
-    tDaily: "Código de hoy", tMoods: "Metas de bienestar", tRecipe: "Receta del mes", tDyk: "¿Sabías que?", tTravel: "Viajes: próximamente",
+    tDaily: "Código de hoy", tMoods: "Metas de bienestar", tRecipe: "Receta del mes", tDyk: "¿Sabías que?", tTalk: "Hablemos", tTravel: "Viajes: próximamente",
     save: "Guardar", cancel: "Cancelar", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Despublicar", preview: "Vista previa", hidePreview: "Ocultar vista previa",
     published: "Publicado", draft: "Borrador", today: "Hoy", scheduled: "Programado", saved: "Guardado.", saveFail: "No se pudo guardar. Inténtalo de nuevo.", loadFail: "No se pudo cargar.",
     confirmDel: "¿Eliminar esta entrada? No se puede deshacer.", confirmReset: "¿Quitar esta personalización y volver al texto original?", up: "Subir", down: "Bajar", empty: "Todavía no hay entradas.",
@@ -20,13 +20,14 @@ const T = {
     rIntro: "Una tarjeta que se voltea en el Rincón Matcha & Arte. Al frente: título y adelanto. Atrás: tu receta (imagen ya terminada y texto corto).",
     rTitle: "Título", rTeaser: "Adelanto (frente)", rText: "Texto corto (reverso)", rImage: "Imagen de la receta (reverso)", rLink: "Enlace a la receta completa (opcional)", rRemove: "Quitar receta", rPub: "Publicada (visible para las miembros)",
     imgReplace: "Subir o cambiar imagen", imgNote: "Se muestra completa, sin recortar ni deformar.",
+    talkIntro: "La pregunta de la tarjeta «Hablemos» en Inicio. Cámbiala cada semana (o cada día). Si no publicas nada, se usan las preguntas de siempre, que rotan solas.", tqTitle: "Título corto (opcional)", tqBody: "Pregunta", tqPub: "Publicada (reemplaza la pregunta automática)", tqReset: "Volver a las preguntas automáticas",
     dykIntro: "Datos breves que rotan cada día en Inicio. Escribe español e inglés.", dTitle: "Título (opcional)", dBody: "Dato",
     travelIntro: "Los dos espacios «Próximamente» y el mensaje de anuncio de Viajes. Vacío = texto original. Si ya hay una experiencia publicada, el espacio libre usa el Espacio 1.",
     slotN: n => "Espacio " + n, sLabel: "Etiqueta (ej. Próximamente)", sTitle: "Destino o titular", sImage: "Imagen promocional (opcional)",
     tvTeaser: "Mensaje de anuncio (Inicio y Viajes)", cHomeExpSoon: "Titular", cHomeExpSoonP: "Texto", cStoryT: "Promesa: titular", cStoryP: "Promesa: texto"
   },
   en: {
-    tDaily: "Code for Today", tMoods: "Wellness goals", tRecipe: "Recipe of the Month", tDyk: "Did You Know?", tTravel: "Travel: coming soon",
+    tDaily: "Code for Today", tMoods: "Wellness goals", tRecipe: "Recipe of the Month", tDyk: "Did You Know?", tTalk: "Let's Talk", tTravel: "Travel: coming soon",
     save: "Save", cancel: "Cancel", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Unpublish", preview: "Preview", hidePreview: "Hide preview",
     published: "Published", draft: "Draft", today: "Today", scheduled: "Scheduled", saved: "Saved.", saveFail: "Couldn't save. Please try again.", loadFail: "Couldn't load.",
     confirmDel: "Delete this entry? This can't be undone.", confirmReset: "Remove this customization and go back to the original text?", up: "Move up", down: "Move down", empty: "No entries yet.",
@@ -41,6 +42,7 @@ const T = {
     rIntro: "A flip card on the Matcha & Art Corner. Front: title and teaser. Back: your recipe (a finished image and short text).",
     rTitle: "Title", rTeaser: "Teaser (front)", rText: "Short text (back)", rImage: "Recipe image (back)", rLink: "Link to the full recipe (optional)", rRemove: "Remove recipe", rPub: "Published (visible to members)",
     imgReplace: "Upload or replace image", imgNote: "Shown whole, never cropped or stretched.",
+    talkIntro: "The question on the “Let's Talk” card on Home. Change it every week (or every day). If nothing is published, the usual questions are used and rotate on their own.", tqTitle: "Short title (optional)", tqBody: "Question", tqPub: "Published (replaces the automatic question)", tqReset: "Back to the automatic questions",
     dykIntro: "Short facts that rotate daily on Home. Write Spanish and English.", dTitle: "Title (optional)", dBody: "Fact",
     travelIntro: "The two “Coming soon” spaces and the announcement message on Travel. Empty = original text. If one experience is already published, the free space uses Space 1.",
     slotN: n => "Space " + n, sLabel: "Label (e.g. Coming soon)", sTitle: "Destination or headline", sImage: "Promo image (optional)",
@@ -271,6 +273,29 @@ async function recipeTab() {
   return form;
 }
 
+// ----- Let's Talk weekly question (settings.talk_prompt; empty/unpublished = built-in rotation) -----
+async function talkTab() {
+  const cur = (await settingsMap()).talk_prompt || {};
+  const title = pair(tx("tqTitle"), "title", cur, { line: true, max: 80 }), body = pair(tx("tqBody"), "body", cur, { rows: 3 });
+  const pub = el("input", { type: "checkbox" }); pub.checked = !!cur.published;
+  const fb = feedbackNode();
+  return el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("talkIntro") }),
+    title.node, body.node, el("label", { class: "check" }, pub, tx("tqPub")), fb,
+    el("div", { class: "admin-bar" },
+      K.button(tx("save"), "primary", async () => {
+        say(fb, ""); const v = Object.assign({}, title.val(), body.val(), { published: pub.checked });
+        if (half(body)) return say(fb, tx("bothLangs"));
+        if (v.published && !(v.body_es && v.body_en)) return say(fb, tx("bothLangs"));
+        try { await putSetting("talk_prompt", v); } catch (e) { console.error(e); return say(fb, tx("saveFail")); }
+        K.toast(tx("saved"));
+      }),
+      K.button(tx("tqReset"), "danger", async () => {
+        if (!confirmed(tx("confirmReset"))) return;
+        try { await putSetting("talk_prompt", null); } catch { return say(fb, tx("saveFail")); }
+        K.toast(tx("saved")); K.rerender();
+      })));
+}
+
 // ----- Travel placeholders + announcement (settings.travel_slots, settings.copy) -----
 async function travelTab() {
   const cfg = await settingsMap();
@@ -325,6 +350,7 @@ function init() {
   A.registerTab("moods", { group: "content", label: lab(T.es.tMoods, T.en.tMoods), render: async () => moodsTab() });
   A.registerTab("recipe", { group: "content", label: lab(T.es.tRecipe, T.en.tRecipe), render: async () => recipeTab() });
   A.registerTab("dyk", { group: "content", label: lab(T.es.tDyk, T.en.tDyk), render: async () => dykTab() });
+  A.registerTab("talk", { group: "content", label: lab(T.es.tTalk, T.en.tTalk), render: async () => talkTab() });
   A.registerTab("travelx", { group: "content", label: lab(T.es.tTravel, T.en.tTravel), render: async () => travelTab() });
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
