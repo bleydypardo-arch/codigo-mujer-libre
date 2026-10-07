@@ -8,26 +8,29 @@
   #home.page.active { display: flex; flex-direction: column; }
   #home .home-cols, #home .home-col { display: contents; }
 
+  /* Prescribed hierarchy: 1 hero + today's code → 2 weekly code → 3 Matcha & Art + Código Experiences → the rest */
   #home > .hero { order: 0; }
   #home > .code-card { order: 1; }
-  #home > .quick { order: 2; }
-  #homeWeek { order: 3; }
-  #homeUpcoming { order: 4; }
-  #homeMatcha { order: 5; }
-  #homeExperience { order: 6; }
-  #homeCodeWeek { order: 7; }
-  #homeDiscover { order: 8; }
-  #homeUpdates { order: 9; }
-  #homeWeekend { order: 10; }
+  #homeCodeWeek { order: 2; }
+  #homeMatcha { order: 3; }
+  #homeExperience { order: 4; }
+  #home > .quick { order: 5; }
+  #homeWeek { order: 6; }
+  #homeUpcoming { order: 7; }
+  #homeWeekend { order: 8; }
+  #homeDiscover { order: 9; }
+  #homeUpdates { order: 10; }
   #homeMemory { order: 11; }
   #home .home-more { order: 12; }
-  #homeChecklist { order: 14; }
+  #homeChecklist { order: 13; }
 
   /* even vertical rhythm: every block after the quick doors sits 22px from the last */
   #homeWeek, #homeUpcoming, #homeMatcha, #homeExperience, #homeCodeWeek, #homeDiscover,
   #homeUpdates, #homeWeekend, #homeMemory, #home .home-more, #homeChecklist { margin: 22px 0 0 !important; }
-  #homeWeek { margin-top: 20px !important; }
-  #home > .quick { margin-bottom: 0; }
+  #homeCodeWeek { margin-top: 18px !important; }
+  /* Matcha & Art leads; Código Experiences sits right under it as its quieter partner */
+  #homeExperience { margin-top: 12px !important; }
+  #home > .quick { margin-top: 22px; margin-bottom: 0; }
 }
 
 /* ---- 2. shared quiet language for the secondary blocks ---- */
@@ -121,4 +124,10 @@
 .well-reads .cards { gap: 14px; }
 
 /* Código Experiences teaser: a touch shorter on phones so the flow keeps moving */
-@media (max-width: 1023.98px) { #homeExperience.hx-card { min-height: 236px; } #homeExperience.hx-card.is-soon { min-height: 250px; } }
+@media (max-width: 1023.98px) {
+  #homeExperience.hx-card { min-height: 0; border-radius: 22px; box-shadow: 0 14px 30px -20px rgba(78, 26, 38, .5); }
+  #homeExperience .hx-txt { padding: 20px 20px 18px; gap: 8px; }
+  #homeExperience.hx-card .hx-title { font-size: 21px !important; max-width: 22ch; }
+  #homeExperience.hx-card.is-soon { min-height: 0; padding: 0; }
+  #homeExperience.hx-card.is-soon .hx-invite { padding: 20px !important; }
+}
