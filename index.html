@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="design.css">
   <link rel="stylesheet" href="theme-final.css">
   <link rel="stylesheet" href="content.css">
+  <link rel="stylesheet" href="home-luxe.css">
 </head>
 
 <body>
@@ -326,18 +327,16 @@
         <div id="homeWeek" class="card week-card" hidden></div>
         <div id="homeUpcoming" class="home-upcoming" hidden></div>
         <div id="homeWeekend" class="card weekend-card" hidden></div>
-        <div id="featuredBlock" class="featured-block" hidden>
-          <h2 data-i18n="thisWeek">Esta semana</h2>
-          <div id="featured" class="cards"></div>
-        </div>
       </div>
       <div class="home-col home-col-side">
         <div id="homeMatcha" class="matcha-card-wrap" hidden></div>
         <div id="homeUpdates" class="card home-updates" hidden></div>
         <div id="homeMemory" class="card mem-home" hidden></div>
         <div id="homeDiscover" class="card discover-card" hidden></div>
-        <div id="homeTalk" class="card talk-card" hidden></div>
-        <div id="homeDyk" class="dyk-card" hidden></div>
+        <div class="home-more">
+          <div id="homeTalk" class="card talk-card" hidden></div>
+          <div id="homeDyk" class="dyk-card" hidden></div>
+        </div>
       </div>
     </div>
 
@@ -567,6 +566,14 @@
     <div id="wellDiscover" class="well-discover" hidden></div>
 
     <div id="wellnessCards" hidden></div>
+
+    <!-- Editorial area (was "Esta semana" on Home): same #featuredBlock/#featured, same admin Home tab, now lives in Wellness -->
+    <div id="featuredBlock" class="featured-block well-reads" hidden>
+      <small class="rose" data-i18n="wellReadsK">PARA LEER</small>
+      <h2 data-i18n="wellReadsT">Lecturas de bienestar</h2>
+      <p class="small-note" data-i18n="wellReadsP">Ideas cortas sobre longevidad, alimentación, salud de la mujer y hábitos.</p>
+      <div id="featured" class="cards"></div>
+    </div>
 
     <div id="wellUpcoming" class="well-upcoming" hidden></div>
 

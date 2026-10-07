@@ -1,0 +1,124 @@
+/* Código Mujer Libre — Home composition (presentation only).
+   Same components, same data, same animations; this file only decides ORDER, SIZE and RHYTHM on Home.
+   Phones: one calm column — hero, today's code, quick doors, then a short curated flow.
+   Desktop (>=1024px) keeps the existing two-column layout untouched. */
+
+/* ---- 1. one column, curated order (phones & tablets) ---- */
+@media (max-width: 1023.98px) {
+  #home.page.active { display: flex; flex-direction: column; }
+  #home .home-cols, #home .home-col { display: contents; }
+
+  #home > .hero { order: 0; }
+  #home > .code-card { order: 1; }
+  #home > .quick { order: 2; }
+  #homeWeek { order: 3; }
+  #homeUpcoming { order: 4; }
+  #homeMatcha { order: 5; }
+  #homeExperience { order: 6; }
+  #homeCodeWeek { order: 7; }
+  #homeDiscover { order: 8; }
+  #homeUpdates { order: 9; }
+  #homeWeekend { order: 10; }
+  #homeMemory { order: 11; }
+  #home .home-more { order: 12; }
+  #homeChecklist { order: 14; }
+
+  /* even vertical rhythm: every block after the quick doors sits 22px from the last */
+  #homeWeek, #homeUpcoming, #homeMatcha, #homeExperience, #homeCodeWeek, #homeDiscover,
+  #homeUpdates, #homeWeekend, #homeMemory, #home .home-more, #homeChecklist { margin: 22px 0 0 !important; }
+  #homeWeek { margin-top: 20px !important; }
+  #home > .quick { margin-bottom: 0; }
+}
+
+/* ---- 2. shared quiet language for the secondary blocks ---- */
+#homeWeek, #homeCodeWeek, #homeTalk, #homeDyk, #homeChecklist, #homeUpdates, #homeWeekend {
+  border-radius: 22px; box-shadow: 0 1px 0 rgba(255, 255, 255, .9) inset, 0 10px 28px -18px rgba(90, 59, 66, .28);
+}
+#homeUpcoming .section-head { margin: 0 0 10px; }
+#homeUpcoming .section-head h2 { font-size: 21px; }
+
+/* ---- 3. Matcha & Art: a signature band, not another rectangle ---- */
+.matcha-card-wrap .matcha-card {
+  position: relative; grid-template-columns: minmax(0, 42%) minmax(0, 1fr); min-height: 176px; border: 0; border-radius: 26px;
+  background: linear-gradient(135deg, #F4F7EE 0%, #E6EFE0 55%, #F3EBDD 100%);
+  box-shadow: 0 22px 44px -26px rgba(79, 107, 75, .55), 0 2px 0 rgba(255, 255, 255, .8) inset;
+}
+.matcha-card-wrap .matcha-card::after {            /* fine gold keyline, like a framed card */
+  content: ""; position: absolute; inset: 7px; border-radius: 20px; pointer-events: none;
+  border: 1px solid rgba(201, 161, 105, .55);
+}
+.matcha-card-wrap .matcha-img { min-height: 176px; }
+.matcha-card-wrap .matcha-img::after {             /* blends the photo into the card */
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(230, 239, 224, 0) 55%, rgba(230, 239, 224, .95) 100%);
+}
+.matcha-card-wrap .matcha-txt { gap: 6px; padding: 22px 22px 20px 12px; justify-content: center; }
+.matcha-card-wrap .matcha-txt .rose { font-size: 10.5px; letter-spacing: .22em; color: var(--cml-gold-ink); font-weight: 600; }
+.matcha-card-wrap .matcha-txt b { font: italic 400 25px/1.15 var(--font-display); color: #2F3B2C; text-wrap: balance; }
+.matcha-card-wrap .matcha-sub { color: #55634F; }
+.matcha-card-wrap .matcha-go { color: var(--cml-gold-ink); letter-spacing: .04em; }
+@media (min-width: 1024px) {
+  .matcha-card-wrap .matcha-card { grid-template-columns: minmax(0, 1fr); }
+  .matcha-card-wrap .matcha-img::after { background: linear-gradient(180deg, rgba(230, 239, 224, 0) 60%, rgba(230, 239, 224, .95) 100%); }
+  .matcha-card-wrap .matcha-txt { padding: 16px 22px 22px; }
+}
+
+/* ---- 4. "Your code this week": one quiet row instead of an 8-tile grid ---- */
+#homeCodeWeek { padding: 16px 0 14px 16px; }
+#homeCodeWeek .wc-top, #homeCodeWeek .wc-result, #homeCodeWeek .wc-acts, #homeCodeWeek .wc-hint, #homeCodeWeek .wc-brand { padding-right: 16px; }
+#homeCodeWeek:not(.is-chosen) .wc-head h2 { font-size: 20px; }
+#homeCodeWeek:not(.is-chosen) .wc-head .small-note { display: none; }
+#homeCodeWeek .wc-grid { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x proximity; padding: 4px 16px 6px 0; margin-top: 10px; scrollbar-width: none; }
+#homeCodeWeek .wc-grid::-webkit-scrollbar { display: none; }
+#homeCodeWeek .wc-pick { flex: 0 0 84px; scroll-snap-align: start; min-height: 74px; }
+#homeCodeWeek .wc-hint { margin: 2px 0 0; font-size: 12px; }
+@media (min-width: 720px) { #homeCodeWeek .wc-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); overflow: visible; } #homeCodeWeek .wc-pick { flex: none; } }
+
+/* ---- 5. "Haz algo nuevo": three small cards you swipe, not a list you scroll ---- */
+#homeDiscover.discover-card { padding: 0; background: none; border: 0; box-shadow: none; }
+#homeDiscover > small, #homeDiscover > h2 { padding: 0 2px; }
+#homeDiscover > h2 { margin: 2px 0 12px; font-size: 21px; }
+#homeDiscover .disc-list { flex-direction: row; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 2px 8px; scrollbar-width: none; margin: 0 -2px; }
+#homeDiscover .disc-list::-webkit-scrollbar { display: none; }
+#homeDiscover .disc-row {
+  flex: 0 0 min(232px, 70%); scroll-snap-align: start; flex-direction: column; align-items: stretch; gap: 0; padding: 0; min-height: 0;
+  border: 1px solid var(--cml-line); border-radius: 20px; overflow: hidden; background: #fff; box-shadow: 0 12px 26px -20px rgba(90, 59, 66, .4);
+}
+#homeDiscover .disc-row:first-child { border-top: 1px solid var(--cml-line); }
+#homeDiscover .disc-th { width: 100%; height: 88px; border-radius: 0; font-size: 34px; }
+#homeDiscover .disc-txt { padding: 12px 14px 14px; gap: 3px; }
+#homeDiscover .disc-txt b { font-size: 16.5px; }
+#homeDiscover .wrow-go, #homeDiscover .disc-row > :last-child:not(.disc-th):not(.disc-txt) { display: none; }
+@media (min-width: 1024px) {
+  #homeDiscover .disc-list { flex-direction: column; overflow: visible; }
+  #homeDiscover .disc-row { flex: none; flex-direction: row; align-items: center; padding: 10px 12px; }
+  #homeDiscover .disc-th { width: 54px; height: 54px; border-radius: 12px; }
+}
+
+/* Hablemos + ¿Sabías que? share one swipeable row on phones */
+.home-more { display: contents; }
+.home-more .card h2 { margin: 2px 0 8px; font: 400 19px/1.25 var(--font-display); }
+@media (max-width: 1023.98px) {
+  .home-more { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 2px 2px 8px; margin-left: -2px; margin-right: -2px; }
+  .home-more::-webkit-scrollbar { display: none; }
+  .home-more:not(:has(> :not([hidden]))) { display: none; }
+  .home-more > #homeTalk, .home-more > #homeDyk { flex: 1 0 84%; scroll-snap-align: start; margin: 0 !important; }
+  .home-more > #homeTalk .talk-cta { white-space: nowrap; }
+}
+
+/* ---- 6. Hablemos / ¿Sabías que?: softer, smaller, near the end ---- */
+#homeTalk { padding: 16px 18px; }
+#homeTalk h2 { font-size: 19px; margin-bottom: 4px; }
+#homeTalk p { font-size: 14.5px; margin-bottom: 10px; }
+#homeDyk { padding: 16px 18px; }
+#homeChecklist { padding: 12px 14px; }
+
+/* ---- 7. Wellness: the former "This week" editorial area, as an extra section ---- */
+.well-reads { margin: 26px 0 0; }
+.well-reads > .rose { display: block; font-size: 10.5px; letter-spacing: .2em; color: var(--cml-gold-ink); font-weight: 600; }
+.well-reads > h2 { margin: 4px 0 4px !important; font: 400 22px/1.2 var(--font-display); }
+.well-reads > .small-note { margin: 0 0 12px; }
+.well-reads .cards { gap: 14px; }
+
+/* Código Experiences teaser: a touch shorter on phones so the flow keeps moving */
+@media (max-width: 1023.98px) { #homeExperience.hx-card { min-height: 236px; } #homeExperience.hx-card.is-soon { min-height: 250px; } }

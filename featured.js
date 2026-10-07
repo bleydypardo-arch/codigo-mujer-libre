@@ -8,11 +8,13 @@ let C = null, facts = [], factOffset = 0, flipped = false;
 const ES = { rcK: "RECETA DEL MES", rcTap: "Toca para descubrir la receta", rcBack: "Toca para volver", rcOpen: "Ver receta completa",
   dykK: "¿SABÍAS QUE?", dykNext: "Otro dato", dykAria: "Dato curioso",
   rcSoonT: "Muy pronto: nuestra primera receta", rcSoonP: "Cada mes compartiremos aquí una receta de matcha para disfrutar con calma.", rcSoonTag: "Muy pronto",
-  dykSoon: "Muy pronto compartiremos aquí un dato curioso para ti." };
+  dykSoon: "Muy pronto compartiremos aquí un dato curioso para ti.",
+  wellReadsK: "PARA LEER", wellReadsT: "Lecturas de bienestar", wellReadsP: "Ideas cortas sobre longevidad, alimentación, salud de la mujer y hábitos." };
 const EN = { rcK: "RECIPE OF THE MONTH", rcTap: "Tap to reveal the recipe", rcBack: "Tap to go back", rcOpen: "View the full recipe",
   dykK: "DID YOU KNOW?", dykNext: "Another one", dykAria: "Did you know",
   rcSoonT: "Coming soon: our first recipe", rcSoonP: "Every month we'll share a matcha recipe here to enjoy slowly.", rcSoonTag: "Coming soon",
-  dykSoon: "Soon we'll share a fun fact here for you." };
+  dykSoon: "Soon we'll share a fun fact here for you.",
+  wellReadsK: "TO READ", wellReadsT: "Wellness reads", wellReadsP: "Short ideas on longevity, healthy eating, women's health and habits." };
 const el = (...a) => C.el(...a);
 const reduced = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 const pickLang = (o, k) => { const lang = C.lang(), other = lang === "es" ? "en" : "es"; return String(o[k + "_" + lang] || o[k + "_" + other] || "").trim(); };
