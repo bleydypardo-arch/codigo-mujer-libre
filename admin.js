@@ -4,7 +4,7 @@
 
 const S = {
   es: {
-    pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada",
+    pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada", welcomeSend: "Enviar bienvenida", welcomeDone: "Listo",
     tabs: { plans: "Planes y eventos", trips: "Viajes y Experiencias", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imágenes y textos", matcha: "Rincón Matcha", trips: "Viajes y Experiencias" },
     groups: { content: "Contenido", people: "Comunidad", tools: "Ajustes y medios" },
     secImages: "Imágenes", secTexts: "Textos de la app", imgLogoTitle: "Logo de la marca", imgLogoHelp: "Aparece en el encabezado. Usa un archivo cuadrado (PNG o SVG con fondo transparente). Si lo quitas, vuelve el logo aprobado.",
@@ -72,7 +72,7 @@ const S = {
     quoteTitle: "Mensaje de hoy", quoteEs: "Mensaje (español)", quoteEn: "Mensaje (inglés)"
   },
   en: {
-    pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated",
+    pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated", welcomeSend: "Send welcome", welcomeDone: "Done",
     tabs: { plans: "Plans & events", trips: "Travel & Experiences", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Images & texts", matcha: "Matcha Corner", trips: "Travel & Experiences" },
     groups: { content: "Content", people: "Community", tools: "Settings & media" },
     secImages: "Images", secTexts: "App texts", imgLogoTitle: "Brand logo", imgLogoHelp: "Shown in the header. Use a square file (PNG or SVG with a transparent background). Remove it to return to the approved logo.",
@@ -895,6 +895,25 @@ async function messagesView() {
 // ---------- Miembros: requests (with the application answers), members, everyone ----------
 let usersFilter = "";
 const isRequest = u => u.role === "member" && !u.approved && !u.rejected;
+// Welcome message the admin sends from her own WhatsApp after approving (opens a pre-filled chat; she presses send).
+const WELCOME = {
+  es: (n, url) => "Hola " + n + " 💛🌸 ¡Ya fuiste aprobada en Código Mujer Libre! Bienvenida a la comunidad.\n\nEntra aquí con el correo y la contraseña que creaste al registrarte:\n" + url + "\n\nGuarda este enlace o añádelo a la pantalla de inicio de tu teléfono para entrar rápido. Si tienes cualquier duda, escríbeme por aquí.\n— Código Mujer Libre",
+  en: (n, url) => "Hi " + n + " 💛🌸 You've been approved for Código Mujer Libre! Welcome to the community.\n\nLog in here with the email and password you created when you signed up:\n" + url + "\n\nSave this link or add it to your phone's home screen to get in quickly. If you have any questions, message me here.\n— Código Mujer Libre"
+};
+// WhatsApp needs the country code. A "+" number is used as typed; a 10-digit number is assumed to be US (+1).
+function waDigits(phone) {
+  const raw = String(phone || "").trim(), d = raw.replace(/\D/g, "");
+  if (raw.startsWith("+")) return d;
+  return d.length === 10 ? "1" + d : d;
+}
+function welcomeLink(u) {
+  const d = waDigits(u.phone);
+  if (u.whatsapp !== true || d.length < 7) return null;
+  const lang = u.application && u.application.lang === "en" ? "en" : "es";
+  const url = window.location.origin + window.location.pathname;
+  const text = WELCOME[lang]((u.first_name || "").trim() || (lang === "en" ? "there" : ""), url);
+  return el("a", { class: "primary welcome-wa", href: "https://wa.me/" + d + "?text=" + encodeURIComponent(text), target: "_blank", rel: "noopener noreferrer", text: "💬 " + a("welcomeSend") });
+}
 function applicationNode(u) {
   const app = u.application && typeof u.application === "object" ? u.application : {};
   const rows = [];
@@ -970,7 +989,16 @@ async function usersView() {
         const setApproval = async ok => {
           const r = ok ? await C.db.rpc("approve_member", { target: u.id, ok: true }) : await C.db.rpc("reject_member", { target: u.id });
           if (r.error) return toast(a("saveFail"));
-          toast(a("approvalSaved")); pendingCount(); render();
+          toast(a("approvalSaved")); pendingCount();
+          const w = ok ? welcomeLink(u) : null;
+          if (w) {   // keep her card in view so the welcome can be sent right now
+            u.approved = true; u.rejected = false; item.classList.remove("is-request");
+            const wait = item.querySelector(".mc-wait"); if (wait) wait.remove();
+            const bd = item.querySelector(".mc-badges .badge.pending"); if (bd) { bd.classList.remove("pending"); bd.classList.add("live"); bd.textContent = " " + a("approvedBadge"); }
+            acts.replaceChildren(w, button(a("welcomeDone"), "", () => render()));
+            return;
+          }
+          render();
         };
         const acts = el("div", { class: "actions" + (req ? " mc-decide" : "") });
         if (!u.approved) acts.appendChild(button((req ? "✓ " : "") + a("approve"), req ? "primary mc-approve" : "", () => setApproval(true)));
@@ -980,6 +1008,7 @@ async function usersView() {
           toast(a("approvalSaved")); pendingCount(); render();
         }));
         else if (!u.rejected) acts.appendChild(button(a("reject"), "danger", () => setApproval(false)));
+        if (u.approved) { const w = welcomeLink(u); if (w) acts.insertBefore(w, acts.firstChild); }
         item.appendChild(acts);
         if (req) item.appendChild(el("p", { class: "mc-wait", text: a("appWait") }));
       }
