@@ -87,7 +87,7 @@ const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "
 const el = (...a) => C.el(...a);
 const WCATS = ["spa", "massage", "facial", "skincare", "nails", "hair", "beauty", "gym", "fitness", "pilates", "yoga", "movement", "meditation", "mind", "retreat", "food", "workshop", "offer", "promo", "other"];
 const catLabel = tag => (tag.cat === "other" && tag.label ? tag.label : t("wcat_" + tag.cat));
-const MATCHA_DEFAULT = "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=900&q=80";
+const MATCHA_DEFAULT = "matcha-cup.jpg";
 const MATCHA_RE = /^\s*🍵\s*Matcha/i;
 const DAY = 86400000;
 const todayStr = () => C.todayStr();
@@ -257,7 +257,7 @@ function renderMatchaHome() {
   const next = matchaPlans().find(p => p.kind === "event" || p.kind === "weekend");
   const sub = meet ? t("maNextMeet", meet.m.place, meetWhen(meet.m)) : next ? t("maNext", C.pick(next, "title")) + (next.event_date ? " · " + shortWhen(next) : "") : t("maHomeSub");
   const card = el("button", { type: "button", class: "matcha-card", "data-go": "matcha" },
-    el("span", { class: "matcha-img" }, imgNode(matchaImage()), el("span", { class: "ma-foam", "aria-hidden": "true" })),
+    el("span", { class: "matcha-img" + (settingUrl("matcha_image") ? " is-custom" : "") }, imgNode(matchaImage()), el("span", { class: "ma-foam", "aria-hidden": "true" })),
     el("span", { class: "matcha-txt" },
       el("small", { class: "rose", text: t("maName").toUpperCase() }),
       el("b", { text: t("maTag") }),
@@ -356,7 +356,7 @@ function renderMatchaPage() {
   const cityRow = cities.length > 1 ? el("div", { class: "chips ma-cities", role: "group", "aria-label": t("maCity") },
     ...["all", ...cities].map(c => { const b = btn(c === "all" ? t("maAllCities") : c, "chip" + (maCity === c ? " selected" : ""), () => { maCity = c; renderMatchaPage(); }); b.setAttribute("aria-pressed", String(maCity === c)); return b; })) : null;
   hero.replaceChildren(
-    el("div", { class: "ma-hero-img" }, imgNode(matchaImage()), el("span", { class: "ma-foam", "aria-hidden": "true" })),
+    el("div", { class: "ma-hero-img" + (settingUrl("matcha_image") ? " is-custom" : "") }, imgNode(matchaImage()), el("span", { class: "ma-foam", "aria-hidden": "true" })),
     el("div", { class: "ma-hero-txt" },
       el("small", { class: "rose", text: t("maKicker") }),
       el("h1", { text: t("maName") }),

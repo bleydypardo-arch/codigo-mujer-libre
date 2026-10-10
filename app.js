@@ -525,6 +525,7 @@ Object.assign(translations.en, {
 
 // (Sample cards were removed: empty sections now show an honest empty state instead of placeholder plans.)
 const DEFAULT_HERO = "hero-home.jpg";
+let settingsReady = false;   // the cover photo is shown only once the saved settings are known, so no photo flashes first
 
 // ==============================
 // Local storage (language + weekly code only)
@@ -787,6 +788,7 @@ function renderHero() {
   }
   // The redesigned editorial hero has its own admin-managed photo ("hero_photo"). The older "hero_image"
   // setting (used by the previous design) is left untouched in the database but no longer shown here.
+  if (!settingsReady) return;
   const custom = settings.hero_photo && safeUrl(settings.hero_photo.url);
   const wanted = custom || DEFAULT_HERO;
   if (img.getAttribute("src") !== wanted) img.setAttribute("src", wanted);
@@ -1856,6 +1858,7 @@ async function loadAll() {
   } catch {
     announce("loadError");
   }
+  settingsReady = true;
   await Promise.all([
     loadMembers().catch(() => {}),
     loadPosts().catch(() => {}),
