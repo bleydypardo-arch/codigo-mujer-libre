@@ -129,6 +129,15 @@ function msgFor(code) {
   return t("wcMsg_" + code);
 }
 
+// A soft bloom of the code's colour when it is chosen (fx.css). Removed after it plays; never blocks anything.
+const BLOOM = { Social: "#FADBD8", Wellness: "#DDEBD9", Connection: "#E7B8B5", Adventure: "#DBC19F", Faith: "#EFE6DE", Family: "#FADBD8", Recharge: "#DDEBD9", Support: "#F3C9C6" };
+function bloom(code) {
+  const res = document.querySelector(".wc-result");
+  if (!res || (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
+  res.style.setProperty("--bloom", BLOOM[code] || "#FADBD8");
+  res.classList.add("wc-bloom");
+  setTimeout(() => res.classList.remove("wc-bloom"), 1300);
+}
 function svg(code, cls) {
   const s = el("span", { class: cls, "aria-hidden": "true" });
   s.innerHTML = '<svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="' + ICON[code] + '"/></svg>';
@@ -168,7 +177,7 @@ function render() {
   if (!chosen) {
     const grid = el("div", { class: "wc-grid", role: "group", "aria-label": t("wcQ") }, ...CODES.map(code => {
       const b = el("button", { type: "button", class: "wc-pick wc-" + code.toLowerCase(), "data-wcode": code }, svg(code, "wc-ic"), el("span", { text: t("wcName_" + code) }));
-      b.addEventListener("click", () => { setCode(code); render(); const r = host.querySelector(".wc-chosen"); if (r) r.focus({ preventScroll: true }); });
+      b.addEventListener("click", () => { setCode(code); render(); const r = host.querySelector(".wc-chosen"); if (r) r.focus({ preventScroll: true }); bloom(code); });
       return b;
     }));
     host.className = "card wc-card";
