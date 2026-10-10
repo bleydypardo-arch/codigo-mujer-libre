@@ -1,0 +1,47 @@
+/* Wellness "Lecturas": animated card + reading page + library. Uses the app's own tokens. */
+.reads-card { display: grid; grid-template-columns: 112px minmax(0, 1fr); width: 100%; padding: 0; overflow: hidden; border-radius: var(--r-md); border: 1px solid var(--cml-line); background: linear-gradient(120deg, #fff 40%, #F2F6EF 100%); box-shadow: var(--sh-1); text-align: left; cursor: pointer; font: inherit; color: var(--cml-ink); }
+.reads-card:hover { box-shadow: var(--sh-2); }
+.reads-vis { position: relative; min-height: 150px; overflow: hidden; background: linear-gradient(165deg, #E6EFE0 0%, #D6E4D0 55%, #EFE6DE 100%); display: grid; place-items: center; }
+.rv-glow { position: absolute; width: 120%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 62%); animation: rvBreathe 5s ease-in-out infinite; }
+.rv-orchid { position: relative; width: 74px; height: 74px; object-fit: contain; transform-origin: 50% 90%; animation: rvSway 6s ease-in-out infinite; filter: drop-shadow(0 6px 10px rgba(158, 77, 86, .25)); }
+.rv-sp { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px 2px rgba(255, 255, 255, .9); opacity: 0; animation: rvTwinkle 4s ease-in-out infinite; }
+.rv-s1 { left: 22%; top: 24%; } .rv-s2 { right: 20%; top: 40%; animation-delay: 1.3s; } .rv-s3 { left: 36%; bottom: 20%; animation-delay: 2.5s; }
+@keyframes rvSway { 0%, 100% { transform: rotate(-4deg) translateY(2px); } 50% { transform: rotate(4deg) translateY(-4px); } }
+@keyframes rvBreathe { 0%, 100% { opacity: .65; transform: scale(.94); } 50% { opacity: 1; transform: scale(1.04); } }
+@keyframes rvTwinkle { 0%, 100% { opacity: 0; transform: scale(.5); } 50% { opacity: 1; transform: scale(1); } }
+.reads-txt { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; }
+.reads-txt .rose { font-size: 12.5px; font-weight: 700; letter-spacing: .2em; color: transparent !important; background: linear-gradient(90deg, #4F6B4B, #7E9A6F 45%, #9C7B4E 75%, #4F6B4B); -webkit-background-clip: text; background-clip: text; }
+.reads-txt b { font: italic 400 21px/1.2 var(--font-display); color: #3E5A3B; }
+.reads-sub { font-size: 12.5px; color: var(--cml-ink2); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.reads-btn { align-self: flex-start; margin-top: auto; position: relative; overflow: hidden; display: inline-flex; align-items: center; min-height: 38px; padding: 0 20px; border-radius: 999px; font: 600 13.5px var(--font-ui); letter-spacing: .02em; color: #fff; background: linear-gradient(135deg, var(--cml-rose) 0%, var(--cml-rose-d) 100%); box-shadow: 0 8px 18px -8px rgba(158, 77, 86, .65); }
+.reads-btn::after { content: ""; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .45), transparent); animation: rvShine 3.8s ease-in-out infinite; }
+@keyframes rvShine { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+.well-reads { margin-top: 22px; }
+.well-reads > .rose, .well-reads > h2, .well-reads > .small-note { display: none; }
+
+/* page */
+#reads .small-note { margin: 4px 0 14px; }
+.reads-latest { position: relative; margin: 0 0 6px; }
+.reads-chip { position: absolute; z-index: 2; top: 10px; left: 10px; padding: 4px 12px; border-radius: 999px; background: var(--cml-rose); color: #fff; font: 600 12px var(--font-ui); }
+.reads-open { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.reads-whole { display: block; width: 100%; height: auto; border-radius: 18px; box-shadow: var(--sh-2); }
+.reads-h { margin: 12px 2px 0; font: 400 22px/1.2 var(--font-display); }
+.reads-textpost { padding: 20px; border-radius: 18px; background: #fff; border: 1px solid var(--cml-line); }
+.reads-textpost h2 { margin: 0 0 8px; font: 400 24px/1.2 var(--font-display); }
+.reads-pre { white-space: pre-line; line-height: 1.6; }
+.reads-empty { padding: 28px 16px; text-align: center; color: var(--cml-ink2); background: #fff; border: 1px solid var(--cml-line); border-radius: 18px; }
+.reads-lib { margin: 28px 2px 0; font: 400 24px/1.2 var(--font-display); }
+.reads-month { margin: 0 0 10px; border: 1px solid var(--cml-line); border-radius: 16px; background: #fff; overflow: hidden; }
+.reads-month > summary { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; cursor: pointer; font: 600 15px var(--font-ui); list-style: none; }
+.reads-month > summary::-webkit-details-marker { display: none; }
+.reads-month > summary small { min-width: 24px; text-align: center; padding: 2px 8px; border-radius: 999px; background: var(--cml-sage, #DDEBD9); color: #4F6B4B; font-weight: 600; }
+.reads-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 14px; border: 0; border-top: 1px solid var(--cml-line); background: none; text-align: left; cursor: pointer; font: inherit; color: var(--cml-ink); }
+.reads-th { flex: none; width: 52px; height: 66px; border-radius: 10px; overflow: hidden; background: var(--cml-beige); display: grid; place-items: center; }
+.reads-th img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.reads-rt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.reads-rt b { font: 500 15px/1.3 var(--font-ui); }
+.reads-rt small { color: var(--cml-ink2); font-size: 12.5px; }
+.reads-sheet { padding-bottom: 22px; }
+.reads-sheet .reads-whole { margin-top: 6px; box-shadow: none; }
+@media (prefers-reduced-motion: reduce) { .rv-glow, .rv-orchid, .rv-sp, .reads-btn::after { animation: none; } .rv-sp { opacity: 0; } }
+@media (min-width: 700px) { #reads .reads-latest, #reads .reads-month, #reads .reads-h { max-width: 560px; } }

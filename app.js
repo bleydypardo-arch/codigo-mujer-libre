@@ -843,21 +843,8 @@ function renderWeeklyCode() {            // (name kept: renderAll calls it) → 
 }
 // Home "Esta semana": real Home ideas published by the admin. Hidden (no sample cards) when there are none.
 function renderFeatured() {
-  const container = byId("featured");
-  if (!container) return;
-  const block = byId("featuredBlock");
-  const items = session ? plans.filter(p => p.kind === "home" && !planTag(p.id).matcha) : [];   // matcha items live in the Corner
-  if (block) block.hidden = !items.length;
-  container.replaceChildren(...items.map(p => {
-    const card = planCard(p);
-    const title = pick(p, "title");
-    if (window.CMLRedesign && title) {
-      const share = el("button", { type: "button", class: "link-btn suggest-btn", text: t("suggestToCommunity") + " →" });
-      share.addEventListener("click", () => window.CMLRedesign.compose(tf("suggestDraft", title)));
-      card.appendChild(share);
-    }
-    return card;
-  }));
+  // Wellness "Lecturas": an animated card that opens the reads page (reads.js). Posts live there, whole and uncropped.
+  if (window.CMLReads) return window.CMLReads.renderCard();
 }
 function emptyState(icon, title, text, action) {
   return el("div", { class: "empty-state" },

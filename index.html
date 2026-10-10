@@ -32,6 +32,7 @@
   <link rel="stylesheet" href="home-luxe.css">
   <link rel="stylesheet" href="flipcards.css">
   <link rel="stylesheet" href="pilot.css">
+  <link rel="stylesheet" href="reads.css">
 </head>
 
 <body>
@@ -615,9 +616,6 @@
 
     <!-- Editorial area (was "Esta semana" on Home): same #featuredBlock/#featured, same admin Home tab, now lives in Wellness -->
     <div id="featuredBlock" class="featured-block well-reads" hidden>
-      <small class="rose" data-i18n="wellReadsK">PARA LEER</small>
-      <h2 data-i18n="wellReadsT">Lecturas de bienestar</h2>
-      <p class="small-note" data-i18n="wellReadsP">Ideas cortas sobre longevidad, alimentación, salud de la mujer y hábitos.</p>
       <div id="featured" class="cards"></div>
     </div>
 
@@ -742,6 +740,15 @@
 
   </section>
 
+  <!-- LECTURAS DE BIENESTAR -->
+  <section id="reads" class="page">
+
+    <div class="page-back"><button type="button" class="back-btn" data-go="wellness" aria-label="Volver" data-i18n-aria="backLabel"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>
+
+    <div id="readsBody"></div>
+
+  </section>
+
   <!-- ADMIN -->
   <section id="admin" class="page">
     <small class="rose" data-i18n="adminLabel">ADMINISTRACIÓN</small>
@@ -862,6 +869,7 @@
   <script src="featured.js"></script>
   <script src="hero-water.js"></script>
   <script src="discover.js"></script>
+  <script src="reads.js"></script>
   <script src="code.js"></script>
   <script src="experiences.js"></script>
   <script src="story.js"></script>
