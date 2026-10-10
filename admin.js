@@ -201,9 +201,9 @@ Object.assign(S.en, {
   appView: "View application", appHide: "Hide application", appWait: "Not sure yet? Leave her in Requests and come back anytime.", ago: d => d
 });
 S.es.tabs.users = "Miembros";
-Object.assign(S.es, { fFull: "Mostrar la imagen completa (sin recortar)",
+Object.assign(S.es, { fPin: "Fijar en el Home, en “Algo distinto para esta semana”", fHomeImg: "Imagen solo para el Home (opcional)", fHomeImgHelp: "Se muestra completa, sin recortar. Si la dejas vacía se usa la imagen principal del evento.", fFull: "Mostrar la imagen completa (sin recortar)",
   copy_storyT: "Viajes: título de la promesa", copy_storyP: "Viajes: texto de la promesa", copy_homeExpSoon: "Experiencias: titular «próximamente» (Inicio)", copy_homeExpSoonP: "Experiencias: texto «próximamente» (Inicio)" });
-Object.assign(S.en, { fFull: "Show the whole image (don't crop)",
+Object.assign(S.en, { fPin: "Pin to Home, in “Something different this week”", fHomeImg: "Image for Home only (optional)", fHomeImgHelp: "Shown whole, not cropped. If empty, the event's main image is used.", fFull: "Show the whole image (don't crop)",
   copy_storyT: "Travel: promise headline", copy_storyP: "Travel: promise text", copy_homeExpSoon: "Experiences: “coming soon” headline (Home)", copy_homeExpSoonP: "Experiences: “coming soon” text (Home)" });
 Object.assign(S.es, { makeContentAdmin: "Hacer administradora de contenido", removeContentAdmin: "Quitar administradora de contenido",
   adminLimit: "Ya existe la cuenta adicional de administración (contenido). Quítala primero para nombrar a otra.",
@@ -279,6 +279,18 @@ async function saveTag(planId, tag) {
   if (tag.matcha) clean.matcha = true;
   if (tag.full) clean.full = true;
   if (tag.featured) clean.featured = true;
+  if (tag.homeImg) clean.homeImg = tag.homeImg;
+  if (tag.pin) {   // only one card can be pinned to Home: unpin the others in the same write
+    clean.pin = true;
+    const r = await C.db.from("settings").select("key,value").eq("key", "plan_tags").maybeSingle();
+    if (r.error) throw r.error;
+    const all = Object.assign({}, (r.data && r.data.value) || {});
+    Object.keys(all).forEach(id => { if (id !== planId && all[id] && all[id].pin) { const t = Object.assign({}, all[id]); delete t.pin; if (Object.keys(t).length) all[id] = t; else delete all[id]; } });
+    all[planId] = clean;
+    const w = await C.db.from("settings").upsert({ key: "plan_tags", value: all, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (w.error) throw w.error;
+    return;
+  }
   await setMapEntry("plan_tags", planId, clean);
 }
 
@@ -737,6 +749,13 @@ function formView() {
     fullBox = el("input", { type: "checkbox" }); fullBox.checked = !!oldTag.full;
     form.appendChild(el("label", { class: "check" }, fullBox, a("fFull")));
   }
+  let pinBox = null, homePicker = null;
+  if (kind === "event") {
+    pinBox = el("input", { type: "checkbox" }); pinBox.checked = !!oldTag.pin;
+    form.appendChild(el("label", { class: "check" }, pinBox, a("fPin")));
+    homePicker = imagePicker(oldTag.homeImg || "");
+    form.appendChild(el("fieldset", {}, el("legend", { text: a("fHomeImg") }), el("p", { class: "small-note", text: a("fHomeImgHelp") }), homePicker.node));
+  }
   if (kind === "event" || kind === "weekend" || kind === "wellness") {
     matchaBox = el("input", { type: "checkbox" }); matchaBox.checked = !!oldTag.matcha;
     form.appendChild(el("label", { class: "check" }, matchaBox, a("fMatcha")));
@@ -806,7 +825,8 @@ function formView() {
   const buildTag = () => kind === "matcha"
     ? Object.assign({ matcha: true, mtype: mtypeSel.value, featured: featuredBox.checked, city: cityIn.value.trim() }, oldTag.full ? { full: true } : {})
     : { cat: typeSel ? (kind === "trip" && typeSel.value === "trip" ? "" : typeSel.value) : "", matcha: !!(matchaBox && matchaBox.checked),
-        featured: !!(featBox && featBox.checked), full: !!(fullBox && fullBox.checked), label: labelIn && typeSel && typeSel.value === "other" ? labelIn.value.trim() : "" };
+        featured: !!(featBox && featBox.checked), full: !!(fullBox && fullBox.checked),
+        pin: !!(pinBox && pinBox.checked), homeImg: homePicker && C.safeUrl(homePicker.value) ? homePicker.value : "", label: labelIn && typeSel && typeSel.value === "other" ? labelIn.value.trim() : "" };
   const previewBtn = (kind === "event" || kind === "trip" || kind === "wellness") && C.openPreview
     ? button(a("preview"), "secondary studio-preview", () => {
         feedback.hidden = true;
