@@ -4,7 +4,7 @@
 
 const S = {
   es: {
-    pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada", welcomeSend: "Enviar bienvenida", welcomeDone: "Listo",
+    pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada", welcomeSend: "Enviar bienvenida", welcomeDone: "Listo", emailSent: "Correo de aprobación enviado", emailFail: "Aprobada, pero el correo no salió. Usa «Reenviar correo»", emailResend: "Reenviar correo", emailResendAsk: "¿Enviar de nuevo el correo de aprobación?",
     tabs: { plans: "Planes y eventos", trips: "Viajes y Experiencias", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imágenes y textos", matcha: "Rincón Matcha", trips: "Viajes y Experiencias" },
     groups: { content: "Contenido", people: "Comunidad", tools: "Ajustes y medios" },
     secImages: "Imágenes", secTexts: "Textos de la app", imgLogoTitle: "Logo de la marca", imgLogoHelp: "Aparece en el encabezado. Usa un archivo cuadrado (PNG o SVG con fondo transparente). Si lo quitas, vuelve el logo aprobado.",
@@ -72,7 +72,7 @@ const S = {
     quoteTitle: "Mensaje de hoy", quoteEs: "Mensaje (español)", quoteEn: "Mensaje (inglés)"
   },
   en: {
-    pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated", welcomeSend: "Send welcome", welcomeDone: "Done",
+    pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated", welcomeSend: "Send welcome", welcomeDone: "Done", emailSent: "Approval email sent", emailFail: "Approved, but the email did not go out. Use “Resend email”", emailResend: "Resend email", emailResendAsk: "Send the approval email again?",
     tabs: { plans: "Plans & events", trips: "Travel & Experiences", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Images & texts", matcha: "Matcha Corner", trips: "Travel & Experiences" },
     groups: { content: "Content", people: "Community", tools: "Settings & media" },
     secImages: "Images", secTexts: "App texts", imgLogoTitle: "Brand logo", imgLogoHelp: "Shown in the header. Use a square file (PNG or SVG with a transparent background). Remove it to return to the approved logo.",
@@ -906,6 +906,13 @@ function waDigits(phone) {
   if (raw.startsWith("+")) return d;
   return d.length === 10 ? "1" + d : d;
 }
+// Approval email (Resend, via the "send-approval-email" Edge Function). Best effort: approving never depends on it.
+async function sendApprovalEmail(id, force) {
+  try {
+    const { data, error } = await C.db.functions.invoke("send-approval-email", { body: { user_id: id, force: !!force } });
+    return !error && !!(data && data.ok);
+  } catch (e) { return false; }
+}
 function welcomeLink(u) {
   const d = waDigits(u.phone);
   if (u.whatsapp !== true || d.length < 7) return null;
@@ -990,6 +997,7 @@ async function usersView() {
           const r = ok ? await C.db.rpc("approve_member", { target: u.id, ok: true }) : await C.db.rpc("reject_member", { target: u.id });
           if (r.error) return toast(a("saveFail"));
           toast(a("approvalSaved")); pendingCount();
+          if (ok) sendApprovalEmail(u.id).then(sent => toast(a(sent ? "emailSent" : "emailFail")));
           const w = ok ? welcomeLink(u) : null;
           if (w) {   // keep her card in view so the welcome can be sent right now
             u.approved = true; u.rejected = false; item.classList.remove("is-request");
@@ -1009,6 +1017,10 @@ async function usersView() {
         }));
         else if (!u.rejected) acts.appendChild(button(a("reject"), "danger", () => setApproval(false)));
         if (u.approved) { const w = welcomeLink(u); if (w) acts.insertBefore(w, acts.firstChild); }
+        if (u.approved) acts.insertBefore(button(a("emailResend"), "", async () => {
+          if (!window.confirm(a("emailResendAsk"))) return;
+          toast(a((await sendApprovalEmail(u.id, true)) ? "emailSent" : "emailFail"));
+        }), acts.firstChild);
         item.appendChild(acts);
         if (req) item.appendChild(el("p", { class: "mc-wait", text: a("appWait") }));
       }
