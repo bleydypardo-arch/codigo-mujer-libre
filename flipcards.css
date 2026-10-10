@@ -43,16 +43,32 @@
 @keyframes bfFlapLo { 0%, 100% { transform: scaleX(1); } 45% { transform: scaleX(.86); } 62% { transform: scaleX(.98); } 78% { transform: scaleX(.9); } }
 @keyframes bfFloat { 0%, 100% { transform: translateY(0) rotate(-1.2deg); } 50% { transform: translateY(-4px) rotate(1.2deg); } }
 
-/* envelope — a slow float, the seal catches the light once in a while */
-.en { display: block; width: 150px; height: auto; margin: 0 auto 2px; overflow: visible; filter: drop-shadow(0 8px 10px rgba(156, 44, 69, .16)); }
-.en-float { animation: enFloat 6s ease-in-out infinite; transform-origin: 100px 90px; transform-box: view-box; }
-.en-letter { animation: enLetter 6s ease-in-out infinite; transform-box: view-box; }
-.en-seal { transform-origin: 100px 104px; transform-box: view-box; animation: enSeal 6s ease-in-out infinite; }
-@keyframes enFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-@keyframes enLetter { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-@keyframes enSeal { 0%, 82%, 100% { transform: scale(1); filter: none; } 90% { transform: scale(1.07); filter: brightness(1.18); } }
+/* envelope — floats and tilts, the letter peeks out, the seal beats like a heart, gold sparks twinkle */
+.en { display: block; width: 160px; height: auto; margin: 0 auto; overflow: visible; filter: drop-shadow(0 8px 10px rgba(156, 44, 69, .16)); }
+.bf { margin-bottom: 0; }
+.en-float { animation: enFloat 5.4s ease-in-out infinite; transform-origin: 100px 100px; transform-box: view-box; }
+.en-shadow { transform-origin: 100px 140px; transform-box: view-box; animation: enShadow 5.4s ease-in-out infinite; }
+.en-letter { animation: enLetter 5.4s ease-in-out infinite; transform-box: view-box; }
+.en-seal { transform-origin: 100px 104px; transform-box: view-box; animation: enSeal 3.2s ease-in-out infinite; }
+.en-spark path { transform-box: fill-box; transform-origin: center; opacity: 0; animation: enTwinkle 3.6s ease-in-out infinite; }
+.en-s2 { animation-delay: 1.2s; } .en-s3 { animation-delay: 2.3s; }
+@keyframes enFloat { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-7px) rotate(2deg); } }
+@keyframes enShadow { 0%, 100% { transform: scaleX(1); opacity: .14; } 50% { transform: scaleX(.8); opacity: .08; } }
+@keyframes enLetter { 0%, 20%, 100% { transform: translateY(0); } 55%, 75% { transform: translateY(-12px); } }
+@keyframes enSeal { 0%, 100% { transform: scale(1); filter: none; } 12% { transform: scale(1.12); filter: brightness(1.2); } 24% { transform: scale(1); } 36% { transform: scale(1.08); filter: brightness(1.15); } 50% { transform: scale(1); filter: none; } }
+@keyframes enTwinkle { 0%, 100% { opacity: 0; transform: scale(.4) rotate(0deg); } 50% { opacity: 1; transform: scale(1.1) rotate(25deg); } }
+
+/* same size and height for both cards in the swipe row */
+.fc-face { min-height: 238px; }
+@media (max-width: 1023.98px) {
+  .home-more > #homeTalk, .home-more > #homeDyk { display: flex; }
+  .home-more .fc, .home-more .fc-inner { flex: 1; }
+  .home-more .fc { display: flex; }
+  .home-more .fc-inner { width: 100%; }
+}
 
 @media (prefers-reduced-motion: reduce) {
+  .en-float, .en-shadow, .en-letter, .en-seal, .en-spark path { animation: none; }
   .fc-inner { transition: none; transform: none !important; }
   .fc-face { transition: opacity .2s; }
   .fc-back { transform: none; opacity: 0; visibility: hidden; }
