@@ -53,7 +53,8 @@ function renderCard() {
   const latest = list[0];
   const sub = latest ? (C.pick(latest, "title") || t("rdIntro")) : t("rdIntro");
   const vis = el("span", { class: "reads-vis", "aria-hidden": "true" },
-    el("i", { class: "rv-glow" }), whiteOrchid(),
+    el("i", { class: "rv-aurora" }), el("i", { class: "rv-ring" }), el("i", { class: "rv-glow" }),
+    el("i", { class: "rv-leaf rv-l1" }), el("i", { class: "rv-leaf rv-l2" }), el("i", { class: "rv-leaf rv-l3" }), el("i", { class: "rv-leaf rv-l4" }), whiteOrchid(),
     el("i", { class: "rv-sp rv-s1" }), el("i", { class: "rv-sp rv-s2" }), el("i", { class: "rv-sp rv-s3" }));
   const card = el("button", { type: "button", class: "reads-card", "data-go": "reads" }, vis,
     el("span", { class: "reads-txt" },
