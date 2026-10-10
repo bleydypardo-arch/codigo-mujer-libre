@@ -36,6 +36,13 @@ const monthOf = p => {
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
+// White orchid (drawn by code.js with a white palette), so this section does not repeat the pink one of the home page.
+function whiteOrchid() {
+  const s = el("span", { class: "rv-orchid" });
+  if (window.CMLOrchid) s.innerHTML = window.CMLOrchid.svg("rv-svg", true);
+  return s;
+}
+
 // ---- the card on the Wellness page ----
 function renderCard() {
   const host = document.getElementById("featuredBlock"), box = document.getElementById("featured");
@@ -46,7 +53,7 @@ function renderCard() {
   const latest = list[0];
   const sub = latest ? (C.pick(latest, "title") || t("rdIntro")) : t("rdIntro");
   const vis = el("span", { class: "reads-vis", "aria-hidden": "true" },
-    el("i", { class: "rv-glow" }), el("img", { class: "rv-orchid", src: "email/orchid-email.png", alt: "" }),
+    el("i", { class: "rv-glow" }), whiteOrchid(),
     el("i", { class: "rv-sp rv-s1" }), el("i", { class: "rv-sp rv-s2" }), el("i", { class: "rv-sp rv-s3" }));
   const card = el("button", { type: "button", class: "reads-card", "data-go": "reads" }, vis,
     el("span", { class: "reads-txt" },

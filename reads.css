@@ -3,7 +3,8 @@
 .reads-card:hover { box-shadow: var(--sh-2); }
 .reads-vis { position: relative; min-height: 150px; overflow: hidden; background: linear-gradient(165deg, #E6EFE0 0%, #D6E4D0 55%, #EFE6DE 100%); display: grid; place-items: center; }
 .rv-glow { position: absolute; width: 120%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, .85), rgba(255, 255, 255, 0) 62%); animation: rvBreathe 5s ease-in-out infinite; }
-.rv-orchid { position: relative; width: 74px; height: 74px; object-fit: contain; transform-origin: 50% 90%; animation: rvSway 6s ease-in-out infinite; filter: drop-shadow(0 6px 10px rgba(158, 77, 86, .25)); }
+.rv-orchid { position: relative; display: block; width: 82px; height: 82px; transform-origin: 50% 90%; animation: rvSway 6s ease-in-out infinite; filter: drop-shadow(0 6px 10px rgba(79, 107, 75, .38)); }
+.rv-orchid .rv-svg { display: block; width: 100%; height: 100%; }
 .rv-sp { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px 2px rgba(255, 255, 255, .9); opacity: 0; animation: rvTwinkle 4s ease-in-out infinite; }
 .rv-s1 { left: 22%; top: 24%; } .rv-s2 { right: 20%; top: 40%; animation-delay: 1.3s; } .rv-s3 { left: 36%; bottom: 20%; animation-delay: 2.5s; }
 @keyframes rvSway { 0%, 100% { transform: rotate(-4deg) translateY(2px); } 50% { transform: rotate(4deg) translateY(-4px); } }
