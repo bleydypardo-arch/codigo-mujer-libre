@@ -21,8 +21,13 @@ const t = k => (C ? C.t(k) : k);
 const el = (...a) => C.el(...a);
 const items = () => {
   if (!C || !C.session()) return [];
-  return C.homeData().plans.filter(p => p.kind === "home" && !C.planTag(p.id).matcha)
+  const all = C.homeData().plans.filter(p => p.kind === "home" && !C.planTag(p.id).matcha)
     .sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")));
+  // Each read can be marked Spanish-only / English-only in Admin: members see the ones for their language (and "both").
+  // If nothing matches her language, show everything rather than an empty page.
+  const lang = C.lang() === "en" ? "en" : "es";
+  const mine = all.filter(p => { const l = C.planTag(p.id).lang; return !l || l === lang; });
+  return mine.length ? mine : all;
 };
 const imgOf = p => {
   const tg = C.planTag(p.id);
