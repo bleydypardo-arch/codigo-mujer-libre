@@ -495,7 +495,7 @@ function planItem(kind, row, c, memIds) {
     }));
   }
   actions.appendChild(button(a("del"), "danger", async () => {
-    if (!window.confirm(a("confirmDelete"))) return;
+    if (!await window.cmlConfirm(a("confirmDelete"))) return;
     const { error } = await C.db.from("plans").delete().eq("id", row.id);
     if (error) return toast(a("saveFail"));
     await C.refreshPublic(); toast(a("deleted")); render();
@@ -857,7 +857,7 @@ async function communityView() {
       el("p", { class: "saved-text", text: p.body }),
       el("p", { class: "small-note", text: new Date(p.created_at).toLocaleString(C.loc()) }));
     item.appendChild(el("div", { class: "actions" }, button(a("del"), "danger", async () => {
-      if (!window.confirm(a("confirmDelete"))) return;
+      if (!await window.cmlConfirm(a("confirmDelete"))) return;
       const r = await C.db.from("community_posts").delete().eq("id", p.id);
       if (r.error) return toast(a("saveFail"));
       await C.refreshPublic(); toast(a("deleted")); render();
@@ -1018,7 +1018,7 @@ async function usersView() {
         else if (!u.rejected) acts.appendChild(button(a("reject"), "danger", () => setApproval(false)));
         if (u.approved) { const w = welcomeLink(u); if (w) acts.insertBefore(w, acts.firstChild); }
         if (u.approved) acts.insertBefore(button(a("emailResend"), "", async () => {
-          if (!window.confirm(a("emailResendAsk"))) return;
+          if (!await window.cmlConfirm(a("emailResendAsk"))) return;
           toast(a((await sendApprovalEmail(u.id, true)) ? "emailSent" : "emailFail"));
         }), acts.firstChild);
         item.appendChild(acts);
@@ -1044,7 +1044,7 @@ async function usersView() {
           if (seatTaken && u.approved) acts.appendChild(el("small", { class: "ac-note", text: a("adminLimit") }));
           else if (!makeContent || u.approved) acts.appendChild(button(makeContent ? a("makeContentAdmin") : a("removeContentAdmin"), makeContent ? "" : "danger", async () => {
             if (makeContent && data.filter(x => x.role === "admin" || x.role === "content_admin").length >= 1) return toast(a("adminLimit"));
-            if (makeContent && !window.confirm(a("confirmContentAdmin"))) return;
+            if (makeContent && !await window.cmlConfirm(a("confirmContentAdmin"))) return;
             const r = await C.db.from("profiles").update({ role: makeContent ? "content_admin" : "member" }).eq("id", u.id);
             if (r.error) return toast(a("saveFail"));
             toast(a("roleSaved")); render();

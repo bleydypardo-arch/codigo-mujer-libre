@@ -25,3 +25,8 @@
 
 /* Admin: "Enviar bienvenida" is a link styled as the usual button */
 .welcome-wa { display: inline-block; text-decoration: none; text-align: center; color: #fff; }
+
+/* In-app confirmation sheet (confirm.js) */
+.lg-panel .cml-confirm-row { display: flex; gap: 10px; margin-top: 18px; }
+.lg-panel .cml-confirm-row button { flex: 1; min-height: 46px; border-radius: 999px; font: 600 15px var(--font-ui, inherit); cursor: pointer; border: 1px solid var(--cml-line, #EADFDB); background: #fff; color: var(--cml-rose-d, #9E4D56); }
+.lg-panel .cml-confirm-row button.cml-yes { background: var(--cml-rose, #B85F68); border-color: var(--cml-rose, #B85F68); color: #fff; }

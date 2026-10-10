@@ -380,7 +380,7 @@ function adminBar() {
         C.announce("memSaved"); repaintAlbum();
       }),
       btn(t("memDelete"), "danger", async () => {
-        if (!window.confirm(t("memConfirmDeleteMemory"))) return;
+        if (!await window.cmlConfirm(t("memConfirmDeleteMemory"))) return;
         await deleteMemory(m.id); C.announce("memDeleted"); showList();
       })),
     editBox);
@@ -471,7 +471,7 @@ async function lightbox(items, index) {
     }
     if (C.isAdmin() || x.user_id === uid()) {
       tools.appendChild(btn(t("memDelete"), "danger", async () => {
-        if (!window.confirm(t("memConfirmDelete"))) return;
+        if (!await window.cmlConfirm(t("memConfirmDelete"))) return;
         const r = await C.db.from("memory_media").delete().eq("id", x.id);
         if (r.error) return C.announce("memSaveFail");
         await removeFiles([x.path, x.thumb_path]).catch(() => {});
@@ -533,7 +533,7 @@ function postNode(p) {
 
   const actions = el("div", { class: "actions" });
   if (mine || C.isAdmin()) actions.appendChild(btn(t("memDelete"), "danger", async () => {
-    if (!window.confirm(t("memConfirmDelete"))) return;
+    if (!await window.cmlConfirm(t("memConfirmDelete"))) return;
     const files = media.flatMap(x => [x.path, x.thumb_path]);
     const r = await C.db.from("memory_posts").delete().eq("id", p.id);
     if (r.error) return C.announce("memSaveFail");

@@ -313,7 +313,7 @@ async function adminView(helpers) {
         await C.refreshPublic(); document.dispatchEvent(new CustomEvent("cml:lang"));
       }),
       btn(t("aPollDelete"), "danger", async () => {
-        if (!window.confirm(t("aPollConfirm"))) return;
+        if (!await window.cmlConfirm(t("aPollConfirm"))) return;
         const r2 = await C.db.from("polls").delete().eq("id", poll.id);
         if (r2.error) return toast(t("aPollFail"));
         await C.refreshPublic(); document.dispatchEvent(new CustomEvent("cml:lang"));

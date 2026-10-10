@@ -66,7 +66,7 @@ function pair(label, key, data, opts) {
 }
 const half = p => { const v = p.val(); const [a, b] = Object.values(v); return !!a !== !!b; };       // only one language filled
 const full = p => { const [a, b] = Object.values(p.val()); return !!a && !!b; };
-const confirmed = text => window.confirm(text);
+const confirmed = text => window.cmlConfirm(text);
 async function settingsMap() {
   const r = await C.db.from("settings").select("key,value");
   if (r.error) throw r.error;
@@ -122,7 +122,7 @@ function tableEditor(cfg) {
         }),
         i > 0 ? arrow("↑", tx("up"), () => swap(-1)) : null, i < rows.length - 1 ? arrow("↓", tx("down"), () => swap(1)) : null,
         K.button(tx("del"), "danger", async () => {
-          if (!confirmed(tx("confirmDel"))) return;
+          if (!await confirmed(tx("confirmDel"))) return;
           const w = await C.db.from(cfg.table).delete().eq("id", row.id);
           if (w.error) return K.toast(tx("saveFail"));
           await after(); K.toast(tx("saved")); reload();
@@ -229,7 +229,7 @@ async function moodsTab() {
           K.toast(tx("saved"));
         }),
         K.button(tx("mReset"), "secondary", async () => {
-          if (!confirmed(tx("confirmReset"))) return;
+          if (!await confirmed(tx("confirmReset"))) return;
           try { await K.setMap("wellness_moods", k, null); } catch { return say(fb, tx("saveFail")); }
           rows.forEach(r => { r.es.value = ""; r.en.value = ""; }); K.toast(tx("saved"));
         }))));
@@ -266,7 +266,7 @@ async function recipeTab() {
           C.safeUrl(v.image) ? el("img", { src: C.safeUrl(v.image), alt: "" }) : null, el("span", { text: v["text_" + l] || "" }))));
       }),
       K.button(tx("rRemove"), "danger", async () => {
-        if (!confirmed(tx("confirmDel"))) return;
+        if (!await confirmed(tx("confirmDel"))) return;
         try { await putSetting("recipe_month", null); } catch { return say(fb, tx("saveFail")); }
         K.toast(tx("saved")); K.rerender();
       })));
@@ -290,7 +290,7 @@ async function talkTab() {
         K.toast(tx("saved"));
       }),
       K.button(tx("tqReset"), "danger", async () => {
-        if (!confirmed(tx("confirmReset"))) return;
+        if (!await confirmed(tx("confirmReset"))) return;
         try { await putSetting("talk_prompt", null); } catch { return say(fb, tx("saveFail")); }
         K.toast(tx("saved")); K.rerender();
       })));
