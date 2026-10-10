@@ -1684,3 +1684,10 @@ fieldset.join-card { padding: 16px !important; margin: 14px 0 0 !important; }
     radial-gradient(9% 20% at 44% 52%, rgba(255, 255, 255, .7), transparent 70%),
     radial-gradient(7% 18% at 52% 48%, rgba(255, 255, 255, .6), transparent 70%),
     radial-gradient(8% 21% at 58% 54%, rgba(255, 252, 245, .65), transparent 70%); }
+/* A photo chosen in Admin (coffee, ceramics...) keeps a gentle centered steam and a neutral crop; the exact placement above is for the default cup only. */
+.matcha-img.is-custom .ma-foam { top: 52%; width: 68%; }
+.matcha-img.is-custom::before, .ma-hero-img.is-custom::before { background:
+    radial-gradient(9% 22% at 44% 62%, rgba(255, 255, 255, .7), transparent 70%),
+    radial-gradient(7% 20% at 52% 58%, rgba(255, 255, 255, .6), transparent 70%),
+    radial-gradient(8% 24% at 58% 64%, rgba(255, 252, 245, .65), transparent 70%); }
+.ma-hero-img.is-custom img { object-position: 50% 50%; }
