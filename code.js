@@ -52,7 +52,7 @@ const EN = {
 };
 // Signature orchid (phalaenopsis-inspired), drawn inline so it can float, sway and shift color. Unique gradient ids per copy.
 let __oid = 0;
-function orchidSVG(cls) {
+function orchidSVG(cls, white) {
   const p = "or" + (++__oid) + "_";
   const mx = d => d.replace(/(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)/g, (m, x, y) => (200 - parseFloat(x)) + " " + y);
   const petalL = "M99 96 C90 70 70 42 42 40 C14 40 4 70 12 96 C20 122 52 128 76 118 C88 112 96 104 99 100Z";
@@ -64,7 +64,7 @@ function orchidSVG(cls) {
     const v = ["M98 98 C80 84 56 70 34 66", "M98 98 C78 96 52 96 26 92", "M98 100 C80 106 58 112 38 114", "M98 96 C84 78 66 58 50 50"];
     return v.map(d => '<path d="' + (side ? mx(d) : d) + '"/>').join("");
   };
-  return '<svg class="' + (cls || "orchid") + '" viewBox="0 0 200 200" aria-hidden="true" focusable="false">' +
+  const svgStr = '<svg class="' + (cls || "orchid") + '" viewBox="0 0 200 200" aria-hidden="true" focusable="false">' +
   '<defs>' +
   '<radialGradient id="' + p + 'pt" cx="100" cy="98" r="96" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFF8EF"/><stop offset=".22" stop-color="#FCE1E8"/><stop offset=".55" stop-color="#F4A9C2"/><stop offset=".85" stop-color="#E06A98"/><stop offset="1" stop-color="#C94C82"/></radialGradient>' +
   '<radialGradient id="' + p + 'sp" cx="100" cy="98" r="90" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#FFF4EC"/><stop offset=".35" stop-color="#F8C9D7"/><stop offset=".8" stop-color="#E585A8"/><stop offset="1" stop-color="#CF5A8C"/></radialGradient>' +
@@ -88,7 +88,14 @@ function orchidSVG(cls) {
   '</g>' +
   '<g class="or-spark" fill="#E9CF9E"><path d="M168 40l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path d="M34 160l1.4 4 4 1.4-4 1.4-1.4 4-1.4-4-4-1.4 4-1.4z"/></g>' +
   '</svg>';
+  if (!white) return svgStr;
+  // White phalaenopsis: same shapes, white petals and sepals (the lip keeps its soft magenta), for the Wellness card.
+  return svgStr
+    .replace(/<stop offset="0" stop-color="#FFF8EF"\/><stop offset="\.22" stop-color="#FCE1E8"\/><stop offset="\.55" stop-color="#F4A9C2"\/><stop offset="\.85" stop-color="#E06A98"\/><stop offset="1" stop-color="#C94C82"\/>/, '<stop offset="0" stop-color="#FFFFFF"/><stop offset=".22" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#FAF6F8"/><stop offset=".85" stop-color="#F0E7EC"/><stop offset="1" stop-color="#E5D9E0"/>')
+    .replace(/<stop offset="0" stop-color="#FFF4EC"\/><stop offset="\.35" stop-color="#F8C9D7"\/><stop offset="\.8" stop-color="#E585A8"\/><stop offset="1" stop-color="#CF5A8C"\/>/, '<stop offset="0" stop-color="#FFFFFF"/><stop offset=".35" stop-color="#FDFBFC"/><stop offset=".8" stop-color="#F2EAEF"/><stop offset="1" stop-color="#E6DBE1"/>')
+    .replace('stroke="#B83A72" stroke-opacity=".22"', 'stroke="#9A7A8C" stroke-opacity=".22"');
 }
+window.CMLOrchid = { svg: orchidSVG };
 function orchid(cls) { const s = el("span", { class: "wc-orchid " + (cls || ""), "aria-hidden": "true" }); s.innerHTML = orchidSVG("orchid"); return s; }
 
 const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "function" ? v(...args) : (v || key); };
