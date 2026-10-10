@@ -126,7 +126,7 @@ function paint(failed) {
     if (x.mine || C.isAdmin()) {
       const del = el("button", { type: "button", class: "link-btn", text: t("wallDelete") });
       del.addEventListener("click", async () => {
-        if (!window.confirm(t("wallConfirm"))) return;
+        if (!await window.cmlConfirm(t("wallConfirm"))) return;
         const r = await C.db.from("prayer_requests").delete().eq("id", x.id);
         if (!r.error) { rows = rows.filter(y => y.id !== x.id); paint(); }
       });

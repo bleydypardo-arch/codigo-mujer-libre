@@ -843,21 +843,8 @@ function renderWeeklyCode() {            // (name kept: renderAll calls it) → 
 }
 // Home "Esta semana": real Home ideas published by the admin. Hidden (no sample cards) when there are none.
 function renderFeatured() {
-  const container = byId("featured");
-  if (!container) return;
-  const block = byId("featuredBlock");
-  const items = session ? plans.filter(p => p.kind === "home" && !planTag(p.id).matcha) : [];   // matcha items live in the Corner
-  if (block) block.hidden = !items.length;
-  container.replaceChildren(...items.map(p => {
-    const card = planCard(p);
-    const title = pick(p, "title");
-    if (window.CMLRedesign && title) {
-      const share = el("button", { type: "button", class: "link-btn suggest-btn", text: t("suggestToCommunity") + " →" });
-      share.addEventListener("click", () => window.CMLRedesign.compose(tf("suggestDraft", title)));
-      card.appendChild(share);
-    }
-    return card;
-  }));
+  // Wellness "Lecturas": an animated card that opens the reads page (reads.js). Posts live there, whole and uncropped.
+  if (window.CMLReads) return window.CMLReads.renderCard();
 }
 function emptyState(icon, title, text, action) {
   return el("div", { class: "empty-state" },
@@ -1244,11 +1231,24 @@ function wireSheet() {
     else if (!e.shiftKey && (document.activeElement === last || !sheet.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
   });
 }
+// The event shown in Home "Algo distinto": the one pinned in Admin, else the next not-yet-joined event (newest first when undated).
+function discoverPick() {
+  if (!session) return null;
+  const today = todayStr();
+  const ok = p => p.kind === "event" && (!p.event_date || p.event_date >= today);
+  const pinned = plans.find(p => ok(p) && planTag(p.id).pin);
+  if (pinned) return pinned;
+  const tried = new Set(plans.filter(p => mine.has(p.id) && p.code).map(p => p.code));
+  return plans.filter(p => ok(p) && !mine.has(p.id))
+    .sort((a, b) => (tried.has(a.code) - tried.has(b.code)) || String(a.event_date || "9").localeCompare(String(b.event_date || "9"))
+      || String(b.created_at || "").localeCompare(String(a.created_at || "")))[0] || null;
+}
 function renderUpcoming() {
   const host = byId("homeUpcoming");
   if (!host) return;
   const today = todayStr();
-  const next = session ? plans.filter(p => p.kind === "event" && p.event_date && p.event_date >= today).sort(byDate).slice(0, 3) : [];
+  const shown = discoverPick();   // already featured above in "Algo distinto": not repeated here
+  const next = session ? plans.filter(p => p.kind === "event" && p.event_date && p.event_date >= today && !(shown && p.id === shown.id)).sort(byDate).slice(0, 3) : [];
   host.hidden = !next.length;
   if (!next.length) return host.replaceChildren();
   const all = el("button", { type: "button", class: "see-all", text: t("seeAll") + " →" });
@@ -2021,7 +2021,7 @@ function initialize() {
     t, lang: () => currentLanguage, loc,
     session: () => session, profile: () => profile,
     isAdmin, isSuper, isContentAdmin, isStaff, announce,
-    refreshPublic: async () => { if (session) await loadAll(); },
+    refreshPublic: async () => { if (session) await loadAll(); }, discoverPick,
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,
     setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,

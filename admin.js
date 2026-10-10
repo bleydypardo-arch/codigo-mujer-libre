@@ -201,9 +201,9 @@ Object.assign(S.en, {
   appView: "View application", appHide: "Hide application", appWait: "Not sure yet? Leave her in Requests and come back anytime.", ago: d => d
 });
 S.es.tabs.users = "Miembros";
-Object.assign(S.es, { fFull: "Mostrar la imagen completa (sin recortar)",
+Object.assign(S.es, { fImgEn: "Versión en inglés de la imagen (opcional)", fImgEnHelp: "Si tu lectura es una imagen diseñada, sube aquí la versión en inglés. Las mujeres que usan el app en inglés verán esta.", readsIntro: "Aquí van tus lecturas de bienestar. Aparecen en Bienestar → Lecturas de bienestar: la más nueva arriba y las anteriores en la biblioteca, por mes. Para ocultar una, desmarca “Publicado”.", fPin: "Fijar en el Home, en “Algo distinto para esta semana”", fHomeImg: "Imagen solo para el Home (opcional)", fHomeImgHelp: "Se muestra completa, sin recortar. Si la dejas vacía se usa la imagen principal del evento.", fFull: "Mostrar la imagen completa (sin recortar)",
   copy_storyT: "Viajes: título de la promesa", copy_storyP: "Viajes: texto de la promesa", copy_homeExpSoon: "Experiencias: titular «próximamente» (Inicio)", copy_homeExpSoonP: "Experiencias: texto «próximamente» (Inicio)" });
-Object.assign(S.en, { fFull: "Show the whole image (don't crop)",
+Object.assign(S.en, { fImgEn: "English version of the image (optional)", fImgEnHelp: "If your read is a designed image, upload the English version here. Members using the app in English will see this one.", readsIntro: "Your wellness reads go here. They appear in Wellness → Wellness reads: the newest on top and earlier ones in the library, by month. To hide one, untick “Published”.", fPin: "Pin to Home, in “Something different this week”", fHomeImg: "Image for Home only (optional)", fHomeImgHelp: "Shown whole, not cropped. If empty, the event's main image is used.", fFull: "Show the whole image (don't crop)",
   copy_storyT: "Travel: promise headline", copy_storyP: "Travel: promise text", copy_homeExpSoon: "Experiences: “coming soon” headline (Home)", copy_homeExpSoonP: "Experiences: “coming soon” text (Home)" });
 Object.assign(S.es, { makeContentAdmin: "Hacer administradora de contenido", removeContentAdmin: "Quitar administradora de contenido",
   adminLimit: "Ya existe la cuenta adicional de administración (contenido). Quítala primero para nombrar a otra.",
@@ -279,6 +279,19 @@ async function saveTag(planId, tag) {
   if (tag.matcha) clean.matcha = true;
   if (tag.full) clean.full = true;
   if (tag.featured) clean.featured = true;
+  if (tag.homeImg) clean.homeImg = tag.homeImg;
+  if (tag.imgEn) clean.imgEn = tag.imgEn;
+  if (tag.pin) {   // only one card can be pinned to Home: unpin the others in the same write
+    clean.pin = true;
+    const r = await C.db.from("settings").select("key,value").eq("key", "plan_tags").maybeSingle();
+    if (r.error) throw r.error;
+    const all = Object.assign({}, (r.data && r.data.value) || {});
+    Object.keys(all).forEach(id => { if (id !== planId && all[id] && all[id].pin) { const t = Object.assign({}, all[id]); delete t.pin; if (Object.keys(t).length) all[id] = t; else delete all[id]; } });
+    all[planId] = clean;
+    const w = await C.db.from("settings").upsert({ key: "plan_tags", value: all, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (w.error) throw w.error;
+    return;
+  }
   await setMapEntry("plan_tags", planId, clean);
 }
 
@@ -415,6 +428,7 @@ async function listView(kind) {
   const rows = kind === "matcha" ? data.filter(isCorner) : kind === "home" ? data.filter(r => !isCorner(r)) : data;
   const wrap = el("div");
   if (kind === "matcha") wrap.appendChild(el("p", { class: "small-note", text: a("matchaIntro") }));
+  if (kind === "home") wrap.appendChild(el("p", { class: "small-note", text: a("readsIntro") }));
   if (kind === "trip") wrap.appendChild(el("p", { class: "small-note studio-intro", text: a("studioTrip") }));
   if (kind === "wellness") wrap.appendChild(el("p", { class: "small-note studio-intro", text: a("studioWell") }));
   const newLabel = kind === "wellness" ? a("newWellness") : kind === "trip" ? a("newTrip") : kind === "event" ? a("newEvent") : a("newItem");
@@ -495,7 +509,7 @@ function planItem(kind, row, c, memIds) {
     }));
   }
   actions.appendChild(button(a("del"), "danger", async () => {
-    if (!window.confirm(a("confirmDelete"))) return;
+    if (!await window.cmlConfirm(a("confirmDelete"))) return;
     const { error } = await C.db.from("plans").delete().eq("id", row.id);
     if (error) return toast(a("saveFail"));
     await C.refreshPublic(); toast(a("deleted")); render();
@@ -737,6 +751,17 @@ function formView() {
     fullBox = el("input", { type: "checkbox" }); fullBox.checked = !!oldTag.full;
     form.appendChild(el("label", { class: "check" }, fullBox, a("fFull")));
   }
+  let pinBox = null, homePicker = null, enPicker = null;
+  if (kind === "home") {
+    enPicker = imagePicker(oldTag.imgEn || "");
+    form.appendChild(el("fieldset", {}, el("legend", { text: a("fImgEn") }), el("p", { class: "small-note", text: a("fImgEnHelp") }), enPicker.node));
+  }
+  if (kind === "event") {
+    pinBox = el("input", { type: "checkbox" }); pinBox.checked = !!oldTag.pin;
+    form.appendChild(el("label", { class: "check" }, pinBox, a("fPin")));
+    homePicker = imagePicker(oldTag.homeImg || "");
+    form.appendChild(el("fieldset", {}, el("legend", { text: a("fHomeImg") }), el("p", { class: "small-note", text: a("fHomeImgHelp") }), homePicker.node));
+  }
   if (kind === "event" || kind === "weekend" || kind === "wellness") {
     matchaBox = el("input", { type: "checkbox" }); matchaBox.checked = !!oldTag.matcha;
     form.appendChild(el("label", { class: "check" }, matchaBox, a("fMatcha")));
@@ -806,7 +831,8 @@ function formView() {
   const buildTag = () => kind === "matcha"
     ? Object.assign({ matcha: true, mtype: mtypeSel.value, featured: featuredBox.checked, city: cityIn.value.trim() }, oldTag.full ? { full: true } : {})
     : { cat: typeSel ? (kind === "trip" && typeSel.value === "trip" ? "" : typeSel.value) : "", matcha: !!(matchaBox && matchaBox.checked),
-        featured: !!(featBox && featBox.checked), full: !!(fullBox && fullBox.checked), label: labelIn && typeSel && typeSel.value === "other" ? labelIn.value.trim() : "" };
+        featured: !!(featBox && featBox.checked), full: !!(fullBox && fullBox.checked),
+        pin: !!(pinBox && pinBox.checked), homeImg: homePicker && C.safeUrl(homePicker.value) ? homePicker.value : "", imgEn: enPicker && C.safeUrl(enPicker.value) ? enPicker.value : "", label: labelIn && typeSel && typeSel.value === "other" ? labelIn.value.trim() : "" };
   const previewBtn = (kind === "event" || kind === "trip" || kind === "wellness") && C.openPreview
     ? button(a("preview"), "secondary studio-preview", () => {
         feedback.hidden = true;
@@ -857,7 +883,7 @@ async function communityView() {
       el("p", { class: "saved-text", text: p.body }),
       el("p", { class: "small-note", text: new Date(p.created_at).toLocaleString(C.loc()) }));
     item.appendChild(el("div", { class: "actions" }, button(a("del"), "danger", async () => {
-      if (!window.confirm(a("confirmDelete"))) return;
+      if (!await window.cmlConfirm(a("confirmDelete"))) return;
       const r = await C.db.from("community_posts").delete().eq("id", p.id);
       if (r.error) return toast(a("saveFail"));
       await C.refreshPublic(); toast(a("deleted")); render();
@@ -1018,7 +1044,7 @@ async function usersView() {
         else if (!u.rejected) acts.appendChild(button(a("reject"), "danger", () => setApproval(false)));
         if (u.approved) { const w = welcomeLink(u); if (w) acts.insertBefore(w, acts.firstChild); }
         if (u.approved) acts.insertBefore(button(a("emailResend"), "", async () => {
-          if (!window.confirm(a("emailResendAsk"))) return;
+          if (!await window.cmlConfirm(a("emailResendAsk"))) return;
           toast(a((await sendApprovalEmail(u.id, true)) ? "emailSent" : "emailFail"));
         }), acts.firstChild);
         item.appendChild(acts);
@@ -1044,7 +1070,7 @@ async function usersView() {
           if (seatTaken && u.approved) acts.appendChild(el("small", { class: "ac-note", text: a("adminLimit") }));
           else if (!makeContent || u.approved) acts.appendChild(button(makeContent ? a("makeContentAdmin") : a("removeContentAdmin"), makeContent ? "" : "danger", async () => {
             if (makeContent && data.filter(x => x.role === "admin" || x.role === "content_admin").length >= 1) return toast(a("adminLimit"));
-            if (makeContent && !window.confirm(a("confirmContentAdmin"))) return;
+            if (makeContent && !await window.cmlConfirm(a("confirmContentAdmin"))) return;
             const r = await C.db.from("profiles").update({ role: makeContent ? "content_admin" : "member" }).eq("id", u.id);
             if (r.error) return toast(a("saveFail"));
             toast(a("roleSaved")); render();

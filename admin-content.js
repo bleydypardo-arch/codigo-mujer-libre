@@ -5,7 +5,7 @@
 "use strict";
 const T = {
   es: {
-    tDaily: "Código de hoy", tMoods: "Metas de bienestar", tRecipe: "Receta del mes", tDyk: "¿Sabías que?", tTalk: "Hablemos", tTravel: "Viajes: próximamente",
+    tDaily: "Código de hoy", tMoods: "Metas de bienestar", tRecipe: "Receta del mes", tDyk: "¿Sabías que?", tTalk: "Hablemos", tTravel: "Viajes: próximamente", tCodeMsgs: "Frases de los códigos",
     save: "Guardar", cancel: "Cancelar", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Despublicar", preview: "Vista previa", hidePreview: "Ocultar vista previa",
     published: "Publicado", draft: "Borrador", today: "Hoy", scheduled: "Programado", saved: "Guardado.", saveFail: "No se pudo guardar. Inténtalo de nuevo.", loadFail: "No se pudo cargar.",
     confirmDel: "¿Eliminar esta entrada? No se puede deshacer.", confirmReset: "¿Quitar esta personalización y volver al texto original?", up: "Subir", down: "Bajar", empty: "Todavía no hay entradas.",
@@ -24,10 +24,13 @@ const T = {
     dykIntro: "Datos breves que rotan cada día en Inicio. Escribe español e inglés.", dTitle: "Título (opcional)", dBody: "Dato",
     travelIntro: "Los dos espacios «Próximamente» y el mensaje de anuncio de Viajes. Vacío = texto original. Si ya hay una experiencia publicada, el espacio libre usa el Espacio 1.",
     slotN: n => "Espacio " + n, sLabel: "Etiqueta (ej. Próximamente)", sTitle: "Destino o titular", sImage: "Imagen promocional (opcional)",
+    cmIntro: "Cada código tiene su frase de la semana. Escribe las tuyas en español e inglés y elige el mes. Si agregas varias para el mismo mes, rotan una por semana. Si un mes no tiene frase, se usa la de «Todos los meses»; si tampoco hay, se queda la frase original.",
+    cmNow: "Frase original:", cmAdd: "+ Agregar frase", cmAllMonths: "Todos los meses", cmMonth: "Mes", cmRemove: "Quitar", cmCount: n => n ? n + (n === 1 ? " frase" : " frases") : "frase original",
+    cmEs: "Español", cmEn: "English", cmReset: "Volver a las frases originales",
     tvTeaser: "Mensaje de anuncio (Inicio y Viajes)", cHomeExpSoon: "Titular", cHomeExpSoonP: "Texto", cStoryT: "Promesa: titular", cStoryP: "Promesa: texto"
   },
   en: {
-    tDaily: "Code for Today", tMoods: "Wellness goals", tRecipe: "Recipe of the Month", tDyk: "Did You Know?", tTalk: "Let's Talk", tTravel: "Travel: coming soon",
+    tDaily: "Code for Today", tMoods: "Wellness goals", tRecipe: "Recipe of the Month", tDyk: "Did You Know?", tTalk: "Let's Talk", tTravel: "Travel: coming soon", tCodeMsgs: "Code phrases",
     save: "Save", cancel: "Cancel", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Unpublish", preview: "Preview", hidePreview: "Hide preview",
     published: "Published", draft: "Draft", today: "Today", scheduled: "Scheduled", saved: "Saved.", saveFail: "Couldn't save. Please try again.", loadFail: "Couldn't load.",
     confirmDel: "Delete this entry? This can't be undone.", confirmReset: "Remove this customization and go back to the original text?", up: "Move up", down: "Move down", empty: "No entries yet.",
@@ -46,6 +49,9 @@ const T = {
     dykIntro: "Short facts that rotate daily on Home. Write Spanish and English.", dTitle: "Title (optional)", dBody: "Fact",
     travelIntro: "The two “Coming soon” spaces and the announcement message on Travel. Empty = original text. If one experience is already published, the free space uses Space 1.",
     slotN: n => "Space " + n, sLabel: "Label (e.g. Coming soon)", sTitle: "Destination or headline", sImage: "Promo image (optional)",
+    cmIntro: "Each code has its phrase of the week. Write yours in Spanish and English and pick the month. If you add several for the same month they rotate, one per week. If a month has none, the “Every month” ones are used; if there are none either, the original phrase stays.",
+    cmNow: "Original phrase:", cmAdd: "+ Add phrase", cmAllMonths: "Every month", cmMonth: "Month", cmRemove: "Remove", cmCount: n => n ? n + (n === 1 ? " phrase" : " phrases") : "original phrase",
+    cmEs: "Español", cmEn: "English", cmReset: "Back to the original phrases",
     tvTeaser: "Announcement message (Home and Travel)", cHomeExpSoon: "Headline", cHomeExpSoonP: "Text", cStoryT: "Promise: headline", cStoryP: "Promise: text"
   }
 };
@@ -66,7 +72,7 @@ function pair(label, key, data, opts) {
 }
 const half = p => { const v = p.val(); const [a, b] = Object.values(v); return !!a !== !!b; };       // only one language filled
 const full = p => { const [a, b] = Object.values(p.val()); return !!a && !!b; };
-const confirmed = text => window.confirm(text);
+const confirmed = text => window.cmlConfirm(text);
 async function settingsMap() {
   const r = await C.db.from("settings").select("key,value");
   if (r.error) throw r.error;
@@ -122,7 +128,7 @@ function tableEditor(cfg) {
         }),
         i > 0 ? arrow("↑", tx("up"), () => swap(-1)) : null, i < rows.length - 1 ? arrow("↓", tx("down"), () => swap(1)) : null,
         K.button(tx("del"), "danger", async () => {
-          if (!confirmed(tx("confirmDel"))) return;
+          if (!await confirmed(tx("confirmDel"))) return;
           const w = await C.db.from(cfg.table).delete().eq("id", row.id);
           if (w.error) return K.toast(tx("saveFail"));
           await after(); K.toast(tx("saved")); reload();
@@ -229,7 +235,7 @@ async function moodsTab() {
           K.toast(tx("saved"));
         }),
         K.button(tx("mReset"), "secondary", async () => {
-          if (!confirmed(tx("confirmReset"))) return;
+          if (!await confirmed(tx("confirmReset"))) return;
           try { await K.setMap("wellness_moods", k, null); } catch { return say(fb, tx("saveFail")); }
           rows.forEach(r => { r.es.value = ""; r.en.value = ""; }); K.toast(tx("saved"));
         }))));
@@ -266,7 +272,7 @@ async function recipeTab() {
           C.safeUrl(v.image) ? el("img", { src: C.safeUrl(v.image), alt: "" }) : null, el("span", { text: v["text_" + l] || "" }))));
       }),
       K.button(tx("rRemove"), "danger", async () => {
-        if (!confirmed(tx("confirmDel"))) return;
+        if (!await confirmed(tx("confirmDel"))) return;
         try { await putSetting("recipe_month", null); } catch { return say(fb, tx("saveFail")); }
         K.toast(tx("saved")); K.rerender();
       })));
@@ -290,7 +296,7 @@ async function talkTab() {
         K.toast(tx("saved"));
       }),
       K.button(tx("tqReset"), "danger", async () => {
-        if (!confirmed(tx("confirmReset"))) return;
+        if (!await confirmed(tx("confirmReset"))) return;
         try { await putSetting("talk_prompt", null); } catch { return say(fb, tx("saveFail")); }
         K.toast(tx("saved")); K.rerender();
       })));
@@ -340,6 +346,58 @@ async function travelTab() {
   return wrap;
 }
 
+// ----- Weekly code phrases (settings.code_msgs = { Code: [ { m: 0..12, es, en } ] }) -----
+const CM_CODES = ["Social", "Wellness", "Connection", "Adventure", "Faith", "Family", "Recharge", "Support"];
+async function codeMsgsTab() {
+  const cfg = await settingsMap();
+  const saved = cfg.code_msgs && typeof cfg.code_msgs === "object" ? cfg.code_msgs : {};
+  const months = Array.from({ length: 12 }, (_, i) => { const n = new Date(2026, i, 1).toLocaleDateString(C.lang() === "en" ? "en-US" : "es-US", { month: "long" }); return n.charAt(0).toUpperCase() + n.slice(1); });
+  const wrap = el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("cmIntro") }));
+  const blocks = CM_CODES.map(code => {
+    const rows = [];
+    const list = el("div", { class: "cm-list" });
+    const counter = el("small", { class: "small-note" });
+    const upd = () => { counter.textContent = tx("cmCount")(rows.length); };
+    const addRow = (cur) => {
+      const m = el("select", {}, el("option", { value: "0", text: tx("cmAllMonths") }), months.map((n, i) => el("option", { value: String(i + 1), text: n })));
+      m.value = String((cur && cur.m) || 0);
+      const es = el("textarea", { rows: 2, maxlength: 220 }); es.value = (cur && cur.es) || "";
+      const en = el("textarea", { rows: 2, maxlength: 220 }); en.value = (cur && cur.en) || "";
+      const box = el("div", { class: "rf-pair cm-row" }, el("label", {}, tx("cmMonth"), m),
+        el("div", { class: "ac-two" }, el("label", {}, el("small", { text: tx("cmEs") }), es), el("label", {}, el("small", { text: tx("cmEn") }), en)));
+      const row = { m, es, en, box };
+      box.appendChild(K.button(tx("cmRemove"), "link-btn", () => { rows.splice(rows.indexOf(row), 1); box.remove(); upd(); }));
+      rows.push(row); list.appendChild(box); upd();
+    };
+    (Array.isArray(saved[code]) ? saved[code] : []).forEach(addRow);
+    const name = C.t("wcName_" + code);
+    const det = el("details", { class: "rf-group", open: rows.length > 0 }, el("summary", { text: name }), counter,
+      el("p", { class: "small-note", text: tx("cmNow") + " " + C.t("wcMsg_" + code) }), list,
+      el("div", { class: "admin-bar" }, K.button(tx("cmAdd"), "secondary", () => addRow(null))));
+    wrap.appendChild(det);
+    return { code, rows };
+  });
+  const fb = feedbackNode(); wrap.appendChild(fb);
+  wrap.appendChild(el("div", { class: "admin-bar" },
+    K.button(tx("save"), "primary", async () => {
+      say(fb, "");
+      const out = {};
+      for (const b of blocks) {
+        const items = [];
+        for (const r of b.rows) {
+          const es = r.es.value.trim(), en = r.en.value.trim();
+          if (!es && !en) continue;
+          if (!es || !en) return say(fb, tx("bothLangs"));
+          items.push({ m: parseInt(r.m.value, 10) || 0, es, en });
+        }
+        if (items.length) out[b.code] = items;
+      }
+      try { await putSetting("code_msgs", Object.keys(out).length ? out : null); } catch (e) { console.error(e); return say(fb, tx("saveFail")); }
+      K.toast(tx("saved"));
+    })));
+  return wrap;
+}
+
 function init() {
   C = window.CML; const A = window.CMLAdmin;
   if (!C || !A || !A.registerTab) return;
@@ -351,6 +409,7 @@ function init() {
   A.registerTab("recipe", { group: "content", label: lab(T.es.tRecipe, T.en.tRecipe), render: async () => recipeTab() });
   A.registerTab("dyk", { group: "content", label: lab(T.es.tDyk, T.en.tDyk), render: async () => dykTab() });
   A.registerTab("talk", { group: "content", label: lab(T.es.tTalk, T.en.tTalk), render: async () => talkTab() });
+  A.registerTab("codemsgs", { group: "content", label: lab(T.es.tCodeMsgs, T.en.tCodeMsgs), render: async () => codeMsgsTab() });
   A.registerTab("travelx", { group: "content", label: lab(T.es.tTravel, T.en.tTravel), render: async () => travelTab() });
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();

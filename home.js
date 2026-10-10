@@ -255,8 +255,8 @@ function renderWeek() {
 }
 
 // ---------- Haz algo nuevo (discovery from real content) ----------
-function thumb(src, code) {
-  const box = el("span", { class: "disc-th" + (src ? "" : " tone-" + (C.codeLabels[code] ? code : "none")), "aria-hidden": "true" });
+function thumb(src, code, whole) {
+  const box = el("span", { class: "disc-th" + (whole && src ? " is-whole" : "") + (src ? "" : " tone-" + (C.codeLabels[code] ? code : "none")), "aria-hidden": "true" });
   if (src) {
     const img = el("img", { src, alt: "", loading: "lazy" });
     img.addEventListener("error", () => { img.remove(); box.classList.add("tone-none"); box.textContent = emojiOf(code); });
@@ -278,12 +278,11 @@ function renderDiscover() {
   const { plans, mine } = C.homeData();
   const today = day0().getTime();
   const tried = new Set(plans.filter(p => mine.has(p.id) && p.code).map(p => p.code));
-  const fresh = plans.filter(p => p.kind === "event" && !mine.has(p.id) && (!p.event_date || parse(p.event_date).getTime() >= today))
-    .sort((a, b) => (tried.has(a.code) - tried.has(b.code)) || String(a.event_date || "9").localeCompare(String(b.event_date || "9")));
   const rows = [];
-  const ev = fresh[0];
+  const ev = C.discoverPick();
   if (ev) {
-    rows.push(disc(thumb(C.safeUrl(ev.image_url), ev.code), ev.code && !tried.has(ev.code) ? t("discNewCode") : t("discForYou"),
+    const evTag = C.planTag(ev.id), homeImg = C.safeUrl(evTag.homeImg || "");
+    rows.push(disc(thumb(homeImg || C.safeUrl(ev.image_url), ev.code, !!homeImg || !!evTag.full), ev.code && !tried.has(ev.code) ? t("discNewCode") : t("discForYou"),
       C.pick(ev, "title") || "—", ev.event_date ? shortDate(ev.event_date) + (ev.location ? " · " + ev.location : "") : (ev.location || ""),
       () => C.openDetail(ev.id)));
   } else rows.push(disc(thumb("", "Social"), t("discForYou"), t("discEvents"), t("discEventsSub"), go2("events")));

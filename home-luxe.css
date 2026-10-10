@@ -130,3 +130,8 @@
   #homeExperience.hx-card.is-soon { min-height: 0; padding: 0; }
   #homeExperience.hx-card.is-soon .hx-invite { padding: 20px !important; }
 }
+
+/* Home image chosen for "Algo distinto" (or "show whole image"): shown complete, never cropped */
+#homeDiscover .disc-th.is-whole { height: auto; max-height: 260px; background: var(--cml-beige); }
+#homeDiscover .disc-th.is-whole img { height: auto; max-height: 260px; object-fit: contain; }
+@media (min-width: 1024px) { #homeDiscover .disc-th.is-whole { width: 54px; height: 54px; } #homeDiscover .disc-th.is-whole img { height: 100%; } }

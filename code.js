@@ -104,6 +104,24 @@ const storeKey = () => "cmlWeekCode:" + ((C.session() && C.session().user.id) ||
 function getCode() { try { const v = localStorage.getItem(storeKey()); return CODES.includes(v) ? v : ""; } catch { return memo; } }
 let memo = "";
 function setCode(v) { memo = v; try { if (v) localStorage.setItem(storeKey(), v); else localStorage.removeItem(storeKey()); } catch { /* session only */ } }
+// Weekly phrase for a code. Admin library (settings "code_msgs"): phrases for this month, else "every month" ones, rotating one per week;
+// no library entry = the original phrase above.
+function msgFor(code) {
+  const lib = C && C.setting ? C.setting("code_msgs") : null;
+  const list = lib && Array.isArray(lib[code]) ? lib[code] : [];
+  const month = new Date().getMonth() + 1;
+  let pool = list.filter(x => x && x.m === month);
+  if (!pool.length) pool = list.filter(x => x && (!x.m || x.m === 0));
+  if (pool.length) {
+    const week = Math.floor((new Date().setHours(0, 0, 0, 0) - new Date(2026, 0, 5).getTime()) / (7 * 86400000));
+    const p = pool[((week % pool.length) + pool.length) % pool.length];
+    const lang = C.lang() === "en" ? "en" : "es";
+    const text = (p[lang] || p[lang === "en" ? "es" : "en"] || "").trim();
+    if (text) return text;
+  }
+  return t("wcMsg_" + code);
+}
+
 function svg(code, cls) {
   const s = el("span", { class: cls, "aria-hidden": "true" });
   s.innerHTML = '<svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="' + ICON[code] + '"/></svg>';
@@ -169,7 +187,7 @@ function render() {
       el("div", { class: "wc-txt" },
         el("small", { class: "rose", text: t("wcYour") }),
         el("b", { class: "wc-chosen", tabindex: "-1", text: t("wcName_" + chosen) }),
-        el("p", { class: "wc-msg", text: t("wcMsg_" + chosen) })),
+        el("p", { class: "wc-msg", text: msgFor(chosen) })),
       change),
     el("div", { class: "wc-acts" }, ...actions(chosen).map(([label, fn]) => {
       const b = el("button", { type: "button", class: "wc-act", text: label + " →" });
