@@ -201,9 +201,9 @@ Object.assign(S.en, {
   appView: "View application", appHide: "Hide application", appWait: "Not sure yet? Leave her in Requests and come back anytime.", ago: d => d
 });
 S.es.tabs.users = "Miembros";
-Object.assign(S.es, { fLang: "Idioma de esta lectura", fLangBoth: "Los dos idiomas (se muestra a todas)", fLangEs: "Solo español (se muestra a quien usa el app en español)", fLangEn: "Solo English (se muestra a quien usa el app en inglés)", fLangHelp: "Si publicas una lectura en español y otra en inglés, marca el idioma de cada una y cada mujer verá solo la suya.", fImgEn: "Versión en inglés de la imagen (opcional)", fImgEnHelp: "Si tu lectura es una imagen diseñada, sube aquí la versión en inglés. Las mujeres que usan el app en inglés verán esta.", readsIntro: "Aquí van tus lecturas de bienestar. Aparecen en Bienestar → Lecturas de bienestar: la más nueva arriba y las anteriores en la biblioteca, por mes. Para ocultar una, desmarca “Publicado”.", fPin: "Fijar en el Home, en “Algo distinto para esta semana”", fHomeImg: "Imagen solo para el Home (opcional)", fHomeImgHelp: "Se muestra completa, sin recortar. Si la dejas vacía se usa la imagen principal del evento.", fFull: "Mostrar la imagen completa (sin recortar)",
+Object.assign(S.es, { libEs: "Biblioteca en español", libEn: "Biblioteca en inglés (English)", libBoth: "Para los dos idiomas", newReadEs: "+ Nueva lectura en español", newReadEn: "+ Nueva lectura en inglés", libEmpty: "Todavía no hay lecturas aquí.", fLang: "Idioma de esta lectura", fLangBoth: "Los dos idiomas (se muestra a todas)", fLangEs: "Solo español (se muestra a quien usa el app en español)", fLangEn: "Solo English (se muestra a quien usa el app en inglés)", fLangHelp: "Si publicas una lectura en español y otra en inglés, marca el idioma de cada una y cada mujer verá solo la suya.", fImgEn: "Versión en inglés de la imagen (opcional)", fImgEnHelp: "Si tu lectura es una imagen diseñada, sube aquí la versión en inglés. Las mujeres que usan el app en inglés verán esta.", readsIntro: "Aquí van tus lecturas de bienestar. Aparecen en Bienestar → Lecturas de bienestar: la más nueva arriba y las anteriores en la biblioteca, por mes. Para ocultar una, desmarca “Publicado”.", fPin: "Fijar en el Home, en “Algo distinto para esta semana”", fHomeImg: "Imagen solo para el Home (opcional)", fHomeImgHelp: "Se muestra completa, sin recortar. Si la dejas vacía se usa la imagen principal del evento.", fFull: "Mostrar la imagen completa (sin recortar)",
   copy_storyT: "Viajes: título de la promesa", copy_storyP: "Viajes: texto de la promesa", copy_homeExpSoon: "Experiencias: titular «próximamente» (Inicio)", copy_homeExpSoonP: "Experiencias: texto «próximamente» (Inicio)" });
-Object.assign(S.en, { fLang: "Language of this read", fLangBoth: "Both languages (shown to everyone)", fLangEs: "Spanish only (shown to members using the app in Spanish)", fLangEn: "English only (shown to members using the app in English)", fLangHelp: "If you publish one read in Spanish and another in English, mark the language of each and every member will see only hers.", fImgEn: "English version of the image (optional)", fImgEnHelp: "If your read is a designed image, upload the English version here. Members using the app in English will see this one.", readsIntro: "Your wellness reads go here. They appear in Wellness → Wellness reads: the newest on top and earlier ones in the library, by month. To hide one, untick “Published”.", fPin: "Pin to Home, in “Something different this week”", fHomeImg: "Image for Home only (optional)", fHomeImgHelp: "Shown whole, not cropped. If empty, the event's main image is used.", fFull: "Show the whole image (don't crop)",
+Object.assign(S.en, { libEs: "Spanish library (español)", libEn: "English library", libBoth: "For both languages", newReadEs: "+ New read in Spanish", newReadEn: "+ New read in English", libEmpty: "No reads here yet.", fLang: "Language of this read", fLangBoth: "Both languages (shown to everyone)", fLangEs: "Spanish only (shown to members using the app in Spanish)", fLangEn: "English only (shown to members using the app in English)", fLangHelp: "If you publish one read in Spanish and another in English, mark the language of each and every member will see only hers.", fImgEn: "English version of the image (optional)", fImgEnHelp: "If your read is a designed image, upload the English version here. Members using the app in English will see this one.", readsIntro: "Your wellness reads go here. They appear in Wellness → Wellness reads: the newest on top and earlier ones in the library, by month. To hide one, untick “Published”.", fPin: "Pin to Home, in “Something different this week”", fHomeImg: "Image for Home only (optional)", fHomeImgHelp: "Shown whole, not cropped. If empty, the event's main image is used.", fFull: "Show the whole image (don't crop)",
   copy_storyT: "Travel: promise headline", copy_storyP: "Travel: promise text", copy_homeExpSoon: "Experiences: “coming soon” headline (Home)", copy_homeExpSoonP: "Experiences: “coming soon” text (Home)" });
 Object.assign(S.es, { makeContentAdmin: "Hacer administradora de contenido", removeContentAdmin: "Quitar administradora de contenido",
   adminLimit: "Ya existe la cuenta adicional de administración (contenido). Quítala primero para nombrar a otra.",
@@ -433,8 +433,8 @@ async function listView(kind) {
   if (kind === "trip") wrap.appendChild(el("p", { class: "small-note studio-intro", text: a("studioTrip") }));
   if (kind === "wellness") wrap.appendChild(el("p", { class: "small-note studio-intro", text: a("studioWell") }));
   const newLabel = kind === "wellness" ? a("newWellness") : kind === "trip" ? a("newTrip") : kind === "event" ? a("newEvent") : a("newItem");
-  wrap.appendChild(el("div", { class: "admin-bar" }, button(newLabel, "primary studio-new", () => { editing = { kind, row: null }; render(); })));
-  if (!rows.length) wrap.appendChild(el("p", { class: "small-note", text: a("empty") }));
+  if (kind !== "home") wrap.appendChild(el("div", { class: "admin-bar" }, button(newLabel, "primary studio-new", () => { editing = { kind, row: null }; render(); })));
+  if (!rows.length && kind !== "home") wrap.appendChild(el("p", { class: "small-note", text: a("empty") }));
 
   let tally = new Map();
   if (kind === "event" || kind === "trip" || kind === "weekend") {
@@ -447,6 +447,19 @@ async function listView(kind) {
   }
   let memIds = null;
   if (kind === "event" && window.CMLMem) { try { memIds = await window.CMLMem.planMemoryIds(); } catch { memIds = null; } }
+  if (kind === "home") {
+    // Two libraries, one per language: each month the Spanish read goes in the Spanish library and the English one in the English library.
+    const langOf = r => { const l = (C.planTag(r.id) || {}).lang; return l === "es" || l === "en" ? l : ""; };
+    [["es", "libEs", "newReadEs"], ["en", "libEn", "newReadEn"], ["", "libBoth", null]].forEach(([lg, head, add]) => {
+      const list = rows.filter(r => langOf(r) === lg);
+      if (!lg && !list.length) return;
+      wrap.appendChild(el("h3", { class: "admin-sec-h", text: a(head) + " (" + list.length + ")" }));
+      if (add) wrap.appendChild(el("div", { class: "admin-bar" }, button(a(add), "primary studio-new", () => { editing = { kind, row: null, preLang: lg }; render(); })));
+      if (!list.length) wrap.appendChild(el("p", { class: "small-note", text: a("libEmpty") }));
+      list.forEach(row => wrap.appendChild(planItem(kind, row, { i: 0, g: 0 }, null)));
+    });
+    return wrap;
+  }
   rows.forEach(row => wrap.appendChild(planItem(kind, row, tally.get(row.id) || { i: 0, g: 0 }, memIds)));
   return wrap;
 }
@@ -756,7 +769,7 @@ function formView() {
   let langSel = null;
   if (kind === "home") {
     langSel = el("select", {}, el("option", { value: "", text: a("fLangBoth") }), el("option", { value: "es", text: a("fLangEs") }), el("option", { value: "en", text: a("fLangEn") }));
-    langSel.value = oldTag.lang === "es" || oldTag.lang === "en" ? oldTag.lang : "";
+    langSel.value = oldTag.lang === "es" || oldTag.lang === "en" ? oldTag.lang : (!row && editing && (editing.preLang === "es" || editing.preLang === "en") ? editing.preLang : "");
     form.appendChild(field(a("fLang"), langSel, a("fLangHelp")));
     enPicker = imagePicker(oldTag.imgEn || "");
     form.appendChild(el("fieldset", {}, el("legend", { text: a("fImgEn") }), el("p", { class: "small-note", text: a("fImgEnHelp") }), enPicker.node));
