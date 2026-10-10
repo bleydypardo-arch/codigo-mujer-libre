@@ -6,13 +6,13 @@
 "use strict";
 let C = null;
 const ES = {
-  rdK: "BIENESTAR", rdTitle: "Lecturas de bienestar", rdNow: "Leer ahora", rdNew: "Nueva",
+  rdK: "BIENESTAR", rdTitle: "Lecturas de Bienestar", rdNow: "Leer ahora", rdNew: "Nueva",
   rdIntro: "Ideas cortas sobre longevidad, alimentación, salud de la mujer y hábitos.",
   rdLibK: "Biblioteca", rdLibP: "Todas las lecturas anteriores, para volver a ellas cuando quieras.",
   rdEmpty: "Pronto compartiremos aquí nuestra primera lectura.", rdOpen: "Abrir lectura", rdShare: "Compartir con la comunidad"
 };
 const EN = {
-  rdK: "WELLNESS", rdTitle: "Wellness reads", rdNow: "Read now", rdNew: "New",
+  rdK: "WELLNESS", rdTitle: "Wellness Reads", rdNow: "Read now", rdNew: "New",
   rdIntro: "Short ideas on longevity, healthy eating, women's health and habits.",
   rdLibK: "Library", rdLibP: "Every earlier read, to come back to whenever you like.",
   rdEmpty: "Soon we'll share our first read here.", rdOpen: "Open read", rdShare: "Share with the community"
