@@ -87,7 +87,7 @@ const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "
 const el = (...a) => C.el(...a);
 const WCATS = ["spa", "massage", "facial", "skincare", "nails", "hair", "beauty", "gym", "fitness", "pilates", "yoga", "movement", "meditation", "mind", "retreat", "food", "workshop", "offer", "promo", "other"];
 const catLabel = tag => (tag.cat === "other" && tag.label ? tag.label : t("wcat_" + tag.cat));
-const MATCHA_DEFAULT = "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=900&q=80";
+const MATCHA_DEFAULT = "matcha-cup.jpg";
 const MATCHA_RE = /^\s*🍵\s*Matcha/i;
 const DAY = 86400000;
 const todayStr = () => C.todayStr();

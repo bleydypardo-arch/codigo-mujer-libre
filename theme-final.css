@@ -1672,3 +1672,15 @@ fieldset.join-card > legend.join-q + .join-heard, fieldset.join-card > legend.jo
   body:has(#navAdmin:not([hidden])) nav button { min-width: 0; flex: 1 1 0; padding-left: 0; padding-right: 0; }
 }
 fieldset.join-card { padding: 16px !important; margin: 14px 0 0 !important; }
+
+/* Matcha cup photo (matcha-cup.jpg): the animated foam and steam sit on the cup's liquid, which is in the upper part of this photo. */
+.matcha-img .ma-foam { top: 34%; width: 50%; }
+.matcha-img::before { background:
+    radial-gradient(9% 16% at 45% 35%, rgba(255, 255, 255, .7), transparent 70%),
+    radial-gradient(7% 15% at 52% 31%, rgba(255, 255, 255, .6), transparent 70%),
+    radial-gradient(8% 17% at 58% 36%, rgba(255, 252, 245, .65), transparent 70%); }
+.ma-hero-img img { object-position: 50% 36%; }
+.ma-hero-img::before { background:
+    radial-gradient(9% 20% at 44% 52%, rgba(255, 255, 255, .7), transparent 70%),
+    radial-gradient(7% 18% at 52% 48%, rgba(255, 255, 255, .6), transparent 70%),
+    radial-gradient(8% 21% at 58% 54%, rgba(255, 252, 245, .65), transparent 70%); }
