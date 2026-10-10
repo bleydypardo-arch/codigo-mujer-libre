@@ -48,7 +48,7 @@ function envelopeSVG() {
     '<radialGradient id="enSeal" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#C9475F"/><stop offset=".6" stop-color="#9C2C45"/><stop offset="1" stop-color="#6B1B2E"/></radialGradient>' +
     '</defs>' +
     '<g class="en-float">' +
-      '<ellipse cx="100" cy="140" rx="64" ry="5" fill="#B85F68" opacity=".14"/>' +
+      '<ellipse class="en-shadow" cx="100" cy="140" rx="64" ry="5" fill="#B85F68" opacity=".14"/>' +
       '<g class="en-letter"><rect x="46" y="22" width="108" height="76" rx="6" fill="#FFFDF8" stroke="#E9D6B8" stroke-width="1"/>' +
         '<path d="M62 40h76M62 52h76M62 64h48" stroke="#DBC19F" stroke-width="1.4" stroke-linecap="round" opacity=".8"/></g>' +
       '<rect x="22" y="48" width="156" height="86" rx="10" fill="url(#enBody)" stroke="url(#enGold)" stroke-width="1.4"/>' +
@@ -56,6 +56,7 @@ function envelopeSVG() {
       '<path d="M22 56 C22 52 25 50 29 52 L100 100 L171 52 C175 50 178 52 178 56 L100 112 Z" fill="url(#enFlap)" stroke="url(#enGold)" stroke-width="1.3" stroke-linejoin="round"/>' +
       '<g class="en-seal"><circle cx="100" cy="104" r="13" fill="url(#enGold)"/><circle cx="100" cy="104" r="10.4" fill="url(#enSeal)"/>' +
       '<path d="M100 110 C93 105 91 100 94 97.5 C96.5 95.5 99 97 100 99 C101 97 103.5 95.5 106 97.5 C109 100 107 105 100 110 Z" fill="#F6E7C6"/></g>' +
+      '<g class="en-spark" fill="#E9CF9E"><path class="en-s1" d="M166 30l1.8 5.4 5.4 1.8-5.4 1.8-1.8 5.4-1.8-5.4-5.4-1.8 5.4-1.8z"/><path class="en-s2" d="M30 40l1.4 4.2 4.2 1.4-4.2 1.4-1.4 4.2-1.4-4.2-4.2-1.4 4.2-1.4z"/><path class="en-s3" d="M176 96l1.2 3.6 3.6 1.2-3.6 1.2-1.2 3.6-1.2-3.6-3.6-1.2 3.6-1.2z"/></g>' +
     '</g></svg>';
 }
 
