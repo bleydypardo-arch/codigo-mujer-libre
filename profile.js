@@ -163,7 +163,8 @@ function renderProfile() {
     el("h1", { text: t("profTitle") }),
     el("p", { class: "small-note", text: t("profIntro") }),
     form,
-    ...(window.CMLRedesign ? [window.CMLRedesign.essenceLink()] : []));
+    ...(window.CMLRedesign ? [window.CMLRedesign.essenceLink()] : []),
+    ...[window.CMLInstall && window.CMLInstall.profileCard()].filter(Boolean));
 }
 
 // ---------- birthdays (shown inside "Tu semana" on Home, drawn by home.js) ----------

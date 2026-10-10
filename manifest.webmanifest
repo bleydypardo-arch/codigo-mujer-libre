@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "Código Mujer Libre",
+  "short_name": "Mujer Libre",
+  "description": "Una comunidad para conectar, vivir y crecer juntas.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF9F8",
+  "theme_color": "#FFF9F8",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
