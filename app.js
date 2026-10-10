@@ -778,6 +778,7 @@ function renderHero() {
     const h = new Date().getHours();
     const first = profile && profile.first_name ? profile.first_name : "";
     greet.textContent = tf(h >= 5 && h < 12 ? "greetMorning" : h >= 12 && h < 19 ? "greetAfternoon" : "greetEvening", first);
+    if (first && window.CMLFx) window.CMLFx.greet(greet);
   }
   const img = byId("heroImg");
   if (!img) return;
