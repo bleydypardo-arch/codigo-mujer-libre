@@ -36,3 +36,10 @@
 .inv-canvas { width: min(100%, 320px); height: auto; border-radius: 16px; border: 1px solid var(--cml-line, #EFE6DE); box-shadow: 0 10px 26px -14px rgba(158, 77, 86, .35); }
 .inv-out label { width: 100%; }
 .inv-link { font-size: 12.5px; }
+
+/* Mi QR para invitar (Mi perfil) */
+.inv-card { text-align: center; margin-top: 16px; }
+.inv-card h2 { margin: 2px 0 6px; font-size: 21px; }
+.inv-card .small-note { margin: 0 auto 10px; max-width: 34ch; }
+.inv-me { width: min(100%, 260px); }
+.inv-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 12px; }

@@ -28,6 +28,38 @@
   document.addEventListener("DOMContentLoaded", () => { prefill(); setTimeout(prefill, 600); setTimeout(prefill, 1800); });
   window.addEventListener("hashchange", () => setTimeout(prefill, 50));
 
+
+  // ---- member side: "My invitation QR" card on Mi perfil ----
+  const M = {
+    es: { k: "INVITA A UNA AMIGA", h: "Mi QR para invitar", p: "Muéstrasela a una amiga o mándasela por WhatsApp. Cuando se una con tu QR, la solicitud llega con tu nombre.", dl: "Descargar mi QR", sh: "Compartir", cp: "Copiar enlace", ok: "Enlace copiado", msg: "Te invito a Código Mujer Libre, una comunidad de mujeres para conectar, vivir y crecer." },
+    en: { k: "INVITE A FRIEND", h: "My invitation QR", p: "Show it to a friend or send it on WhatsApp. When she joins with your QR, her application arrives with your name.", dl: "Download my QR", sh: "Share", cp: "Copy link", ok: "Link copied", msg: "I invite you to Código Mujer Libre, a community of women to connect, live and grow." }
+  };
+  function profileCard() {
+    const C = window.CML; if (!C || !C.profile || !window.CMLQR) return null;
+    const me = C.profile(); if (!me) return null;
+    const first = clean(me.first_name || ""), last = clean(me.last_name || "");
+    const name = clean(first ? first + (last ? " " + last.charAt(0).toUpperCase() + "." : "") : (me.display_name || ""));
+    if (!name) return null;
+    const L = M[C.lang()] || M.es, el = C.el, url = linkFor(name);
+    const canvas = el("canvas", { class: "inv-canvas inv-me", "aria-label": "QR" });
+    drawQR(canvas, url, { top: "Código Mujer Libre", bottom: (T[C.lang()] || T.es).cap + " · " + name });
+    const toBlob = () => new Promise(res => canvas.toBlob(res, "image/png"));
+    const dl = el("button", { type: "button", class: "primary", text: L.dl });
+    dl.addEventListener("click", () => { const a = document.createElement("a"); a.download = "QR-" + name.replace(/[^\w\-]+/g, "_") + ".png"; a.href = canvas.toDataURL("image/png"); document.body.appendChild(a); a.click(); a.remove(); });
+    const sh = el("button", { type: "button", class: "secondary", text: L.sh });
+    sh.addEventListener("click", async () => {
+      try {
+        const blob = await toBlob(), file = new File([blob], "QR-codigo-mujer-libre.png", { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: L.msg + " " + url }); return; }
+        if (navigator.share) { await navigator.share({ text: L.msg, url }); return; }
+      } catch (e) { if (e && e.name === "AbortError") return; }
+      try { await navigator.clipboard.writeText(url); sh.textContent = L.ok; setTimeout(() => { sh.textContent = L.sh; }, 1800); } catch { /* ignore */ }
+    });
+    return el("section", { class: "card inv-card" }, el("small", { class: "rose", text: L.k }), el("h2", { text: L.h }), el("p", { class: "small-note", text: L.p }),
+      el("div", { class: "inv-out" }, canvas), el("div", { class: "inv-actions" }, dl, sh));
+  }
+  window.CMLInvites = { profileCard };
+
   // ---- admin side ----
   const T = {
     es: { tab: "Invitaciones QR", intro: "Crea un QR personal para cada persona que invita (tú, una anfitriona, una ciudad). Quien se une con ese QR llega a la solicitud con “Una amiga me invitó” y el nombre ya escritos. Tú sigues aprobando a cada una.", name: "Nombre de quien invita o de la ciudad", ph: "Ej.: Jazz, Orlando, Boston, Comunidad", make: "Crear QR", link: "Enlace", copy: "Copiar enlace", copied: "Enlace copiado", save: "Descargar imagen", need: "Escribe un nombre primero.", hint: "Imprime la imagen o compártela por WhatsApp. El QR funciona siempre, no caduca.", cap: "Escanea para unirte" },
