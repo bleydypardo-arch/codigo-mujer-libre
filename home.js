@@ -259,6 +259,7 @@ function thumb(src, code, whole) {
   const box = el("span", { class: "disc-th" + (whole && src ? " is-whole" : "") + (src ? "" : " tone-" + (C.codeLabels[code] ? code : "none")), "aria-hidden": "true" });
   if (src) {
     const img = el("img", { src, alt: "", loading: "lazy" });
+    if (whole) box.style.setProperty("--th-bg", 'url("' + String(src).replace(/["\\()\s]/g, encodeURIComponent) + '")');
     img.addEventListener("error", () => { img.remove(); box.classList.add("tone-none"); box.textContent = emojiOf(code); });
     box.appendChild(img);
   } else box.textContent = emojiOf(code);

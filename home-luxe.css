@@ -87,8 +87,8 @@
   border: 1px solid var(--cml-line); border-radius: 20px; overflow: hidden; background: #fff; box-shadow: 0 12px 26px -20px rgba(90, 59, 66, .4);
 }
 #homeDiscover .disc-row:first-child { border-top: 1px solid var(--cml-line); }
-#homeDiscover .disc-th { width: 100%; height: 88px; border-radius: 0; font-size: 34px; }
-#homeDiscover .disc-txt { padding: 12px 14px 14px; gap: 3px; }
+#homeDiscover .disc-th { width: 100%; height: 150px; border-radius: 0; font-size: 38px; }
+#homeDiscover .disc-txt { padding: 12px 14px 14px; gap: 3px; min-height: 76px; }
 #homeDiscover .disc-txt b { font-size: 16.5px; }
 #homeDiscover .wrow-go, #homeDiscover .disc-row > :last-child:not(.disc-th):not(.disc-txt) { display: none; }
 @media (min-width: 1024px) {
@@ -131,7 +131,8 @@
   #homeExperience.hx-card.is-soon .hx-invite { padding: 20px !important; }
 }
 
-/* Home image chosen for "Algo distinto" (or "show whole image"): shown complete, never cropped */
-#homeDiscover .disc-th.is-whole { height: auto; max-height: 260px; background: var(--cml-beige); }
-#homeDiscover .disc-th.is-whole img { height: auto; max-height: 260px; object-fit: contain; }
-@media (min-width: 1024px) { #homeDiscover .disc-th.is-whole { width: 54px; height: 54px; } #homeDiscover .disc-th.is-whole img { height: 100%; } }
+/* Every card has the same size. A photo chosen for Home (or "show whole image") is shown complete inside the same frame, over a soft blurred copy of itself. */
+#homeDiscover .disc-th.is-whole { position: relative; background: var(--cml-beige); }
+#homeDiscover .disc-th.is-whole::before { content: ""; position: absolute; inset: -14px; background: var(--th-bg) center / cover no-repeat; filter: blur(14px) saturate(1.05); opacity: .55; }
+#homeDiscover .disc-th.is-whole img { position: relative; width: 100%; height: 100%; object-fit: contain; }
+@media (min-width: 1024px) { #homeDiscover .disc-th.is-whole { width: 54px; height: 54px; } #homeDiscover .disc-th.is-whole::before { display: none; } }
