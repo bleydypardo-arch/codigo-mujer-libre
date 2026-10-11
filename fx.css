@@ -13,7 +13,7 @@
 /* "Algo distinto": the card in front glows, the others step back (phone swipe row only) */
 @media (max-width: 1023px) {
   #homeDiscover .disc-row { transition: transform .35s ease, opacity .35s ease, box-shadow .35s ease; }
-  #homeDiscover .disc-list .disc-row:not(.is-active) { opacity: .8; transform: scale(.97); }
+  #homeDiscover .disc-list .disc-row:not(.is-active) { opacity: .88; }
   #homeDiscover .disc-list .disc-row.is-active { box-shadow: 0 0 0 1.5px rgba(219, 193, 159, .75), 0 16px 30px -18px rgba(158, 77, 86, .5); }
 }
 @media (prefers-reduced-motion: reduce) { .wc-result.wc-bloom::before, .hero-greet.greet-shine { animation: none; } #homeDiscover .disc-row { transition: none; } }
