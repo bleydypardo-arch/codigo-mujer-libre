@@ -17,7 +17,7 @@ const S = {
     copy_travelIntro: "Viajes · introducción", copy_travelBadge: "Viajes · etiqueta", copy_maTag: "Rincón Matcha · lema", copy_maIntro: "Rincón Matcha · introducción",
     copy_wcQ: "Tu código · pregunta", copy_wcSub: "Tu código · subtítulo",
     imgTravelTitle: "Imagen de Viajes y Experiencias", imgTravelHelp: "Se usa en la portada de Viajes (si el viaje no tiene foto) y en los accesos a Viajes desde Inicio y Eventos.",
-    imgFounderTitle: "Foto de la fundadora", imgFounderHelp: "Aparece en «Nuestra Historia». Mejor una foto vertical o cuadrada. Sube una nueva cuando quieras cambiarla.",
+    useMyPhoto: "Usar mi foto de perfil", useMyPhotoNone: "Primero sube tu foto en Mi perfil.", useMyPhotoFail: "No se pudo copiar la foto. Intenta de nuevo.", imgFounderTitle: "Foto de la fundadora", imgFounderHelp: "Aparece en «Nuestra Historia». Mejor una foto vertical o cuadrada. Sube una nueva cuando quieras cambiarla.",
     imgDefault: "Quitar y usar la predeterminada",
     imgMatchaTitle: "Imagen de Matcha y Arte", imgMatchaHelp: "Aparece en la tarjeta de Inicio y en la página de la colección.",
     fType: "Tipo de plan (filtros de Eventos)", fTypeAuto: "Automático (según el código)", fType_social: "Happy hour y social", fType_dining: "Restaurante y comida", fType_events: "Evento o plan (conciertos, mercados, festivales, exposiciones, concursos…)",
@@ -85,7 +85,7 @@ const S = {
     copy_travelIntro: "Travel · intro", copy_travelBadge: "Travel · badge", copy_maTag: "Matcha corner · tagline", copy_maIntro: "Matcha corner · intro",
     copy_wcQ: "Your code · question", copy_wcSub: "Your code · subtitle",
     imgTravelTitle: "Travel & Experiences image", imgTravelHelp: "Used on the Travel cover (when the trip has no photo) and on the Travel entry points on Home and Events.",
-    imgFounderTitle: "Founder photo", imgFounderHelp: "Shown on “Our Story”. A portrait or square photo works best. Upload a new one anytime to change it.",
+    useMyPhoto: "Use my profile photo", useMyPhotoNone: "Upload your photo in My profile first.", useMyPhotoFail: "Could not copy the photo. Please try again.", imgFounderTitle: "Founder photo", imgFounderHelp: "Shown on “Our Story”. A portrait or square photo works best. Upload a new one anytime to change it.",
     imgDefault: "Remove and use the default",
     imgMatchaTitle: "Matcha & Art image", imgMatchaHelp: "Shown on the Home card and on the collection page.",
     fType: "Plan type (Events filters)", fTypeAuto: "Automatic (from the code)", fType_social: "Happy hour & social", fType_dining: "Restaurant & food", fType_events: "Event or thing to do (concerts, markets, festivals, exhibitions, contests…)",
@@ -1150,6 +1150,19 @@ function imageSetting(cfg, key, title, help) {
         if (r.error) return toast(a("saveFail"));
         await C.refreshPublic(); toast(a("saved"));
       }),
+      key === "founder_photo" ? button(a("useMyPhoto"), "secondary", async () => {
+        const path = C.profile && C.profile() && C.profile().avatar_path;
+        if (!path) return toast(a("useMyPhotoNone"));
+        try {
+          const s = await C.db.storage.from("avatars").createSignedUrl(path, 300);
+          if (s.error || !s.data || !s.data.signedUrl) throw s.error || new Error("url");
+          const blob = await (await fetch(s.data.signedUrl)).blob();
+          const url = await uploadImage(new File([blob], "perfil.jpg", { type: blob.type || "image/jpeg" }));
+          const r = await C.db.from("settings").upsert({ key, value: { url }, updated_at: new Date().toISOString() }, { onConflict: "key" });
+          if (r.error) throw r.error;
+          pick.value = url; await C.refreshPublic(); toast(a("saved"));
+        } catch (e) { console.error(e); toast(a("useMyPhotoFail")); }
+      }) : null,
       button(a("imgDefault"), "secondary", async () => {
         const r = await C.db.from("settings").delete().eq("key", key);
         if (r.error) return toast(a("saveFail"));
