@@ -5,7 +5,7 @@
 const S = {
   es: {
     pendingBanner: n => n + (n === 1 ? " usuaria espera tu aprobación" : " usuarias esperan tu aprobación"), reviewNow: "Revisar", mkMemory: "Crear recuerdo", openMemory: "Abrir recuerdo", memCreated: "Recuerdo creado", approvedBadge: "Aprobada", pendingBadge: "Pendiente", approve: "Aprobar", reject: "Rechazar", rejectedBadge: "Rechazada", unapprove: "Quitar aprobación", adminTaken: "Ya hay una segunda administradora. Quítale el cargo primero para nombrar a otra.",  approvalSaved: "Aprobación actualizada", welcomeSend: "Enviar bienvenida", welcomeDone: "Listo", emailSent: "Correo de aprobación enviado", emailFail: "Aprobada, pero el correo no salió. Usa «Reenviar correo»", emailResend: "Reenviar correo", emailResendAsk: "¿Enviar de nuevo el correo de aprobación?",
-    tabs: { plans: "Planes y eventos", trips: "Viajes y Experiencias", weekend: "Ideas de fin de semana", home: "Inicio", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imágenes y textos", matcha: "Rincón Matcha", trips: "Viajes y Experiencias" },
+    tabs: { plans: "Planes y eventos", trips: "Viajes y Experiencias", weekend: "Ideas de fin de semana", home: "Lecturas de bienestar", wellness: "Bienestar", community: "Comunidad", memories: "Recuerdos", polls: "Votaciones", messages: "Mensajes", users: "Usuarias", ai: "✨ Asistente IA", settings: "Imágenes y textos", matcha: "Rincón Matcha", trips: "Viajes y Experiencias" },
     groups: { content: "Contenido", people: "Comunidad", tools: "Ajustes y medios" },
     secImages: "Imágenes", secTexts: "Textos de la app", imgLogoTitle: "Logo de la marca", imgLogoHelp: "Aparece en el encabezado. Usa un archivo cuadrado (PNG o SVG con fondo transparente). Si lo quitas, vuelve el logo aprobado.",
     imgPagesTitle: "Fotos de entrada de cada sección (opcional)", imgPagesHelp: "Si agregas una foto, aparece detrás del título de esa sección con un velo suave para que el texto se lea bien.",
@@ -73,7 +73,7 @@ const S = {
   },
   en: {
     pendingBanner: n => n + (n === 1 ? " member is waiting for your approval" : " members are waiting for your approval"), reviewNow: "Review", mkMemory: "Create memory", openMemory: "Open memory", memCreated: "Memory created", approvedBadge: "Approved", pendingBadge: "Pending", approve: "Approve", reject: "Reject", rejectedBadge: "Rejected", unapprove: "Remove approval", adminTaken: "There is already a second admin. Remove her role first to name someone else.",  approvalSaved: "Approval updated", welcomeSend: "Send welcome", welcomeDone: "Done", emailSent: "Approval email sent", emailFail: "Approved, but the email did not go out. Use “Resend email”", emailResend: "Resend email", emailResendAsk: "Send the approval email again?",
-    tabs: { plans: "Plans & events", trips: "Travel & Experiences", weekend: "Weekend ideas", home: "Home", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Images & texts", matcha: "Matcha Corner", trips: "Travel & Experiences" },
+    tabs: { plans: "Plans & events", trips: "Travel & Experiences", weekend: "Weekend ideas", home: "Wellness reads", wellness: "Wellness", community: "Community", memories: "Memories", polls: "Polls", messages: "Messages", users: "Members", ai: "✨ AI assistant", settings: "Images & texts", matcha: "Matcha Corner", trips: "Travel & Experiences" },
     groups: { content: "Content", people: "Community", tools: "Settings & media" },
     secImages: "Images", secTexts: "App texts", imgLogoTitle: "Brand logo", imgLogoHelp: "Shown in the header. Use a square file (PNG or SVG with a transparent background). Remove it to return to the approved logo.",
     imgPagesTitle: "Section entrance photos (optional)", imgPagesHelp: "When you add a photo it appears behind that section's title with a soft veil so the text stays readable.",
@@ -201,9 +201,9 @@ Object.assign(S.en, {
   appView: "View application", appHide: "Hide application", appWait: "Not sure yet? Leave her in Requests and come back anytime.", ago: d => d
 });
 S.es.tabs.users = "Miembros";
-Object.assign(S.es, { libEs: "Biblioteca en español", libEn: "Biblioteca en inglés (English)", libBoth: "Para los dos idiomas", newReadEs: "+ Nueva lectura en español", newReadEn: "+ Nueva lectura en inglés", libEmpty: "Todavía no hay lecturas aquí.", fLang: "Idioma de esta lectura", fLangBoth: "Los dos idiomas (se muestra a todas)", fLangEs: "Solo español (se muestra a quien usa el app en español)", fLangEn: "Solo English (se muestra a quien usa el app en inglés)", fLangHelp: "Si publicas una lectura en español y otra en inglés, marca el idioma de cada una y cada mujer verá solo la suya.", fImgEn: "Versión en inglés de la imagen (opcional)", fImgEnHelp: "Si tu lectura es una imagen diseñada, sube aquí la versión en inglés. Las mujeres que usan el app en inglés verán esta.", readsIntro: "Aquí van tus lecturas de bienestar. Aparecen en Bienestar → Lecturas de bienestar: la más nueva arriba y las anteriores en la biblioteca, por mes. Para ocultar una, desmarca “Publicado”.", fPin: "Fijar en el Home, en “Algo distinto para esta semana”", fHomeImg: "Imagen solo para el Home (opcional)", fHomeImgHelp: "Se muestra completa, sin recortar. Si la dejas vacía se usa la imagen principal del evento.", fFull: "Mostrar la imagen completa (sin recortar)",
+Object.assign(S.es, { hpTab: "Inicio: Algo distinto", hpIntro: "Esta es la tarjeta “Algo distinto para esta semana” que ven todas en Inicio. Al tocarla lleva a la página de Eventos, donde está el evento con la dirección y todo para inscribirse. Elige qué evento se muestra y, si quieres, una foto solo para Inicio. Cuando cambie el evento, vuelve aquí y cámbialo.", hpPick: "Evento que se muestra", hpAuto: "Automático (el próximo evento disponible)", hpImg: "Foto para Inicio (opcional)", hpImgHelp: "Se muestra completa, sin recortar. Si la dejas vacía se usa la foto del evento.", hpSave: "Guardar", hpSaved: "Guardado. Ya se ve en Inicio.", hpFail: "No se pudo guardar. Intenta de nuevo.", hpNone: "Todavía no hay eventos publicados.", libEs: "Biblioteca en español", libEn: "Biblioteca en inglés (English)", libBoth: "Para los dos idiomas", newReadEs: "+ Nueva lectura en español", newReadEn: "+ Nueva lectura en inglés", libEmpty: "Todavía no hay lecturas aquí.", fLang: "Idioma de esta lectura", fLangBoth: "Los dos idiomas (se muestra a todas)", fLangEs: "Solo español (se muestra a quien usa el app en español)", fLangEn: "Solo English (se muestra a quien usa el app en inglés)", fLangHelp: "Si publicas una lectura en español y otra en inglés, marca el idioma de cada una y cada mujer verá solo la suya.", fImgEn: "Versión en inglés de la imagen (opcional)", fImgEnHelp: "Si tu lectura es una imagen diseñada, sube aquí la versión en inglés. Las mujeres que usan el app en inglés verán esta.", readsIntro: "Aquí van tus lecturas de bienestar. Aparecen en Bienestar → Lecturas de bienestar: la más nueva arriba y las anteriores en la biblioteca, por mes. Para ocultar una, desmarca “Publicado”.", fPin: "Fijar en el Home, en “Algo distinto para esta semana”", fHomeImg: "Imagen solo para el Home (opcional)", fHomeImgHelp: "Se muestra completa, sin recortar. Si la dejas vacía se usa la imagen principal del evento.", fFull: "Mostrar la imagen completa (sin recortar)",
   copy_storyT: "Viajes: título de la promesa", copy_storyP: "Viajes: texto de la promesa", copy_homeExpSoon: "Experiencias: titular «próximamente» (Inicio)", copy_homeExpSoonP: "Experiencias: texto «próximamente» (Inicio)" });
-Object.assign(S.en, { libEs: "Spanish library (español)", libEn: "English library", libBoth: "For both languages", newReadEs: "+ New read in Spanish", newReadEn: "+ New read in English", libEmpty: "No reads here yet.", fLang: "Language of this read", fLangBoth: "Both languages (shown to everyone)", fLangEs: "Spanish only (shown to members using the app in Spanish)", fLangEn: "English only (shown to members using the app in English)", fLangHelp: "If you publish one read in Spanish and another in English, mark the language of each and every member will see only hers.", fImgEn: "English version of the image (optional)", fImgEnHelp: "If your read is a designed image, upload the English version here. Members using the app in English will see this one.", readsIntro: "Your wellness reads go here. They appear in Wellness → Wellness reads: the newest on top and earlier ones in the library, by month. To hide one, untick “Published”.", fPin: "Pin to Home, in “Something different this week”", fHomeImg: "Image for Home only (optional)", fHomeImgHelp: "Shown whole, not cropped. If empty, the event's main image is used.", fFull: "Show the whole image (don't crop)",
+Object.assign(S.en, { hpTab: "Home: Something different", hpIntro: "This is the “Something different this week” card everyone sees on Home. Tapping it opens the Events page, where the event has the address and everything to sign up. Choose which event is shown and, if you like, a photo just for Home. When the event changes, come back here and change it.", hpPick: "Event shown", hpAuto: "Automatic (the next available event)", hpImg: "Photo for Home (optional)", hpImgHelp: "Shown whole, not cropped. If empty, the event's own photo is used.", hpSave: "Save", hpSaved: "Saved. It is now live on Home.", hpFail: "Could not save. Please try again.", hpNone: "No published events yet.", libEs: "Spanish library (español)", libEn: "English library", libBoth: "For both languages", newReadEs: "+ New read in Spanish", newReadEn: "+ New read in English", libEmpty: "No reads here yet.", fLang: "Language of this read", fLangBoth: "Both languages (shown to everyone)", fLangEs: "Spanish only (shown to members using the app in Spanish)", fLangEn: "English only (shown to members using the app in English)", fLangHelp: "If you publish one read in Spanish and another in English, mark the language of each and every member will see only hers.", fImgEn: "English version of the image (optional)", fImgEnHelp: "If your read is a designed image, upload the English version here. Members using the app in English will see this one.", readsIntro: "Your wellness reads go here. They appear in Wellness → Wellness reads: the newest on top and earlier ones in the library, by month. To hide one, untick “Published”.", fPin: "Pin to Home, in “Something different this week”", fHomeImg: "Image for Home only (optional)", fHomeImgHelp: "Shown whole, not cropped. If empty, the event's main image is used.", fFull: "Show the whole image (don't crop)",
   copy_storyT: "Travel: promise headline", copy_storyP: "Travel: promise text", copy_homeExpSoon: "Experiences: “coming soon” headline (Home)", copy_homeExpSoonP: "Experiences: “coming soon” text (Home)" });
 Object.assign(S.es, { makeContentAdmin: "Hacer administradora de contenido", removeContentAdmin: "Quitar administradora de contenido",
   adminLimit: "Ya existe la cuenta adicional de administración (contenido). Quítala primero para nombrar a otra.",
@@ -1305,4 +1305,39 @@ function renderResults(box, out) {
   });
   if (out.note) box.appendChild(el("p", { class: "small-note", text: a("aiNote") + ": " + out.note }));
 }
+
+// ---------- Home "Something different": choose which event is pinned + an optional Home-only photo ----------
+async function homePinTab() {
+  const r = await C.db.from("plans").select("*").eq("kind", "event").eq("published", true).order("event_date", { ascending: true });
+  const today = new Date().toISOString().slice(0, 10);
+  const rows = r.error ? [] : (r.data || []).filter(p => !p.event_date || p.event_date >= today);
+  const wrap = el("div", { class: "admin-form" }, el("p", { class: "small-note", text: a("hpIntro") }));
+  if (!rows.length) { wrap.appendChild(el("p", { class: "small-note", text: a("hpNone") })); return wrap; }
+  const cur = rows.find(p => (C.planTag(p.id) || {}).pin);
+  const sel = el("select", {}, el("option", { value: "", text: a("hpAuto") }),
+    rows.map(p => el("option", { value: p.id, text: (C.pick(p, "title") || "—") + (p.event_date ? " · " + C.fmtDate(p.event_date) : "") })));
+  sel.value = cur ? cur.id : "";
+  const picker = imagePicker(cur ? ((C.planTag(cur.id) || {}).homeImg || "") : "");
+  sel.addEventListener("change", () => { const p = rows.find(x => x.id === sel.value); picker.value = p ? ((C.planTag(p.id) || {}).homeImg || "") : ""; });
+  const fb = el("p", { class: "form-feedback", role: "alert", hidden: true });
+  const save = button(a("hpSave"), "primary", async () => {
+    fb.hidden = true;
+    try {
+      const id = sel.value;
+      if (!id) {
+        if (cur) { const t = Object.assign({}, C.planTag(cur.id)); delete t.pin; await saveTag(cur.id, t); }
+      } else {
+        const t = Object.assign({}, C.planTag(id), { pin: true });
+        const img = picker.value && C.safeUrl(picker.value) ? picker.value : "";
+        if (img) t.homeImg = img; else delete t.homeImg;
+        await saveTag(id, t);
+      }
+      await C.refreshPublic();
+      toast(a("hpSaved")); render();
+    } catch (e) { console.error(e); fb.hidden = false; fb.textContent = a("hpFail"); }
+  });
+  wrap.append(el("label", {}, a("hpPick"), sel), el("fieldset", {}, el("legend", { text: a("hpImg") }), el("p", { class: "small-note", text: a("hpImgHelp") }), picker.node), fb, el("div", { class: "admin-bar" }, save));
+  return wrap;
+}
+registerTab("homepin", { group: "content", label: { es: S.es.hpTab, en: S.en.hpTab }, render: async () => homePinTab() });
 })();
