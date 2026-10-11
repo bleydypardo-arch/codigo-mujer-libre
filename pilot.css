@@ -30,3 +30,9 @@
 .lg-panel .cml-confirm-row { display: flex; gap: 10px; margin-top: 18px; }
 .lg-panel .cml-confirm-row button { flex: 1; min-height: 46px; border-radius: 999px; font: 600 15px var(--font-ui, inherit); cursor: pointer; border: 1px solid var(--cml-line, #EADFDB); background: #fff; color: var(--cml-rose-d, #9E4D56); }
 .lg-panel .cml-confirm-row button.cml-yes { background: var(--cml-rose, #B85F68); border-color: var(--cml-rose, #B85F68); color: #fff; }
+
+/* Invitation QR (Admin) */
+.inv-out { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-top: 8px; }
+.inv-canvas { width: min(100%, 320px); height: auto; border-radius: 16px; border: 1px solid var(--cml-line, #EFE6DE); box-shadow: 0 10px 26px -14px rgba(158, 77, 86, .35); }
+.inv-out label { width: 100%; }
+.inv-link { font-size: 12.5px; }
