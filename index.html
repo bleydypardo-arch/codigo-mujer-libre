@@ -167,7 +167,15 @@
                 <input id="suLast" autocomplete="family-name" maxlength="60" required></label>
             </div>
             <label><span data-i18n="joinCity">Ciudad o zona</span>
-              <input id="suCity" autocomplete="address-level2" maxlength="80" required></label>
+              <select id="suCitySel" required>
+                <option value="" data-i18n="cityPick">Elige tu ciudad</option>
+                <option value="Orlando">Orlando</option><option value="Miami">Miami</option><option value="Boston">Boston</option>
+                <option value="Bogotá">Bogotá</option><option value="Medellín">Medellín</option>
+                <option value="__other" data-i18n="cityOther">Otra ciudad</option>
+              </select></label>
+            <label id="suCityOtherWrap" hidden><span class="sr-only" data-i18n="cityOtherLbl">¿Cuál es tu ciudad?</span>
+              <input id="suCity" autocomplete="address-level2" maxlength="80" data-i18n-placeholder="cityOtherLbl" placeholder="¿Cuál es tu ciudad?"></label>
+            <p class="join-hint" data-i18n="cityHint">Solo la ciudad. Nunca pedimos tu dirección.</p>
             <label><span data-i18n="joinPhone">Teléfono</span>
               <input id="suPhone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" required></label>
             <fieldset class="join-seg">
@@ -195,12 +203,23 @@
 
         <div id="joinStep2" class="join-step" hidden>
           <fieldset class="join-card">
-            <legend class="join-q" data-i18n="joinQ1">1 · ¿Qué te gustaría vivir aquí?</legend>
+            <legend class="join-q" data-i18n="joinQ1">1 · ¿Qué te gustaría encontrar aquí?</legend>
             <p class="join-qs" data-i18n="joinQ1s">Elige las que quieras.</p>
             <div class="choice-grid join-chips" id="suInterests"></div>
           </fieldset>
           <fieldset class="join-card">
-            <legend class="join-q" data-i18n="joinQ2">2 · ¿Cómo llegaste a Código Mujer Libre?</legend>
+            <legend class="join-q" data-i18n="joinQDoes">2 · ¿A qué te dedicas hoy?</legend>
+            <label><span class="sr-only" data-i18n="joinQDoes">2 · ¿A qué te dedicas hoy?</span>
+              <input id="suDoes" maxlength="120" autocomplete="off" data-i18n-placeholder="joinQDoesPh" placeholder="Soy maestra, cuido mi hogar, tengo un negocio, busco empleo…"></label>
+          </fieldset>
+          <fieldset class="join-card">
+            <legend class="join-q" data-i18n="joinQDream">3 · ¿Qué sueño todavía vive en ti?</legend>
+            <label><span class="sr-only" data-i18n="joinQDream">3 · ¿Qué sueño todavía vive en ti?</span>
+              <textarea id="suDream" rows="3" maxlength="300" data-i18n-placeholder="joinQDreamPh" placeholder="Abrir mi panadería, escribir un libro, volver a estudiar, viajar…"></textarea></label>
+            <p class="join-hint" data-i18n="joinQDreamHint">Nunca es tarde para empezar. Lo verán las demás integrantes cuando te conozcan.</p>
+          </fieldset>
+          <fieldset class="join-card">
+            <legend class="join-q" data-i18n="joinQ2">4 · ¿Cómo llegaste a Código Mujer Libre?</legend>
             <div class="join-chips join-heard">
               <label class="choice"><input type="radio" name="suHeard" value="friend"> <span data-i18n="heard_friend">Una amiga me invitó</span></label>
               <label class="choice"><input type="radio" name="suHeard" value="event"> <span data-i18n="heard_event">Un evento</span></label>
@@ -209,11 +228,6 @@
             </div>
             <label><span data-i18n="joinInvited">¿Quién te invitó?</span> <small data-i18n="optional">(opcional)</small>
               <input id="suInvited" maxlength="80" autocomplete="off"></label>
-          </fieldset>
-          <fieldset class="join-card">
-            <legend class="join-q"><span data-i18n="joinQ3">3 · Cuéntanos algo que te haga sonreír</span> <small data-i18n="optional">(opcional)</small></legend>
-            <label><span class="sr-only" data-i18n="joinQ3">3 · Cuéntanos algo que te haga sonreír</span>
-              <textarea id="suSmile" rows="2" maxlength="300" data-i18n-placeholder="joinQ3ph" placeholder="Un buen café con amigas, bailar, una tarde de playa…"></textarea></label>
           </fieldset>
           <div class="join-card join-guide">
             <p class="jg-h"><span aria-hidden="true">◆</span> <span data-i18n="guideTitle">Nuestro código</span></p>
@@ -532,6 +546,8 @@
         placeholder="¿Qué quieres compartir con la comunidad?"
       ></textarea>
 
+      <div id="postCats"></div>
+
       <div class="post-photo-row">
         <label class="mem-addfiles post-photo-btn"><span data-i18n="addPhoto">📷 Agregar foto (opcional)</span>
           <input type="file" id="postPhoto" accept="image/jpeg,image/png,image/webp,image/*" class="mem-file"></label>
@@ -549,6 +565,7 @@
     </div>
 
     <p class="note" data-i18n="communityLocalNote">Las publicaciones las ve toda la comunidad.</p>
+    <div id="postFilter"></div>
     <div id="posts"></div>
       </div>
     </div>
@@ -867,6 +884,7 @@
   <script src="flipcard.js"></script>
   <script src="home.js"></script>
   <script src="connect.js"></script>
+  <script src="community-plus.js"></script>
   <script src="notify.js"></script>
   <script src="redesign.js"></script>
   <script src="daily.js"></script>

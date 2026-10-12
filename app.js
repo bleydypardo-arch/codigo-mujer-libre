@@ -478,15 +478,19 @@ Object.assign(translations.es, {
   joinCity: "Ciudad o zona", joinPhone: "Teléfono", joinWa: "¿Podemos escribirte por WhatsApp?", yes: "Sí", no: "No",
   joinBday: "Tu cumpleaños", optional: "(opcional)", month: "Mes", day: "Día",
   joinBdayHint: "🎂 Solo el día y el mes, para celebrarte. Nunca pedimos el año.", joinPassword: "Crea una contraseña",
-  joinQ1: "1 · ¿Qué te gustaría vivir aquí?", joinQ1s: "Elige las que quieras.",
-  joinQ2: "2 · ¿Cómo llegaste a Código Mujer Libre?", heard_friend: "Una amiga me invitó", heard_event: "Un evento", heard_social: "Redes sociales", heard_other: "Otro",
+  memCityAll: "Todas", memCityAria: "Filtrar por ciudad",
+  cityPick: "Elige tu ciudad", cityOther: "Otra ciudad", cityOtherLbl: "¿Cuál es tu ciudad?", cityHint: "Solo la ciudad. Nunca pedimos tu dirección.",
+  joinQDoes: "2 · ¿A qué te dedicas hoy?", joinQDoesPh: "Soy maestra, cuido mi hogar, tengo un negocio, busco empleo…",
+  joinQDream: "3 · ¿Qué sueño todavía vive en ti?", joinQDreamPh: "Abrir mi panadería, escribir un libro, volver a estudiar, viajar…", joinQDreamHint: "Nunca es tarde para empezar. Lo verán las demás integrantes cuando te conozcan.",
+  joinQ1: "1 · ¿Qué te gustaría encontrar aquí?", joinQ1s: "Elige las que quieras.",
+  joinQ2: "4 · ¿Cómo llegaste a Código Mujer Libre?", heard_friend: "Una amiga me invitó", heard_event: "Un evento", heard_social: "Redes sociales", heard_other: "Otro",
   joinInvited: "¿Quién te invitó?", joinQ3: "3 · Cuéntanos algo que te haga sonreír", joinQ3ph: "Un buen café con amigas, bailar, una tarde de playa…",
   guideTitle: "Nuestro código", guide1b: "Respeto y cariño.", guide1: "Aquí todas somos bienvenidas.", guide2b: "Lo que se comparte aquí, se queda aquí.",
   guide3b: "Sin ventas ni spam", guide3: "entre miembros.", guide4b: "Aparece y participa:", guide4: "esta comunidad la hacemos juntas.",
-  guideAccept: "Acepto las normas de la comunidad", signupBtn: "Enviar mi solicitud",
+  guideAccept: "Confirmo que soy mujer y acepto las normas de la comunidad", signupBtn: "Enviar mi solicitud",
   joinMissing1: "Completa tu nombre, apellido, ciudad, teléfono, correo y contraseña.", joinWaNeed: "Cuéntanos si podemos escribirte por WhatsApp.",
   joinPhoneBad: "Revisa tu número de teléfono.", joinEmailBad: "Revisa tu correo electrónico.", joinBdayBoth: "Elige el mes y el día de tu cumpleaños (o deja ambos vacíos).",
-  joinHeardNeed: "Cuéntanos cómo llegaste a Código Mujer Libre.", joinGuideNeed: "Para enviar tu solicitud, acepta las normas de la comunidad.",
+  joinHeardNeed: "Cuéntanos cómo llegaste a Código Mujer Libre.", joinGuideNeed: "Para enviar tu solicitud, confirma que eres mujer y acepta las normas de la comunidad.",
   thanksTitle: n => "¡Gracias, " + n + "!", thanksBody: "Tu solicitud llegó a nuestro equipo. La revisamos con cariño y te escribiremos por WhatsApp o correo en cuanto estés dentro.",
   thanksConfirm: "Antes, confirma tu correo con el enlace que te enviamos a", thanksLogin: "Ya lo confirmé · Entrar",
   pendThanks: n => n ? "¡Gracias, " + n + "!" : "¡Gracias!", pendBody2: "Tu solicitud llegó a nuestro equipo. La revisamos con cariño y te escribiremos por WhatsApp o correo en cuanto estés dentro.",
@@ -505,15 +509,19 @@ Object.assign(translations.en, {
   joinCity: "City or area", joinPhone: "Phone", joinWa: "May we message you on WhatsApp?", yes: "Yes", no: "No",
   joinBday: "Your birthday", optional: "(optional)", month: "Month", day: "Day",
   joinBdayHint: "🎂 Just the day and month, so we can celebrate you. We never ask for the year.", joinPassword: "Create a password",
-  joinQ1: "1 · What would you love to experience here?", joinQ1s: "Choose as many as you like.",
-  joinQ2: "2 · How did you find Código Mujer Libre?", heard_friend: "A friend invited me", heard_event: "An event", heard_social: "Social media", heard_other: "Other",
+  memCityAll: "All", memCityAria: "Filter by city",
+  cityPick: "Choose your city", cityOther: "Another city", cityOtherLbl: "What is your city?", cityHint: "Just the city. We never ask for your address.",
+  joinQDoes: "2 · What do you do today?", joinQDoesPh: "I'm a teacher, I care for my home, I run a business, I'm looking for work…",
+  joinQDream: "3 · What dream still lives in you?", joinQDreamPh: "Open my bakery, write a book, go back to school, travel…", joinQDreamHint: "It is never too late to begin. Other members will see it when they get to know you.",
+  joinQ1: "1 · What would you like to find here?", joinQ1s: "Choose as many as you like.",
+  joinQ2: "4 · How did you find Código Mujer Libre?", heard_friend: "A friend invited me", heard_event: "An event", heard_social: "Social media", heard_other: "Other",
   joinInvited: "Who invited you?", joinQ3: "3 · Tell us something that makes you smile", joinQ3ph: "A good coffee with friends, dancing, an afternoon at the beach…",
   guideTitle: "Our code", guide1b: "Respect and kindness.", guide1: "Everyone is welcome here.", guide2b: "What's shared here, stays here.",
   guide3b: "No selling or spam", guide3: "between members.", guide4b: "Show up and take part:", guide4: "we build this community together.",
-  guideAccept: "I accept the community guidelines", signupBtn: "Send my application",
+  guideAccept: "I confirm that I am a woman and I accept the community guidelines", signupBtn: "Send my application",
   joinMissing1: "Please fill in your first name, last name, city, phone, email and password.", joinWaNeed: "Let us know if we may message you on WhatsApp.",
   joinPhoneBad: "Please check your phone number.", joinEmailBad: "Please check your email address.", joinBdayBoth: "Choose both the month and day of your birthday (or leave both empty).",
-  joinHeardNeed: "Tell us how you found Código Mujer Libre.", joinGuideNeed: "To send your application, please accept the community guidelines.",
+  joinHeardNeed: "Tell us how you found Código Mujer Libre.", joinGuideNeed: "To send your application, please confirm you are a woman and accept the community guidelines.",
   thanksTitle: n => "Thank you, " + n + "!", thanksBody: "Your application has reached our team. We'll review it with care and message you on WhatsApp or by email as soon as you're in.",
   thanksConfirm: "First, confirm your email with the link we sent to", thanksLogin: "I've confirmed it · Log in",
   pendThanks: n => n ? "Thank you, " + n + "!" : "Thank you!", pendBody2: "Your application has reached our team. We'll review it with care and message you on WhatsApp or by email as soon as you're in.",
@@ -1418,17 +1426,21 @@ async function loadResponses() {
 // Community
 // ==============================
 let members = [];
+let memCity = "all";
 document.addEventListener("cml:connections", () => { try { renderMembers(); } catch { /* ignore */ } });
+document.addEventListener("cml:community", () => { try { renderMembers(); renderPosts(); } catch { /* ignore */ } });
 function renderMembers() {
   const container = byId("membersList");
   if (!container) return;
   container.replaceChildren();
   if (!members.length) return appendParagraph(container, t("membersEmpty"), "meta");
   // Compact on phones: one scrollable row of members; "See all" opens the full list with interests.
-  const shown = members.slice(0, 30);
+  const cityList = [...new Set(members.map(m => (m.city || "").trim()).filter(Boolean))];
+  if (memCity !== "all" && !cityList.includes(memCity)) memCity = "all";
+  const shown = members.filter(m => (memCity === "all" || (m.city || "").trim() === memCity) && !(window.CMLCommunity && window.CMLCommunity.isBlocked(m.id))).slice(0, 30);
   const expanded = container.dataset.expanded === "1";
   container.classList.toggle("expanded", expanded);
-  const head = el("div", { class: "members-head" }, el("b", { text: tf("membersCount", members.length) }));
+  const head = el("div", { class: "members-head" }, el("b", { text: tf("membersCount", members.filter(m => !(window.CMLCommunity && window.CMLCommunity.isBlocked(m.id))).length) }));
   if (members.length > 4) {
     const toggle = el("button", { type: "button", class: "see-all", "aria-expanded": String(expanded), text: t(expanded ? "membersLess" : "membersAll") });
     toggle.addEventListener("click", () => { container.dataset.expanded = expanded ? "" : "1"; renderMembers(); });
@@ -1445,7 +1457,16 @@ function renderMembers() {
   });
   const inc = CN && CN.incoming ? CN.incoming() : null;
   if (inc) container.appendChild(inc);
-  container.append(head, strip);
+  let cityRow = null;
+  if (cityList.length > 1) {
+    cityRow = el("div", { class: "chips mem-cities", role: "group", "aria-label": t("memCityAria") },
+      ...["all", ...cityList].map(c => {
+        const b = el("button", { type: "button", class: "chip" + (memCity === c ? " selected" : ""), "aria-pressed": String(memCity === c), text: c === "all" ? t("memCityAll") : c });
+        b.addEventListener("click", () => { memCity = c; renderMembers(); });
+        return b;
+      }));
+  }
+  container.append(head, ...(cityRow ? [cityRow] : []), strip);
 }
 function appendParagraph(container, text, className = "") {
   container.appendChild(el("p", { class: className, text }));
@@ -1454,7 +1475,14 @@ function renderPosts() {
   const container = byId("posts");
   if (!container) return;
   container.replaceChildren();
-  if (!posts.length) {
+  const CC = window.CMLCommunity;
+  const cats = byId("postCats"), filt = byId("postFilter");
+  if (CC && cats) cats.replaceChildren(CC.composerNode());
+  if (CC && filt) filt.replaceChildren(CC.filterNode());
+  const all = posts;
+  const posts_ = CC ? all.filter(p => !CC.isBlocked(p.user_id) && CC.catOk(p)) : all;
+  if (all.length && !posts_.length && CC) return container.appendChild(el("p", { class: "small-note", text: t("ccNone") }));
+  if (!all.length) {
     if (!session) return;
     const write = el("button", { type: "button", class: "secondary", text: t("noPostsCta") });
     write.addEventListener("click", () => byId("postText")?.focus());
@@ -1462,7 +1490,7 @@ function renderPosts() {
   }
   const S = window.CMLSocial;
   const P = window.CMLProfile;
-  posts.forEach(post => {
+  posts_.forEach(post => {
     const date = new Date(post.created_at);
     const okDate = !Number.isNaN(date.getTime());
     const name = post.author_name || "";
@@ -1472,6 +1500,7 @@ function renderPosts() {
         el("span", { class: "post-who" },
           el("b", { text: name }),
           okDate ? el("time", { class: "meta", datetime: date.toISOString(), text: postWhen(date) }) : null)));
+    if (CC && post.cat) card.insertBefore(CC.catBadge(post), card.firstChild.nextSibling);
     const meet = window.CMLDiscover && window.CMLDiscover.meetupNode ? window.CMLDiscover.meetupNode(post) : null;
     if (meet) card.appendChild(meet);
     else if (post.body) card.appendChild(el("p", { class: "saved-text", text: post.body }));
@@ -1484,6 +1513,8 @@ function renderPosts() {
     }
     if (S) card.appendChild(S.postFooter(post, del));
     else if (del) card.appendChild(del);
+    const menu = CC ? CC.postMenu(post) : null;
+    if (menu) card.appendChild(menu);
     container.appendChild(card);
   });
 }
@@ -1499,6 +1530,7 @@ async function loadPosts() {
   if (error) throw error;
   // obvious developer test posts ("TEST …" in capitals at the very start) are hidden from the feed; nothing is deleted
   posts = (data || []).filter(x => !/^\s*TEST\b/.test(x.body || "") && !/^\s*test\s*$/i.test(x.body || ""));
+  if (window.CMLCommunity) posts.forEach(window.CMLCommunity.parse);
   if (window.CMLSocial) { try { await window.CMLSocial.loadExtras(posts); } catch { /* extras are optional */ } }
   await loadPostAvatars();
 }
@@ -1538,7 +1570,7 @@ async function addPost() {
   try {
     if (file) photoPath = await S.uploadPhoto(file);
     const { error } = await db.from("community_posts").insert({
-      user_id: session.user.id, author_name: profile ? profile.first_name : "", body: text.slice(0, 1000), photo_path: photoPath
+      user_id: session.user.id, author_name: profile ? profile.first_name : "", body: (window.CMLCommunity ? window.CMLCommunity.encode(window.CMLCommunity.getComposerCat(), text) : text).slice(0, 1000), photo_path: photoPath
     });
     if (error) { if (photoPath) await S.removePhoto(photoPath); throw error; }
   } catch {
@@ -1547,6 +1579,7 @@ async function addPost() {
   }
   button.disabled = false;
   field.value = "";
+  if (window.CMLCommunity) window.CMLCommunity.clearComposerCat();
   if (S) S.clearChosen();
   try { await loadPosts(); } catch { /* ignore */ }
   renderPosts();
@@ -1730,9 +1763,11 @@ function fillBirthdaySelects() {
   m.value = mv; d.value = dv;
 }
 const joinVal = id => (byId(id) ? byId(id).value.trim() : "");
+const cityVal = () => { const v = joinVal("suCitySel"); return v === "__other" ? joinVal("suCity") : v; };
+document.addEventListener("change", e => { if (e.target && e.target.id === "suCitySel") { const w = byId("suCityOtherWrap"); if (w) w.hidden = e.target.value !== "__other"; } });
 const radioVal = name => { const r = document.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : ""; };
 function joinCheck1() {
-  if (!joinVal("suFirst") || !joinVal("suLast") || !joinVal("suCity") || !joinVal("suPhone") || !joinVal("suEmail") || !byId("suPassword").value) return "joinMissing1";
+  if (!joinVal("suFirst") || !joinVal("suLast") || !cityVal() || !joinVal("suPhone") || !joinVal("suEmail") || !byId("suPassword").value) return "joinMissing1";
   if (joinVal("suPhone").replace(/\D/g, "").length < 7) return "joinPhoneBad";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(joinVal("suEmail"))) return "joinEmailBad";
   if (byId("suPassword").value.length < 8) return "authShortPassword";
@@ -1868,6 +1903,7 @@ async function loadAll() {
   settingsReady = true;
   await Promise.all([
     loadMembers().catch(() => {}),
+    (window.CMLCommunity ? window.CMLCommunity.loadBlocks() : Promise.resolve()).catch(() => {}),
     loadPosts().catch(() => {}),
     loadMessages().catch(() => {})
   ]);
@@ -1920,10 +1956,10 @@ async function handleSignup(event) {
         // The membership application travels with the account; the database saves it on the new
         // member's profile (see supabase/migration_join_application.sql). Birthday: month + day only.
         data: {
-          first_name: first, last_name: last, city: joinVal("suCity"), interests,
+          first_name: first, last_name: last, city: cityVal(), interests,
           phone: joinVal("suPhone").slice(0, 30), whatsapp: radioVal("suWa") === "true",
           birth_month: joinVal("suBMonth") || null, birth_day: joinVal("suBDay") || null,
-          application: { heard: radioVal("suHeard"), invited_by: joinVal("suInvited").slice(0, 80), smile: joinVal("suSmile").slice(0, 300), guidelines: true, lang: currentLanguage }
+          application: { heard: radioVal("suHeard"), invited_by: joinVal("suInvited").slice(0, 80), smile: joinVal("suSmile").slice(0, 300), occupation: joinVal("suDoes").slice(0, 120), dream: joinVal("suDream").slice(0, 300), guidelines: true, lang: currentLanguage }
         },
         emailRedirectTo: window.location.origin + window.location.pathname
       }

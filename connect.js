@@ -73,6 +73,7 @@
   }
 
   function card(m) {
+    init();
     const b = el("button", { type: "button", class: "mcard", "aria-label": t("cnOpen", m.first_name) },
       avatar(m, "avatar-card"),
       el("b", { class: "mcard-name", text: m.first_name }),
@@ -85,6 +86,7 @@
   }
 
   function openSheet(m) {
+    init();
     closeSheet();
     const prev = document.activeElement;
     const close = el("button", { type: "button", class: "cn-x", "aria-label": t("cnClose"), text: "×" });
@@ -120,7 +122,7 @@
       row(t("cnDoesLabel"), m.occupation),
       m.dream ? el("blockquote", { class: "cn-dream" }, el("small", { text: t("cnDreamLabel") }), el("p", { text: m.dream })) : el("p", { class: "meta", text: t("cnNoInfo") }),
       row(t("cnInterests"), chips.join(" · ")),
-      act, note);
+      act, note, window.CMLCommunity ? window.CMLCommunity.memberLinks(m) : null);
     const sheet = el("div", { class: "cn-sheet", role: "dialog", "aria-modal": "true", "aria-label": m.first_name }, close, body);
     const wrap = el("div", { class: "cn-wrap", id: "cnWrap" }, sheet);
     wrap.addEventListener("click", e => { if (e.target === wrap) closeSheet(prev); });
@@ -137,6 +139,7 @@
 
   // Block at the top of Community: greetings waiting for an answer.
   function incoming() {
+    if (!init()) return null;
     if (!enabled || !loaded) return null;
     const rows = [...links.entries()].filter(([id, l]) => l.status === "pending" && l.to_user === me() && byId.has(id)).map(([id]) => byId.get(id));
     if (!rows.length) return null;
@@ -159,5 +162,5 @@
       .map(([id, l]) => ({ at: new Date(l.created_at).getTime(), name: byId.get(id).first_name }));
   }
 
-  window.CMLConnect = { load, card, incoming, pending, openSheet };
+  window.CMLConnect = { nameOf: id => (byId.get(id) || {}).first_name || "", load, card, incoming, pending, openSheet };
 })();

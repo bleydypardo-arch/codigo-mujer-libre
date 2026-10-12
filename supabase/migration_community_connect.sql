@@ -53,3 +53,70 @@ create policy "connections remove own" on public.connections
 revoke all on public.connections from public, anon;
 grant select, insert, delete on public.connections to authenticated;
 grant update (status) on public.connections to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Formulario nuevo: "¿A qué te dedicas hoy?" y "¿Qué sueño todavía vive en ti?"
+-- La función que limpia las respuestas del formulario ahora también guarda esas dos.
+create or replace function public.cml_application_from_meta(meta jsonb) returns jsonb
+language sql immutable set search_path = public as $$
+  select jsonb_strip_nulls(jsonb_build_object(
+    'heard',      case when meta->'application'->>'heard' in ('friend','event','social','other') then meta->'application'->>'heard' end,
+    'invited_by', nullif(left(trim(coalesce(meta->'application'->>'invited_by', '')), 80), ''),
+    'smile',      nullif(left(trim(coalesce(meta->'application'->>'smile', '')), 300), ''),
+    'occupation', nullif(left(trim(coalesce(meta->'application'->>'occupation', '')), 120), ''),
+    'dream',      nullif(left(trim(coalesce(meta->'application'->>'dream', '')), 300), ''),
+    'guidelines', case when (meta->'application'->>'guidelines') = 'true' then true end,
+    'lang',       case when meta->'application'->>'lang' in ('es','en') then meta->'application'->>'lang' end
+  ))
+$$;
+
+-- Para que una integrante ya aprobada pueda completar estas dos respuestas desde "Mi perfil".
+create or replace function public.set_my_story(p_occupation text, p_dream text)
+returns void language sql security definer set search_path = public as $$
+  update public.profiles
+     set application = coalesce(application, '{}'::jsonb)
+       || jsonb_build_object('occupation', left(trim(coalesce(p_occupation, '')), 120),
+                             'dream',      left(trim(coalesce(p_dream, '')), 300))
+   where id = auth.uid()
+$$;
+revoke all on function public.set_my_story(text, text) from public, anon;
+grant execute on function public.set_my_story(text, text) to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Reportar y bloquear
+create table if not exists public.reports (
+  id uuid primary key default gen_random_uuid(),
+  reporter uuid not null references public.profiles(id) on delete cascade,
+  kind text not null check (kind in ('post','member')),
+  target_id uuid,
+  target_user uuid,
+  reason text not null default '' check (char_length(reason) <= 40),
+  excerpt text not null default '' check (char_length(excerpt) <= 300),
+  status text not null default 'open' check (status in ('open','done')),
+  created_at timestamptz not null default now()
+);
+alter table public.reports enable row level security;
+drop policy if exists "reports send" on public.reports;
+create policy "reports send" on public.reports for insert to authenticated
+  with check (reporter = auth.uid() and public.is_approved());
+drop policy if exists "reports read admin" on public.reports;
+create policy "reports read admin" on public.reports for select to authenticated using (public.is_admin());
+drop policy if exists "reports update admin" on public.reports;
+create policy "reports update admin" on public.reports for update to authenticated using (public.is_admin()) with check (public.is_admin());
+revoke all on public.reports from public, anon;
+grant select, insert on public.reports to authenticated;
+grant update (status) on public.reports to authenticated;
+
+create table if not exists public.blocks (
+  blocker uuid not null references public.profiles(id) on delete cascade,
+  blocked uuid not null references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (blocker, blocked),
+  check (blocker <> blocked)
+);
+alter table public.blocks enable row level security;
+drop policy if exists "blocks own" on public.blocks;
+create policy "blocks own" on public.blocks for all to authenticated
+  using (blocker = auth.uid()) with check (blocker = auth.uid() and public.is_approved());
+revoke all on public.blocks from public, anon;
+grant select, insert, delete on public.blocks to authenticated;

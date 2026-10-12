@@ -25,7 +25,7 @@ const S = {
     fUrlOffer: "Enlace de la oferta o reserva (https://…)",
     imgRemove: "Quitar imagen", fTripType: "Tipo de experiencia", fTripTypeHelp: "Define en qué tipo aparece en Viajes y Experiencias.",
     fMtype: "Tipo de contenido", mtype_spot: "Café o salón de té", mtype_place: "Lugar creativo / taller", mtype_recipe: "Receta o video", mtype_offer: "Oferta especial / colaboración",
-    fFeatured: "Matcha de la semana (destacado)", fCity: "Ciudad", fCityHelp: "Permite filtrar por ciudad (Orlando, Boston, Miami…).",
+    fFeatured: "Matcha de la semana (destacado)", fCity: "Ciudad", fCityHelp: "Permite filtrar por ciudad (Orlando, Miami, Boston, Bogotá, Medellín).",
     fUrlMatcha: "Enlace (receta, video, web o reserva)", fUrlBook: "Enlace de reserva o más información (https://…)",
     matchaIntro: "Contenido del Rincón Matcha & Arte: cafés, salones de té, lugares creativos, recetas y ofertas. Para eventos, márcalos con «Incluir en Matcha y Arte» en Planes y eventos.",
     tripIntro: "Cada experiencia tiene su propia página: agrega solo los detalles que apliquen (un picnic no necesita hotel).",
@@ -93,7 +93,7 @@ const S = {
     fUrlOffer: "Offer or booking link (https://…)",
     imgRemove: "Remove image", fTripType: "Experience type", fTripTypeHelp: "Sets which type it appears under in Travel & Experiences.",
     fMtype: "Content type", mtype_spot: "Café or tea room", mtype_place: "Creative place / workshop", mtype_recipe: "Recipe or video", mtype_offer: "Special offer / collaboration",
-    fFeatured: "Matcha of the week (featured)", fCity: "City", fCityHelp: "Lets members filter by city (Orlando, Boston, Miami…).",
+    fFeatured: "Matcha of the week (featured)", fCity: "City", fCityHelp: "Lets members filter by city (Orlando, Miami, Boston, Bogotá, Medellín).",
     fUrlMatcha: "Link (recipe, video, website or booking)", fUrlBook: "Booking or information link (https://…)",
     matchaIntro: "Content for the Matcha & Art Corner: cafés, tea rooms, creative places, recipes and offers. For events, tick “Include in Matcha & Art” in Plans & events.",
     tripIntro: "Each experience gets its own page: add only the details that apply (a picnic doesn't need a hotel).",
@@ -754,7 +754,8 @@ function formView() {
     form.appendChild(field(a("fMtype"), mtypeSel));
     featuredBox = el("input", { type: "checkbox" }); featuredBox.checked = !!oldTag.featured;
     form.appendChild(el("label", { class: "check" }, featuredBox, a("fFeatured")));
-    cityIn = el("input", { type: "text", maxlength: 40, value: oldTag.city || "", placeholder: "Orlando, Boston…" });
+    cityIn = el("input", { type: "text", maxlength: 40, value: oldTag.city || "", placeholder: "Orlando, Bogotá…", list: "cmlCityList", autocomplete: "off" });
+    form.appendChild(el("datalist", { id: "cmlCityList" }, ...["Orlando", "Miami", "Boston", "Bogotá", "Medellín"].map(v => el("option", { value: v }))));
   }
   if (kind === "trip" || kind === "wellness") {
     featBox = el("input", { type: "checkbox" }); featBox.checked = !!oldTag.featured;
