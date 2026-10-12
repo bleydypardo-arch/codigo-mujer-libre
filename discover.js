@@ -98,7 +98,7 @@ const shortWhen = p => p.event_date
 const settingUrl = key => { const v = C.setting ? C.setting(key) : null; return v && v.url ? C.safeUrl(v.url) : ""; };
 const btn = (text, cls, fn) => { const b = el("button", { type: "button", class: cls, text }); b.addEventListener("click", fn); return b; };
 function emptyBox(icon, title, text, action) {
-  return el("div", { class: "empty-state has-photo" }, el("span", { class: "empty-photo", "aria-hidden": "true", style: "background-image:url('scene-lotus.svg');background-position:50% 55%" }),
+  return el("div", { class: "empty-state" }, el("span", { class: "empty-ic", "aria-hidden": "true", text: icon }),
     el("b", { text: title }), text ? el("p", { text }) : null, action || null);
 }
 

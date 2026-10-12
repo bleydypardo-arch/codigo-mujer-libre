@@ -1290,7 +1290,7 @@ function renderEvents() {
     if (!session) return list.replaceChildren();
     const idea = el("button", { type: "button", class: "secondary", text: t("evEmptyCta") });
     idea.addEventListener("click", () => openModal("idea"));
-    return list.replaceChildren(emptyState("📅", t("evEmptyTitle"), t("evEmptyText"), idea, "scene-table.svg|50% 60%"));
+    return list.replaceChildren(emptyState("📅", t("evEmptyTitle"), t("evEmptyText"), idea));
   }
   const cat = catSel;
   const chipHost = byId("evCodeChip");
@@ -1328,7 +1328,7 @@ function renderEvents() {
     const idea = el("button", { type: "button", class: "link-btn", text: t("catSuggest") });
     idea.addEventListener("click", () => openModal("idea"));
     const empty = cat !== "all" && monthSel === "all" && !codeSel
-      ? emptyState("✨", t("catEmpty_" + cat), t("catEmptyText"), el("div", { class: "empty-acts" }, idea, all), "scene-table.svg|50% 60%")
+      ? emptyState("✨", t("catEmpty_" + cat), t("catEmptyText"), el("div", { class: "empty-acts" }, idea, all))
       : emptyState("🔎", t("evNoMatch"), "", all);
     list.replaceChildren(empty);
   } else list.replaceChildren(...shown.map(p => eventCard(p)));

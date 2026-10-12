@@ -233,7 +233,7 @@ function wireTripIdea() {
 }
 
 // ---------- editorial images (admin-editable through the existing settings table) ----------
-const DEFAULT_TRAVEL = "paradise-sunset.svg";
+const DEFAULT_TRAVEL = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80";
 function settingUrl(key) {
   const v = C && C.setting ? C.setting(key) : null;
   return v && v.url ? C.safeUrl(v.url) : "";
