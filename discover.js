@@ -41,7 +41,7 @@ const ES = {
   maMeetPropose: "Proponer un encuentro", maPlace: "Lugar", maPlacePh: "Café, salón de té o taller", maCity: "Ciudad", maCityPh: "Orlando, Bogotá…",
   maDate: "Día", maTime: "Hora", maNote: "Nota (opcional)", maNotePh: "Ej.: ¡traigan su cuaderno de dibujo!",
   maMeetSend: "Publicar encuentro", maMeetNeed: "Escribe el lugar y el día.", maMeetFail: "No se pudo publicar. Inténtalo de nuevo.", maMeetDone: "¡Listo! Tu encuentro ya aparece en el rincón y en Comunidad.",
-  maPollK: "DECIDAMOS JUNTAS", maPollTitle: "¿Dónde nos vemos?", maAllCities: "Todas las ciudades",
+  maPollK: "DECIDAMOS JUNTAS", maPollTitle: "¿Dónde nos vemos?", maAllCities: "Todas las ciudades", maSearchPh: "Buscar un lugar o ciudad…", maSeePlaces: "Ver los lugares", maNoMatch: "No encontramos lugares con esa búsqueda.",
   maSpotsK: "LUGARES FAVORITOS", maSpotsTitle: "Cafés y rincones creativos", maRecipesK: "RECETAS E IDEAS", maRecipesTitle: "Para preparar en casa",
   maCreateTitle: "Crea algo"
 };
@@ -79,7 +79,7 @@ const EN = {
   maMeetPropose: "Propose a meetup", maPlace: "Place", maPlacePh: "Café, tea room or studio", maCity: "City", maCityPh: "Orlando, Bogotá…",
   maDate: "Day", maTime: "Time", maNote: "Note (optional)", maNotePh: "e.g. bring your sketchbook!",
   maMeetSend: "Post meetup", maMeetNeed: "Write the place and the day.", maMeetFail: "Could not post. Please try again.", maMeetDone: "Done! Your meetup now shows in the corner and in Community.",
-  maPollK: "LET'S DECIDE TOGETHER", maPollTitle: "Where should we meet?", maAllCities: "All cities",
+  maPollK: "LET'S DECIDE TOGETHER", maPollTitle: "Where should we meet?", maAllCities: "All cities", maSearchPh: "Search a place or city…", maSeePlaces: "See the places", maNoMatch: "No places match that search.",
   maSpotsK: "FAVORITE PLACES", maSpotsTitle: "Cafés and creative corners", maRecipesK: "RECIPES & IDEAS", maRecipesTitle: "To make at home",
   maCreateTitle: "Create something"
 };
@@ -195,6 +195,7 @@ function renderFamily() {
 const MEET_RE = /^🍵📍\s*(.+?)\s·\s(.*?)\s·\s(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}:\d{2}))?\s*(?:\n([\s\S]*))?$/u;
 const MTYPES = ["spot", "place", "recipe", "offer"];
 let maCity = "all";
+let maQ = "", maQFocus = false;
 function matchaImage() { return settingUrl("matcha_image") || MATCHA_DEFAULT; }
 const cityFrom = loc => { const parts = String(loc || "").split(",").map(x => x.trim()).filter(Boolean); return parts.length > 1 ? parts[parts.length - 2 >= 0 && /^[A-Z]{2}$/.test(parts[parts.length - 1]) ? parts.length - 2 : parts.length - 1] : (parts[0] || ""); };
 function cityOf(p) { const tg = C.planTag(p.id); return (tg.city || cityFrom(p.location) || "").trim(); }
@@ -346,6 +347,13 @@ function meetForm() {
 function section(kicker, title, ...kids) {
   return el("section", { class: "card ma-section" }, el("small", { class: "rose", text: kicker }), title ? el("h2", { text: title }) : null, ...kids.filter(Boolean));
 }
+function searchRow(count) {
+  const inp = el("input", { type: "search", class: "ma-search", placeholder: t("maSearchPh"), "aria-label": t("maSearchPh"), value: maQ, autocomplete: "off", maxlength: "60" });
+  inp.addEventListener("input", () => { maQ = inp.value; maQFocus = true; renderMatchaPage(); });
+  if (maQFocus) { maQFocus = false; setTimeout(() => { inp.focus(); try { inp.setSelectionRange(inp.value.length, inp.value.length); } catch (e) {} }, 0); }
+  const go = count ? btn(t("maSeePlaces") + " (" + count + ")", "link-btn ma-see", () => { const x = document.getElementById("maSpots"); if (x) x.scrollIntoView({ behavior: "smooth", block: "start" }); }) : null;
+  return el("div", { class: "ma-searchrow" }, inp, go);
+}
 function renderMatchaPage() {
   const hero = document.getElementById("matchaHero"), body = document.getElementById("matchaBody");
   if (!hero || !body || !C) return;
@@ -362,9 +370,12 @@ function renderMatchaPage() {
       el("h1", { text: t("maName") }),
       el("p", { class: "ma-tag", text: t("maTag") }),
       el("p", { class: "ma-intro", text: t("maIntro") }),
-      cityRow));
+      cityRow,
+      C.session() ? searchRow(items.filter(p => C.planTag(p.id).mtype !== "recipe").length) : null));
   if (!C.session()) { body.replaceChildren(); return; }
-  const shown = items.filter(p => inCity(cityOf(p)));
+  const qn = maQ.trim().toLowerCase();
+  const hit = p => !qn || [C.pick(p, "title"), p.location, cityOf(p), C.pick(p, "desc")].join(" ").toLowerCase().includes(qn);
+  const shown = items.filter(p => inCity(cityOf(p)) && hit(p));
   const featured = shown.find(p => C.planTag(p.id).featured);
   const spots = shown.filter(p => p !== featured && C.planTag(p.id).mtype !== "recipe");
   const recipes = shown.filter(p => p !== featured && C.planTag(p.id).mtype === "recipe");
@@ -377,11 +388,12 @@ function renderMatchaPage() {
   const meetBox = section(t("maMeetK"), t("maMeetTitle"),
     el("p", { class: "small-note", text: meets.length ? t("maMeetIntro") : t("maMeetEmpty") }),
     meetsShown.length ? el("div", { class: "meet-list" }, ...meetsShown.map(x => meetupNode(x.post))) : null,
-    window.CMLCommunity ? window.CMLCommunity.safetyNode() : null,
     meetDraft ? meetForm() : btn("🍵 " + t("maMeetPropose"), "primary ma-meet-btn", () => openMeetForm("", "")),
+    window.CMLCommunity ? window.CMLCommunity.safetyNode() : null,
     window.CMLPolls && window.CMLPolls.placedBlock ? window.CMLPolls.placedBlock("matcha", t("maPollK"), t("maPollTitle"), "") : null);
+  if (spots.length) { const sp = section(t("maSpotsK"), t("maSpotsTitle"), el("div", { class: "ma-items" }, ...spots.map(p => itemCard(p)))); sp.id = "maSpots"; colA.push(sp); }
+  else if (qn) colA.push(section(t("maSpotsK"), t("maSpotsTitle"), el("p", { class: "small-note", text: t("maNoMatch") })));
   colA.push(meetBox);
-  if (spots.length) colA.push(section(t("maSpotsK"), t("maSpotsTitle"), el("div", { class: "ma-items" }, ...spots.map(p => itemCard(p)))));
   // upcoming gatherings (tagged events / weekend ideas / wellness)
   const plansBox = section(t("maPlans"), null);
   if (evs.length) {
