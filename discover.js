@@ -38,7 +38,7 @@ const ES = {
   maRecipeOpen: "Ver receta o video", maLinkOpen: "Ver más", maMeetHere: "Proponer encuentro aquí",
   maMeetK: "¿DÓNDE NOS VEMOS?", maMeetTitle: "Encuentros para tomar matcha", maMeetIntro: "Únete a un plan o propón el tuyo: un café, una tarde creativa, una conversación.",
   maMeetEmpty: "Todavía no hay encuentros. Propón uno: lugar, ciudad, día y hora. Las demás podrán decir «Me apunto».",
-  maMeetPropose: "Proponer un encuentro", maPlace: "Lugar", maPlacePh: "Café, salón de té o taller", maCity: "Ciudad", maCityPh: "Orlando, Boston…",
+  maMeetPropose: "Proponer un encuentro", maPlace: "Lugar", maPlacePh: "Café, salón de té o taller", maCity: "Ciudad", maCityPh: "Orlando, Bogotá…",
   maDate: "Día", maTime: "Hora", maNote: "Nota (opcional)", maNotePh: "Ej.: ¡traigan su cuaderno de dibujo!",
   maMeetSend: "Publicar encuentro", maMeetNeed: "Escribe el lugar y el día.", maMeetFail: "No se pudo publicar. Inténtalo de nuevo.", maMeetDone: "¡Listo! Tu encuentro ya aparece en el rincón y en Comunidad.",
   maPollK: "DECIDAMOS JUNTAS", maPollTitle: "¿Dónde nos vemos?", maAllCities: "Todas las ciudades",
@@ -76,7 +76,7 @@ const EN = {
   maRecipeOpen: "See recipe or video", maLinkOpen: "Learn more", maMeetHere: "Propose a meetup here",
   maMeetK: "WHERE SHOULD WE MEET?", maMeetTitle: "Meetups for matcha", maMeetIntro: "Join a plan or propose your own: a coffee, a creative afternoon, a conversation.",
   maMeetEmpty: "No meetups yet. Propose one: place, city, day and time. Others can say “I'm in”.",
-  maMeetPropose: "Propose a meetup", maPlace: "Place", maPlacePh: "Café, tea room or studio", maCity: "City", maCityPh: "Orlando, Boston…",
+  maMeetPropose: "Propose a meetup", maPlace: "Place", maPlacePh: "Café, tea room or studio", maCity: "City", maCityPh: "Orlando, Bogotá…",
   maDate: "Day", maTime: "Time", maNote: "Note (optional)", maNotePh: "e.g. bring your sketchbook!",
   maMeetSend: "Post meetup", maMeetNeed: "Write the place and the day.", maMeetFail: "Could not post. Please try again.", maMeetDone: "Done! Your meetup now shows in the corner and in Community.",
   maPollK: "LET'S DECIDE TOGETHER", maPollTitle: "Where should we meet?", maAllCities: "All cities",
@@ -312,7 +312,7 @@ function meetForm() {
   // Light suggestions from places/cities the community already uses; any other text is still accepted.
   const known = C.homeData().plans.filter(p => C.planTag(p.id).matcha || p.kind === "event");
   const placeSet = [...new Set([...cornerItems().map(p => C.pick(p, "title")), ...(C.homeData().posts || []).map(parseMeetup).filter(Boolean).map(m => m.place)].filter(Boolean))].slice(0, 30);
-  const citySet = [...new Set(["Orlando", "Boston", "Miami", ...known.map(cityOf), ...(C.homeData().posts || []).map(parseMeetup).filter(Boolean).map(m => m.city)].filter(Boolean))].slice(0, 30);
+  const citySet = [...new Set(["Orlando", "Miami", "Boston", "Bogotá", "Medellín", ...known.map(cityOf), ...(C.homeData().posts || []).map(parseMeetup).filter(Boolean).map(m => m.city)].filter(Boolean))].slice(0, 30);
   const dl = (id, list) => el("datalist", { id }, ...list.map(v => el("option", { value: v })));
   const place = inp("meetPlace", "text", d.place, t("maPlacePh"), { maxlength: 80, list: "meetPlaceList", autocomplete: "off" });
   const city = inp("meetCity", "text", d.city, t("maCityPh"), { maxlength: 40, list: "meetCityList", autocomplete: "off" });
@@ -377,6 +377,7 @@ function renderMatchaPage() {
   const meetBox = section(t("maMeetK"), t("maMeetTitle"),
     el("p", { class: "small-note", text: meets.length ? t("maMeetIntro") : t("maMeetEmpty") }),
     meetsShown.length ? el("div", { class: "meet-list" }, ...meetsShown.map(x => meetupNode(x.post))) : null,
+    window.CMLCommunity ? window.CMLCommunity.safetyNode() : null,
     meetDraft ? meetForm() : btn("🍵 " + t("maMeetPropose"), "primary ma-meet-btn", () => openMeetForm("", "")),
     window.CMLPolls && window.CMLPolls.placedBlock ? window.CMLPolls.placedBlock("matcha", t("maPollK"), t("maPollTitle"), "") : null);
   colA.push(meetBox);

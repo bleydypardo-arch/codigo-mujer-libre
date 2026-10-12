@@ -91,6 +91,7 @@ async function collect() {
     const rows = r.data || [];
     if (rows.length) out.push({ at: new Date(rows[0].created_at).getTime(), text: t("ntPhotos", rows.length), page: "events", memories: true, pri: 5 });
   }));
+  if (window.CMLConnect) window.CMLConnect.pending().forEach(g => out.push({ at: g.at, text: t("ntGreet", g.name), page: "community", pri: 2 }));
   await Promise.all(queries.map(q => q.catch(() => {})));
   out.sort((a, b) => a.pri - b.pri || b.at - a.at);
   return out;
