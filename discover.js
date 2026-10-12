@@ -357,6 +357,18 @@ function applySearch() {
   root.querySelectorAll("#maSpots .ma-item").forEach(c => { const ok = !q || (c.dataset.q || "").includes(q); c.hidden = !ok; if (ok) any = true; });
   const none = document.getElementById("maNone"); if (none) none.hidden = !(q && !any);
 }
+// Luxe call-to-action: matcha bowl icon with rising steam, gold hairline, soft shimmer
+function luxBtn(text, fn) {
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 40 40"); svg.setAttribute("class", "lux-ico"); svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML = '<g class="steam" fill="none" stroke-linecap="round"><path class="w1" d="M14 15c-2-2.5 2-4 0-7"/><path class="w2" d="M20 14c-2.4-3 2.4-5 0-8.5"/><path class="w3" d="M26 15c-2-2.5 2-4 0-7"/></g>'
+    + '<path d="M6 19h28c0 8-5.5 14-14 14S6 27 6 19z" fill="currentColor" opacity=".95"/><ellipse cx="20" cy="19" rx="14" ry="2.6" fill="#8fb27f"/><ellipse cx="20" cy="19" rx="9" ry="1.2" fill="#b7d3a8" opacity=".7"/>'
+    + '<path d="M13 35.5h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+  const b = el("button", { type: "button", class: "ma-meet-btn lux" }, svg, el("span", { class: "lux-txt", text }), el("span", { class: "lux-shine", "aria-hidden": "true" }));
+  b.addEventListener("click", fn);
+  return b;
+}
 function searchRow(count) {
   if (!count) return null;
   const inp = el("input", { type: "search", class: "ma-search", placeholder: "🔎 " + t("maSearchPh"), "aria-label": t("maSearchPh"), value: maQ, autocomplete: "off", autocapitalize: "off", maxlength: "60", enterkeyhint: "search" });
@@ -396,7 +408,7 @@ function renderMatchaPage() {
   const meetBox = section(t("maMeetK"), t("maMeetTitle"),
     el("p", { class: "small-note", text: meets.length ? t("maMeetIntro") : t("maMeetEmpty") }),
     meetsShown.length ? el("div", { class: "meet-list" }, ...meetsShown.map(x => meetupNode(x.post))) : null,
-    meetDraft ? meetForm() : btn("🍵  " + t("maMeetPropose"), "primary ma-meet-btn", () => openMeetForm("", "")),
+    meetDraft ? meetForm() : luxBtn(t("maMeetPropose"), () => openMeetForm("", "")),
     window.CMLCommunity ? window.CMLCommunity.safetyNode() : null,
     window.CMLPolls && window.CMLPolls.placedBlock ? window.CMLPolls.placedBlock("matcha", t("maPollK"), t("maPollTitle"), "") : null);
   if (spots.length) { const sp = section(t("maSpotsK"), t("maSpotsTitle"), srow, el("div", { class: "ma-items" }, ...spots.map(p => itemCard(p)))); sp.id = "maSpots"; sp.appendChild(el("p", { class: "small-note", id: "maNone", hidden: true, text: t("maNoMatch") })); colA.push(sp); }
