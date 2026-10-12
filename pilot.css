@@ -183,3 +183,28 @@
 #matchaBody .ma-section .small-note { margin: 6px 0 10px; }
 #matchaBody .ma-section .ma-evs { margin-bottom: 4px; }
 #matchaBody .ma-section > .ma-propose { margin-top: 0; padding-left: 0; }
+
+/* ===== Rincón Matcha has its own palette: lilac, orchid and blush (Wellness keeps its olive green) ===== */
+#matcha { --mx-plum: #5C3A6E; --mx-orchid: #8A5A9B; --mx-lilac: #EFE4F5; --mx-lilac-2: #F7F0FA; --mx-blush: #FADCE6; --mx-line: rgba(176, 140, 196, .38); }
+#matcha::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 520px; pointer-events: none; z-index: -1; background: radial-gradient(120% 90% at 50% 0%, rgba(233, 218, 245, .75) 0%, rgba(250, 228, 236, .45) 55%, rgba(255, 249, 245, 0) 100%); }
+#matcha { position: relative; isolation: isolate; }
+#matcha h1, #matcha h2, #matcha .ma-hero-txt h1, #matcha .rc-title, #matcha .pick-head, #matcha .pick-name { color: var(--mx-plum); }
+#matcha .ma-hero-txt .rose, #matcha .rc-k { color: var(--mx-orchid); }
+#matcha .ma-hero-img { background: var(--mx-lilac); }
+#matcha .ma-hero-txt, #matcha .ma-section { border-color: var(--mx-line); }
+#matcha .rc-front { background: linear-gradient(135deg, #FFFFFF 18%, var(--mx-lilac) 62%, var(--mx-blush) 100%); border-color: rgba(201, 165, 107, .55); }
+#matcha .rc-back { background: linear-gradient(160deg, #fff 30%, var(--mx-lilac-2) 100%); border-color: var(--mx-line); }
+#matcha .rc-cta, #matcha .rc-link { color: #A0486B; }
+#matcha .rc-teaser { color: #6E5A78; }
+#matcha .pick-box { background: linear-gradient(160deg, #FFFCFE 0%, var(--mx-lilac-2) 55%, #FBE9F0 100%); border-color: var(--mx-line); }
+#matcha .pick-list { border-color: var(--mx-line); scrollbar-color: #C9A8D8 transparent; }
+#matcha .pick-row { border-bottom-color: rgba(176, 140, 196, .22); }
+#matcha .pick-row summary::after { color: var(--mx-orchid); }
+#matcha .pick-city { color: #8B7596; }
+#matcha .ma-search:focus { border-color: #B98BC9; outline: 0; box-shadow: 0 0 0 3px rgba(185, 139, 201, .22); }
+#matcha .chips .chip.selected { background: linear-gradient(115deg, #C98AAE, #A66BB5); border-color: transparent; color: #fff; }
+/* Main action: champagne gold melting into blush, orchid and lilac */
+#matcha .ma-meet-btn.lux { color: #5C2A55; border-color: #D4B07C; background: linear-gradient(115deg, #F4DDB2 0%, #F8CFD2 34%, #EFB2CD 68%, #D8B8EA 100%); box-shadow: 0 0 0 3px rgba(219, 193, 159, .3), 0 12px 28px rgba(138, 90, 155, .26), inset 0 1px 0 rgba(255, 255, 255, .75); }
+#matcha .ma-meet-btn.lux:hover, #matcha .ma-meet-btn.lux:focus-visible { box-shadow: 0 0 0 3px rgba(219, 193, 159, .5), 0 16px 32px rgba(138, 90, 155, .34), inset 0 1px 0 rgba(255, 255, 255, .85); }
+#matcha .pick-here { color: #5C2A55; border-color: #D4B07C; background: linear-gradient(115deg, #F6E3C2, #F4CFE0 60%, #E3CCF0); }
+#matcha .ma-share-btn, #matcha .ma-propose { color: #A0486B; }
