@@ -505,3 +505,57 @@ html.pw-lock { overflow: hidden; }
 .ph-travel.is-photo .tc-cta { box-shadow: 0 8px 20px rgba(184, 116, 47, .28); }
 @media (min-width: 720px) { .ph-travel.is-photo .ph-text { padding: 28px 40px 32px; } .ph-travel.is-photo h1 { font-size: 46px !important; } }
 @media (prefers-reduced-motion: reduce) { .ph-travel.is-photo .tv-slide { animation: none; } }
+
+/* Home · Código Experiences with the photo: whole photo on top, real waves rolling toward the women, words below */
+.hx-card.is-photo, .hx-card.is-photo.is-soon { display: block; min-height: 0; padding: 0; overflow: hidden; background: linear-gradient(160deg, #EAF8F6, #FFF3E4); border: 1px solid #CDEBE8; }
+.hx-card.is-photo::after, .hx-card.is-photo.is-soon::after { display: none; }
+.hx-card.is-photo .hx-bg { position: relative; inset: auto; display: block; height: 0; padding-top: 66.67%; overflow: hidden; background-size: cover; background-position: 50% 50%; filter: none; animation: pvKen 26s ease-in-out infinite alternate; }
+.hx-card.is-photo .hx-bg::before, .hx-card.is-photo .hx-bg::after { display: block; inset: 0; mix-blend-mode: soft-light; }
+/* rolling waves: crests travel DOWN the picture (toward the viewer / the shore), only over the sea band */
+.hx-card.is-photo .hx-bg::before { opacity: .95; background-image: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0) 10px, rgba(255, 255, 255, .9) 13px, rgba(255, 255, 255, 0) 17px, rgba(255, 255, 255, 0) 26px); background-size: 100% 26px;
+  -webkit-mask-image: linear-gradient(180deg, transparent 29%, #000 36%, #000 66%, transparent 74%); mask-image: linear-gradient(180deg, transparent 29%, #000 36%, #000 66%, transparent 74%);
+  animation: phRoll 3.2s linear infinite, phSway 6s ease-in-out infinite alternate; }
+.hx-card.is-photo .hx-bg::after { opacity: .9; mix-blend-mode: screen; background: radial-gradient(2.4px 1.2px at 31% 33%, #fff, transparent), radial-gradient(3px 1.4px at 33% 37%, #fff, transparent), radial-gradient(2.6px 1.2px at 30% 41%, #fff, transparent), radial-gradient(3.4px 1.4px at 34% 46%, #fff, transparent), radial-gradient(2.4px 1.2px at 62% 40%, #fff, transparent), radial-gradient(2.4px 1.2px at 78% 52%, #fff, transparent), radial-gradient(2.4px 1.2px at 12% 48%, #fff, transparent);
+  -webkit-mask-image: none; mask-image: none; animation: phGlint 2.4s ease-in-out infinite; }
+@keyframes phRoll { from { background-position: 0 0; } to { background-position: 0 26px; } }
+@keyframes phSway { from { transform: translateX(-1.2%) scaleY(1); } to { transform: translateX(1.2%) scaleY(1.04); } }
+@keyframes phGlint { 0%, 100% { opacity: .15; } 50% { opacity: 1; } }
+.hx-card.is-photo .hx-txt, .hx-card.is-photo .hx-invite { position: relative; max-width: none; margin: 0; padding: 20px 20px 22px !important; border: 0; border-radius: 0; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; align-items: center; text-align: center; }
+.hx-card.is-photo .hx-sig { align-self: center; }
+.hx-card.is-photo .hx-sig-t { background-image: linear-gradient(100deg, #A8702E 0%, #D9A25A 25%, #F2C987 40%, #B98035 60%, #D9A25A 80%, #A8702E 100%); background-size: 250% 100%; }
+.hx-card.is-photo .hx-ic { background: #FFE6B8; color: #0B5A66; box-shadow: 0 0 0 5px rgba(255, 190, 120, .25); }
+.hx-card.is-photo .hx-title { color: #0B4F5C !important; text-shadow: none; max-width: 22ch; margin: 0 auto !important; }
+.hx-card.is-photo .hx-p { color: #3C7079; text-shadow: none; margin: 0 auto; }
+.hx-card.is-photo .hx-rule { margin: 0 auto; background: linear-gradient(90deg, rgba(217, 162, 90, 0), #D9A25A, rgba(217, 162, 90, 0)); }
+.hx-card.is-photo .hx-cta { align-self: center; }
+@media (prefers-reduced-motion: reduce) { .hx-card.is-photo .hx-bg, .hx-card.is-photo .hx-bg::before, .hx-card.is-photo .hx-bg::after { animation: none; } }
+/* photo card fixes: waves only on open water (never across the women), readable gold+green brand line */
+.hx-card.is-photo .hx-bg::before { -webkit-mask-image: linear-gradient(#000, #000), linear-gradient(#000, #000), linear-gradient(#000, #000); mask-image: linear-gradient(#000, #000), linear-gradient(#000, #000), linear-gradient(#000, #000);
+  -webkit-mask-size: 100% 11%, 19% 36%, 21% 36%; mask-size: 100% 11%, 19% 36%, 21% 36%; -webkit-mask-position: 0 31%, 0 40%, 100% 40%; mask-position: 0 31%, 0 40%, 100% 40%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.hx-card.is-photo .hx-sig-t, .hx-card.is-photo.is-art .hx-sig-t { background-image: linear-gradient(100deg, #A8702E 0%, #D9A25A 22%, #0E8A97 48%, #D9A25A 72%, #A8702E 100%); background-size: 250% 100%; filter: none; text-shadow: none; font-weight: 700; }
+.hx-card.is-photo.is-art .hx-cta { background: linear-gradient(135deg, #FFF3D6, #FFD9A0 55%, #F2B96A); color: #0B5A66; border: 1.5px solid #12909C; }
+.ph-travel.is-photo .ph-kicker [data-i18n="travelKicker"] { background-image: linear-gradient(100deg, #A8702E 0%, #D9A25A 22%, #0E8A97 48%, #D9A25A 72%, #A8702E 100%); }
+
+/* v3 · living sea on the photo: a copy of the open water swells toward the viewer + soft rolling light bands. Women are never touched. */
+.hx-card.is-photo .hx-sig-t, .hx-card.is-photo.is-art .hx-sig-t { color: transparent !important; text-shadow: none !important; }
+.hx-card.is-photo .hx-bg::before, .hx-card.is-photo .hx-bg::after { -webkit-mask-image: none; mask-image: none; mix-blend-mode: normal;
+  clip-path: polygon(0 31%, 100% 31%, 100% 62%, 83% 62%, 83% 36.5%, 17% 36.5%, 17% 66%, 0 66%); }
+.hx-card.is-photo .hx-bg::before { opacity: 1; background: var(--img) 50% 50% / cover no-repeat; transform-origin: 50% 31%; animation: phSwell 3.6s ease-in-out infinite alternate; }
+@keyframes phSwell { from { transform: translateY(-3px) scaleY(.992); filter: brightness(1) saturate(1); } to { transform: translateY(5px) scaleY(1.018); filter: brightness(1.1) saturate(1.12); } }
+.hx-card.is-photo .hx-bg::after { opacity: 1; mix-blend-mode: soft-light; background-image: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, .85) 14px, rgba(255, 255, 255, 0) 30px, rgba(255, 255, 255, 0) 46px); background-size: 100% 46px; animation: phRoll2 3.4s linear infinite; }
+@keyframes phRoll2 { from { background-position: 0 0; } to { background-position: 0 46px; } }
+@media (prefers-reduced-motion: reduce) { .hx-card.is-photo .hx-bg::before, .hx-card.is-photo .hx-bg::after { animation: none; } }
+@keyframes phSwell { from { transform: translateY(-2px) scaleY(.995); } to { transform: translateY(6px) scaleY(1.02); } }
+.hx-card.is-photo .hx-bg::after { background-image: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, .3) 14px, rgba(255, 255, 255, 0) 30px, rgba(255, 255, 255, 0) 46px); }
+/* feathered edges so the moving water blends into the still photo with no visible seam */
+.hx-card.is-photo .hx-bg::before { clip-path: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 50%, transparent 100%), linear-gradient(90deg, #000 0%, #000 45%, transparent 100%), linear-gradient(270deg, #000 0%, #000 45%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 50%, transparent 100%), linear-gradient(90deg, #000 0%, #000 45%, transparent 100%), linear-gradient(270deg, #000 0%, #000 45%, transparent 100%);
+  -webkit-mask-size: 100% 9%, 20% 34%, 22% 31%; mask-size: 100% 9%, 20% 34%, 22% 31%;
+  -webkit-mask-position: 0 31.5%, 0 36%, 100% 36%; mask-position: 0 31.5%, 0 36%, 100% 36%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.hx-card.is-photo .hx-bg::after { clip-path: none; -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%), linear-gradient(90deg, #000 0%, #000 45%, transparent 100%), linear-gradient(270deg, #000 0%, #000 45%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%), linear-gradient(90deg, #000 0%, #000 45%, transparent 100%), linear-gradient(270deg, #000 0%, #000 45%, transparent 100%);
+  -webkit-mask-size: 100% 9%, 20% 34%, 22% 31%; mask-size: 100% 9%, 20% 34%, 22% 31%;
+  -webkit-mask-position: 0 31.5%, 0 36%, 100% 36%; mask-position: 0 31.5%, 0 36%, 100% 36%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+@keyframes phSwell { from { transform: translateY(-3px) scaleY(.995); } to { transform: translateY(5px) scaleY(1.02); } }
+.hx-card.is-photo .hx-bg::before, .hx-card.is-photo .hx-bg::after { -webkit-mask-size: 100% 5.5%, 20% 34%, 22% 31%; mask-size: 100% 5.5%, 20% 34%, 22% 31%; }

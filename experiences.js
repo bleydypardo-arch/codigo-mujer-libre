@@ -45,7 +45,8 @@ const EN = {
 const TYPE_KEY = { trip: "expTrip", retreat: "expRetreat", party: "expParty", dining: "expDining", nature: "expNature" };
 const DEFAULT_TRAVEL = "paradise-sunset.svg";
 const HERO_PHOTO = "travel-experiences.jpg";
-const homeImg = () => { const i = stageImages()[0]; return i === HERO_PHOTO ? DEFAULT_TRAVEL : i; };
+const homeImg = () => stageImages()[0];
+const homeCls = img => img === HERO_PHOTO ? " is-art is-photo" : img === DEFAULT_TRAVEL ? " is-art" : "";
 const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "function" ? v(...args) : (v || key); };
 const el = (...a) => C.el(...a);
 const reduced = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -272,10 +273,10 @@ function paintHome() {
   if (!p) {
     const b = el("button", { type: "button", class: "hx-cta", text: t("homeExpAll") + " →" });
     b.addEventListener("click", go);
-    host.className = "hx-card is-soon" + (homeImg() === DEFAULT_TRAVEL ? " is-art" : "");
+    host.className = "hx-card is-soon" + homeCls(homeImg());
     host.replaceChildren(el("span", { class: "hx-bg", "aria-hidden": "true" }), el("div", { class: "hx-txt hx-invite" }, brand,
       el("h2", { class: "hx-title", text: t("homeExpSoon") }), el("span", { class: "hx-rule", "aria-hidden": "true" }), el("p", { class: "hx-p", text: t("homeExpSoonP") }), b));
-    const bg = host.querySelector(".hx-bg"); bg.style.backgroundImage = 'url("' + homeImg().replace(/"/g, "%22") + '")';
+    const bg = host.querySelector(".hx-bg"); bg.style.backgroundImage = 'url("' + homeImg().replace(/"/g, "%22") + '")'; bg.style.setProperty("--img", bg.style.backgroundImage);
     return;
   }
   const open = el("button", { type: "button", class: "hx-cta", text: t("homeExpGo") + " →" });
@@ -283,9 +284,10 @@ function paintHome() {
   const all = el("button", { type: "button", class: "hx-all", text: t("homeExpAll") });
   all.addEventListener("click", go);
   const av = availability(p);
-  host.className = "hx-card" + (!C.safeUrl(p.image_url) && homeImg() === DEFAULT_TRAVEL ? " is-art" : "");
+  host.className = "hx-card" + (C.safeUrl(p.image_url) ? "" : homeCls(homeImg()));
   const bg = el("span", { class: "hx-bg", "aria-hidden": "true" });
   bg.style.backgroundImage = 'url("' + (C.safeUrl(p.image_url) || homeImg()).replace(/"/g, "%22") + '")';
+  bg.style.setProperty("--img", bg.style.backgroundImage);
   host.replaceChildren(bg, el("div", { class: "hx-txt" }, brand,
     el("small", { class: "hx-meta", text: [t(TYPE_KEY[C.tripTypeOf(p)]), dateRange(p), place(p)].filter(Boolean).join(" · ") }),
     el("h2", { class: "hx-title", text: C.pick(p, "title") || "—" }),
