@@ -105,3 +105,12 @@
 @media (max-width: 520px) { .meet-form .two-col { grid-template-columns: minmax(0, 1fr); gap: 10px; } }
 .meet-form-acts .primary { min-height: 46px; }
 .ma-section { overflow: hidden; }
+
+/* Rincón Matcha: elegant primary action + search */
+.ma-meet-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 56px; margin-top: 14px; border: 0; border-radius: 999px; color: #fff; font: 600 17px/1 var(--font-display, "Playfair Display", serif); letter-spacing: .2px; background: linear-gradient(135deg, var(--cml-rose) 0%, var(--cml-rose-d) 100%); box-shadow: 0 8px 22px rgba(184, 95, 104, .28); cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; }
+.ma-meet-btn:hover, .ma-meet-btn:focus-visible { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(184, 95, 104, .34); }
+.ma-meet-btn:active { transform: translateY(0) scale(.98); }
+.ma-searchrow { margin: 4px 0 14px; }
+.ma-search { width: 100%; box-sizing: border-box; }
+.ma-item[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .ma-meet-btn { transition: none; } }
