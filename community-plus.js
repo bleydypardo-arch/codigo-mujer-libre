@@ -11,7 +11,7 @@
     rpThanks: "Gracias. Nuestro equipo lo revisará con cuidado.", rpFail: "No se pudo enviar. Intenta de nuevo.", rpCancel: "Cancelar",
     blTitle: n => "¿Bloquear a " + n + "?", blText: "No verás sus publicaciones ni su perfil. Ella no recibe aviso. Puedes desbloquearla en Mi perfil.", blYes: "Sí, bloquear", blDone: "Listo. Ya no verás a esta persona.",
     blMine: "Personas bloqueadas", blNone: "No has bloqueado a nadie.", blUndo: "Desbloquear", blUnknown: "Integrante",
-    safeTitle: "Para tu tranquilidad", safe1: "Reúnete en un lugar público (café, restaurante, evento).", safe2: "Avisa a alguien de confianza adónde vas y a qué hora.", safe3: "Llega y vuelve por tu cuenta. Tu seguridad va primero.", safe4: "Si algo no se siente bien, vete. Y cuéntanos con «Reportar»."
+    safeTitle: "Consejos para encontrarnos con tranquilidad", safe1: "Reúnete en un lugar público (café, restaurante, evento).", safe2: "Avisa a alguien de confianza adónde vas y a qué hora.", safe3: "Llega y vuelve por tu cuenta. Tu seguridad va primero.", safe4: "Si algo no se siente bien, vete. Y cuéntanos con «Reportar»."
   };
   const EN = {
     ccAll: "All", ccPickLabel: "What is it about? (optional)",
@@ -21,7 +21,7 @@
     rpThanks: "Thank you. Our team will review it carefully.", rpFail: "Could not send. Please try again.", rpCancel: "Cancel",
     blTitle: n => "Block " + n + "?", blText: "You won't see her posts or profile. She isn't notified. You can unblock her in My profile.", blYes: "Yes, block", blDone: "Done. You won't see this person anymore.",
     blMine: "Blocked people", blNone: "You haven't blocked anyone.", blUndo: "Unblock", blUnknown: "Member",
-    safeTitle: "For your peace of mind", safe1: "Meet in a public place (café, restaurant, event).", safe2: "Tell someone you trust where you're going and when.", safe3: "Arrive and leave on your own. Your safety comes first.", safe4: "If something feels off, leave. And tell us with “Report”."
+    safeTitle: "Tips for meeting up with peace of mind", safe1: "Meet in a public place (café, restaurant, event).", safe2: "Tell someone you trust where you're going and when.", safe3: "Arrive and leave on your own. Your safety comes first.", safe4: "If something feels off, leave. And tell us with “Report”."
   };
   let C = null, blocked = new Set(), blocksOk = true, curCat = "all";
   const t = (k, ...a) => { const v = C ? C.t(k) : ""; return typeof v === "function" ? v(...a) : (v || k); };
@@ -162,7 +162,7 @@
   // safety box shown with meetups
   function safetyNode() {
     if (!init()) return null;
-    return el("div", { class: "card safe-box" }, el("b", { text: "🛡 " + t("safeTitle") }),
+    return el("details", { class: "safe-box" }, el("summary", { text: "🛡 " + t("safeTitle") }),
       el("ul", {}, ...["safe1", "safe2", "safe3", "safe4"].map(k => el("li", { text: t(k) }))));
   }
 
