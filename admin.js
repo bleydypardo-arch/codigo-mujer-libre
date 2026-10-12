@@ -25,7 +25,7 @@ const S = {
     fUrlOffer: "Enlace de la oferta o reserva (https://…)",
     imgRemove: "Quitar imagen", fTripType: "Tipo de experiencia", fTripTypeHelp: "Define en qué tipo aparece en Viajes y Experiencias.",
     fMtype: "Tipo de contenido", mtype_spot: "Café o salón de té", mtype_place: "Lugar creativo / taller", mtype_recipe: "Receta o video", mtype_offer: "Oferta especial / colaboración",
-    fFeatured: "Matcha de la semana (destacado)", fShow: "¿Dónde se muestra?", fShowAll: "Todas las ciudades", fShowHelp: "Las mujeres de otra ciudad no verán este contenido.", tierLabel: "Título en el Club", tierNone: "Sin título", tier_owner: "Fundadora", tier_founder: "Anfitriona Fundadora", tier_host: "Anfitriona", tierSaved: "Título guardado.", fCity: "Ciudad", fCityHelp: "Permite filtrar por ciudad (Orlando, Miami, New York, Boston, Bogotá, Medellín).",
+    fFeatured: "Matcha de la semana (destacado)", csTab: "Ciudades", csIntro: "Marca de una vez como \"Orlando\" todos los eventos, planes de bienestar y fines de semana que ya existen y no tienen ciudad. Viajes, cafés y el resto siguen para todas.", csBtn: "Marcar eventos actuales como Orlando", csDone: n => n + " publicaciones marcadas como Orlando.", csNone: "No hay nada por marcar.", fShow: "¿Dónde se muestra?", fShowAll: "Todas las ciudades", fShowHelp: "Las mujeres de otra ciudad no verán este contenido.", tierLabel: "Título en el Club", tierNone: "Sin título", tier_owner: "Fundadora", tier_founder: "Anfitriona Fundadora", tier_host: "Anfitriona", tierSaved: "Título guardado.", fCity: "Ciudad", fCityHelp: "Permite filtrar por ciudad (Orlando, Miami, New York, Boston, Bogotá, Medellín).",
     fUrlMatcha: "Enlace (receta, video, web o reserva)", fUrlBook: "Enlace de reserva o más información (https://…)",
     matchaIntro: "Contenido del Rincón Matcha & Arte: cafés, salones de té, lugares creativos, recetas y ofertas. Para eventos, márcalos con «Incluir en Matcha y Arte» en Planes y eventos.",
     tripIntro: "Cada experiencia tiene su propia página: agrega solo los detalles que apliquen (un picnic no necesita hotel).",
@@ -93,7 +93,7 @@ const S = {
     fUrlOffer: "Offer or booking link (https://…)",
     imgRemove: "Remove image", fTripType: "Experience type", fTripTypeHelp: "Sets which type it appears under in Travel & Experiences.",
     fMtype: "Content type", mtype_spot: "Café or tea room", mtype_place: "Creative place / workshop", mtype_recipe: "Recipe or video", mtype_offer: "Special offer / collaboration",
-    fFeatured: "Matcha of the week (featured)", fShow: "Where is it shown?", fShowAll: "All cities", fShowHelp: "Women in other cities will not see this content.", tierLabel: "Title in the Club", tierNone: "No title", tier_owner: "Founder", tier_founder: "Founding Host", tier_host: "Host", tierSaved: "Title saved.", fCity: "City", fCityHelp: "Lets members filter by city (Orlando, Miami, New York, Boston, Bogotá, Medellín).",
+    fFeatured: "Matcha of the week (featured)", csTab: "Cities", csIntro: "Mark every existing event, wellness plan and weekend that has no city as \"Orlando\" in one go. Trips, cafés and everything else stay for everyone.", csBtn: "Mark current events as Orlando", csDone: n => n + " items marked as Orlando.", csNone: "Nothing to mark.", fShow: "Where is it shown?", fShowAll: "All cities", fShowHelp: "Women in other cities will not see this content.", tierLabel: "Title in the Club", tierNone: "No title", tier_owner: "Founder", tier_founder: "Founding Host", tier_host: "Host", tierSaved: "Title saved.", fCity: "City", fCityHelp: "Lets members filter by city (Orlando, Miami, New York, Boston, Bogotá, Medellín).",
     fUrlMatcha: "Link (recipe, video, website or booking)", fUrlBook: "Booking or information link (https://…)",
     matchaIntro: "Content for the Matcha & Art Corner: cafés, tea rooms, creative places, recipes and offers. For events, tick “Include in Matcha & Art” in Plans & events.",
     tripIntro: "Each experience gets its own page: add only the details that apply (a picnic doesn't need a hotel).",
@@ -1367,5 +1367,26 @@ async function homePinTab() {
   wrap.append(el("label", {}, a("hpPick"), sel), el("fieldset", {}, el("legend", { text: a("hpImg") }), el("p", { class: "small-note", text: a("hpImgHelp") }), picker.node), fb, el("div", { class: "admin-bar" }, save));
   return wrap;
 }
+async function citiesTab() {
+  const wrap = el("div", { class: "admin-form" }, el("p", { class: "small-note", text: a("csIntro") }));
+  const r = await C.db.from("plans").select("id,kind").in("kind", ["event", "wellness", "weekend"]);
+  const tags = (C.setting("plan_tags") && typeof C.setting("plan_tags") === "object") ? C.setting("plan_tags") : {};
+  const todo = (r.data || []).filter(p => !(tags[p.id] && tags[p.id].show));
+  const btn = button(a("csBtn") + " (" + todo.length + ")", "primary", async () => {
+    if (!todo.length) return toast(a("csNone"));
+    try {
+      const f = await C.db.from("settings").select("key,value").eq("key", "plan_tags").maybeSingle();
+      if (f.error) throw f.error;
+      const all = Object.assign({}, (f.data && f.data.value) || {});
+      todo.forEach(p => { all[p.id] = Object.assign({}, all[p.id], { show: "Orlando" }); });
+      const w = await C.db.from("settings").upsert({ key: "plan_tags", value: all, updated_at: new Date().toISOString() }, { onConflict: "key" });
+      if (w.error) throw w.error;
+      await C.refreshPublic(); toast(a("csDone")(todo.length)); render();
+    } catch (e) { console.error(e); toast(a("saveFail")); }
+  });
+  wrap.appendChild(el("div", { class: "admin-bar" }, btn));
+  return wrap;
+}
+registerTab("cities", { group: "content", label: { es: S.es.csTab, en: S.en.csTab }, render: async () => citiesTab() });
 registerTab("homepin", { group: "content", label: { es: S.es.hpTab, en: S.en.hpTab }, render: async () => homePinTab() });
 })();
