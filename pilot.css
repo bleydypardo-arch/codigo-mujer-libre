@@ -389,3 +389,100 @@ html.pw-lock { overflow: hidden; }
 .hx-bg::before, .hx-bg::after { -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, .35) 0%, #000 60%); mask-image: linear-gradient(180deg, rgba(0, 0, 0, .35) 0%, #000 60%); }
 .hx-bg::before { mix-blend-mode: screen; opacity: .5; background-image: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0) 13px, rgba(255, 255, 255, .55) 16px, rgba(255, 255, 255, 0) 20px, rgba(255, 255, 255, 0) 30px); }
 .hx-bg::after { opacity: .9; }
+
+/* =====================================================================
+   CÓDIGO EXPERIENCES — paraíso: aqua, durazno y dorado (sin borgoña)
+   ===================================================================== */
+#travel { --cml-rose: #1496A3; --cml-rose-d: #0E7F8C; --wine: #1496A3; --wine-d: #0E7F8C; --cml-blush: #DDF4F1; --cml-dusty: #9ADAD6; --cml-gold-ink: #B8742F; --cml-line: #D5ECEA; }
+/* the painted sunset sea is its own animation: hide the generic stripe overlays on it */
+.ph-travel.is-art .ph-media::before, .ph-travel.is-art .ph-media::after, .hx-card.is-art .hx-bg::before, .hx-card.is-art .hx-bg::after { display: none; }
+.hx-card.is-art .hx-bg { filter: none; }
+/* hero: luminous, only a soft teal shade behind the words */
+.ph-travel.tv-stage { background: #2FB5BC; box-shadow: 0 22px 46px rgba(14, 120, 140, .28); }
+.ph-travel .ph-media { background: #2FB5BC; }
+.ph-travel.tv-stage::after { background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(6, 86, 104, 0) 38%, rgba(6, 92, 110, .5) 78%, rgba(4, 70, 88, .72) 100%); }
+.ph-travel .ph-ic { background: #FFE6B8; color: #0B5A66; box-shadow: 0 0 0 6px rgba(255, 255, 255, .22); }
+.ph-travel .tc-cta { background: linear-gradient(135deg, #FFF3D6, #FFD9A0 55%, #FFC27A); color: #0B4F5C; box-shadow: 0 8px 22px rgba(4, 70, 88, .3); }
+.ph-travel .tc-cta:hover { background: linear-gradient(135deg, #FFF9E6, #FFE2B2 55%, #FFCE8E); }
+.ph-travel .tc-lead { text-shadow: 0 1px 12px rgba(4, 60, 76, .55); }
+.ph-travel .ph-intro { text-shadow: 0 1px 10px rgba(4, 60, 76, .55); }
+.tc-promise { color: #FFEFD0; text-shadow: 0 1px 8px rgba(4, 60, 76, .5); }
+.tc-promise i { color: #FFD9A0; }
+.ph-travel .ph-kicker [data-i18n="travelKicker"] { filter: drop-shadow(0 1px 6px rgba(4, 60, 76, .55)); }
+/* the promise: light and airy */
+.tv-story { background: linear-gradient(135deg, #E6F7F5 0%, #F4FBF8 45%, #FFF0DF 100%); color: #0B4F5C; border: 1px solid #CDEBE8; box-shadow: 0 14px 32px rgba(20, 130, 145, .14); }
+.tv-story::before { background: radial-gradient(circle at 92% 0%, rgba(255, 205, 150, .5), transparent 46%), radial-gradient(circle at 0% 100%, rgba(120, 214, 208, .35), transparent 52%); }
+.tv-k { color: #C0773B; }
+.tv-story-t { color: #0B4F5C !important; }
+.tv-story-p { color: #2F6670; }
+.tv-slot { border-color: #8FD5D0; color: #0B4F5C; background: rgba(255, 255, 255, .72); box-shadow: 0 6px 16px rgba(20, 130, 145, .08); }
+.tv-slot.is-soon { background: rgba(255, 255, 255, .72); border-style: dashed; }
+.tv-slot.has-img { color: #fff; }
+.tv-num { color: #D2873F; text-shadow: none; }
+.tv-slot.has-img .tv-num { color: #FFE2B0; text-shadow: 0 2px 10px rgba(0, 0, 0, .3); }
+.tv-slot-txt small { color: #B8742F; }
+.tv-slot.has-img .tv-slot-txt small { color: #FFE9C6; }
+.tv-slot-go { color: #FFE2B0; }
+.tv-slot-veil { background: linear-gradient(180deg, rgba(4, 70, 88, .05), rgba(4, 70, 88, .72)); }
+/* type picker + forms */
+#travel .card { border-color: #D5ECEA; box-shadow: 0 10px 26px rgba(20, 130, 145, .08); }
+#travel small.rose { color: #B8742F; }
+.trip-type .ci { background: #DDF4F1; color: #0E7F8C; }
+.trip-type.on { background: #12909C; border-color: #12909C; }
+.trip-type.on .ci { background: rgba(255, 255, 255, .22); color: #fff; }
+#travel .primary { background: linear-gradient(135deg, #17A3AE, #0E7F8C); box-shadow: 0 8px 18px rgba(14, 127, 140, .26); }
+#travel .primary:hover { background: linear-gradient(135deg, #1FB2BD, #118898); }
+#travel input[type="text"]:focus { border-color: #17A3AE; outline-color: #17A3AE; }
+#travel .secondary { border-color: #8FD5D0; color: #0E7F8C; }
+#travel .back-btn { color: #0E7F8C; }
+
+/* Ideas para soñar */
+.tdr { margin: 16px 0 18px; }
+.tdr-head { margin: 0 0 12px; text-align: center; }
+.tdr-k { display: block; font: 700 11.5px var(--font-ui); letter-spacing: .26em; color: #B8742F; }
+.tdr-t { margin: 6px 0 6px !important; font: 400 24px/1.2 var(--font-display) !important; color: #0B4F5C !important; text-wrap: balance; }
+.tdr-p { margin: 0 auto; max-width: 46ch; font-size: 13.5px; line-height: 1.55; color: #3C7079; }
+.tdr-grid { display: grid; gap: 12px; }
+.tdr-card { position: relative; display: block; width: 100%; min-height: 170px; padding: 0; border: 0; border-radius: 22px; overflow: hidden; text-align: left; font: inherit; color: #fff; cursor: pointer; box-shadow: 0 12px 26px rgba(14, 127, 140, .2); transition: transform .35s ease, box-shadow .35s ease; }
+.tdr-card:hover { transform: translateY(-3px); box-shadow: 0 18px 34px rgba(14, 127, 140, .28); }
+.tdr-media { position: absolute; inset: 0; } .tdr-media svg, .tdr-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.tdr-veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4, 70, 88, 0) 35%, rgba(4, 70, 88, .72) 100%); }
+.tdr-pill { position: absolute; top: 12px; left: 12px; padding: 5px 12px; border-radius: 999px; font: 600 11.5px/1 var(--font-ui); letter-spacing: .06em; color: #0B4F5C; background: rgba(255, 244, 222, .92); }
+.tdr-txt { position: absolute; left: 16px; right: 16px; bottom: 14px; display: flex; flex-direction: column; gap: 3px; }
+.tdr-txt b { font: 400 22px/1.15 var(--font-display); text-shadow: 0 2px 12px rgba(4, 60, 76, .55); }
+.tdr-txt small { font-size: 12.5px; line-height: 1.4; color: rgba(255, 255, 255, .94); text-shadow: 0 1px 8px rgba(4, 60, 76, .6); max-width: 36ch; }
+.tdr-love { margin-top: 3px; font: 600 12.5px var(--font-ui); color: #FFE2B0; }
+.dw { animation: dwv 6s ease-in-out infinite alternate; } .dw.d2 { animation-duration: 8s; animation-direction: alternate-reverse; }
+@keyframes dwv { from { transform: translateX(-26px); } to { transform: translateX(26px); } }
+.dg rect { transform-box: fill-box; transform-origin: center; animation: dgl 2.6s ease-in-out infinite; } .dg rect:nth-child(2) { animation-delay: .7s; } .dg rect:nth-child(3) { animation-delay: 1.4s; }
+@keyframes dgl { 0%, 100% { transform: scaleX(.6); opacity: .4; } 50% { transform: scaleX(1.1); opacity: .95; } }
+.dgon { animation: dgo 5s ease-in-out infinite alternate; } @keyframes dgo { from { transform: translate(-6px, 0); } to { transform: translate(8px, 2px); } }
+.dsun { animation: dsn 6s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; } @keyframes dsn { to { transform: scale(1.08); } }
+@media (min-width: 720px) { .tdr-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .tdr-card { min-height: 250px; } .tdr-t { font-size: 30px !important; } }
+@media (prefers-reduced-motion: reduce) { .dw, .dg rect, .dgon, .dsun { animation: none; } }
+/* legibility pass: deeper teal shade behind the words, cream (not gold) title, stronger veil on the destination cards */
+.ph-travel.tv-stage::after { background: linear-gradient(180deg, rgba(6, 86, 104, 0) 0%, rgba(6, 86, 104, .12) 22%, rgba(6, 90, 108, .6) 52%, rgba(4, 70, 88, .84) 82%, rgba(3, 62, 80, .92) 100%); }
+.ph-travel h1 { background-image: linear-gradient(100deg, #FFFFFF 0%, #FFF1D6 30%, #FFFFFF 55%, #FFE3B0 80%, #FFFFFF 100%); filter: drop-shadow(0 2px 12px rgba(3, 50, 66, .6)); }
+.ph-travel .ph-kicker [data-i18n="travelKicker"] { background-image: linear-gradient(100deg, #FFE2A8 0%, #FFF6DC 20%, #FFFFFF 30%, #FFE9BE 45%, #FFD08A 62%, #FFF6DC 78%, #FFE2A8 100%); background-size: 250% 100%; }
+.tdr-veil { background: linear-gradient(180deg, rgba(4, 70, 88, 0) 12%, rgba(4, 70, 88, .55) 52%, rgba(3, 60, 78, .86) 100%); }
+.tdr-card { min-height: 190px; }
+.trip-type { background: #F6FCFB; }
+/* keep the sunset bright: shade only where the words sit */
+.ph-travel.tv-stage::after { background: linear-gradient(180deg, rgba(6, 86, 104, 0) 0%, rgba(6, 86, 104, 0) 42%, rgba(6, 96, 114, .28) 62%, rgba(4, 78, 96, .55) 100%); }
+.tdr-veil { background: linear-gradient(180deg, rgba(4, 70, 88, 0) 42%, rgba(4, 74, 92, .5) 72%, rgba(3, 64, 82, .78) 100%); }
+.ph-travel .tc-lead, .ph-travel .ph-intro { text-shadow: 0 1px 3px rgba(3, 60, 76, .55), 0 2px 16px rgba(3, 60, 76, .6); }
+.tdr-card .tdr-txt b, .tdr-card .tdr-txt small { text-shadow: 0 1px 3px rgba(3, 60, 76, .6), 0 2px 12px rgba(3, 60, 76, .6); }
+/* painted sea on the Travel page: horizon higher so the title sits on the water, not on the sun */
+.ph-travel.is-art .tv-slide { background-size: auto 142%; background-position: 50% 100%; }
+
+/* Home · Código Experiences card: paradise glass instead of wine */
+.hx-card.is-art::after, .hx-card.is-soon.is-art::after { background: linear-gradient(180deg, rgba(255, 255, 255, 0) 40%, rgba(4, 80, 98, .22) 100%); }
+.hx-card.is-art .hx-bg { background-size: auto 150%; background-position: 50% 100%; }
+.hx-card.is-art .hx-invite { background: linear-gradient(160deg, rgba(8, 100, 118, .5), rgba(6, 84, 102, .42)); border-color: rgba(255, 255, 255, .5); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); box-shadow: 0 14px 30px rgba(4, 70, 88, .25), inset 0 1px 0 rgba(255, 255, 255, .25); }
+.hx-card.is-art .hx-title, .hx-card.is-art .hx-p { text-shadow: 0 1px 3px rgba(3, 60, 76, .5), 0 2px 12px rgba(3, 60, 76, .45); }
+.hx-card.is-art .hx-rule { background: linear-gradient(90deg, #FFE2B0, rgba(255, 226, 176, 0)); }
+.hx-card.is-art .hx-ic { background: #FFE6B8; color: #0B5A66; box-shadow: 0 0 0 5px rgba(255, 255, 255, .2); }
+.hx-card.is-art .hx-cta { background: linear-gradient(135deg, #FFF3D6, #FFD9A0 55%, #FFC27A); color: #0B4F5C; }
+.hx-card.is-art .hx-sig-t { background-image: linear-gradient(100deg, #FFE2A8 0%, #FFF6DC 20%, #FFFFFF 30%, #FFE9BE 45%, #FFD08A 62%, #FFF6DC 78%, #FFE2A8 100%); background-size: 250% 100%; }
+.hx-card.is-art .hx-bg { background-size: auto 118%; background-position: 50% 78%; }
+.hx-card.is-art .hx-invite { background: linear-gradient(160deg, rgba(8, 100, 118, .3), rgba(6, 84, 102, .2)); -webkit-backdrop-filter: blur(1.5px); backdrop-filter: blur(1.5px); }

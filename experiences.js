@@ -16,7 +16,12 @@ const ES = {
   homeExpAll: "Ver todas las experiencias", homeExpGo: "Descubrir la experiencia",
   typesK: "EXPLORA POR TIPO", typesNote: "Toca un tipo para ver solo esas experiencias. Toca de nuevo para ver todas.",
   wellPick: "Código Pick", wellBook: "Reservar", wellSee: "Ver experiencia", wellUntil: d => "Hasta el " + d,
-  addWellness: "+ Agregar experiencia de bienestar", addExperience: "+ Crear experiencia"
+  addWellness: "+ Agregar experiencia de bienestar", addExperience: "+ Crear experiencia",
+  dreamK: "IDEAS PARA SOÑAR", dreamT: "Lugares que soñamos vivir contigo", dreamP: "Todavía no son viajes anunciados: son los destinos que imaginamos. Toca el que te enamora y cuéntanos.",
+  dreamSoon: "Muy pronto", dreamLove: "Me enamora",
+  dmx: "Riviera Maya, México", dmxP: "Cenotes, selva y mar turquesa. Un atardecer frente al Caribe.",
+  dtu: "Toscana, Italia", dtuP: "Colinas doradas, viñedos y una mesa larga al caer el sol.",
+  dve: "Venecia, Italia", dveP: "Canales, luz de oro y una cena que no se olvida."
 };
 const EN = {
   expBrandK: "CÓDIGO", expBrand: "Experiences",
@@ -30,10 +35,15 @@ const EN = {
   homeExpAll: "See all experiences", homeExpGo: "Discover the experience",
   typesK: "EXPLORE BY TYPE", typesNote: "Tap a type to see only those experiences. Tap again to see them all.",
   wellPick: "Código Pick", wellBook: "Book", wellSee: "See experience", wellUntil: d => "Until " + d,
-  addWellness: "+ Add wellness experience", addExperience: "+ Create experience"
+  addWellness: "+ Add wellness experience", addExperience: "+ Create experience",
+  dreamK: "DREAMING OF…", dreamT: "Places we dream of living with you", dreamP: "These aren't announced trips yet: they're the destinations we imagine. Tap the one you love and tell us.",
+  dreamSoon: "Coming soon", dreamLove: "I love this",
+  dmx: "Riviera Maya, Mexico", dmxP: "Cenotes, jungle and turquoise sea. A sunset over the Caribbean.",
+  dtu: "Tuscany, Italy", dtuP: "Golden hills, vineyards and a long table as the sun goes down.",
+  dve: "Venice, Italy", dveP: "Canals, golden light and a dinner you won't forget."
 };
 const TYPE_KEY = { trip: "expTrip", retreat: "expRetreat", party: "expParty", dining: "expDining", nature: "expNature" };
-const DEFAULT_TRAVEL = "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80";
+const DEFAULT_TRAVEL = "paradise-sunset.svg";
 const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "function" ? v(...args) : (v || key); };
 const el = (...a) => C.el(...a);
 const reduced = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
@@ -134,6 +144,7 @@ function paintStage() {
     return s;
   }));
   head.classList.add("has-photo", "tv-stage");
+  head.classList.toggle("is-art", imgs[0] === DEFAULT_TRAVEL);
   if (imgs.length > 1 && !reduced()) {
     let i = 0;
     slideTimer = setInterval(() => {
@@ -188,10 +199,49 @@ function paintStory() {
       el("p", { class: "tv-story-p", text: t("storyP") })),
     C.session() ? el("div", { class: "tv-two" }, slot(next[0], t("storyI"), 0), slot(next[1], t("storyII"), next[0] ? 0 : 1)) : null);
 }
+
+// ---------- "Ideas para soñar": original illustrated destinations (clearly NOT announced trips) ----------
+const SCENE_MX = '<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="dmA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6CCBE8"/><stop offset=".55" stop-color="#FFE3BC"/><stop offset="1" stop-color="#FFB890"/></linearGradient><linearGradient id="dmB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7FE0D6"/><stop offset="1" stop-color="#14A3AE"/></linearGradient></defs><rect width="400" height="300" fill="url(#dmA)"/><circle cx="130" cy="150" r="30" fill="#FFF3CF"/><rect y="150" width="400" height="150" fill="url(#dmB)"/><g class="dw"><path d="M0 190q50-8 100 0t100 0 100 0 100 0v110H0z" fill="#fff" opacity=".22"/></g><g class="dw d2"><path d="M0 225q50-10 100 0t100 0 100 0 100 0v75H0z" fill="#0F8FA0" opacity=".45"/></g><path d="M0 262q110-34 230-8 90 20 170 4v42H0z" fill="#FFF1D9"/><g fill="none" stroke="#0B5A63" stroke-linecap="round"><path d="M318 288Q312 220 332 164" stroke-width="6"/><path d="M366 292Q372 236 354 196" stroke-width="5"/></g><g fill="#0B5A63"><path d="M332 164q-40-6-62 18 30-8 62-18zM332 164q-24-26-58-22 34 2 58 22zM332 164q16-30 52-30-30 8-52 30zM332 164q36-8 56 14-30-6-56-14zM332 164q-6-24-2-44 12 22 2 44z"/><path d="M354 196q-30-2-46 16 24-6 46-16zM354 196q-14-22-42-20 28 2 42 20zM354 196q14-22 44-20-28 4-44 20zM354 196q26 0 38 18-24-8-38-18z"/></g></svg>'
+const SCENE_TU = '<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="dtA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FD3EA"/><stop offset=".5" stop-color="#FFE2B0"/><stop offset="1" stop-color="#FFB27E"/></linearGradient></defs><rect width="400" height="300" fill="url(#dtA)"/><circle class="dsun" cx="250" cy="148" r="40" fill="#FFF1C4"/><path d="M0 170q80-34 160-8t140-6 100 10v134H0z" fill="#E8C57F"/><path d="M0 200q100-40 200-6t200-14v120H0z" fill="#D2A857"/><path d="M0 238q120-30 240-4t160-8v74H0z" fill="#9FA862"/><g fill="#2F5A3A"><ellipse cx="84" cy="206" rx="6" ry="30"/><ellipse cx="108" cy="214" rx="5" ry="24"/><ellipse cx="302" cy="196" rx="6" ry="32"/><ellipse cx="326" cy="204" rx="5" ry="25"/><ellipse cx="350" cy="200" rx="5.5" ry="28"/></g><g stroke="#C7956A" stroke-width="2" fill="none" opacity=".7"><path d="M0 256q100-14 200-8t200-6"/><path d="M0 272q100-12 200-6t200-6"/></g><g fill="#F6EBD9"><rect x="196" y="190" width="22" height="14"/><path d="M193 190l14-10 14 10z" fill="#C9724F"/></g></svg>'
+const SCENE_VE = '<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="dvA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9ED5EA"/><stop offset=".55" stop-color="#FFDCC0"/><stop offset="1" stop-color="#FFB69A"/></linearGradient><linearGradient id="dvB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2B7A0"/><stop offset=".3" stop-color="#5BB8C2"/><stop offset="1" stop-color="#1B8296"/></linearGradient></defs><rect width="400" height="300" fill="url(#dvA)"/><circle cx="300" cy="120" r="28" fill="#FFF3CF"/><g><rect x="20" y="118" width="64" height="62" fill="#E9B79A"/><rect x="84" y="100" width="54" height="80" fill="#F4DCC2"/><path d="M84 100l27-22 27 22z" fill="#C7684B"/><rect x="138" y="124" width="70" height="56" fill="#D99A80"/><rect x="208" y="110" width="58" height="70" fill="#F1D3B6"/><rect x="266" y="128" width="70" height="52" fill="#E5A98C"/><rect x="336" y="116" width="64" height="64" fill="#F4DCC2"/></g><g fill="#7A4A44" opacity=".75"><path d="M34 140q6-12 12 0v12H34zM58 140q6-12 12 0v12H58zM98 124q6-12 12 0v14H98zM118 124q6-12 12 0v14h-12zM152 142q6-12 12 0v12h-12zM176 142q6-12 12 0v12h-12zM222 130q6-12 12 0v14h-12zM244 130q6-12 12 0v14h-12zM280 144q6-12 12 0v12h-12zM304 144q6-12 12 0v12h-12zM350 134q6-12 12 0v14h-12z"/></g><rect y="180" width="400" height="120" fill="url(#dvB)"/><g class="dw"><path d="M0 214q50-7 100 0t100 0 100 0 100 0v86H0z" fill="#fff" opacity=".2"/></g><g class="dg" fill="#FFF1D2"><rect x="150" y="196" width="60" height="3" rx="1.5"/><rect x="160" y="212" width="46" height="3" rx="1.5"/><rect x="170" y="230" width="34" height="3" rx="1.5"/></g><g class="dgon"><path d="M92 252q40 16 100-2l-6-6q-44 10-82 2z" fill="#2B2230"/><path d="M92 252l-8-14 14 12z" fill="#2B2230"/><path d="M192 250l8-16-14 12z" fill="#2B2230"/></g></svg>'
+const DREAMS = [
+  { k: "mx", svg: SCENE_MX }, { k: "tu", svg: SCENE_TU }, { k: "ve", svg: SCENE_VE }
+];
+function dreamCard(d, idx) {
+  const list = C.setting && C.setting("travel_dreams");
+  const cfg = (Array.isArray(list) && list[idx]) || {};
+  const lang = C.lang(), other = lang === "es" ? "en" : "es";
+  const pk = k => String(cfg[k + "_" + lang] || cfg[k + "_" + other] || "").trim();
+  const img = C.safeUrl(cfg.image);
+  const title = pk("title") || t("d" + (d.k === "mx" ? "mx" : d.k === "tu" ? "tu" : "ve"));
+  const text = pk("text") || t("d" + d.k + "P");
+  const media = el("span", { class: "tdr-media", "aria-hidden": "true" });
+  if (img) { const im = el("img", { src: img, alt: "", loading: "lazy" }); im.addEventListener("error", () => { im.remove(); media.innerHTML = d.svg; }); media.appendChild(im); }
+  else media.innerHTML = d.svg;
+  const b = el("button", { type: "button", class: "tdr-card tdr-" + d.k, "aria-label": title + " · " + t("dreamLove") },
+    media, el("span", { class: "tdr-veil", "aria-hidden": "true" }),
+    el("span", { class: "tdr-pill", text: t("dreamSoon") }),
+    el("span", { class: "tdr-txt" }, el("b", { text: title }), el("small", { text }), el("span", { class: "tdr-love", text: "♡ " + t("dreamLove") })));
+  b.addEventListener("click", () => {
+    const f = document.getElementById("travelSuggest"), inp = document.getElementById("tripIdea");
+    if (inp) inp.value = title;
+    if (f && !f.hidden) { f.scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "center" }); if (inp) setTimeout(() => inp.focus({ preventScroll: true }), 350); }
+  });
+  return b;
+}
+function paintDreams() {
+  const host = document.getElementById("travelDreams");
+  if (!host) return;
+  host.hidden = false;
+  host.replaceChildren(
+    el("div", { class: "tdr-head" }, el("small", { class: "tdr-k", text: t("dreamK") }), el("h2", { class: "tdr-t", text: t("dreamT") }), el("p", { class: "tdr-p", text: t("dreamP") })),
+    el("div", { class: "tdr-grid" }, ...DREAMS.map(dreamCard)));
+}
 function paintTravelPage() {
   if (!C) return;
   paintStage();
   paintStory();
+  paintDreams();
   const k = document.querySelector("#travel .exp-types > small"), n = document.querySelector("#travel .exp-types > .small-note");
   if (k) k.textContent = t("typesK");
   if (n) n.textContent = t("typesNote");
@@ -219,7 +269,7 @@ function paintHome() {
   if (!p) {
     const b = el("button", { type: "button", class: "hx-cta", text: t("homeExpAll") + " →" });
     b.addEventListener("click", go);
-    host.className = "hx-card is-soon";
+    host.className = "hx-card is-soon" + (stageImages()[0] === DEFAULT_TRAVEL ? " is-art" : "");
     host.replaceChildren(el("span", { class: "hx-bg", "aria-hidden": "true" }), el("div", { class: "hx-txt hx-invite" }, brand,
       el("h2", { class: "hx-title", text: t("homeExpSoon") }), el("span", { class: "hx-rule", "aria-hidden": "true" }), el("p", { class: "hx-p", text: t("homeExpSoonP") }), b));
     const bg = host.querySelector(".hx-bg"); bg.style.backgroundImage = 'url("' + stageImages()[0].replace(/"/g, "%22") + '")';
@@ -230,7 +280,7 @@ function paintHome() {
   const all = el("button", { type: "button", class: "hx-all", text: t("homeExpAll") });
   all.addEventListener("click", go);
   const av = availability(p);
-  host.className = "hx-card";
+  host.className = "hx-card" + (!C.safeUrl(p.image_url) && stageImages()[0] === DEFAULT_TRAVEL ? " is-art" : "");
   const bg = el("span", { class: "hx-bg", "aria-hidden": "true" });
   bg.style.backgroundImage = 'url("' + (C.safeUrl(p.image_url) || stageImages()[0]).replace(/"/g, "%22") + '")';
   host.replaceChildren(bg, el("div", { class: "hx-txt" }, brand,
