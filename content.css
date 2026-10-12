@@ -120,3 +120,9 @@
   .rc-medal::after { animation: rcGlint 7s ease-in-out 1.2s infinite; }
   @keyframes rcGlint { 0%, 70% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
 }
+
+/* Recipe of the Month: the card is only as tall as the side you are looking at (no long empty green area) */
+.rc-card:not(.is-flipped) .rc-back { max-height: 0; min-height: 0; padding-top: 0; padding-bottom: 0; border-width: 0; overflow: hidden; box-shadow: none; }
+.rc-card.is-flipped .rc-front { max-height: 0; min-height: 0; padding-top: 0; padding-bottom: 0; border-width: 0; overflow: hidden; box-shadow: none; }
+.rc-front { min-height: 150px; }
+.rc-cta { margin-top: 4px; }
