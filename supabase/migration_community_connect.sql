@@ -120,3 +120,33 @@ create policy "blocks own" on public.blocks for all to authenticated
   using (blocker = auth.uid()) with check (blocker = auth.uid() and public.is_approved());
 revoke all on public.blocks from public, anon;
 grant select, insert, delete on public.blocks to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- WhatsApp opcional entre dos mujeres conectadas.
+-- El número solo se muestra cuando las DOS aceptaron conocerse y las DOS eligieron compartirlo.
+alter table public.connections add column if not exists from_share boolean not null default false;
+alter table public.connections add column if not exists to_share boolean not null default false;
+
+create or replace function public.share_whatsapp(p_other uuid, p_share boolean)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_approved() then return; end if;
+  update public.connections set from_share = p_share
+   where from_user = auth.uid() and to_user = p_other and status = 'accepted';
+  update public.connections set to_share = p_share
+   where to_user = auth.uid() and from_user = p_other and status = 'accepted';
+end $$;
+revoke all on function public.share_whatsapp(uuid, boolean) from public, anon;
+grant execute on function public.share_whatsapp(uuid, boolean) to authenticated;
+
+create or replace function public.connection_phone(p_other uuid)
+returns text language sql stable security definer set search_path = public as $$
+  select p.phone
+    from public.connections c
+    join public.profiles p on p.id = p_other
+   where c.status = 'accepted' and c.from_share and c.to_share and public.is_approved()
+     and ((c.from_user = auth.uid() and c.to_user = p_other) or (c.to_user = auth.uid() and c.from_user = p_other))
+     and coalesce(p.phone, '') <> ''
+$$;
+revoke all on function public.connection_phone(uuid) from public, anon;
+grant execute on function public.connection_phone(uuid) to authenticated;

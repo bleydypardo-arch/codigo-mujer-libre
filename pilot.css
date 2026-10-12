@@ -89,3 +89,6 @@
 .safe-box b { color: var(--cml-sage-ink); } .safe-box ul { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; line-height: 1.5; }
 .cn-sheet h3 { margin: 6px 0 4px; }
 .rp-menu .rp-link { background: none; border: 0; box-shadow: none; padding: 0 2px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.cn-share { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 8px; }
+.cn-wa { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; min-height: 46px; padding: 0 20px; border-radius: 999px; }
+.cn-phone { font-size: 13px; color: var(--cml-ink2); }
