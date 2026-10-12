@@ -10,7 +10,7 @@ const TOPICS = ["entrepreneurship", "spirituality", "emotional", "wellness", "he
 const ES = {
   podName: "Entre Nosotras", podTag: "Dos voces. Dos miradas. Conversaciones que importan.",
   podK: "PODCAST", podNew: "NUEVO EPISODIO", podNext: "PRÓXIMO ESTRENO", podSoonT: "Muy pronto: nuestro primer episodio", podSoonP: "Amor, salud, dinero, bienestar, belleza, propósito y emprendimiento. Conversaciones que importan.",
-  podListen: "Escuchar", podPlay: "Reproducir", podCal: "Agregar al calendario", podShare: "Compartir", podAll: "Todos", podMore: "Ver más episodios", podNone: "No hay episodios de este tema todavía.",
+  podListen: "Escuchar el podcast", podTopicsLine: "Amor · Salud · Dinero · Bienestar · Belleza · Propósito · Emprendimiento · Vida", podPlay: "Reproducir", podCal: "Agregar al calendario", podShare: "Compartir", podAll: "Todos", podMore: "Ver más episodios", podNone: "No hay episodios de este tema todavía.",
   podLibK: "PODCAST", podLibT: "Entre Nosotras", podOpenYt: "Abrir en YouTube", podClose: "Cerrar", podShareMsg: n => "Escucha «" + n + "» en Entre Nosotras, el podcast de Código Mujer Libre:",
   podAt: "a las", podCount: n => n === 1 ? "1 episodio" : n + " episodios",
   tp_entrepreneurship: "Emprendimiento", tp_spirituality: "Espiritualidad", tp_emotional: "Emocional", tp_wellness: "Bienestar", tp_health: "Salud", tp_identity: "Identidad", tp_beauty: "Belleza", tp_money: "Dinero", tp_organization: "Organización", tp_love: "Amor y relaciones"
@@ -18,7 +18,7 @@ const ES = {
 const EN = {
   podName: "Between Us", podTag: "Two voices. Two perspectives. Conversations that matter.",
   podK: "PODCAST", podNew: "NEW EPISODE", podNext: "NEXT PREMIERE", podSoonT: "Coming soon: our first episode", podSoonP: "Love, health, money, wellness, beauty, purpose and entrepreneurship. Conversations that matter.",
-  podListen: "Listen", podPlay: "Play", podCal: "Add to calendar", podShare: "Share", podAll: "All", podMore: "Show more episodes", podNone: "No episodes on this topic yet.",
+  podListen: "Listen to the podcast", podTopicsLine: "Love · Health · Money · Wellness · Beauty · Purpose · Entrepreneurship · Life", podPlay: "Play", podCal: "Add to calendar", podShare: "Share", podAll: "All", podMore: "Show more episodes", podNone: "No episodes on this topic yet.",
   podLibK: "PODCAST", podLibT: "Between Us", podOpenYt: "Open on YouTube", podClose: "Close", podShareMsg: n => "Listen to “" + n + "” on Between Us, the Código Mujer Libre podcast:",
   podAt: "at", podCount: n => n === 1 ? "1 episode" : n + " episodes",
   tp_entrepreneurship: "Entrepreneurship", tp_spirituality: "Spirituality", tp_emotional: "Emotional", tp_wellness: "Wellness", tp_health: "Health", tp_identity: "Identity", tp_beauty: "Beauty", tp_money: "Money", tp_organization: "Organization", tp_love: "Love & relationships"
@@ -75,6 +75,11 @@ function playerNode(id, label, cls) {
   wrap.appendChild(b);
   return wrap;
 }
+function embedNode(id, label) {
+  const wrap = el("div", { class: "pod-media episode" });
+  wrap.appendChild(el("iframe", { src: "https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1&rel=0&playsinline=1", title: label, allow: "autoplay; encrypted-media; picture-in-picture; fullscreen", allowfullscreen: "", referrerpolicy: "strict-origin-when-cross-origin" }));
+  return wrap;
+}
 function icsUrl(e) {
   const d = e.date.replace(/-/g, ""), tm = (e.time || "19:00").replace(":", "") + "00";
   const end = new Date(new Date(e.date + "T" + (e.time || "19:00")).getTime() + 15 * 60000);
@@ -104,18 +109,19 @@ function renderHome() {
   }
   const e = f.ep, id = ytId(e.url), tid = ytId(e.teaser);
   const acts = el("div", { class: "pod-acts" });
+  const listen = el("button", { type: "button", class: "pod-listen", text: "▶  " + t("podListen") });
+  listen.addEventListener("click", () => { const m = embedNode(id, titleOf(e)); listen.replaceWith(m); });
   if (f.upcoming) acts.appendChild(el("a", { class: "pod-btn-gold", href: icsUrl(e), download: "entre-nosotras.ics", text: "📅 " + t("podCal") }));
   acts.appendChild(el("a", { class: "pod-btn-ghost", href: shareLink(e), target: "_blank", rel: "noopener noreferrer", text: t("podShare") }));
   host.replaceChildren(
     el("div", { class: "pod-head" }, el("span", { class: "pod-mic", "aria-hidden": "true" }, "🎙"), el("div", {}, el("small", { class: "pod-k", text: f.upcoming ? t("podNext") : t("podNew") }), el("h2", { class: "pod-name", text: t("podName") }))),
+    el("p", { class: "pod-tag", text: t("podTag") }),
     tid ? playerNode(tid, titleOf(e), "teaser") : null,
-    el("span", { class: "pod-chip", text: topicLabel(TOPICS.includes(e.topic) ? e.topic : "wellness") }),
+    el("p", { class: "pod-topics", text: t("podTopicsLine") }),
     el("h3", { class: "pod-title", text: titleOf(e) }),
-    el("p", { class: "pod-when", text: whenText(e) }),
+    el("p", { class: "pod-when", text: topicLabel(TOPICS.includes(e.topic) ? e.topic : "wellness") + " · " + whenText(e) }),
     C.pick(e, "desc") ? el("p", { class: "pod-sub", text: C.pick(e, "desc") }) : null,
-    f.upcoming ? null : playerNode(id, titleOf(e), "episode"),
-    f.upcoming && !tid ? playerNode(id, titleOf(e), "episode") : null,
-    acts);
+    listen, acts);
 }
 
 // ---------- Wellness library ----------
@@ -144,7 +150,11 @@ function renderLibrary() {
   }
   host.replaceChildren(...kids);
 }
-function render() { renderHome(); renderLibrary(); }
+function render(ev) {
+  const lang = ev && ev.type === "cml:lang";
+  if (!lang && document.querySelector("#homePodcast iframe, #wellPodcast iframe")) return;   // never interrupt a playing episode
+  renderHome(); renderLibrary();
+}
 
 function init() {
   C = window.CML; if (!C) return;
