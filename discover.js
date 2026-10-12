@@ -41,7 +41,7 @@ const ES = {
   maMeetPropose: "Proponer un Encuentro", maPlace: "Lugar", maPlacePh: "Café, salón de té o taller", maCity: "Ciudad", maCityPh: "Orlando, Bogotá…",
   maDate: "Día", maTime: "Hora", maNote: "Nota (opcional)", maNotePh: "Ej.: ¡traigan su cuaderno de dibujo!",
   maMeetSend: "Publicar encuentro", maMeetNeed: "Escribe el lugar y el día.", maMeetFail: "No se pudo publicar. Inténtalo de nuevo.", maMeetDone: "¡Listo! Tu encuentro ya aparece en el rincón y en Comunidad.",
-  maPollK: "DECIDAMOS JUNTAS", maPollTitle: "¿Dónde nos vemos?", maAllCities: "Todas las ciudades", maSearchPh: "Buscar un lugar o ciudad…", maSeePlaces: "Ver los lugares", maNoMatch: "No encontramos lugares con esa búsqueda.",
+  maPollK: "DECIDAMOS JUNTAS", maPollTitle: "¿Dónde nos vemos?", maAllCities: "Todas las ciudades", maSearchPh: "Buscar un lugar o ciudad…", maPickK: "Lugares", maPickCount: "lugares", maPickHint: "Toca un lugar para ver más. Desliza para ver todos.", maSeePlaces: "Ver los lugares", maNoMatch: "No encontramos lugares con esa búsqueda.",
   maSpotsK: "LUGARES FAVORITOS", maSpotsTitle: "Cafés y rincones creativos", maRecipesK: "RECETAS E IDEAS", maRecipesTitle: "Para preparar en casa",
   maCreateTitle: "Crea algo"
 };
@@ -79,7 +79,7 @@ const EN = {
   maMeetPropose: "Propose a Meetup", maPlace: "Place", maPlacePh: "Café, tea room or studio", maCity: "City", maCityPh: "Orlando, Bogotá…",
   maDate: "Day", maTime: "Time", maNote: "Note (optional)", maNotePh: "e.g. bring your sketchbook!",
   maMeetSend: "Post meetup", maMeetNeed: "Write the place and the day.", maMeetFail: "Could not post. Please try again.", maMeetDone: "Done! Your meetup now shows in the corner and in Community.",
-  maPollK: "LET'S DECIDE TOGETHER", maPollTitle: "Where should we meet?", maAllCities: "All cities", maSearchPh: "Search a place or city…", maSeePlaces: "See the places", maNoMatch: "No places match that search.",
+  maPollK: "LET'S DECIDE TOGETHER", maPollTitle: "Where should we meet?", maAllCities: "All cities", maSearchPh: "Search a place or city…", maPickK: "Places", maPickCount: "places", maPickHint: "Tap a place for details. Scroll to see them all.", maSeePlaces: "See the places", maNoMatch: "No places match that search.",
   maSpotsK: "FAVORITE PLACES", maSpotsTitle: "Cafés and creative corners", maRecipesK: "RECIPES & IDEAS", maRecipesTitle: "To make at home",
   maCreateTitle: "Create something"
 };
@@ -354,8 +354,32 @@ function applySearch() {
   const q = maQ.trim().toLowerCase(), root = document.getElementById("matchaBody");
   if (!root) return;
   let any = false;
-  root.querySelectorAll("#maSpots .ma-item").forEach(c => { const ok = !q || (c.dataset.q || "").includes(q); c.hidden = !ok; if (ok) any = true; });
+  root.querySelectorAll("#maSpots .pick-row").forEach(c => { const ok = !q || (c.dataset.q || "").includes(q); c.hidden = !ok; if (ok) any = true; });
+  const cnt = document.getElementById("maCount"); if (cnt) cnt.textContent = root.querySelectorAll("#maSpots .pick-row:not([hidden])").length + " " + t("maPickCount");
   const none = document.getElementById("maNone"); if (none) none.hidden = !(q && !any);
+}
+// Compact, expandable row for one place (the long list lives inside the Meetup card, scrollable)
+function pickRow(p) {
+  const tg = C.planTag(p.id), city = cityOf(p), img = C.safeUrl(p.image_url), url = C.safeUrl(p.url);
+  const title = C.pick(p, "title") || "—", desc = C.pick(p, "desc");
+  const acts = el("div", { class: "pick-acts" });
+  acts.appendChild(btn(t("maMeetHere"), "pick-here", () => openMeetForm(title, city)));
+  if (p.location) acts.appendChild(el("a", { class: "link-btn", href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(p.location), target: "_blank", rel: "noopener noreferrer", text: C.t("viewOnMap") + " ↗" }));
+  if (url) acts.appendChild(el("a", { class: "link-btn", href: url, target: "_blank", rel: "noopener noreferrer", text: t("maLinkOpen") + " ↗" }));
+  const d = el("details", { class: "pick-row", "data-q": [title, p.location, city, desc].join(" ").toLowerCase() },
+    el("summary", {}, el("span", { class: "pick-name", text: title }), el("span", { class: "pick-city", text: city || "" })),
+    el("div", { class: "pick-body" }, img ? el("div", { class: "pick-img" }, imgNode(img)) : null, p.location ? el("span", { class: "ma-item-city", text: "📍 " + p.location }) : null, desc ? el("p", { class: "ma-item-d", text: desc }) : null, acts));
+  return d;
+}
+function pickBox(spots) {
+  if (!spots.length) return null;
+  const inp = el("input", { type: "search", class: "ma-search", placeholder: "🔎 " + t("maSearchPh"), "aria-label": t("maSearchPh"), value: maQ, autocomplete: "off", autocapitalize: "off", maxlength: "60", enterkeyhint: "search" });
+  inp.addEventListener("input", () => { maQ = inp.value; applySearch(); });
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
+  const list = el("div", { class: "pick-list", id: "maSpots", tabindex: "0", role: "region", "aria-label": t("maPickK") }, ...spots.map(pickRow), el("p", { class: "small-note", id: "maNone", hidden: true, text: t("maNoMatch") }));
+  return el("div", { class: "pick-box" },
+    el("div", { class: "pick-head" }, el("b", { text: t("maPickK") }), el("span", { id: "maCount", class: "pick-count", text: spots.length + " " + t("maPickCount") })),
+    inp, list, el("p", { class: "pick-hint", text: t("maPickHint") }));
 }
 // Luxe call-to-action: iced matcha latte icon, champagne-gold to blush gradient, soft shimmer
 function luxBtn(text, fn) {
@@ -405,16 +429,15 @@ function renderMatchaPage() {
   const meetsShown = meets.filter(x => inCity(x.m.city)).slice(0, 6);
 
   const colA = [], colB = [];
-  const srow = searchRow(spots.length);
   if (featured) colA.push(el("section", { class: "ma-feature" }, itemCard(featured, true)));
   // ¿Dónde nos vemos?
   const meetBox = section(t("maMeetK"), t("maMeetTitle"),
     el("p", { class: "small-note", text: meets.length ? t("maMeetIntro") : t("maMeetEmpty") }),
+    pickBox(spots),
     meetsShown.length ? el("div", { class: "meet-list" }, ...meetsShown.map(x => meetupNode(x.post))) : null,
     meetDraft ? meetForm() : luxBtn(t("maMeetPropose"), () => openMeetForm("", "")),
     window.CMLCommunity ? window.CMLCommunity.safetyNode() : null,
     window.CMLPolls && window.CMLPolls.placedBlock ? window.CMLPolls.placedBlock("matcha", t("maPollK"), t("maPollTitle"), "") : null);
-  if (spots.length) { const sp = section(t("maSpotsK"), t("maSpotsTitle"), srow, el("div", { class: "ma-items" }, ...spots.map(p => itemCard(p)))); sp.id = "maSpots"; sp.appendChild(el("p", { class: "small-note", id: "maNone", hidden: true, text: t("maNoMatch") })); colA.push(sp); }
   colA.push(meetBox);
   // upcoming gatherings (tagged events / weekend ideas / wellness)
   const plansBox = section(t("maPlans"), null);
