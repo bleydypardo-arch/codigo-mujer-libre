@@ -84,7 +84,7 @@ function renderProfile() {
   month.value = me.birth_month ? String(me.birth_month) : ""; day.value = me.birth_day ? String(me.birth_day) : "";
   const lang = el("select", { id: "profLang" }, el("option", { value: "es", text: "Español" }), el("option", { value: "en", text: "English" }));
   lang.value = me.pref_lang || C.lang();
-  const CITIES = ["Orlando", "Miami", "Boston", "Bogotá", "Medellín"];
+  const CITIES = ["Orlando", "Miami", "New York", "Boston", "Bogotá", "Medellín"];
   const cityList = me.city && !CITIES.includes(me.city) ? [...CITIES, me.city] : CITIES;
   const citySel = el("select", { id: "profCity" }, el("option", { value: "", text: t("profCityPick") }), ...cityList.map(c => el("option", { value: c, text: c })));
   citySel.value = me.city || "";

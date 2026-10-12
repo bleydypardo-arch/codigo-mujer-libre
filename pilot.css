@@ -607,3 +607,20 @@ html.pw-lock { overflow: hidden; }
 .tv-two .tv-slot.is-soon:not(.has-img):nth-child(2)::after { animation-delay: 1.4s; }
 @keyframes tvTwinkle { 0%, 100% { opacity: .35; transform: scale(.9); } 50% { opacity: 1; transform: scale(1.15); } }
 @media (prefers-reduced-motion: reduce) { .tv-slot.is-soon:not(.has-img)::after { animation: none; } }
+
+/* ===== Club: header name + host tiers (Fundadora · Anfitriona Fundadora · Anfitriona) ===== */
+header .brand .brand-club { font-style: italic; font-weight: 400; color: #A8832F; letter-spacing: .01em; }
+.tier-badge { display: inline-block; margin: 2px 0 1px; padding: 2px 9px; border-radius: 99px; font-family: inherit; font-size: 10.5px; font-weight: 600; line-height: 1.5; letter-spacing: .02em; white-space: nowrap; }
+.tier-badge.big { font-size: 12.5px; padding: 3px 12px; margin: 4px 0; }
+.tier-badge.tier-owner { background: linear-gradient(135deg, #E9CB7E, #C79A36); color: #3A2A06; box-shadow: 0 0 0 1px rgba(150,110,20,.35); }
+.tier-badge.tier-founder { background: linear-gradient(120deg, #D8B55A 0%, #9DB37A 55%, #2F7F6D 100%); color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.25); }
+.tier-badge.tier-host { background: #F1DDF0; color: #6C2E73; box-shadow: 0 0 0 1px rgba(150,70,160,.28); }
+.mcard.has-tier { border-width: 1.5px; }
+.mcard.tier-owner { border-color: #D2AB4C; background: linear-gradient(#FFF8E4, #fff 60%); }
+.mcard.tier-founder { border-color: #86A874; background: linear-gradient(#F3F6E6, #fff 60%); }
+.mcard.tier-host { border-color: #CDA0D0; background: linear-gradient(#FBF1FB, #fff 60%); }
+.hosts-row { margin: 0 0 18px; }
+.hosts-t { display: block; font: 500 18px var(--font-display); color: var(--cml-ink); }
+.hosts-s { display: block; margin: 0 0 8px; color: var(--cml-muted, #6b6b6b); }
+.tier-pick { align-items: center; gap: 8px; }
+.tier-pick select { flex: 1; min-height: 40px; }

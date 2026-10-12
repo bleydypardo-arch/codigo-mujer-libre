@@ -479,6 +479,7 @@ Object.assign(translations.es, {
   joinBday: "Tu cumpleaños", optional: "(opcional)", month: "Mes", day: "Día",
   joinBdayHint: "🎂 Solo el día y el mes, para celebrarte. Nunca pedimos el año.", joinPassword: "Crea una contraseña",
   memCityAll: "Todas", memCityAria: "Filtrar por ciudad",
+  tier_owner: "Fundadora", tier_founder: "Anfitriona Fundadora", tier_host: "Anfitriona", hostsTitle: "Tus anfitrionas", hostsSub: "Mujeres que te reciben y cuidan el Club en tu ciudad.",
   cityPick: "Elige tu ciudad", cityOther: "Otra ciudad", cityOtherLbl: "¿Cuál es tu ciudad?", cityHint: "Solo la ciudad. Nunca pedimos tu dirección.",
   joinQDoes: "2 · ¿A qué te dedicas hoy?", joinQDoesPh: "Soy maestra, cuido mi hogar, tengo un negocio, busco empleo…",
   joinQDream: "3 · ¿Qué sueño todavía vive en ti?", joinQDreamPh: "Abrir mi panadería, escribir un libro, volver a estudiar, viajar…", joinQDreamHint: "Nunca es tarde para empezar. Lo verán las demás integrantes cuando te conozcan.",
@@ -510,6 +511,7 @@ Object.assign(translations.en, {
   joinBday: "Your birthday", optional: "(optional)", month: "Month", day: "Day",
   joinBdayHint: "🎂 Just the day and month, so we can celebrate you. We never ask for the year.", joinPassword: "Create a password",
   memCityAll: "All", memCityAria: "Filter by city",
+  tier_owner: "Founder", tier_founder: "Founding Host", tier_host: "Host", hostsTitle: "Your hosts", hostsSub: "Women who welcome you and look after the Club in your city.",
   cityPick: "Choose your city", cityOther: "Another city", cityOtherLbl: "What is your city?", cityHint: "Just the city. We never ask for your address.",
   joinQDoes: "2 · What do you do today?", joinQDoesPh: "I'm a teacher, I care for my home, I run a business, I'm looking for work…",
   joinQDream: "3 · What dream still lives in you?", joinQDreamPh: "Open my bakery, write a book, go back to school, travel…", joinQDreamHint: "It is never too late to begin. Other members will see it when they get to know you.",
@@ -599,6 +601,22 @@ const isSuper = () => !!profile && profile.role === "super_admin";
 // Content admin: manages content and images only (no members, messages or roles). isStaff = anyone who may open Admin.
 const isContentAdmin = () => !!profile && profile.role === "content_admin";
 const isStaff = () => isAdmin() || isContentAdmin();
+// Cities: content tagged for one city ("¿Dónde se muestra?") is shown to women of that city; untagged content ("Todas") to everyone.
+const cityKey = v => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
+const KNOWN_CITIES = ["orlando", "miami", "newyork", "boston", "bogota", "medellin"];
+function shownTo(p) {
+  const show = cityKey(planTag(p.id).show);
+  if (!show || isStaff()) return true;
+  const mine = cityKey(profile && profile.city);
+  return !KNOWN_CITIES.includes(mine) || mine === show;   // unknown / "other" city: sees everything
+}
+// Host tiers (settings.hosts[userId]): owner = Fundadora, founder = Anfitriona Fundadora, host = Anfitriona.
+const TIERS = ["owner", "founder", "host"];
+const hostTier = id => { const h = settings.hosts; const v = h && typeof h === "object" && id ? h[id] : ""; return TIERS.includes(v) ? v : ""; };
+function hostBadge(id, cls = "") {
+  const tier = hostTier(id);
+  return tier ? el("span", { class: "tier-badge tier-" + tier + (cls ? " " + cls : ""), text: t("tier_" + tier) }) : null;
+}
 
 const codeLabels = {
   Social: "social", Wellness: "wellnessChip", Faith: "faith", Adventure: "adventure",
@@ -1470,7 +1488,17 @@ function renderMembers() {
         return b;
       }));
   }
-  container.append(head, ...(cityRow ? [cityRow] : []), strip);
+  const rank = id => TIERS.indexOf(hostTier(id));
+  const myCity = cityKey(profile && profile.city);
+  const hosts = members.filter(m => m.id && hostTier(m.id) && !(window.CMLCommunity && window.CMLCommunity.isBlocked(m.id)))
+    .sort((a, b) => (cityKey(b.city) === myCity) - (cityKey(a.city) === myCity) || rank(a.id) - rank(b.id));
+  let hostRow = null;
+  if (hosts.length && CN) {
+    const hs = el("div", { class: "members-strip" });
+    hosts.forEach(m => hs.appendChild(CN.card(m)));
+    hostRow = el("section", { class: "hosts-row", "aria-label": t("hostsTitle") }, el("b", { class: "hosts-t", text: t("hostsTitle") }), el("small", { class: "hosts-s", text: t("hostsSub") }), hs);
+  }
+  container.append(...(hostRow ? [hostRow] : []), head, ...(cityRow ? [cityRow] : []), strip);
 }
 function appendParagraph(container, text, className = "") {
   container.appendChild(el("p", { class: className, text }));
@@ -1900,6 +1928,7 @@ async function loadAll() {
     plans = (pl.data || []).filter(p => !isTestContent(p.title_es, p.title_en));
     settings = {};
     (st.data || []).forEach(r => { settings[r.key] = r.value; });
+    plans = plans.filter(shownTo);
     await Promise.all([loadResponses(), refreshCounts()]);
   } catch {
     announce("loadError");
@@ -2067,7 +2096,7 @@ function initialize() {
     db, el, pick, safeUrl, fmtDate, monthLabel, todayStr, codeLabels,
     t, lang: () => currentLanguage, loc,
     session: () => session, profile: () => profile,
-    isAdmin, isSuper, isContentAdmin, isStaff, announce,
+    isAdmin, isSuper, isContentAdmin, isStaff, announce, hostTier, hostBadge, TIERS,
     refreshPublic: async () => { if (session) await loadAll(); }, discoverPick,
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,

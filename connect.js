@@ -129,9 +129,11 @@
 
   function card(m) {
     init();
-    const b = el("button", { type: "button", class: "mcard", "aria-label": t("cnOpen", m.first_name) },
+    const tier = C.hostTier ? C.hostTier(m.id) : "";
+    const b = el("button", { type: "button", class: "mcard" + (tier ? " has-tier tier-" + tier : ""), "aria-label": t("cnOpen", m.first_name) },
       avatar(m, "avatar-card"),
       el("b", { class: "mcard-name", text: m.first_name }),
+      C.hostBadge ? C.hostBadge(m.id) : null,
       m.city ? el("small", { class: "mcard-city", text: m.city }) : null,
       m.occupation ? el("small", { class: "mcard-job", text: clip(m.occupation, 40) }) : null,
       m.dream ? el("em", { class: "mcard-dream", text: "“" + clip(m.dream, 70) + "”" }) : null,
@@ -173,6 +175,7 @@
     const body = el("div", { class: "cn-body" },
       avatar(m, "avatar-lg"),
       el("h3", { text: m.first_name }),
+      C.hostBadge ? C.hostBadge(m.id, "big") : null,
       m.city ? el("p", { class: "cn-city", text: m.city }) : null,
       row(t("cnDoesLabel"), m.occupation),
       m.dream ? el("blockquote", { class: "cn-dream" }, el("small", { text: t("cnDreamLabel") }), el("p", { text: m.dream })) : el("p", { class: "meta", text: t("cnNoInfo") }),

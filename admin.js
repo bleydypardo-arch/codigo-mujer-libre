@@ -25,7 +25,7 @@ const S = {
     fUrlOffer: "Enlace de la oferta o reserva (https://…)",
     imgRemove: "Quitar imagen", fTripType: "Tipo de experiencia", fTripTypeHelp: "Define en qué tipo aparece en Viajes y Experiencias.",
     fMtype: "Tipo de contenido", mtype_spot: "Café o salón de té", mtype_place: "Lugar creativo / taller", mtype_recipe: "Receta o video", mtype_offer: "Oferta especial / colaboración",
-    fFeatured: "Matcha de la semana (destacado)", fCity: "Ciudad", fCityHelp: "Permite filtrar por ciudad (Orlando, Miami, Boston, Bogotá, Medellín).",
+    fFeatured: "Matcha de la semana (destacado)", fShow: "¿Dónde se muestra?", fShowAll: "Todas las ciudades", fShowHelp: "Las mujeres de otra ciudad no verán este contenido.", tierLabel: "Título en el Club", tierNone: "Sin título", tier_owner: "Fundadora", tier_founder: "Anfitriona Fundadora", tier_host: "Anfitriona", tierSaved: "Título guardado.", fCity: "Ciudad", fCityHelp: "Permite filtrar por ciudad (Orlando, Miami, New York, Boston, Bogotá, Medellín).",
     fUrlMatcha: "Enlace (receta, video, web o reserva)", fUrlBook: "Enlace de reserva o más información (https://…)",
     matchaIntro: "Contenido del Rincón Matcha & Arte: cafés, salones de té, lugares creativos, recetas y ofertas. Para eventos, márcalos con «Incluir en Matcha y Arte» en Planes y eventos.",
     tripIntro: "Cada experiencia tiene su propia página: agrega solo los detalles que apliquen (un picnic no necesita hotel).",
@@ -93,7 +93,7 @@ const S = {
     fUrlOffer: "Offer or booking link (https://…)",
     imgRemove: "Remove image", fTripType: "Experience type", fTripTypeHelp: "Sets which type it appears under in Travel & Experiences.",
     fMtype: "Content type", mtype_spot: "Café or tea room", mtype_place: "Creative place / workshop", mtype_recipe: "Recipe or video", mtype_offer: "Special offer / collaboration",
-    fFeatured: "Matcha of the week (featured)", fCity: "City", fCityHelp: "Lets members filter by city (Orlando, Miami, Boston, Bogotá, Medellín).",
+    fFeatured: "Matcha of the week (featured)", fShow: "Where is it shown?", fShowAll: "All cities", fShowHelp: "Women in other cities will not see this content.", tierLabel: "Title in the Club", tierNone: "No title", tier_owner: "Founder", tier_founder: "Founding Host", tier_host: "Host", tierSaved: "Title saved.", fCity: "City", fCityHelp: "Lets members filter by city (Orlando, Miami, New York, Boston, Bogotá, Medellín).",
     fUrlMatcha: "Link (recipe, video, website or booking)", fUrlBook: "Booking or information link (https://…)",
     matchaIntro: "Content for the Matcha & Art Corner: cafés, tea rooms, creative places, recipes and offers. For events, tick “Include in Matcha & Art” in Plans & events.",
     tripIntro: "Each experience gets its own page: add only the details that apply (a picnic doesn't need a hotel).",
@@ -275,7 +275,7 @@ async function setMapEntry(key, id, value) {
 }
 async function saveTag(planId, tag) {
   const clean = {};
-  ["cat", "mtype", "city", "label"].forEach(k => { if (tag[k]) clean[k] = tag[k]; });
+  ["cat", "mtype", "city", "label", "show"].forEach(k => { if (tag[k]) clean[k] = tag[k]; });
   if (tag.matcha) clean.matcha = true;
   if (tag.full) clean.full = true;
   if (tag.featured) clean.featured = true;
@@ -755,7 +755,7 @@ function formView() {
     featuredBox = el("input", { type: "checkbox" }); featuredBox.checked = !!oldTag.featured;
     form.appendChild(el("label", { class: "check" }, featuredBox, a("fFeatured")));
     cityIn = el("input", { type: "text", maxlength: 40, value: oldTag.city || "", placeholder: "Orlando, Bogotá…", list: "cmlCityList", autocomplete: "off" });
-    form.appendChild(el("datalist", { id: "cmlCityList" }, ...["Orlando", "Miami", "Boston", "Bogotá", "Medellín"].map(v => el("option", { value: v }))));
+    form.appendChild(el("datalist", { id: "cmlCityList" }, ...["Orlando", "Miami", "New York", "Boston", "Bogotá", "Medellín"].map(v => el("option", { value: v }))));
   }
   if (kind === "trip" || kind === "wellness") {
     featBox = el("input", { type: "checkbox" }); featBox.checked = !!oldTag.featured;
@@ -785,6 +785,10 @@ function formView() {
     matchaBox = el("input", { type: "checkbox" }); matchaBox.checked = !!oldTag.matcha;
     form.appendChild(el("label", { class: "check" }, matchaBox, a("fMatcha")));
   }
+  const SHOW_CITIES = ["Orlando", "Miami", "New York", "Boston", "Bogotá", "Medellín"];
+  const showSel = el("select", {}, el("option", { value: "", text: a("fShowAll") }), SHOW_CITIES.map(c => el("option", { value: c, text: c })));
+  showSel.value = SHOW_CITIES.includes(oldTag.show) ? oldTag.show : "";
+  form.appendChild(field(a("fShow"), showSel, a("fShowHelp")));
   // Spanish and English side by side, so it's always clear which text matches which
   form.appendChild(el("div", { class: "lang-pairs" },
     el("div", { class: "lang-col" }, el("b", { class: "lang-h", text: "ESPAÑOL" }),
@@ -847,7 +851,8 @@ function formView() {
     event_time: val0("event_time"), date_text: val0("date_text"), location: val0("location"), price: val0("price"),
     url: val0("url"), details: richEditor ? richEditor.value() : val0("details"), image_url: picker ? picker.value : "", published: published.checked
   });
-  const buildTag = () => kind === "matcha"
+  const buildTag = () => Object.assign(buildTag0(), { show: showSel.value });
+  const buildTag0 = () => kind === "matcha"
     ? Object.assign({ matcha: true, mtype: mtypeSel.value, featured: featuredBox.checked, city: cityIn.value.trim() }, oldTag.full ? { full: true } : {})
     : { cat: typeSel ? (kind === "trip" && typeSel.value === "trip" ? "" : typeSel.value) : "", matcha: !!(matchaBox && matchaBox.checked),
         featured: !!(featBox && featBox.checked), full: !!(fullBox && fullBox.checked),
@@ -1068,6 +1073,15 @@ async function usersView() {
         }), acts.firstChild);
         item.appendChild(acts);
         if (req) item.appendChild(el("p", { class: "mc-wait", text: a("appWait") }));
+      }
+      if (u.approved || u.role !== "member") {
+        const cur = (C.setting("hosts") || {})[u.id] || "";
+        const tierSel = el("select", { "aria-label": a("tierLabel") }, el("option", { value: "", text: a("tierNone") }), ...C.TIERS.map(k => el("option", { value: k, text: a("tier_" + k) })));
+        tierSel.value = cur;
+        tierSel.addEventListener("change", async () => {
+          try { await setMapEntry("hosts", u.id, tierSel.value || null); toast(a("tierSaved")); if (C.refreshPublic) C.refreshPublic(); } catch { toast(a("saveFail")); }
+        });
+        item.appendChild(el("div", { class: "actions tier-pick" }, el("small", { text: a("tierLabel") }), tierSel));
       }
       if (u.birth_month && (u.approved || u.role !== "member")) {
         item.appendChild(el("div", { class: "actions" }, button(C.t("bdCelebrate"), "", () => celebrate(u))));
