@@ -145,6 +145,7 @@ function renderLibrary() {
   if (!host || !C) return;
   if (!C.session()) { host.hidden = true; host.replaceChildren(); return; }
   const all = episodes();
+  if (!all.length) { host.hidden = true; host.replaceChildren(); return; }   // nothing to show until there are episodes
   host.hidden = false;
   const used = TOPICS.filter(k => all.some(e => e.topic === k));
   const chips = el("div", { class: "chips pod-chips", role: "group", "aria-label": t("podLibT") },
