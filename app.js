@@ -997,6 +997,7 @@ function eventMedia(p, cls) {
   // One post feeds the thumbnail and the detail hero: the main image, else the first gallery photo.
   let image = safeUrl(p.image_url);
   if (!image) { try { const g = richOf(p).gallery; image = Array.isArray(g) ? (g.map(safeUrl).find(Boolean) || "") : ""; } catch (e) { /* no gallery */ } }
+  if (!image && p.kind === "trip") image = "tuscany.jpg";   // trips without their own photo: Tuscany, never the plane on wine
   const box = el("div", { class: "ev-media " + cls + (image ? "" : " ev-ph " + toneOf(p.code)) + (image && planTag(p.id).full ? " is-full" : "") });
   if (image) {
     const img = el("img", { src: image, alt: pick(p, "title") || "", loading: "lazy" });

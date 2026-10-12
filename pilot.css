@@ -572,3 +572,9 @@ html.pw-lock { overflow: hidden; }
 .sea-btn.on .sw1 { animation: seaPulse 1.6s ease-in-out infinite; } .sea-btn.on .sw2 { animation: seaPulse 1.6s ease-in-out .5s infinite; }
 @keyframes seaPulse { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .sea-btn.on .sw1, .sea-btn.on .sw2 { animation: none; opacity: 1; } }
+
+/* Home card (a real experience is announced): readable dark text on the light card */
+.hx-card.is-photo .hx-meta { color: #B8742F !important; text-shadow: none !important; background: none; font-weight: 700; letter-spacing: .08em; }
+.hx-card.is-photo .hx-all { color: #0E7F8C !important; text-shadow: none !important; font-weight: 600; border-bottom-color: rgba(14, 127, 140, .45) !important; }
+.hx-card.is-photo .camp-status { text-shadow: none; }
+.hx-card.is-photo .hx-acts { margin-left: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
