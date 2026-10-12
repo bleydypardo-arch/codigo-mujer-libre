@@ -166,6 +166,53 @@
       el("ul", {}, ...["safe1", "safe2", "safe3", "safe4"].map(k => el("li", { text: t(k) }))));
   }
 
+  // ---- admin tab "Reportes" (owner/admin only; the database also blocks everyone else) ----
+  const AT = {
+    es: { tab: "Reportes", intro: "Lo que las integrantes reportan. Revísalo con calma; no hace falta responder de inmediato.", none: "No hay reportes pendientes. Todo tranquilo.", done: "Marcar como revisado", doneOk: "Marcado como revisado.", fail: "No se pudo. Intenta de nuevo.", about: "Sobre", by: "Reportó", post: "Publicación", member: "Perfil", showDone: "Ver también los revisados", reasons: { respect: "Falta de respeto", spam: "Spam o ventas", unsafe: "Se siente insegura", fake: "Perfil falso", other: "Otra razón" } },
+    en: { tab: "Reports", intro: "What members report. Review it calmly; there is no need to reply right away.", none: "No pending reports. All calm.", done: "Mark as reviewed", doneOk: "Marked as reviewed.", fail: "Could not do that. Please try again.", about: "About", by: "Reported by", post: "Post", member: "Profile", showDone: "Also show reviewed", reasons: { respect: "Disrespect", spam: "Spam or selling", unsafe: "Feels unsafe", fake: "Fake profile", other: "Another reason" } }
+  };
+  async function reportsTab(Cm, K, all) {
+    const L = AT[Cm.lang() === "en" ? "en" : "es"];
+    const wrap = K.el("div", { class: "admin-section" }, K.el("p", { class: "small-note", text: L.intro }));
+    let q = Cm.db.from("reports").select("id,reporter,kind,target_id,target_user,reason,excerpt,status,created_at").order("created_at", { ascending: false }).limit(100);
+    if (!all) q = q.eq("status", "open");
+    const r = await q;
+    if (r.error) { wrap.appendChild(K.el("p", { class: "form-feedback", text: L.fail })); return wrap; }
+    const rows = r.data || [];
+    const ids = [...new Set(rows.flatMap(x => [x.reporter, x.target_user]).filter(Boolean))];
+    const names = new Map();
+    if (ids.length) {
+      const pr = await Cm.db.from("profiles").select("id,first_name,last_name").in("id", ids);
+      (pr.data || []).forEach(p => names.set(p.id, ((p.first_name || "") + " " + (p.last_name || "")).trim()));
+    }
+    const nm = id => names.get(id) || "—";
+    if (!rows.length) wrap.appendChild(K.el("p", { text: L.none }));
+    rows.forEach(x => {
+      const card = K.el("div", { class: "card" },
+        K.el("b", { text: (L.reasons[x.reason] || x.reason) + " · " + (x.kind === "post" ? L.post : L.member) }),
+        K.el("p", { class: "meta", text: new Date(x.created_at).toLocaleString(Cm.loc()) }),
+        K.el("p", { text: L.about + ": " + nm(x.target_user) }),
+        x.excerpt ? K.el("blockquote", { class: "saved-text", text: x.excerpt }) : null,
+        K.el("p", { class: "meta", text: L.by + ": " + nm(x.reporter) }));
+      if (x.status === "open") {
+        card.appendChild(K.button(L.done, "primary", async () => {
+          const u = await Cm.db.from("reports").update({ status: "done" }).eq("id", x.id);
+          if (u.error) { K.toast(L.fail); return; }
+          K.toast(L.doneOk); card.remove();
+        }));
+      }
+      wrap.appendChild(card);
+    });
+    return wrap;
+  }
+  function initAdmin() {
+    const Cm = window.CML, A = window.CMLAdmin;
+    if (!Cm || !A || !A.registerTab) return;
+    const K = A.kit();
+    A.registerTab("reports", { group: "people", label: { es: AT.es.tab, en: AT.en.tab }, render: async () => reportsTab(Cm, K, false) });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initAdmin, { once: true }); else initAdmin();
+
   window.CMLCommunity = { parse, encode, composerNode, filterNode, getComposerCat, clearComposerCat, catOk, catBadge, curCategory,
     loadBlocks, isBlocked, postMenu, memberLinks, profileCard, safetyNode, openReport, openBlock, unblock };
 })();
