@@ -299,6 +299,22 @@ function renderDiscover() {
   host.replaceChildren(el("small", { class: "rose", text: t("discLabel") }), el("h2", { text: t("discTitle") }), el("div", { class: "disc-list" }, ...rows));
 }
 
+// Soft rain of hearts behind the page when the Let's Talk envelope opens (decorative, skipped for reduced motion)
+function fallingHearts() {
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const old = document.querySelector(".hearts-rain"); if (old) old.remove();
+  const box = document.createElement("div"); box.className = "hearts-rain"; box.setAttribute("aria-hidden", "true");
+  const cols = ["#B85F68", "#E58F9F", "#F2B5C0", "#DBC19F", "#D98694"], glyph = ["♥", "♥", "♥", "❤"];
+  for (let i = 0; i < 34; i++) {
+    const h = document.createElement("span"); h.className = "heart-fall"; h.textContent = glyph[i % glyph.length];
+    const dur = 4.2 + Math.random() * 3.2;
+    h.style.cssText = "left:" + (Math.random() * 100).toFixed(1) + "%;font-size:" + (12 + Math.random() * 20).toFixed(0) + "px;color:" + cols[i % cols.length] + ";animation-duration:" + dur.toFixed(2) + "s;animation-delay:" + (Math.random() * 2.2).toFixed(2) + "s;--dx:" + ((Math.random() - .5) * 90).toFixed(0) + "px;--rot:" + ((Math.random() - .5) * 60).toFixed(0) + "deg";
+    box.appendChild(h);
+  }
+  document.body.appendChild(box);
+  setTimeout(() => box.remove(), 8200);
+}
+
 // ---------- Hablemos: a weekly conversation prompt → Community composer ----------
 const TALK = [
   { es: ["Volver a hacer amigas de adulta", "¿Qué te ha ayudado a hacer nuevas amigas de adulta?"], en: ["Making friends again as an adult", "What has helped you make new friends as an adult?"] },
@@ -333,7 +349,7 @@ function renderTalk() {
   if (!F) { host.replaceChildren(...back); return; }
   const art = el("span", { class: "fc-art", "aria-hidden": "true" }); art.innerHTML = F.envelopeSVG();
   host.replaceChildren(F.build({ cls: "fc-talk", label: t("talkLabel"), front: [art, el("span", { class: "fc-title", text: C.t("fcTalkFront") }), el("span", { class: "fc-hint", text: C.t("fcTalkHint") })],
-    back, flipped: talkFlipped, backLabel: C.t("fcBack"), onToggle: on => { talkFlipped = on; } }));
+    back, flipped: talkFlipped, backLabel: C.t("fcBack"), onToggle: on => { talkFlipped = on; if (on) fallingHearts(); } }));
 }
 
 function render(fromFetch) {
