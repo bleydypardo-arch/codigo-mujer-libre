@@ -75,6 +75,20 @@ function playerNode(id, label, cls) {
   wrap.appendChild(b);
   return wrap;
 }
+// Vintage broadcast microphone (gold grille, chrome yoke, stand) with sound waves that radiate outward
+function micNode(cls) {
+  const NS = "http://www.w3.org/2000/svg", w = document.createElementNS(NS, "svg");
+  w.setAttribute("viewBox", "-16 0 112 100"); w.setAttribute("class", "pod-mic-svg " + (cls || "")); w.setAttribute("aria-hidden", "true"); w.setAttribute("focusable", "false");
+  let ribs = ""; for (let y = 16; y <= 54; y += 5) ribs += '<path d="M21 ' + y + 'H59"/>';
+  w.innerHTML = '<defs><linearGradient id="pmG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBEBC0"/><stop offset=".5" stop-color="#D9A650"/><stop offset="1" stop-color="#8E5C25"/></linearGradient><linearGradient id="pmC" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8A8A92"/><stop offset=".45" stop-color="#F4F4F6"/><stop offset="1" stop-color="#7C7C86"/></linearGradient><radialGradient id="pmH" cx=".5" cy=".4" r=".6"><stop offset="0" stop-color="#F3C874" stop-opacity=".7"/><stop offset="1" stop-color="#F3C874" stop-opacity="0"/></radialGradient><clipPath id="pmK"><rect x="20" y="8" width="40" height="52" rx="20"/></clipPath></defs>'
+    + '<circle class="mic-glow" cx="40" cy="34" r="40" fill="url(#pmH)"/>'
+    + '<g class="mic-waves" fill="none" stroke="#C48A36" stroke-linecap="round" stroke-width="2.8"><path class="wv wl1" d="M13 24C8 32 8 42 13 50"/><path class="wv wl2" d="M6 17C-2 29 -2 45 6 57"/><path class="wv wl3" d="M-1 10C-12 26 -12 48 -1 64"/><path class="wv wr1" d="M67 24C72 32 72 42 67 50"/><path class="wv wr2" d="M74 17C82 29 82 45 74 57"/><path class="wv wr3" d="M81 10C92 26 92 48 81 64"/></g>'
+    + '<g class="mic-body"><rect x="37.5" y="72" width="5" height="20" rx="2" fill="url(#pmC)"/><ellipse cx="40" cy="93" rx="19" ry="4.5" fill="url(#pmG)" stroke="#6B4217" stroke-width="1"/>'
+    + '<path d="M17 42C17 70 63 70 63 42" fill="none" stroke="url(#pmC)" stroke-width="4.4" stroke-linecap="round"/><circle cx="17" cy="42" r="3.4" fill="url(#pmG)" stroke="#6B4217" stroke-width=".8"/><circle cx="63" cy="42" r="3.4" fill="url(#pmG)" stroke="#6B4217" stroke-width=".8"/>'
+    + '<rect x="20" y="8" width="40" height="52" rx="20" fill="url(#pmG)" stroke="#6B4217" stroke-width="1.4"/><g clip-path="url(#pmK)"><g stroke="#4B2A0E" stroke-opacity=".62" stroke-width="1.7">' + ribs + '</g><path d="M40 8V60" stroke="#4B2A0E" stroke-opacity=".55" stroke-width="2"/><rect x="20" y="31" width="40" height="5" fill="#F7E3AC" fill-opacity=".9"/><path d="M26 12C22 24 22 40 26 54" stroke="#fff" stroke-opacity=".6" stroke-width="3" fill="none" stroke-linecap="round"/></g>'
+    + '<rect x="35" y="58" width="10" height="16" rx="3" fill="url(#pmC)" stroke="#5E5E68" stroke-width=".8"/></g>';
+  return w;
+}
 function embedNode(id, label) {
   const wrap = el("div", { class: "pod-media episode" });
   wrap.appendChild(el("iframe", { src: "https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1&rel=0&playsinline=1", title: label, allow: "autoplay; encrypted-media; picture-in-picture; fullscreen", allowfullscreen: "", referrerpolicy: "strict-origin-when-cross-origin" }));
@@ -95,33 +109,34 @@ function shareLink(e) {
   return "https://wa.me/?text=" + encodeURIComponent(msg);
 }
 
-// ---------- Home card ----------
+// ---------- Home strip ----------
+let homeOpen = false;
 function renderHome() {
   const host = document.getElementById("homePodcast");
   if (!host || !C) return;
   if (!C.session()) { host.hidden = true; host.replaceChildren(); return; }
   const f = featured(episodes());
   host.hidden = false;
-  if (!f) {
-    host.replaceChildren(el("div", { class: "pod-head" }, el("span", { class: "pod-mic", "aria-hidden": "true" }, "🎙"), el("div", {}, el("small", { class: "pod-k", text: t("podK") }), el("h2", { class: "pod-name", text: t("podName") }))),
-      el("p", { class: "pod-tag", text: t("podTag") }), el("p", { class: "pod-sub", text: t("podSoonP") }), el("span", { class: "pod-chip soon", text: C.t("rcSoonTag") }));
-    return;
-  }
+  host.classList.toggle("is-open", !!(f && homeOpen));
+  const kicker = !f ? t("podK") : f.upcoming ? t("podNext") : t("podNew");
+  const sub = !f ? t("podSoonT") : titleOf(f.ep);
+  const row = el(f ? "button" : "div", { class: "pod-strip", type: f ? "button" : null, "aria-expanded": f ? String(homeOpen) : null },
+    el("span", { class: "pod-mic" }, micNode()),
+    el("span", { class: "pod-strip-txt" }, el("small", { class: "pod-k", text: kicker }), el("b", { class: "pod-name", text: t("podName") }), el("span", { class: "pod-strip-sub", text: sub })),
+    f ? el("span", { class: "pod-go", "aria-hidden": "true" }, homeOpen ? "–" : "▶") : null);
+  if (!f) { host.replaceChildren(row); return; }
   const e = f.ep, id = ytId(e.url), tid = ytId(e.teaser);
-  const acts = el("div", { class: "pod-acts" });
   const listen = el("button", { type: "button", class: "pod-listen", text: "▶  " + t("podListen") });
-  listen.addEventListener("click", () => { const m = embedNode(id, titleOf(e)); listen.replaceWith(m); });
+  listen.addEventListener("click", () => { listen.replaceWith(embedNode(id, titleOf(e))); });
+  const acts = el("div", { class: "pod-acts" });
   if (f.upcoming) acts.appendChild(el("a", { class: "pod-btn-gold", href: icsUrl(e), download: "entre-nosotras.ics", text: "📅 " + t("podCal") }));
   acts.appendChild(el("a", { class: "pod-btn-ghost", href: shareLink(e), target: "_blank", rel: "noopener noreferrer", text: t("podShare") }));
-  host.replaceChildren(
-    el("div", { class: "pod-head" }, el("span", { class: "pod-mic", "aria-hidden": "true" }, "🎙"), el("div", {}, el("small", { class: "pod-k", text: f.upcoming ? t("podNext") : t("podNew") }), el("h2", { class: "pod-name", text: t("podName") }))),
-    el("p", { class: "pod-tag", text: t("podTag") }),
-    tid ? playerNode(tid, titleOf(e), "teaser") : null,
-    el("p", { class: "pod-topics", text: t("podTopicsLine") }),
-    el("h3", { class: "pod-title", text: titleOf(e) }),
-    el("p", { class: "pod-when", text: topicLabel(TOPICS.includes(e.topic) ? e.topic : "wellness") + " · " + whenText(e) }),
-    C.pick(e, "desc") ? el("p", { class: "pod-sub", text: C.pick(e, "desc") }) : null,
-    listen, acts);
+  const body = el("div", { class: "pod-body" }, el("p", { class: "pod-tag", text: t("podTag") }), tid ? playerNode(tid, titleOf(e), "teaser") : null, el("p", { class: "pod-topics", text: t("podTopicsLine") }),
+    el("h3", { class: "pod-title", text: titleOf(e) }), el("p", { class: "pod-when", text: topicLabel(TOPICS.includes(e.topic) ? e.topic : "wellness") + " · " + whenText(e) }),
+    C.pick(e, "desc") ? el("p", { class: "pod-sub", text: C.pick(e, "desc") }) : null, listen, acts);
+  body.hidden = !homeOpen;
+  row.addEventListener("click", () => { homeOpen = !homeOpen; host.classList.toggle("is-open", homeOpen); body.hidden = !homeOpen; row.setAttribute("aria-expanded", String(homeOpen)); row.querySelector(".pod-go").textContent = homeOpen ? "–" : "▶"; });
+  host.replaceChildren(row, body);
 }
 
 // ---------- Wellness library ----------
@@ -142,7 +157,7 @@ function renderLibrary() {
         C.pick(e, "desc") ? el("p", { class: "pod-sub", text: C.pick(e, "desc") }) : null,
         el("div", { class: "pod-acts" }, el("a", { class: "pod-btn-ghost", href: shareLink(e), target: "_blank", rel: "noopener noreferrer", text: t("podShare") }), el("a", { class: "pod-btn-ghost", href: watchUrl(id), target: "_blank", rel: "noopener noreferrer", text: t("podOpenYt") + " ↗" }))));
   });
-  const kids = [el("div", { class: "pod-lib-head" }, el("span", { class: "pod-mic", "aria-hidden": "true" }, "🎙"), el("div", {}, el("small", { class: "pod-k", text: t("podLibK") }), el("h2", { class: "pod-name", text: t("podLibT") }), el("p", { class: "pod-tag", text: t("podTag") })))];
+  const kids = [el("div", { class: "pod-lib-head" }, el("span", { class: "pod-mic" }, micNode("small")), el("div", {}, el("small", { class: "pod-k", text: t("podLibK") }), el("h2", { class: "pod-name", text: t("podLibT") }), el("p", { class: "pod-tag", text: t("podTag") })))];
   if (!all.length) kids.push(el("p", { class: "pod-sub", text: t("podSoonP") }), el("span", { class: "pod-chip soon", text: C.t("rcSoonTag") }));
   else {
     kids.push(chips, el("p", { class: "pod-count", text: t("podCount")(list.length) }), cards.length ? el("div", { class: "pod-grid" }, ...cards) : el("p", { class: "pod-sub", text: t("podNone") }));
