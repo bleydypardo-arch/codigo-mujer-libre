@@ -160,3 +160,26 @@
 .pick-here { border: 1px solid #D9B98A; background: linear-gradient(115deg, #F6E3C2, #F8D3D2); color: #7A3641; border-radius: 999px; min-height: 40px; padding: 0 16px; font: 600 13.5px var(--font-ui, inherit); cursor: pointer; }
 .pick-hint { margin: 8px 2px 0; font-size: 12px; color: var(--cml-ink2); }
 .pick-list .small-note { padding: 12px 14px; margin: 0; }
+
+/* Rincón Matcha page rhythm: one even gap everywhere, balanced columns on desktop, no leftover blank areas */
+#matchaBody { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: stretch; margin-top: 16px; }
+#matchaBody .ma-col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+#matchaBody .ma-section, #matchaBody .rc-card, #matchaBody .ma-feature { margin: 0; }
+#matchaBody .ma-left { order: 1; } #matchaBody .ma-meetbox { order: 2; } #matchaBody .ma-right { order: 3; } #matchaBody .ma-sharesbox { order: 4; }
+#matchaBody .ma-col:empty { display: none; }
+#matchaBody .ma-left > :last-child, #matchaBody .ma-right > :last-child { flex: 1; }
+#matchaBody .ma-section .small-note:last-child { margin-bottom: 0; }
+#matchaBody .ma-propose { align-self: flex-start; margin-top: 4px; }
+@media (min-width: 1024px) {
+  #matchaBody { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  #matchaBody .ma-left { order: 1; } #matchaBody .ma-right { order: 2; } #matchaBody .ma-meetbox { order: 3; grid-column: 1 / -1; } #matchaBody .ma-sharesbox { order: 4; grid-column: 1 / -1; }
+  #matchaBody .ma-meetbox .pick-list { max-height: 330px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: start; }
+  #matchaBody .ma-meetbox .pick-list .pick-row:nth-child(odd) { border-right: 1px solid var(--cml-line, #eadfd6); }
+  #matchaBody .ma-meetbox .pick-list .small-note { grid-column: 1 / -1; }
+  #matchaBody .ma-meetbox .ma-meet-btn { max-width: 460px; margin-left: auto; margin-right: auto; }
+  #matchaBody .ma-meetbox .safe-box { text-align: center; }
+  #matchaBody .ma-sharesbox .ma-shares { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+}
+#matchaBody .ma-section .small-note { margin: 6px 0 10px; }
+#matchaBody .ma-section .ma-evs { margin-bottom: 4px; }
+#matchaBody .ma-section > .ma-propose { margin-top: 0; padding-left: 0; }

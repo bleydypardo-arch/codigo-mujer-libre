@@ -438,7 +438,6 @@ function renderMatchaPage() {
     meetDraft ? meetForm() : luxBtn(t("maMeetPropose"), () => openMeetForm("", "")),
     window.CMLCommunity ? window.CMLCommunity.safetyNode() : null,
     window.CMLPolls && window.CMLPolls.placedBlock ? window.CMLPolls.placedBlock("matcha", t("maPollK"), t("maPollTitle"), "") : null);
-  colA.push(meetBox);
   // upcoming gatherings (tagged events / weekend ideas / wellness)
   const plansBox = section(t("maPlans"), null);
   if (evs.length) {
@@ -451,13 +450,15 @@ function renderMatchaPage() {
   colB.push(plansBox);
   if (recipes.length) colB.push(section(t("maRecipesK"), t("maRecipesTitle"), el("div", { class: "ma-items recipes" }, ...recipes.map(p => itemCard(p)))));
   const posts = matchaPosts().slice(0, 8);
-  colB.push(section(t("maShares"), t("maCreateTitle"),
+  const sharesBox = (section(t("maShares"), t("maCreateTitle"),
     el("p", { class: "small-note", text: posts.length ? t("maSharesIntro") : t("maSharesEmpty") }),
     posts.length ? el("div", { class: "ma-shares" }, ...posts.map(shareCard)) : null,
     btn("🍵 " + t("maShare"), "secondary ma-share-btn", () => { if (window.CMLRedesign) window.CMLRedesign.compose(t("maPrefix")); })));
   const rc = window.CMLFeatured && window.CMLFeatured.recipeNode();   // Recipe of the Month (only when published in Admin)
   if (rc) colA.unshift(rc);
-  body.replaceChildren(el("div", { class: "ma-col" }, ...colA), el("div", { class: "ma-col" }, ...colB));
+  meetBox.classList.add("ma-meetbox"); sharesBox.classList.add("ma-sharesbox");
+  const left = el("div", { class: "ma-col ma-left" }, ...colA), right = el("div", { class: "ma-col ma-right" }, ...colB);
+  body.replaceChildren(left, right, meetBox, sharesBox);
   applySearch();
 }
 
