@@ -6,7 +6,7 @@
 (function () {
 "use strict";
 let C = null, topic = "all", shown = 8, playing = {};
-const TOPICS = ["entrepreneurship", "spirituality", "emotional", "wellness", "health", "identity", "beauty", "money", "organization", "love"];
+const TOPICS = ["entrepreneurship", "spirituality", "emotional", "wellness", "health", "identity", "beauty", "money", "organization", "love", "purpose", "life"];
 const ES = {
   podName: "Entre Nosotras", podTag: "Dos voces. Dos miradas. Conversaciones que importan.",
   podK: "PODCAST", podNew: "NUEVO EPISODIO", podNext: "PRÓXIMO ESTRENO", podSoonT: "Muy pronto: nuestro primer episodio", podSoonP: "Amor, salud, dinero, bienestar, belleza, propósito y emprendimiento. Conversaciones que importan.",
@@ -16,7 +16,7 @@ const ES = {
   podSoonP2: "Amor, salud, dinero, bienestar, belleza, espiritualidad y emprendimiento: cada semana un tema distinto, en una conversación entre dos voces.", podWeekly: "Un episodio nuevo cada semana. Aquí lo escuchas y no te pierdes ninguno.",
   podNote: "Contenido informativo y de inspiración; no sustituye el consejo de un profesional de la salud, legal o financiero. Imagen ilustrativa.",
   podAt: "a las", podCount: n => n === 1 ? "1 episodio" : n + " episodios",
-  tp_entrepreneurship: "Emprendimiento", tp_spirituality: "Espiritualidad", tp_emotional: "Emocional", tp_wellness: "Bienestar", tp_health: "Salud", tp_identity: "Identidad", tp_beauty: "Belleza", tp_money: "Dinero", tp_organization: "Organización", tp_love: "Amor y relaciones"
+  tp_entrepreneurship: "Emprendimiento", tp_spirituality: "Espiritualidad", tp_emotional: "Emocional", tp_wellness: "Bienestar", tp_health: "Salud", tp_identity: "Identidad", tp_beauty: "Belleza", tp_money: "Dinero", tp_organization: "Organización", tp_love: "Amor y relaciones", tp_purpose: "Propósito", tp_life: "Vida"
 };
 const EN = {
   podName: "Between Us", podTag: "Two voices. Two perspectives. Conversations that matter.",
@@ -27,11 +27,14 @@ const EN = {
   podSoonP2: "Love, health, money, wellness, beauty, spirituality and entrepreneurship: a different topic every week, as a conversation between two voices.", podWeekly: "A new episode every week. Listen here and never miss one.",
   podNote: "Informational and inspirational content; it does not replace advice from a health, legal or financial professional. Illustrative image.",
   podAt: "at", podCount: n => n === 1 ? "1 episode" : n + " episodes",
-  tp_entrepreneurship: "Entrepreneurship", tp_spirituality: "Spirituality", tp_emotional: "Emotional", tp_wellness: "Wellness", tp_health: "Health", tp_identity: "Identity", tp_beauty: "Beauty", tp_money: "Money", tp_organization: "Organization", tp_love: "Love & relationships"
+  tp_entrepreneurship: "Entrepreneurship", tp_spirituality: "Spirituality", tp_emotional: "Emotional", tp_wellness: "Wellness", tp_health: "Health", tp_identity: "Identity", tp_beauty: "Beauty", tp_money: "Money", tp_organization: "Organization", tp_love: "Love & relationships", tp_purpose: "Purpose", tp_life: "Life"
 };
 const el = (...a) => C.el(...a);
 const t = k => C.t(k);
 const topicLabel = k => C.t("tp_" + k);
+const tk = k => (TOPICS.includes(k) ? k : "wellness");
+// the topic tag: every topic has its own soft colour so episodes are told apart at a glance
+const chip = (k, extra) => el("span", { class: "pod-chip tp-" + tk(k) + (extra ? " " + extra : ""), text: topicLabel(tk(k)) });
 
 // Only YouTube links are accepted; we keep just the 11-character video id.
 function ytId(url) {
@@ -175,7 +178,7 @@ function renderHome() {
     el("span", { class: "ph-btn-ico", "aria-hidden": "true" }, f ? "▶" : "✦"),
     el("span", { class: "ph-btn-txt", text: f ? t("podListen") : t("podMeet") }));
   const foot = el("div", { class: "ph-foot" },
-    el("small", { class: "ph-k", text: kick }),
+    el("div", { class: "ph-kline" }, f ? chip(f.ep.topic) : null, el("small", { class: "ph-k", text: kick })),
     el("b", { class: "ph-t", text: head }), btn);
   host.replaceChildren(stage, foot);
   homeSig = sig;
@@ -196,7 +199,7 @@ let win = null;
 function winEpisodeView(sel, all, f) {
   const e = sel, id = ytId(e.url), upcoming = e.date >= today();
   const nodes = [];
-  nodes.push(el("div", { class: "pw-meta" }, el("span", { class: "pod-chip", text: topicLabel(TOPICS.includes(e.topic) ? e.topic : "wellness") }),
+  nodes.push(el("div", { class: "pw-meta" }, chip(e.topic),
     upcoming ? el("span", { class: "pod-chip gold", text: t("podNext") }) : null,
     el("small", { class: "pw-when", text: whenText(e) })));
   nodes.push(el("h3", { class: "pw-ep-t", id: "pwEpT", text: titleOf(e) }));
@@ -214,7 +217,7 @@ function winEpisodeView(sel, all, f) {
     others.forEach(o => {
       const row = el("button", { type: "button", class: "pw-row" },
         el("img", { src: thumb(ytId(o.url)), alt: "", loading: "lazy" }),
-        el("span", { class: "pw-row-t" }, el("small", { text: topicLabel(TOPICS.includes(o.topic) ? o.topic : "wellness") }), el("b", { text: titleOf(o) })));
+        el("span", { class: "pw-row-t" }, chip(o.topic, "mini"), el("b", { text: titleOf(o) })));
       row.addEventListener("click", () => { win.epId = o.id; paintWindow(); const b = win.sheet.querySelector(".pw-scroll"); if (b) b.scrollTop = 0; });
       list.appendChild(row);
     });
@@ -228,7 +231,7 @@ function winEpisodeView(sel, all, f) {
   return nodes;
 }
 function winSoonView() {
-  const chips = el("div", { class: "pw-topics" }, ...["love", "health", "money", "wellness", "beauty", "spirituality", "entrepreneurship", "emotional"].map(k => el("span", { class: "pod-chip", text: topicLabel(k) })));
+  const chips = el("div", { class: "pw-topics" }, ...["love", "health", "money", "wellness", "beauty", "spirituality", "entrepreneurship", "emotional", "purpose", "life"].map(k => chip(k)));
   return [el("div", { class: "pw-soon" }, el("span", { class: "pod-mic big" }, micNode()),
     el("h3", { class: "pw-ep-t", id: "pwEpT", text: t("podSoonT") }),
     el("p", { class: "pw-desc", text: t("podSoonP2") }), chips, el("p", { class: "pw-desc pw-weekly", text: t("podWeekly") }))];
@@ -293,12 +296,12 @@ function renderLibrary() {
   host.hidden = false;
   const used = TOPICS.filter(k => all.some(e => e.topic === k));
   const chips = el("div", { class: "chips pod-chips", role: "group", "aria-label": t("podLibT") },
-    ...["all", ...used].map(k => { const b = el("button", { type: "button", class: "chip" + (topic === k ? " selected" : ""), text: k === "all" ? t("podAll") : topicLabel(k) }); b.setAttribute("aria-pressed", String(topic === k)); b.addEventListener("click", () => { topic = k; shown = 8; renderLibrary(); }); return b; }));
+    ...["all", ...used].map(k => { const b = el("button", { type: "button", class: "chip" + (topic === k ? " selected" : ""), text: k === "all" ? t("podAll") : topicLabel(k) }); if (k !== "all") b.dataset.t = k; b.setAttribute("aria-pressed", String(topic === k)); b.addEventListener("click", () => { topic = k; shown = 8; renderLibrary(); }); return b; }));
   const list = all.filter(e => topic === "all" || e.topic === topic);
   const cards = list.slice(0, shown).map(e => {
     const id = ytId(e.url);
     return el("article", { class: "pod-ep" }, playerNode(id, titleOf(e), "episode"),
-      el("div", { class: "pod-ep-body" }, el("span", { class: "pod-chip", text: topicLabel(TOPICS.includes(e.topic) ? e.topic : "wellness") }), el("b", { class: "pod-ep-t", text: titleOf(e) }), el("small", { class: "pod-when", text: whenText(e) }),
+      el("div", { class: "pod-ep-body" }, chip(e.topic), el("b", { class: "pod-ep-t", text: titleOf(e) }), el("small", { class: "pod-when", text: whenText(e) }),
         C.pick(e, "desc") ? el("p", { class: "pod-sub", text: C.pick(e, "desc") }) : null,
         el("div", { class: "pod-acts" }, el("a", { class: "pod-btn-ghost", href: shareLink(e), target: "_blank", rel: "noopener noreferrer", text: t("podShare") }), el("a", { class: "pod-btn-ghost", href: watchUrl(id), target: "_blank", rel: "noopener noreferrer", text: t("podOpenYt") + " ↗" }))));
   });
