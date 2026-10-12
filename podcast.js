@@ -71,12 +71,13 @@ function featured(list) {
 }
 
 // a thumbnail with a play button that turns into the player after a tap
-function playerNode(id, label, cls) {
+function playerNode(id, label, cls, onPlay) {
   const wrap = el("div", { class: "pod-media " + (cls || "") });
   const b = el("button", { type: "button", class: "pod-play", "aria-label": t("podPlay") + ": " + label }, el("img", { src: thumb(id), alt: "", loading: "lazy" }), el("span", { class: "pod-btn", "aria-hidden": "true" }, "▶"));
   b.addEventListener("click", () => {
     const f = el("iframe", { src: "https://www.youtube-nocookie.com/embed/" + id + "?autoplay=1&rel=0&playsinline=1", title: label, allow: "autoplay; encrypted-media; picture-in-picture; fullscreen", allowfullscreen: "", referrerpolicy: "strict-origin-when-cross-origin", loading: "lazy" });
     wrap.replaceChildren(f);
+    if (onPlay) onPlay();
   });
   wrap.appendChild(b);
   return wrap;
@@ -199,7 +200,7 @@ function winEpisodeView(sel, all, f) {
     upcoming ? el("span", { class: "pod-chip gold", text: t("podNext") }) : null,
     el("small", { class: "pw-when", text: whenText(e) })));
   nodes.push(el("h3", { class: "pw-ep-t", id: "pwEpT", text: titleOf(e) }));
-  nodes.push(playerNode(id, titleOf(e), "pw-player"));
+  nodes.push(playerNode(id, titleOf(e), "pw-player", () => { if (win) win.sheet.classList.add("pw-playing"); }));
   if (C.pick(e, "desc")) nodes.push(el("p", { class: "pw-desc", text: C.pick(e, "desc") }));
   const acts = el("div", { class: "pod-acts pw-acts" });
   if (upcoming) acts.appendChild(el("a", { class: "pod-btn-gold", href: icsUrl(e), download: "entre-nosotras.ics", text: "📅 " + t("podCal") }));
@@ -239,6 +240,7 @@ function paintWindow() {
   if (sel) win.epId = sel.id;
   const body = el("div", { class: "pw-body" }, ...(sel ? winEpisodeView(sel, all) : winSoonView()),
     el("p", { class: "pw-note", text: t("podNote") }));
+  win.sheet.classList.remove("pw-playing");
   win.scroll.replaceChildren(body);
   win.sheet.setAttribute("aria-labelledby", "pwEpT");
 }
