@@ -357,14 +357,17 @@ function applySearch() {
   root.querySelectorAll("#maSpots .ma-item").forEach(c => { const ok = !q || (c.dataset.q || "").includes(q); c.hidden = !ok; if (ok) any = true; });
   const none = document.getElementById("maNone"); if (none) none.hidden = !(q && !any);
 }
-// Luxe call-to-action: matcha bowl icon with rising steam, gold hairline, soft shimmer
+// Luxe call-to-action: iced matcha latte icon, champagne-gold to blush gradient, soft shimmer
 function luxBtn(text, fn) {
   const NS = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(NS, "svg");
   svg.setAttribute("viewBox", "0 0 40 40"); svg.setAttribute("class", "lux-ico"); svg.setAttribute("aria-hidden", "true");
-  svg.innerHTML = '<g class="steam" fill="none" stroke-linecap="round"><path class="w1" d="M14 15c-2-2.5 2-4 0-7"/><path class="w2" d="M20 14c-2.4-3 2.4-5 0-8.5"/><path class="w3" d="M26 15c-2-2.5 2-4 0-7"/></g>'
-    + '<path d="M6 19h28c0 8-5.5 14-14 14S6 27 6 19z" fill="currentColor" opacity=".95"/><ellipse cx="20" cy="19" rx="14" ry="2.6" fill="#8fb27f"/><ellipse cx="20" cy="19" rx="9" ry="1.2" fill="#b7d3a8" opacity=".7"/>'
-    + '<path d="M13 35.5h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+  // iced matcha latte: glass, creamy milk, matcha layer, ice, straw, sparkles
+  svg.innerHTML = '<defs><linearGradient id="lxm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9cc78a"/><stop offset="1" stop-color="#5f9a55"/></linearGradient><clipPath id="lxc"><path d="M10 12h20l-2.6 22.5a2 2 0 0 1-2 1.7H14.6a2 2 0 0 1-2-1.7z"/></clipPath></defs>'
+    + '<path class="straw" d="M23 3.5l-3.2 14" stroke="#C98A93" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M23.4 3.8l-.9 3.8" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".7"/>'
+    + '<g clip-path="url(#lxc)"><rect x="8" y="12" width="24" height="26" fill="#FFF8F0"/><rect x="8" y="12" width="24" height="9" fill="url(#lxm)"/><path class="wave" d="M8 21c4 2.6 7-2.4 12 0s8-2.4 12 0V27H8z" fill="url(#lxm)" opacity=".85"/><rect x="8" y="27" width="24" height="11" fill="#FBEAD8" opacity=".9"/><rect class="ice i1" x="13" y="14" width="6.5" height="6.5" rx="1.6" fill="#fff" opacity=".55" transform="rotate(-14 16 17)"/><rect class="ice i2" x="21" y="16" width="6" height="6" rx="1.6" fill="#fff" opacity=".5" transform="rotate(12 24 19)"/></g>'
+    + '<path d="M10 12h20l-2.6 22.5a2 2 0 0 1-2 1.7H14.6a2 2 0 0 1-2-1.7z" fill="none" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/><path d="M12.6 15l1.6 17" stroke="#fff" stroke-width="1.3" stroke-linecap="round" opacity=".65"/>'
+    + '<path class="sp s1" d="M34 8l1 2.6 2.6 1-2.6 1-1 2.6-1-2.6-2.6-1 2.6-1z" fill="#fff"/><path class="sp s2" d="M5.5 22l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" fill="#fff"/>';
   const b = el("button", { type: "button", class: "ma-meet-btn lux" }, svg, el("span", { class: "lux-txt", text }), el("span", { class: "lux-shine", "aria-hidden": "true" }));
   b.addEventListener("click", fn);
   return b;
