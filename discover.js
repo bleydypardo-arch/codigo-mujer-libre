@@ -312,11 +312,13 @@ function meetForm() {
   const inp = (id, type, val, ph, extra) => el("input", Object.assign({ id, type, value: val || "", placeholder: ph || "" }, extra || {}));
   // Light suggestions from places/cities the community already uses; any other text is still accepted.
   const known = C.homeData().plans.filter(p => C.planTag(p.id).matcha || p.kind === "event");
-  const placeSet = [...new Set([...cornerItems().map(p => C.pick(p, "title")), ...(C.homeData().posts || []).map(parseMeetup).filter(Boolean).map(m => m.place)].filter(Boolean))].slice(0, 30);
   const citySet = [...new Set(["Orlando", "Miami", "Boston", "Bogotá", "Medellín", ...known.map(cityOf), ...(C.homeData().posts || []).map(parseMeetup).filter(Boolean).map(m => m.city)].filter(Boolean))].slice(0, 30);
-  const dl = (id, list) => el("datalist", { id }, ...list.map(v => el("option", { value: v })));
-  const place = inp("meetPlace", "text", d.place, t("maPlacePh"), { maxlength: 80, list: "meetPlaceList", autocomplete: "off" });
-  const city = inp("meetCity", "text", d.city, t("maCityPh"), { maxlength: 40, list: "meetCityList", autocomplete: "off" });
+  const place = inp("meetPlace", "text", d.place, t("maPlacePh"), { maxlength: 80, autocomplete: "off" });
+  // City is a simple picker (no typing, no autocomplete popup: that made the phone keyboard glitch)
+  const cityList = [...citySet]; if (d.city && !cityList.some(c => c.toLowerCase() === d.city.toLowerCase())) cityList.push(d.city);
+  const cityPick = (d.city && cityList.find(c => c.toLowerCase() === d.city.toLowerCase())) || "Orlando";
+  const city = el("select", { id: "meetCity" }, ...cityList.map(c => el("option", { value: c, text: c })));
+  city.value = cityPick;
   const date = inp("meetDate", "date", d.date || todayStr(), "", { min: todayStr() });
   const time = inp("meetTime", "time", d.time || "16:30", "");
   const note = inp("meetNote", "text", d.note, t("maNotePh"), { maxlength: 140 });
@@ -327,7 +329,7 @@ function meetForm() {
     el("label", {}, el("span", { text: t("maPlace") }), place),
     el("div", { class: "two-col" }, el("label", {}, el("span", { text: t("maCity") }), city), el("label", {}, el("span", { text: t("maDate") }), date)),
     el("div", { class: "two-col" }, el("label", {}, el("span", { text: t("maTime") }), time), el("label", {}, el("span", { text: t("maNote") }), note)),
-    fb, el("div", { class: "meet-form-acts" }, send, cancel), dl("meetPlaceList", placeSet), dl("meetCityList", citySet));
+    fb, el("div", { class: "meet-form-acts" }, send, cancel));
   form.addEventListener("submit", async e => {
     e.preventDefault();
     const P = place.value.trim(), Y = city.value.trim();
