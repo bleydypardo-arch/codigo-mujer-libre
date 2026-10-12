@@ -7,7 +7,8 @@ let C = null;
 const BUCKET = "avatars";
 
 const ES = {
-  profBtn: "Mi perfil", profTitle: "Mi perfil", profIntro: "Solo compartimos con las demás tu nombre, tu foto y el día y mes de tu cumpleaños (si lo agregas). Nunca tu edad.",
+  profCity: "Ciudad", profCityPick: "Elige tu ciudad", profDoes: "¿A qué te dedicas hoy?", profDoesPh: "Soy maestra, tengo un negocio, cuido mi hogar…", profDream: "¿Qué sueño todavía vive en ti?", profDreamPh: "Abrir mi panadería, escribir un libro, volver a estudiar…",
+  profBtn: "Mi perfil", profTitle: "Mi perfil", profIntro: "Las demás integrantes ven tu nombre, tu foto, tu ciudad, a qué te dedicas, tu sueño y tus intereses, y el día y mes de tu cumpleaños si lo agregas. Nunca tu edad, tu teléfono ni tu correo.",
   profPhoto: "Foto de perfil", profChange: "Cambiar foto", profRemove: "Quitar foto", profPhotoFail: "No se pudo subir la foto.", profPhotoBad: "Elige una imagen (JPG, PNG o WebP).",
   profFirst: "Nombre", profLast: "Apellido", profBirthday: "Cumpleaños (opcional)", profMonth: "Mes", profDay: "Día", profBirthHelp: "Solo mes y día. Nunca guardamos el año.",
   profClearBirth: "Quitar cumpleaños", profLang: "Idioma preferido", profInterests: "Mis intereses", profSave: "Guardar", profSaved: "Perfil guardado.", profFail: "No se pudo guardar.",
@@ -19,7 +20,8 @@ const ES = {
   bdCongrats: "Felicitar", bdDraft: n => "🎂 ¡Feliz cumpleaños, " + n + "! "
 };
 const EN = {
-  profBtn: "My profile", profTitle: "My profile", profIntro: "Other members only see your first name, your photo and your birthday's day and month (if you add it). Never your age.",
+  profCity: "City", profCityPick: "Choose your city", profDoes: "What do you do today?", profDoesPh: "I'm a teacher, I run a business, I care for my home…", profDream: "What dream still lives in you?", profDreamPh: "Open my bakery, write a book, go back to school…",
+  profBtn: "My profile", profTitle: "My profile", profIntro: "Other members see your first name, photo, city, what you do, your dream and interests, and your birthday's day and month if you add it. Never your age, phone or email.",
   profPhoto: "Profile photo", profChange: "Change photo", profRemove: "Remove photo", profPhotoFail: "The photo could not be uploaded.", profPhotoBad: "Please choose an image (JPG, PNG or WebP).",
   profFirst: "First name", profLast: "Last name", profBirthday: "Birthday (optional)", profMonth: "Month", profDay: "Day", profBirthHelp: "Month and day only. We never store the year.",
   profClearBirth: "Remove birthday", profLang: "Preferred language", profInterests: "My interests", profSave: "Save", profSaved: "Profile saved.", profFail: "Could not save.",
@@ -82,6 +84,13 @@ function renderProfile() {
   month.value = me.birth_month ? String(me.birth_month) : ""; day.value = me.birth_day ? String(me.birth_day) : "";
   const lang = el("select", { id: "profLang" }, el("option", { value: "es", text: "Español" }), el("option", { value: "en", text: "English" }));
   lang.value = me.pref_lang || C.lang();
+  const CITIES = ["Orlando", "Miami", "Boston", "Bogotá", "Medellín"];
+  const cityList = me.city && !CITIES.includes(me.city) ? [...CITIES, me.city] : CITIES;
+  const citySel = el("select", { id: "profCity" }, el("option", { value: "", text: t("profCityPick") }), ...cityList.map(c => el("option", { value: c, text: c })));
+  citySel.value = me.city || "";
+  const app0 = me.application && typeof me.application === "object" ? me.application : {};
+  const does = el("input", { type: "text", id: "profDoes", maxlength: 120, autocomplete: "off", placeholder: t("profDoesPh"), value: app0.occupation || "" });
+  const dream = el("textarea", { id: "profDream", rows: 3, maxlength: 300, placeholder: t("profDreamPh") }); dream.value = app0.dream || "";
   const boxes = Object.keys(C.codeLabels).map(code => {
     const input = el("input", { type: "checkbox", value: code }); input.checked = (me.interests || []).includes(code);
     return el("label", { class: "choice" }, input, " " + C.t(C.codeLabels[code]));
@@ -136,6 +145,9 @@ function renderProfile() {
     el("fieldset", {}, el("legend", { text: t("profBirthday") }), el("div", { class: "two-col md" }, month, day),
       el("small", { class: "meta", text: t("profBirthHelp") }), el("div", {}, clear)),
     el("label", {}, el("span", { text: t("profLang") }), lang),
+    el("label", {}, el("span", { text: t("profCity") }), citySel),
+    el("label", {}, el("span", { text: t("profDoes") }), does),
+    el("label", {}, el("span", { text: t("profDream") }), dream),
     el("fieldset", {}, el("legend", { text: t("profInterests") }), el("div", { class: "choice-grid" }, boxes)),
     fb, save);
   form.addEventListener("submit", async e => {
@@ -146,7 +158,7 @@ function renderProfile() {
     if (m && d > MAXDAY[m - 1]) return say(t("profBadDay"));
     const patch = {
       first_name: fn, last_name: last.value.trim(), display_name: (fn + " " + last.value.trim()).trim(),
-      birth_month: m, birth_day: d, pref_lang: lang.value,
+      birth_month: m, birth_day: d, pref_lang: lang.value, city: citySel.value || me.city || "",
       interests: boxes.map(l => l.querySelector("input")).filter(i => i.checked).map(i => i.value)
     };
     save.disabled = true;
@@ -154,6 +166,10 @@ function renderProfile() {
     save.disabled = false;
     if (r.error) return say(t("profFail"));
     Object.assign(me, patch);
+    try {
+      const st = await C.db.rpc("set_my_story", { p_occupation: does.value.trim(), p_dream: dream.value.trim() });
+      if (!st.error) me.application = Object.assign({}, me.application || {}, { occupation: does.value.trim(), dream: dream.value.trim() });
+    } catch { /* the rest of the profile is already saved */ }
     if (lang.value !== C.lang()) C.setLanguage(lang.value); else renderProfile();
     const f2 = host.querySelector(".prof-form .form-feedback");
     if (f2) { f2.textContent = t("profSaved"); f2.hidden = false; f2.classList.add("ok"); }

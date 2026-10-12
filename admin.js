@@ -230,11 +230,11 @@ const GROUPS = [
   ["tools", ["settings", "ai"]]
 ];
 // Content admins get only the content tabs. Full admins keep every tab exactly as before.
-const PEOPLE_TABS = ["community", "memories", "polls", "messages", "users", "ai"];
+const PEOPLE_TABS = ["community", "memories", "polls", "messages", "users", "ai", "reports"];
 const EXTRA = {};   // tabs added by admin-content.js: key -> { group, render, label: {es,en} }
 const allowedTabs = () => [...TABS, ...Object.keys(EXTRA)].filter(k => C.isAdmin() || !PEOPLE_TABS.includes(k));
 function groupsFor() {
-  const base = GROUPS.map(([g, keys]) => [g, g === "content" ? [...keys, ...Object.keys(EXTRA).filter(k => EXTRA[k].group === "content")] : keys]);
+  const base = GROUPS.map(([g, keys]) => [g, (g === "content" || g === "people") ? [...keys, ...Object.keys(EXTRA).filter(k => EXTRA[k].group === g)] : keys]);
   return base.map(([g, keys]) => [g, keys.filter(k => allowedTabs().includes(k))]).filter(([, keys]) => keys.length);
 }
 const CODES = ["Social", "Wellness", "Faith", "Adventure", "Family", "Connection", "Support", "Recharge"];
