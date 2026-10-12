@@ -299,20 +299,22 @@ function renderDiscover() {
   host.replaceChildren(el("small", { class: "rose", text: t("discLabel") }), el("h2", { text: t("discTitle") }), el("div", { class: "disc-list" }, ...rows));
 }
 
-// Soft rain of hearts behind the page when the Let's Talk envelope opens (decorative, skipped for reduced motion)
+// Soft rain of hearts only inside the Let's Talk card when the envelope opens (decorative, skipped for reduced motion)
 function fallingHearts() {
   if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const old = document.querySelector(".hearts-rain"); if (old) old.remove();
+  const back = document.querySelector(".fc-talk .fc-back"); if (!back) return;
+  const old = back.querySelector(".hearts-rain"); if (old) old.remove();
   const box = document.createElement("div"); box.className = "hearts-rain"; box.setAttribute("aria-hidden", "true");
-  const cols = ["#B85F68", "#E58F9F", "#F2B5C0", "#DBC19F", "#D98694"], glyph = ["♥", "♥", "♥", "❤"];
-  for (let i = 0; i < 34; i++) {
-    const h = document.createElement("span"); h.className = "heart-fall"; h.textContent = glyph[i % glyph.length];
-    const dur = 4.2 + Math.random() * 3.2;
-    h.style.cssText = "left:" + (Math.random() * 100).toFixed(1) + "%;font-size:" + (12 + Math.random() * 20).toFixed(0) + "px;color:" + cols[i % cols.length] + ";animation-duration:" + dur.toFixed(2) + "s;animation-delay:" + (Math.random() * 2.2).toFixed(2) + "s;--dx:" + ((Math.random() - .5) * 90).toFixed(0) + "px;--rot:" + ((Math.random() - .5) * 60).toFixed(0) + "deg";
+  const H = (back.offsetHeight || 260) + 40;
+  const cols = ["#B85F68", "#E58F9F", "#F2B5C0", "#DBC19F", "#D98694"];
+  for (let i = 0; i < 18; i++) {
+    const h = document.createElement("span"); h.className = "heart-fall"; h.textContent = "♥";
+    const dur = 3.2 + Math.random() * 2.4;
+    h.style.cssText = "left:" + (4 + Math.random() * 92).toFixed(1) + "%;font-size:" + (11 + Math.random() * 14).toFixed(0) + "px;color:" + cols[i % cols.length] + ";animation-duration:" + dur.toFixed(2) + "s;animation-delay:" + (Math.random() * 1.8).toFixed(2) + "s;--dy:" + H + "px;--dx:" + ((Math.random() - .5) * 50).toFixed(0) + "px;--rot:" + ((Math.random() - .5) * 50).toFixed(0) + "deg";
     box.appendChild(h);
   }
-  document.body.appendChild(box);
-  setTimeout(() => box.remove(), 8200);
+  back.insertBefore(box, back.firstChild);
+  setTimeout(() => box.remove(), 6200);
 }
 
 // ---------- Hablemos: a weekly conversation prompt → Community composer ----------

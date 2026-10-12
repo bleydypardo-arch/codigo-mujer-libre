@@ -132,7 +132,9 @@
 @keyframes luxShine { 0%, 60% { left: -40%; } 100% { left: 130%; } }
 @media (prefers-reduced-motion: reduce) { .lux-ico .wave, .lux-ico .ice, .lux-ico .sp { animation: none; } .lux-ico .sp { opacity: .9; } .lux-shine { display: none; } }
 
-/* Let's Talk: hearts drifting down when the envelope opens */
-.hearts-rain { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 40; }
-.heart-fall { position: absolute; top: -8vh; opacity: 0; text-shadow: 0 2px 6px rgba(184,95,104,.25); animation-name: heartFall; animation-timing-function: ease-in; animation-fill-mode: forwards; }
-@keyframes heartFall { 0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0); } 12% { opacity: .9; } 85% { opacity: .75; } 100% { opacity: 0; transform: translate3d(var(--dx, 0), 112vh, 0) rotate(var(--rot, 0)); } }
+/* Let's Talk: hearts drifting down inside the card only */
+.fc-talk .fc-back { overflow: hidden; }
+.fc-talk .fc-back > *:not(.hearts-rain) { position: relative; z-index: 1; }
+.hearts-rain { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; border-radius: inherit; }
+.heart-fall { position: absolute; top: -22px; opacity: 0; text-shadow: 0 1px 4px rgba(184,95,104,.2); animation-name: heartFall; animation-timing-function: ease-in; animation-fill-mode: forwards; }
+@keyframes heartFall { 0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0); } 15% { opacity: .85; } 85% { opacity: .7; } 100% { opacity: 0; transform: translate3d(var(--dx, 0), var(--dy, 280px), 0) rotate(var(--rot, 0)); } }
