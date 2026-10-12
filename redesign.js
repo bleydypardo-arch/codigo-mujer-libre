@@ -233,7 +233,7 @@ function wireTripIdea() {
 }
 
 // ---------- editorial images (admin-editable through the existing settings table) ----------
-const DEFAULT_TRAVEL = "travel-experiences.jpg";
+const DEFAULT_TRAVEL = "paradise-sunset.svg";
 function settingUrl(key) {
   const v = C && C.setting ? C.setting(key) : null;
   return v && v.url ? C.safeUrl(v.url) : "";

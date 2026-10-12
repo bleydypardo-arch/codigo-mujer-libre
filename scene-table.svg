@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="a" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9ED5EA"/><stop offset=".5" stop-color="#FFDDBA"/><stop offset="1" stop-color="#FFB58F"/></linearGradient><radialGradient id="g"><stop offset="0" stop-color="#FFF3CF"/><stop offset="1" stop-color="#FFF3CF" stop-opacity="0"/></radialGradient><style>.tw{animation:t 2.6s ease-in-out infinite}.tw:nth-child(2n){animation-delay:.9s}.tw:nth-child(3n){animation-delay:1.6s}@keyframes t{0%,100%{opacity:.45}50%{opacity:1}}@media (prefers-reduced-motion:reduce){.tw{animation:none}}</style></defs>
+<rect width="400" height="300" fill="url(#a)"/><circle cx="300" cy="150" r="90" fill="url(#g)"/><circle cx="300" cy="150" r="26" fill="#FFF1C4"/>
+<path d="M0 170q70-26 140-8t130-4 130 8v134H0z" fill="#CFA466"/><path d="M0 205q90-30 200-6t200-8v109H0z" fill="#9FA862"/>
+<path d="M40 14Q200 62 360 10" fill="none" stroke="#7A5A3A" stroke-width="1.5"/>
+<g fill="#FFE9A8"><circle class="tw" cx="70" cy="30" r="4.5"/><circle class="tw" cx="110" cy="43" r="4.5"/><circle class="tw" cx="150" cy="51" r="4.5"/><circle class="tw" cx="190" cy="55" r="4.5"/><circle class="tw" cx="230" cy="53" r="4.5"/><circle class="tw" cx="270" cy="47" r="4.5"/><circle class="tw" cx="310" cy="36" r="4.5"/></g>
+<path d="M30 258h340l-16 28H46z" fill="#E9D5B5"/><path d="M60 258V240h280v18z" fill="#F7EEDC"/>
+<g fill="#7A4A3A"><rect x="70" y="228" width="26" height="14" rx="2"/><rect x="304" y="228" width="26" height="14" rx="2"/></g>
+<g fill="#fff" opacity=".9"><path d="M120 206h10l-2 30h-6z"/><path d="M160 206h10l-2 30h-6z"/><path d="M230 206h10l-2 30h-6z"/><path d="M270 206h10l-2 30h-6z"/></g>
+<g><rect x="196" y="214" width="8" height="22" rx="2" fill="#FBF3E2"/><path class="tw" d="M200 204q-4 6 0 10q4-4 0-10z" fill="#FFB84A"/></g>
+<g fill="#fff"><circle cx="150" cy="228" r="7" opacity=".9"/><circle cx="170" cy="230" r="6" fill="#F6B8A4"/><circle cx="250" cy="228" r="7" opacity=".9"/><circle cx="231" cy="231" r="6" fill="#F6D58A"/></g>
+<g fill="#2F5A3A"><ellipse cx="34" cy="206" rx="6" ry="28"/><ellipse cx="368" cy="204" rx="6" ry="30"/></g></svg>

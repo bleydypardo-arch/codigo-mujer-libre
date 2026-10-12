@@ -1290,7 +1290,7 @@ function renderEvents() {
     if (!session) return list.replaceChildren();
     const idea = el("button", { type: "button", class: "secondary", text: t("evEmptyCta") });
     idea.addEventListener("click", () => openModal("idea"));
-    return list.replaceChildren(emptyState("📅", t("evEmptyTitle"), t("evEmptyText"), idea, "tuscany.jpg|72% 86%"));
+    return list.replaceChildren(emptyState("📅", t("evEmptyTitle"), t("evEmptyText"), idea, "scene-table.svg|50% 60%"));
   }
   const cat = catSel;
   const chipHost = byId("evCodeChip");
@@ -1328,7 +1328,7 @@ function renderEvents() {
     const idea = el("button", { type: "button", class: "link-btn", text: t("catSuggest") });
     idea.addEventListener("click", () => openModal("idea"));
     const empty = cat !== "all" && monthSel === "all" && !codeSel
-      ? emptyState("✨", t("catEmpty_" + cat), t("catEmptyText"), el("div", { class: "empty-acts" }, idea, all), "tuscany.jpg|72% 86%")
+      ? emptyState("✨", t("catEmpty_" + cat), t("catEmptyText"), el("div", { class: "empty-acts" }, idea, all), "scene-table.svg|50% 60%")
       : emptyState("🔎", t("evNoMatch"), "", all);
     list.replaceChildren(empty);
   } else list.replaceChildren(...shown.map(p => eventCard(p)));
@@ -1353,7 +1353,7 @@ function renderTrips() {
   if (!shown.length) {
     const sug = el("button", { type: "button", class: "secondary", text: t("tripSuggestCta") });
     sug.addEventListener("click", () => { const f = byId("tripIdea"); if (f) { f.scrollIntoView({ behavior: "smooth", block: "center" }); f.focus({ preventScroll: true }); } });
-    list.replaceChildren(emptyState("✈️", t(tripType === "all" ? "tripsSoon" : "tripsSoonType"), t("tripsSoonText"), sug, "tuscany.jpg|50% 58%"));
+    list.replaceChildren(emptyState("✈️", t(tripType === "all" ? "tripsSoon" : "tripsSoonType"), t("tripsSoonText"), sug));
   } else list.replaceChildren(...shown.map(p => {
     // compact experience card; the full experience page (details, polls, trip chat) opens in the detail sheet
     if (window.CMLExp) return window.CMLExp.campaignCard(p);

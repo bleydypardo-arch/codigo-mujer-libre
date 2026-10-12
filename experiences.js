@@ -171,7 +171,7 @@ function soonSlot(n, idx) {
   const cfg = (Array.isArray(list) && list[idx]) || {};
   const lang = C.lang(), other = lang === "es" ? "en" : "es";
   const pk = k => String(cfg[k + "_" + lang] || cfg[k + "_" + other] || "").trim();
-  const img = C.safeUrl(cfg.image) || ["tuscany.jpg", "paradise-sunset.svg"][idx % 2];
+  const img = C.safeUrl(cfg.image);
   const kids = [];
   if (img) {
     const im = el("img", { src: img, alt: "", loading: "lazy" });
