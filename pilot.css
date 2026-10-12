@@ -486,3 +486,22 @@ html.pw-lock { overflow: hidden; }
 .hx-card.is-art .hx-sig-t { background-image: linear-gradient(100deg, #FFE2A8 0%, #FFF6DC 20%, #FFFFFF 30%, #FFE9BE 45%, #FFD08A 62%, #FFF6DC 78%, #FFE2A8 100%); background-size: 250% 100%; }
 .hx-card.is-art .hx-bg { background-size: auto 118%; background-position: 50% 78%; }
 .hx-card.is-art .hx-invite { background: linear-gradient(160deg, rgba(8, 100, 118, .3), rgba(6, 84, 102, .2)); -webkit-backdrop-filter: blur(1.5px); backdrop-filter: blur(1.5px); }
+
+/* Travel page with the Código Experiences photo: whole photo on top (nobody cropped), words on a light card below */
+.ph-travel.is-photo.tv-stage { display: block; min-height: 0; padding: 0; background: linear-gradient(160deg, #EAF8F6, #FFF3E4); border: 1px solid #CDEBE8; box-shadow: 0 18px 40px rgba(20, 130, 145, .16); overflow: hidden; }
+.ph-travel.is-photo.tv-stage::after, .ph-travel.is-photo .ph-art { display: none; }
+.ph-travel.is-photo .ph-media { position: relative; inset: auto; display: block; height: 0; padding-top: 66.67%; animation: none; background: #F5C79C; }
+.ph-travel.is-photo .tv-slide { inset: 0; background-size: cover; background-position: 50% 50%; animation: pvKen 26s ease-in-out infinite alternate; }
+@keyframes pvKen { from { transform: scale(1); } to { transform: scale(1.06) translate(-1%, -.6%); } }
+.ph-travel.is-photo .ph-text { padding: 20px 20px 24px; align-items: center; text-align: center; }
+.ph-travel.is-photo .ph-kicker { align-self: center; }
+.ph-travel.is-photo .ph-ic { background: #FFE6B8; color: #0B5A66; box-shadow: 0 0 0 5px rgba(255, 190, 120, .25); }
+.ph-travel.is-photo .ph-kicker [data-i18n="travelKicker"] { background-image: linear-gradient(100deg, #A8702E 0%, #D9A25A 25%, #F2C987 40%, #B98035 60%, #D9A25A 80%, #A8702E 100%); filter: none; }
+.ph-travel.is-photo h1 { background-image: linear-gradient(100deg, #0B4F5C 0%, #12808E 40%, #0B4F5C 70%, #0E6D7A 100%); filter: none; font-size: 34px !important; }
+.ph-travel.is-photo .tc-lead { color: #0B4F5C; text-shadow: none; }
+.ph-travel.is-photo .ph-intro { color: #3C7079 !important; text-shadow: none; }
+.ph-travel.is-photo .tc-promise { color: #B8742F; text-shadow: none; justify-content: center; }
+.ph-travel.is-photo .tc-promise i { color: #D9A25A; }
+.ph-travel.is-photo .tc-cta { box-shadow: 0 8px 20px rgba(184, 116, 47, .28); }
+@media (min-width: 720px) { .ph-travel.is-photo .ph-text { padding: 28px 40px 32px; } .ph-travel.is-photo h1 { font-size: 46px !important; } }
+@media (prefers-reduced-motion: reduce) { .ph-travel.is-photo .tv-slide { animation: none; } }
