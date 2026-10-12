@@ -1418,6 +1418,7 @@ async function loadResponses() {
 // Community
 // ==============================
 let members = [];
+document.addEventListener("cml:connections", () => { try { renderMembers(); } catch { /* ignore */ } });
 function renderMembers() {
   const container = byId("membersList");
   if (!container) return;
@@ -1434,12 +1435,16 @@ function renderMembers() {
     head.appendChild(toggle);
   }
   const strip = el("div", { class: "members-strip" });
+  const CN = window.CMLConnect;
   shown.forEach(m => {
+    if (CN && m.id) return strip.appendChild(CN.card(m));
     const interests = (m.interests || []).map(code => codeLabels[code] ? t(codeLabels[code]) : code).join(" · ");
     strip.appendChild(el("div", { class: "member" },
       el("span", { "aria-hidden": "true", text: (m.first_name || "?").charAt(0).toUpperCase() }),
       el("div", {}, el("b", { text: m.first_name }), interests ? el("small", { text: interests }) : null)));
   });
+  const inc = CN && CN.incoming ? CN.incoming() : null;
+  if (inc) container.appendChild(inc);
   container.append(head, strip);
 }
 function appendParagraph(container, text, className = "") {
@@ -1486,6 +1491,7 @@ async function loadMembers() {
   const { data, error } = await db.rpc("community_members");
   if (error) throw error;
   members = data || [];
+  if (window.CMLConnect) { try { await window.CMLConnect.load(members); } catch { /* cards still work */ } }
 }
 async function loadPosts() {
   const { data, error } = await db.from("community_posts")
