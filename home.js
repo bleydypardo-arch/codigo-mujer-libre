@@ -286,14 +286,14 @@ function renderDiscover() {
     rows.push(disc(thumb(homeImg || C.safeUrl(ev.image_url), ev.code, !!homeImg || !!evTag.full), ev.code && !tried.has(ev.code) ? t("discNewCode") : t("discForYou"),
       C.pick(ev, "title") || "—", ev.event_date ? shortDate(ev.event_date) + (ev.location ? " · " + ev.location : "") : (ev.location || ""),
       () => C.openDetail(ev.id)));
-  } else rows.push(disc(thumb("", "Social"), t("discForYou"), t("discEvents"), t("discEventsSub"), go2("events")));
+  } else rows.push(disc(thumb("tuscany.jpg", "Social"), t("discForYou"), t("discEvents"), t("discEventsSub"), go2("events")));
   const trip = plans.find(p => p.kind === "trip");
   const travelImg = window.CMLRedesign ? window.CMLRedesign.travelImage() : "";
   rows.push(disc(thumb(travelImg, "Adventure"), t("discTravelK"),
     trip ? (C.pick(trip, "title") || C.t("travelTitle")) : C.t("travelTitle"),
     trip ? [trip.location, trip.date_text].filter(Boolean).join(" · ") : C.t("travelTeaser"), go2("travel")));
   const well = plans.find(p => p.kind === "wellness");
-  rows.push(disc(thumb(well ? C.safeUrl(well.image_url) : "", "Wellness"), t("discWellK"),
+  rows.push(disc(thumb(well ? (C.safeUrl(well.image_url) || "hero-home.jpg") : "hero-home.jpg", "Wellness"), t("discWellK"),
     well ? (C.pick(well, "title") || t("discWellTitle")) : t("discWellTitle"), well ? (C.pick(well, "desc") || t("discWellSub")) : t("discWellSub"), go2("wellness")));
   host.hidden = false;
   host.replaceChildren(el("small", { class: "rose", text: t("discLabel") }), el("h2", { text: t("discTitle") }), el("div", { class: "disc-list" }, ...rows));

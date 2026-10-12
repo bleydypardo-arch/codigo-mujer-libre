@@ -855,9 +855,12 @@ function renderFeatured() {
   // Wellness "Lecturas": an animated card that opens the reads page (reads.js). Posts live there, whole and uncropped.
   if (window.CMLReads) return window.CMLReads.renderCard();
 }
-function emptyState(icon, title, text, action) {
-  return el("div", { class: "empty-state" },
-    el("span", { class: "empty-ic", "aria-hidden": "true", text: icon }),
+function emptyState(icon, title, text, action, photo) {
+  // photo = "file.jpg|x% y%": an empty space still shows a real picture, never a bare icon
+  const ph = photo ? String(photo).split("|") : null;
+  return el("div", { class: "empty-state" + (ph ? " has-photo" : "") },
+    ph ? el("span", { class: "empty-photo", "aria-hidden": "true", style: "background-image:url('" + ph[0] + "');background-position:" + (ph[1] || "50% 50%") }) : null,
+    ph ? null : el("span", { class: "empty-ic", "aria-hidden": "true", text: icon }),
     el("b", { text: title }),
     text ? el("p", { text }) : null,
     action || null);
@@ -1287,7 +1290,7 @@ function renderEvents() {
     if (!session) return list.replaceChildren();
     const idea = el("button", { type: "button", class: "secondary", text: t("evEmptyCta") });
     idea.addEventListener("click", () => openModal("idea"));
-    return list.replaceChildren(emptyState("📅", t("evEmptyTitle"), t("evEmptyText"), idea));
+    return list.replaceChildren(emptyState("📅", t("evEmptyTitle"), t("evEmptyText"), idea, "tuscany.jpg|72% 86%"));
   }
   const cat = catSel;
   const chipHost = byId("evCodeChip");
@@ -1325,7 +1328,7 @@ function renderEvents() {
     const idea = el("button", { type: "button", class: "link-btn", text: t("catSuggest") });
     idea.addEventListener("click", () => openModal("idea"));
     const empty = cat !== "all" && monthSel === "all" && !codeSel
-      ? emptyState("✨", t("catEmpty_" + cat), t("catEmptyText"), el("div", { class: "empty-acts" }, idea, all))
+      ? emptyState("✨", t("catEmpty_" + cat), t("catEmptyText"), el("div", { class: "empty-acts" }, idea, all), "tuscany.jpg|72% 86%")
       : emptyState("🔎", t("evNoMatch"), "", all);
     list.replaceChildren(empty);
   } else list.replaceChildren(...shown.map(p => eventCard(p)));
@@ -1350,7 +1353,7 @@ function renderTrips() {
   if (!shown.length) {
     const sug = el("button", { type: "button", class: "secondary", text: t("tripSuggestCta") });
     sug.addEventListener("click", () => { const f = byId("tripIdea"); if (f) { f.scrollIntoView({ behavior: "smooth", block: "center" }); f.focus({ preventScroll: true }); } });
-    list.replaceChildren(emptyState("✈️", t(tripType === "all" ? "tripsSoon" : "tripsSoonType"), t("tripsSoonText"), sug));
+    list.replaceChildren(emptyState("✈️", t(tripType === "all" ? "tripsSoon" : "tripsSoonType"), t("tripsSoonText"), sug, "tuscany.jpg|50% 58%"));
   } else list.replaceChildren(...shown.map(p => {
     // compact experience card; the full experience page (details, polls, trip chat) opens in the detail sheet
     if (window.CMLExp) return window.CMLExp.campaignCard(p);

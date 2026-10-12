@@ -578,3 +578,24 @@ html.pw-lock { overflow: hidden; }
 .hx-card.is-photo .hx-all { color: #0E7F8C !important; text-shadow: none !important; font-weight: 600; border-bottom-color: rgba(14, 127, 140, .45) !important; }
 .hx-card.is-photo .camp-status { text-shadow: none; }
 .hx-card.is-photo .hx-acts { margin-left: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+/* ---------- empty spaces always carry a picture ---------- */
+.empty-state.has-photo { position: relative; padding: 0 18px 22px; overflow: hidden; border-style: solid; border-color: #E7D9D5; background: #fff; }
+.empty-photo { display: block; align-self: stretch; height: 132px; margin: 0 -18px 14px; background-size: cover; background-repeat: no-repeat; }
+.empty-state.has-photo > b { margin-top: 2px; }
+#travel .empty-state.has-photo, .sheet-content.is-trip .empty-state.has-photo { border-color: #CDEBE8; }
+#wellness .empty-state.has-photo { border-color: #D6E6D2; }
+
+/* ---------- Viajes: one colour language (aqua · dorado) ---------- */
+.sheet-content.is-trip { --cml-rose: #1496A3; --cml-rose-d: #0E7F8C; --wine: #1496A3; --wine-d: #0E7F8C; --cml-blush: #DDF4F1; --cml-dusty: #9ADAD6; --cml-line: #D5ECEA; --cml-gold-ink: #B8742F; }
+.sheet-content.is-trip .sheet-hero.ev-ph { background: linear-gradient(135deg, #7FD6CF 0%, #25AFB8 55%, #0E8FA0 100%); }
+.sheet-content.is-trip .sheet-k { color: #B8742F; }
+.sheet-content.is-trip .sheet-title { color: #0B4F5C; }
+.sheet-content.is-trip .rich-sec { border-top-color: #D5ECEA; }
+.sheet-content.is-trip .resp-btn, .sheet-content.is-trip .resp-row button { background: #DDF4F1; color: #0B5A66; border-color: #9ADAD6; }
+.sheet-content.is-trip .resp-btn.on, .sheet-content.is-trip .resp-row button.on, .sheet-content.is-trip .resp-btn[aria-pressed="true"] { background: linear-gradient(135deg, #17A3AE, #0E7F8C); color: #fff; border-color: transparent; }
+.sheet-content.is-trip a, .sheet-content.is-trip .link-btn { color: #0E7F8C; }
+.sheet-content.is-trip .primary { background: linear-gradient(135deg, #17A3AE, #0E7F8C); }
+#homeDiscover .disc-row:has(.disc-th) small { letter-spacing: .1em; }
+.sheet-content.is-trip .rich-ic, .sheet-content.is-trip .rich-sec .ci-wrap, .sheet-content.is-trip .rich-h .ic { background: #DDF4F1; color: #0E7F8C; }
+.sheet:has(.sheet-content.is-trip) .sheet-close { border-color: rgba(255, 255, 255, .85); box-shadow: 0 6px 16px rgba(4, 70, 88, .25); }
