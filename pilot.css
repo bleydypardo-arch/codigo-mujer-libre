@@ -559,3 +559,16 @@ html.pw-lock { overflow: hidden; }
   -webkit-mask-position: 0 31.5%, 0 36%, 100% 36%; mask-position: 0 31.5%, 0 36%, 100% 36%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
 @keyframes phSwell { from { transform: translateY(-3px) scaleY(.995); } to { transform: translateY(5px) scaleY(1.02); } }
 .hx-card.is-photo .hx-bg::before, .hx-card.is-photo .hx-bg::after { -webkit-mask-size: 100% 5.5%, 20% 34%, 22% 31%; mask-size: 100% 5.5%, 20% 34%, 22% 31%; }
+
+/* sound-of-the-sea button (on the photo, top right) */
+.hx-card.is-photo, .ph-travel.is-photo { position: relative; }
+.sea-btn { position: absolute; top: 12px; right: 12px; z-index: 5; display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 14px 0 11px; border: 1px solid rgba(255, 255, 255, .6); border-radius: 999px; font: 600 12.5px/1 var(--font-ui); color: #0B4F5C; cursor: pointer;
+  background: rgba(255, 248, 235, .82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 6px 16px rgba(4, 70, 88, .22); transition: background .25s, transform .25s; }
+.sea-btn:hover { background: rgba(255, 252, 244, .95); transform: translateY(-1px); }
+.sea-btn:focus-visible { outline: 3px solid #12909C; outline-offset: 2px; }
+.sea-btn .ci { width: 19px; height: 19px; stroke-width: 1.7; fill: none; }
+.sea-btn .sw1, .sea-btn .sw2 { opacity: .25; }
+.sea-btn.on { background: linear-gradient(135deg, #17A3AE, #0E7F8C); color: #fff; border-color: rgba(255, 255, 255, .5); }
+.sea-btn.on .sw1 { animation: seaPulse 1.6s ease-in-out infinite; } .sea-btn.on .sw2 { animation: seaPulse 1.6s ease-in-out .5s infinite; }
+@keyframes seaPulse { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .sea-btn.on .sw1, .sea-btn.on .sw2 { animation: none; opacity: 1; } }

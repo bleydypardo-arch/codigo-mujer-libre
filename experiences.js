@@ -18,6 +18,7 @@ const ES = {
   wellPick: "Código Pick", wellBook: "Reservar", wellSee: "Ver experiencia", wellUntil: d => "Hasta el " + d,
   addWellness: "+ Agregar experiencia de bienestar", addExperience: "+ Crear experiencia",
   dreamK: "IDEAS PARA SOÑAR", dreamT: "Lugares que soñamos vivir contigo", dreamP: "Todavía no son viajes anunciados: son los destinos que imaginamos. Toca el que te enamora y cuéntanos.",
+  seaOn: "Escuchar el mar", seaOff: "Silenciar el mar",
   dreamSoon: "Muy pronto", dreamLove: "Me enamora",
   dmx: "Riviera Maya, México", dmxP: "Cenotes, selva y mar turquesa. Un atardecer frente al Caribe.",
   dtu: "Toscana, Italia", dtuP: "Colinas doradas, viñedos y una mesa larga al caer el sol.",
@@ -37,6 +38,7 @@ const EN = {
   wellPick: "Código Pick", wellBook: "Book", wellSee: "See experience", wellUntil: d => "Until " + d,
   addWellness: "+ Add wellness experience", addExperience: "+ Create experience",
   dreamK: "DREAMING OF…", dreamT: "Places we dream of living with you", dreamP: "These aren't announced trips yet: they're the destinations we imagine. Tap the one you love and tell us.",
+  seaOn: "Listen to the sea", seaOff: "Mute the sea",
   dreamSoon: "Coming soon", dreamLove: "I love this",
   dmx: "Riviera Maya, Mexico", dmxP: "Cenotes, jungle and turquoise sea. A sunset over the Caribbean.",
   dtu: "Tuscany, Italy", dtuP: "Golden hills, vineyards and a long table as the sun goes down.",
@@ -149,6 +151,8 @@ function paintStage() {
   head.classList.add("has-photo", "tv-stage");
   head.classList.toggle("is-art", imgs[0] === DEFAULT_TRAVEL || imgs[0] === HERO_PHOTO);
   head.classList.toggle("is-photo", imgs[0] === HERO_PHOTO);
+  const old = head.querySelector(".sea-btn"); if (old) old.remove();
+  if (imgs[0] === HERO_PHOTO) head.appendChild(seaBtn());
   if (imgs.length > 1 && !reduced()) {
     let i = 0;
     slideTimer = setInterval(() => {
@@ -244,6 +248,7 @@ function paintDreams() {
 function paintTravelPage() {
   if (!C) return;
   paintStage();
+  seaSync();
   paintStory();
   paintDreams();
   const k = document.querySelector("#travel .exp-types > small"), n = document.querySelector("#travel .exp-types > .small-note");
@@ -257,6 +262,54 @@ function paintTravelPage() {
     manage.parentNode.insertBefore(add, manage);
   }
   if (add) { add.textContent = t("addExperience"); add.hidden = !(C.session() && C.isAdmin() && window.CMLAdmin && window.CMLAdmin.openNew); }
+}
+
+
+// ---------- sound of the sea (starts only when she taps: browsers block sound that starts by itself) ----------
+const SEA = { audio: null, on: false, fade: null };
+const SEA_ICON = '<svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 10v4h3l5 4V6L7 10z"/><path class="sw1" d="M15.5 9.5a3.5 3.5 0 0 1 0 5"/><path class="sw2" d="M18 7a7 7 0 0 1 0 10"/></svg>';
+function seaFade(to, done) {
+  const a = SEA.audio; if (!a) return;
+  clearInterval(SEA.fade);
+  SEA.fade = setInterval(() => {
+    const v = a.volume + (to > a.volume ? 0.05 : -0.05);
+    a.volume = Math.max(0, Math.min(1, v));
+    if (Math.abs(a.volume - to) < 0.051) { a.volume = to; clearInterval(SEA.fade); if (done) done(); }
+  }, 60);
+}
+function seaSet(on) {
+  if (on) {
+    if (!SEA.audio) { SEA.audio = new Audio("sea-waves.mp3"); SEA.audio.loop = true; SEA.audio.preload = "auto"; }
+    SEA.audio.volume = 0;
+    const pr = SEA.audio.play();
+    if (pr && pr.catch) pr.catch(() => { SEA.on = false; seaSync(); });
+    seaFade(0.6);
+  } else if (SEA.audio) seaFade(0, () => SEA.audio.pause());
+  SEA.on = on; seaSync();
+}
+function seaSync() {
+  document.querySelectorAll(".sea-btn").forEach(b => {
+    b.classList.toggle("on", SEA.on);
+    b.setAttribute("aria-pressed", SEA.on ? "true" : "false");
+    const l = t(SEA.on ? "seaOff" : "seaOn");
+    b.setAttribute("aria-label", l); b.title = l;
+    const tx = b.querySelector(".sea-tx"); if (tx) tx.textContent = l;
+  });
+}
+function seaBtn() {
+  const b = el("button", { type: "button", class: "sea-btn" });
+  b.innerHTML = SEA_ICON + '<span class="sea-tx"></span>';
+  b.addEventListener("click", e => { e.stopPropagation(); seaSet(!SEA.on); });
+  return b;
+}
+function seaGuard() {
+  // silence when the picture is not on screen or the app goes to the background
+  document.addEventListener("visibilitychange", () => { if (document.hidden && SEA.on) seaSet(false); });
+  setInterval(() => {
+    if (!SEA.on) return;
+    const vis = Array.from(document.querySelectorAll(".sea-btn")).some(b => { const r = b.getBoundingClientRect(); return r.width > 0 && r.bottom > 0 && r.top < window.innerHeight; });
+    if (!vis) seaSet(false);
+  }, 1500);
 }
 
 // ---------- Home: the next Código Experience ----------
@@ -274,7 +327,7 @@ function paintHome() {
     const b = el("button", { type: "button", class: "hx-cta", text: t("homeExpAll") + " →" });
     b.addEventListener("click", go);
     host.className = "hx-card is-soon" + homeCls(homeImg());
-    host.replaceChildren(el("span", { class: "hx-bg", "aria-hidden": "true" }), el("div", { class: "hx-txt hx-invite" }, brand,
+    host.replaceChildren(el("span", { class: "hx-bg", "aria-hidden": "true" }), homeImg() === HERO_PHOTO ? seaBtn() : null, el("div", { class: "hx-txt hx-invite" }, brand,
       el("h2", { class: "hx-title", text: t("homeExpSoon") }), el("span", { class: "hx-rule", "aria-hidden": "true" }), el("p", { class: "hx-p", text: t("homeExpSoonP") }), b));
     const bg = host.querySelector(".hx-bg"); bg.style.backgroundImage = 'url("' + homeImg().replace(/"/g, "%22") + '")'; bg.style.setProperty("--img", bg.style.backgroundImage);
     return;
@@ -288,7 +341,7 @@ function paintHome() {
   const bg = el("span", { class: "hx-bg", "aria-hidden": "true" });
   bg.style.backgroundImage = 'url("' + (C.safeUrl(p.image_url) || homeImg()).replace(/"/g, "%22") + '")';
   bg.style.setProperty("--img", bg.style.backgroundImage);
-  host.replaceChildren(bg, el("div", { class: "hx-txt" }, brand,
+  host.replaceChildren(bg, (!C.safeUrl(p.image_url) && homeImg() === HERO_PHOTO) ? seaBtn() : null, el("div", { class: "hx-txt" }, brand,
     el("small", { class: "hx-meta", text: [t(TYPE_KEY[C.tripTypeOf(p)]), dateRange(p), place(p)].filter(Boolean).join(" · ") }),
     el("h2", { class: "hx-title", text: C.pick(p, "title") || "—" }),
     shortStory(p) ? el("p", { class: "hx-p", text: shortStory(p) }) : null,
@@ -322,7 +375,7 @@ function reveal() {
   });
 }
 
-function paintAll() { paintHome(); paintWellnessAdmin(); if (document.querySelector("#travel.active, #travel.page.active")) paintTravelPage(); requestAnimationFrame(reveal); }
+function paintAll() { paintHome(); seaSync(); paintWellnessAdmin(); if (document.querySelector("#travel.active, #travel.page.active")) paintTravelPage(); requestAnimationFrame(reveal); }
 function init() {
   C = window.CML;
   if (!C) return;
@@ -332,6 +385,7 @@ function init() {
   document.addEventListener("cml:lang", () => { paintAll(); paintTravelPage(); });
   document.addEventListener("cml:session", paintAll);
   document.addEventListener("cml:page", e => { if (e.detail && e.detail.page === "travel") paintTravelPage(); requestAnimationFrame(reveal); });
+  seaGuard();
   paintAll();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
