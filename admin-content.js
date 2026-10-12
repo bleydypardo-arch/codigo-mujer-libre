@@ -5,7 +5,7 @@
 "use strict";
 const T = {
   es: {
-    tDaily: "Código de hoy", tMoods: "Metas de bienestar", tRecipe: "Receta del mes", tDyk: "¿Sabías que?", tTalk: "Hablemos", tTravel: "Viajes: próximamente", tCodeMsgs: "Frases de los códigos",
+    tDaily: "Código de hoy", tMoods: "Metas de bienestar", tRecipe: "Receta del mes", tDyk: "¿Sabías que?", tTalk: "Hablemos", tTravel: "Viajes: próximamente", tPod: "Podcast", tCodeMsgs: "Frases de los códigos",
     save: "Guardar", cancel: "Cancelar", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Despublicar", preview: "Vista previa", hidePreview: "Ocultar vista previa",
     published: "Publicado", draft: "Borrador", today: "Hoy", scheduled: "Programado", saved: "Guardado.", saveFail: "No se pudo guardar. Inténtalo de nuevo.", loadFail: "No se pudo cargar.",
     confirmDel: "¿Eliminar esta entrada? No se puede deshacer.", confirmReset: "¿Quitar esta personalización y volver al texto original?", up: "Subir", down: "Bajar", empty: "Todavía no hay entradas.",
@@ -27,10 +27,11 @@ const T = {
     cmIntro: "Cada código tiene su frase de la semana. Escribe las tuyas en español e inglés y elige el mes. Si agregas varias para el mismo mes, rotan una por semana. Si un mes no tiene frase, se usa la de «Todos los meses»; si tampoco hay, se queda la frase original.",
     cmNow: "Frase original:", cmAdd: "+ Agregar frase", cmAllMonths: "Todos los meses", cmMonth: "Mes", cmRemove: "Quitar", cmCount: n => n ? n + (n === 1 ? " frase" : " frases") : "frase original",
     cmEs: "Español", cmEn: "English", cmReset: "Volver a las frases originales",
+    podIntro: "Podcast «Entre Nosotras». Cada episodio vive en YouTube: pega aquí el enlace. Las integrantes lo ven en Inicio (el próximo o el más reciente) y en Bienestar (todos, con filtro por tema).", podNew: "+ Nuevo episodio", podTitle: "Título del episodio", podDesc: "Descripción corta (opcional)", podTopic: "Tema", podDate: "Fecha y día de estreno", podTime: "Hora (opcional)", podUrl: "Enlace de YouTube del episodio", podTeaser: "Enlace del adelanto de 15 segundos (opcional)", podPub: "Publicado (visible para las integrantes)", podRemove: "Quitar episodio", podBadUrl: "El enlace debe ser de YouTube.", podNeed: "Para publicar, completa el título en español e inglés, la fecha y el enlace de YouTube.", podEmpty: "Todavía no hay episodios. Toca «Nuevo episodio».", podEp: n => "Episodio " + n,
     tvTeaser: "Mensaje de anuncio (Inicio y Viajes)", cHomeExpSoon: "Titular", cHomeExpSoonP: "Texto", cStoryT: "Promesa: titular", cStoryP: "Promesa: texto"
   },
   en: {
-    tDaily: "Code for Today", tMoods: "Wellness goals", tRecipe: "Recipe of the Month", tDyk: "Did You Know?", tTalk: "Let's Talk", tTravel: "Travel: coming soon", tCodeMsgs: "Code phrases",
+    tDaily: "Code for Today", tMoods: "Wellness goals", tRecipe: "Recipe of the Month", tDyk: "Did You Know?", tTalk: "Let's Talk", tTravel: "Travel: coming soon", tPod: "Podcast", tCodeMsgs: "Code phrases",
     save: "Save", cancel: "Cancel", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Unpublish", preview: "Preview", hidePreview: "Hide preview",
     published: "Published", draft: "Draft", today: "Today", scheduled: "Scheduled", saved: "Saved.", saveFail: "Couldn't save. Please try again.", loadFail: "Couldn't load.",
     confirmDel: "Delete this entry? This can't be undone.", confirmReset: "Remove this customization and go back to the original text?", up: "Move up", down: "Move down", empty: "No entries yet.",
@@ -52,6 +53,7 @@ const T = {
     cmIntro: "Each code has its phrase of the week. Write yours in Spanish and English and pick the month. If you add several for the same month they rotate, one per week. If a month has none, the “Every month” ones are used; if there are none either, the original phrase stays.",
     cmNow: "Original phrase:", cmAdd: "+ Add phrase", cmAllMonths: "Every month", cmMonth: "Month", cmRemove: "Remove", cmCount: n => n ? n + (n === 1 ? " phrase" : " phrases") : "original phrase",
     cmEs: "Español", cmEn: "English", cmReset: "Back to the original phrases",
+    podIntro: "“Entre Nosotras” podcast. Every episode lives on YouTube: paste its link here. Members see it on Home (the next or latest one) and in Wellness (all of them, filtered by topic).", podNew: "+ New episode", podTitle: "Episode title", podDesc: "Short description (optional)", podTopic: "Topic", podDate: "Release date", podTime: "Time (optional)", podUrl: "YouTube link of the episode", podTeaser: "Link to the 15-second teaser (optional)", podPub: "Published (visible to members)", podRemove: "Remove episode", podBadUrl: "The link must be a YouTube link.", podNeed: "To publish, complete the title in Spanish and English, the date and the YouTube link.", podEmpty: "No episodes yet. Tap “New episode”.", podEp: n => "Episode " + n,
     tvTeaser: "Announcement message (Home and Travel)", cHomeExpSoon: "Headline", cHomeExpSoonP: "Text", cStoryT: "Promise: headline", cStoryP: "Promise: text"
   }
 };
@@ -302,6 +304,53 @@ async function talkTab() {
       })));
 }
 
+// ----- Podcast "Entre Nosotras" (settings.podcast = { episodes: [...] }) -----
+async function podcastTab() {
+  const cfg = (await settingsMap()).podcast || {};
+  let eps = Array.isArray(cfg.episodes) ? cfg.episodes.slice() : [];
+  const TOPICS = (window.CMLPodcast && window.CMLPodcast.TOPICS) || [];
+  const topicName = k => (window.CMLPodcast ? window.CMLPodcast.topicLabel(k) : k);
+  const wrap = el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("podIntro") }));
+  const list = el("div", { class: "pod-admin-list" });
+  const fb = feedbackNode();
+  const forms = [];
+  const addForm = (cur, open) => {
+    const id = cur.id || ("e" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5));
+    const title = pair(tx("podTitle"), "title", cur, { line: true, max: 100 }), desc = pair(tx("podDesc"), "desc", cur, { rows: 2 });
+    const topic = el("select", {}, ...TOPICS.map(k => el("option", { value: k, text: topicName(k) }))); topic.value = TOPICS.includes(cur.topic) ? cur.topic : (TOPICS[0] || "");
+    const date = el("input", { type: "date", value: cur.date || "" }), time = el("input", { type: "time", value: cur.time || "" });
+    const url = el("input", { type: "url", placeholder: "https://youtu.be/…", value: cur.url || "" }), teaser = el("input", { type: "url", placeholder: "https://youtube.com/shorts/…", value: cur.teaser || "" });
+    const pub = el("input", { type: "checkbox" }); pub.checked = !!cur.published;
+    const sum = el("summary", { text: (cur.title_es || cur.title_en || tx("podEp")(forms.length + 1)) + (cur.published ? "" : " · " + tx("draft")) });
+    const box = el("details", { class: "rf-group", open: !!open }, sum, title.node, desc.node,
+      el("div", { class: "ac-two" }, field(tx("podTopic"), topic), field(tx("podDate"), date)), el("div", { class: "ac-two" }, field(tx("podTime"), time), el("span", {})),
+      field(tx("podUrl"), url), field(tx("podTeaser"), teaser), el("label", { class: "check" }, pub, tx("podPub")),
+      K.button(tx("podRemove"), "danger", async () => { if (!await confirmed(tx("confirmDel"))) return; const i = forms.findIndex(f => f.id === id); if (i >= 0) forms.splice(i, 1); box.remove(); }));
+    forms.push({ id, box, title, desc, topic, date, time, url, teaser, pub });
+    list.appendChild(box);
+  };
+  eps.sort((a, b) => String(b.date || "").localeCompare(String(a.date || ""))).forEach(e => addForm(e, false));
+  if (!eps.length) list.appendChild(el("p", { class: "small-note", id: "podEmptyNote", text: tx("podEmpty") }));
+  wrap.append(list, K.button(tx("podNew"), "secondary", () => { const n = document.getElementById("podEmptyNote"); if (n) n.remove(); addForm({}, true); forms[forms.length - 1].box.scrollIntoView({ block: "center" }); }), fb,
+    el("div", { class: "admin-bar" }, K.button(tx("save"), "primary", async () => {
+      say(fb, "");
+      const out = [];
+      for (const f of forms) {
+        const t = f.title.val(), d = f.desc.val();
+        if (half(f.title) || half(f.desc)) return say(fb, tx("bothLangs"));
+        const u = f.url.value.trim(), tz = f.teaser.value.trim();
+        const okYt = v => !v || (window.CMLPodcast && window.CMLPodcast.ytId(v));
+        if (!okYt(u) || !okYt(tz)) return say(fb, tx("podBadUrl"));
+        if (f.pub.checked && !(t.title_es && t.title_en && f.date.value && u)) return say(fb, tx("podNeed"));
+        if (!t.title_es && !t.title_en && !u) continue;
+        out.push(Object.assign({ id: f.id, topic: f.topic.value, date: f.date.value, time: f.time.value, url: u, teaser: tz, published: f.pub.checked }, t, d));
+      }
+      try { await putSetting("podcast", out.length ? { episodes: out } : null); } catch (e) { console.error(e); return say(fb, tx("saveFail")); }
+      K.toast(tx("saved"));
+    })));
+  return wrap;
+}
+
 // ----- Travel placeholders + announcement (settings.travel_slots, settings.copy) -----
 async function travelTab() {
   const cfg = await settingsMap();
@@ -410,6 +459,7 @@ function init() {
   A.registerTab("dyk", { group: "content", label: lab(T.es.tDyk, T.en.tDyk), render: async () => dykTab() });
   A.registerTab("talk", { group: "content", label: lab(T.es.tTalk, T.en.tTalk), render: async () => talkTab() });
   A.registerTab("codemsgs", { group: "content", label: lab(T.es.tCodeMsgs, T.en.tCodeMsgs), render: async () => codeMsgsTab() });
+  A.registerTab("podcast", { group: "content", label: lab(T.es.tPod, T.en.tPod), render: async () => podcastTab() });
   A.registerTab("travelx", { group: "content", label: lab(T.es.tTravel, T.en.tTravel), render: async () => travelTab() });
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
