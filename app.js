@@ -479,6 +479,7 @@ Object.assign(translations.es, {
   joinBday: "Tu cumpleaños", optional: "(opcional)", month: "Mes", day: "Día",
   joinBdayHint: "🎂 Solo el día y el mes, para celebrarte. Nunca pedimos el año.", joinPassword: "Crea una contraseña",
   memCityAll: "Todas", memCityAria: "Filtrar por ciudad",
+  viewAsLabel: "Viendo la app como", viewAsAll: "Todas las ciudades",
   tier_owner: "Fundadora", tier_founder: "Anfitriona Fundadora", tier_host: "Anfitriona", hostsTitle: "Tus anfitrionas", hostsSub: "Mujeres que te reciben y cuidan el Club en tu ciudad.",
   cityPick: "Elige tu ciudad", cityOther: "Otra ciudad", cityOtherLbl: "¿Cuál es tu ciudad?", cityHint: "Solo la ciudad. Nunca pedimos tu dirección.",
   joinQDoes: "2 · ¿A qué te dedicas hoy?", joinQDoesPh: "Soy maestra, cuido mi hogar, tengo un negocio, busco empleo…",
@@ -511,6 +512,7 @@ Object.assign(translations.en, {
   joinBday: "Your birthday", optional: "(optional)", month: "Month", day: "Day",
   joinBdayHint: "🎂 Just the day and month, so we can celebrate you. We never ask for the year.", joinPassword: "Create a password",
   memCityAll: "All", memCityAria: "Filter by city",
+  viewAsLabel: "Viewing the app as", viewAsAll: "All cities",
   tier_owner: "Founder", tier_founder: "Founding Host", tier_host: "Host", hostsTitle: "Your hosts", hostsSub: "Women who welcome you and look after the Club in your city.",
   cityPick: "Choose your city", cityOther: "Another city", cityOtherLbl: "What is your city?", cityHint: "Just the city. We never ask for your address.",
   joinQDoes: "2 · What do you do today?", joinQDoesPh: "I'm a teacher, I care for my home, I run a business, I'm looking for work…",
@@ -604,11 +606,36 @@ const isStaff = () => isAdmin() || isContentAdmin();
 // Cities: content tagged for one city ("¿Dónde se muestra?") is shown to women of that city; untagged content ("Todas") to everyone.
 const cityKey = v => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
 const KNOWN_CITIES = ["orlando", "miami", "newyork", "boston", "bogota", "medellin"];
+// Staff can preview the app as another city ("Viendo como"); by default they see their own city like everyone else.
+const viewAs = () => { try { return localStorage.getItem("cml_viewas") || ""; } catch { return ""; } };
+function viewCity() {
+  if (isStaff()) {
+    const v = viewAs();
+    if (v === "all") return "all";
+    if (v) return cityKey(v);
+    const mine = cityKey(profile && profile.city);
+    return KNOWN_CITIES.includes(mine) ? mine : "orlando";
+  }
+  const mine = cityKey(profile && profile.city);
+  return KNOWN_CITIES.includes(mine) ? mine : "all";   // unknown / "other" city: sees everything
+}
 function shownTo(p) {
   const show = cityKey(planTag(p.id).show);
-  if (!show || isStaff()) return true;
-  const mine = cityKey(profile && profile.city);
-  return !KNOWN_CITIES.includes(mine) || mine === show;   // unknown / "other" city: sees everything
+  if (!show) return true;
+  const v = viewCity();
+  return v === "all" || v === show;
+}
+function viewBar() {
+  const old = document.getElementById("viewAsBar"); if (old) old.remove();
+  if (!isStaff()) return;
+  const cur = viewAs() || (viewCity() === "all" ? "all" : "");
+  const names = { orlando: "Orlando", miami: "Miami", newyork: "New York", boston: "Boston", bogota: "Bogotá", medellin: "Medellín" };
+  const sel = el("select", { "aria-label": t("viewAsLabel") }, ...KNOWN_CITIES.map(k => el("option", { value: names[k], text: names[k] })), el("option", { value: "all", text: t("viewAsAll") }));
+  sel.value = cur || (Object.values(names).find(n => cityKey(n) === viewCity()) || "Orlando");
+  sel.addEventListener("change", async () => { try { localStorage.setItem("cml_viewas", sel.value); } catch { /* ignore */ } await loadAll(); });
+  const bar = el("div", { id: "viewAsBar", class: "view-as-bar" }, el("span", { text: t("viewAsLabel") }), sel);
+  const hdr = document.querySelector("#appShell > header");
+  if (hdr) hdr.after(bar);
 }
 // Host tiers (settings.hosts[userId]): owner = Fundadora, founder = Anfitriona Fundadora, host = Anfitriona.
 const TIERS = ["owner", "founder", "host"];
@@ -1944,6 +1971,7 @@ async function loadAll() {
   if (window.CMLPolls) { try { await window.CMLPolls.reload(); } catch { /* polls are optional */ } }
   if (!session || session.user.id !== uid) return;
   applyCopy();
+  viewBar();
   setLanguage(currentLanguage, false);   // re-applies texts (incl. admin-edited ones) and re-renders everything
 }
 

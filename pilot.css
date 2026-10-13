@@ -624,3 +624,5 @@ header .brand .brand-club { font-style: italic; font-weight: 400; color: #A8832F
 .hosts-s { display: block; margin: 0 0 8px; color: var(--cml-muted, #6b6b6b); }
 .tier-pick { align-items: center; gap: 8px; }
 .tier-pick select { flex: 1; min-height: 40px; }
+.view-as-bar { display: flex; align-items: center; gap: 8px; padding: 6px 14px; background: #FFF4D9; border-bottom: 1px solid rgba(160,120,30,.3); font-size: 12.5px; color: #4a3a12; }
+.view-as-bar select { min-height: 30px; padding: 2px 8px; font-size: 13px; border-radius: 8px; }
