@@ -322,6 +322,8 @@ function paintHome() {
   if (!C.session()) { host.hidden = true; host.replaceChildren(); return; }
   host.hidden = false;
   const p = featuredFirst(upcomingTrips())[0];
+  // outside Orlando the city's experiences live in Home "Algo distinto esta semana": no separate card here
+  if (!orlando() && p) { host.hidden = true; host.replaceChildren(); return; }
   const go = () => { if (window.CMLRedesign) window.CMLRedesign.paintTravel(); C.showPage("travel"); };
   // same small brand signature as the Travel page header (icon + CÓDIGO EXPERIENCES)
   const brand = el("span", { class: "hx-sig" }, el("span", { class: "hx-ic", "aria-hidden": "true" }), el("span", { class: "hx-sig-t", text: t("travelKicker") }));
@@ -355,7 +357,7 @@ function paintHome() {
 }
 // the other upcoming experiences of this city, right on Home (so a city with 3 shows all 3 up front)
 function moreRows(first) {
-  if (orlando()) return null;
+  return null;
   const others = featuredFirst(upcomingTrips()).filter(x => x.id !== first.id).slice(0, 2);
   if (!others.length) return null;
   return el("div", { class: "hx-more" }, el("small", { class: "hx-more-t", text: t("homeExpMore") }),
@@ -397,7 +399,7 @@ function init() {
   C = window.CML;
   if (!C) return;
   C.addStrings(ES, EN);
-  window.CMLExp = { defaults: { es: ES, en: EN }, campaignCard, paintTravelPage, paintHome, typeKey: k => TYPE_KEY[k] || "expTrip", stageImages };
+  window.CMLExp = { defaults: { es: ES, en: EN }, campaignCard, paintTravelPage, paintHome, heroPhoto: () => HERO_PHOTO, cityTrips: () => featuredFirst(upcomingTrips()), dateRange, typeKey: k => TYPE_KEY[k] || "expTrip", stageImages };
   document.addEventListener("cml:render", paintAll);
   document.addEventListener("cml:lang", () => { paintAll(); paintTravelPage(); });
   document.addEventListener("cml:session", paintAll);

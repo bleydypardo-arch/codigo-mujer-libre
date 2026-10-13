@@ -255,12 +255,12 @@ function renderWeek() {
 }
 
 // ---------- Haz algo nuevo (discovery from real content) ----------
-function thumb(src, code, whole) {
+function thumb(src, code, whole, fb) {
   const box = el("span", { class: "disc-th" + (whole && src ? " is-whole" : "") + (src ? "" : " tone-" + (C.codeLabels[code] ? code : "none")), "aria-hidden": "true" });
   if (src) {
     const img = el("img", { src, alt: "", loading: "lazy" });
     if (whole) box.style.setProperty("--th-bg", 'url("' + String(src).replace(/["\\()\s]/g, encodeURIComponent) + '")');
-    img.addEventListener("error", () => { img.remove(); box.classList.add("tone-none"); box.textContent = emojiOf(code); });
+    img.addEventListener("error", () => { if (fb && img.getAttribute("src") !== fb) { box.classList.remove("is-whole"); box.style.removeProperty("--th-bg"); img.src = fb; return; } img.remove(); box.classList.add("tone-none"); box.textContent = emojiOf(code); });
     box.appendChild(img);
   } else box.textContent = emojiOf(code);
   return box;
@@ -280,6 +280,19 @@ function renderDiscover() {
   const today = day0().getTime();
   const tried = new Set(plans.filter(p => mine.has(p.id) && p.code).map(p => p.code));
   const rows = [];
+  const cityTrips = (!(C.viewCity && C.viewCity() === "orlando") && window.CMLExp && window.CMLExp.cityTrips) ? window.CMLExp.cityTrips().slice(0, 3) : [];
+  if (cityTrips.length) {
+    // a city other than Orlando: its upcoming experiences ARE "Algo distinto esta semana" (up to 3)
+    const fallback = window.CMLRedesign ? window.CMLRedesign.travelImage() : "";
+    cityTrips.forEach(x => {
+      const img = C.safeUrl((C.planTag(x.id) || {}).homeImg || "") || C.safeUrl(x.image_url) || window.CMLExp.heroPhoto() || fallback;
+      rows.push(disc(thumb(img, "Adventure", false, window.CMLExp.heroPhoto()), "Código Experiences", C.pick(x, "title") || "—",
+        [window.CMLExp.dateRange(x), x.location].filter(Boolean).join(" · "), () => C.openDetail(x.id)));
+    });
+    host.hidden = false;
+    host.replaceChildren(el("small", { class: "rose", text: t("discLabel") }), el("h2", { text: t("discTitle") }), el("div", { class: "disc-list" }, ...rows));
+    return;
+  }
   const ev = C.discoverPick();
   if (ev) {
     const evTag = C.planTag(ev.id), homeImg = C.safeUrl(evTag.homeImg || "");
