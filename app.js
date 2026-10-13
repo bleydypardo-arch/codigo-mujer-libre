@@ -1293,7 +1293,10 @@ function wireSheet() {
 function discoverPick() {
   if (!session) return null;
   const today = todayStr();
-  const ok = p => p.kind === "event" && (!p.event_date || p.event_date >= today);
+  // an event that is the same outing as an experience already shown in "Código Experiences" is not repeated here
+  const tripTitles = new Set(plans.filter(p => p.kind === "trip").map(p => String(p.title_es || p.title_en || "").trim().toLowerCase()).filter(Boolean));
+  const dedupe = viewCity() !== "orlando";   // Orlando keeps its original behaviour
+  const ok = p => p.kind === "event" && (!p.event_date || p.event_date >= today) && !(dedupe && tripTitles.has(String(p.title_es || p.title_en || "").trim().toLowerCase()));
   const pinned = plans.find(p => ok(p) && planTag(p.id).pin);
   if (pinned) return pinned;
   const tried = new Set(plans.filter(p => mine.has(p.id) && p.code).map(p => p.code));
@@ -2124,7 +2127,7 @@ function initialize() {
     db, el, pick, safeUrl, fmtDate, monthLabel, todayStr, codeLabels,
     t, lang: () => currentLanguage, loc,
     session: () => session, profile: () => profile,
-    isAdmin, isSuper, isContentAdmin, isStaff, announce, hostTier, hostBadge, TIERS,
+    isAdmin, isSuper, isContentAdmin, isStaff, announce, viewCity, hostTier, hostBadge, TIERS,
     refreshPublic: async () => { if (session) await loadAll(); }, discoverPick,
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,

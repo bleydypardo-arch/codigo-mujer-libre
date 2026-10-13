@@ -13,7 +13,7 @@ const ES = {
   campGoing: n => n === 1 ? "1 confirmada" : n + " confirmadas",
   homeExpK: "CÓDIGO EXPERIENCES", homeExpSoon: "Nuestra próxima gran experiencia se anunciará pronto",
   homeExpSoonP: "Dos veces al año nos reunimos para vivir algo inolvidable. ¿A dónde vamos ahora?",
-  homeExpAll: "Ver todas las experiencias", homeExpGo: "Descubrir la experiencia",
+  homeExpAll: "Ver todas las experiencias", homeExpMore: "También próximamente", homeExpGo: "Descubrir la experiencia",
   typesK: "EXPLORA POR TIPO", typesNote: "Toca un tipo para ver solo esas experiencias. Toca de nuevo para ver todas.",
   wellPick: "Código Pick", wellBook: "Reservar", wellSee: "Ver experiencia", wellUntil: d => "Hasta el " + d,
   addWellness: "+ Agregar experiencia de bienestar", addExperience: "+ Crear experiencia",
@@ -33,7 +33,7 @@ const EN = {
   campGoing: n => n === 1 ? "1 confirmed" : n + " confirmed",
   homeExpK: "CÓDIGO EXPERIENCES", homeExpSoon: "Our next big experience will be announced soon",
   homeExpSoonP: "Twice a year, we come together for something unforgettable. Where should we go next?",
-  homeExpAll: "See all experiences", homeExpGo: "Discover the experience",
+  homeExpAll: "See all experiences", homeExpMore: "Also coming up", homeExpGo: "Discover the experience",
   typesK: "EXPLORE BY TYPE", typesNote: "Tap a type to see only those experiences. Tap again to see them all.",
   wellPick: "Código Pick", wellBook: "Book", wellSee: "See experience", wellUntil: d => "Until " + d,
   addWellness: "+ Add wellness experience", addExperience: "+ Create experience",
@@ -54,6 +54,7 @@ const el = (...a) => C.el(...a);
 const reduced = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 const settingUrl = key => { const v = C.setting ? C.setting(key) : null; return v && v.url ? C.safeUrl(v.url) : ""; };
 const trips = () => (C.session() ? C.homeData().plans.filter(p => p.kind === "trip").sort(C.byDate) : []);
+const orlando = () => !!(C.viewCity && C.viewCity() === "orlando");   // Orlando keeps its original behaviour; the new city treatment is for the other cities
 const upcomingTrips = () => { const today = C.todayStr(); return trips().filter(p => !p.event_date || p.event_date >= today); };
 function featuredFirst(list) { return list.slice().sort((a, b) => (C.planTag(b.id).featured ? 1 : 0) - (C.planTag(a.id).featured ? 1 : 0)); }
 function dateRange(p) {
@@ -130,9 +131,10 @@ function stageImages() {
   const pages = (C.setting && C.setting("page_images")) || {};
   // The Código Experiences look (the women by the sea) always comes first, unless the admin chose another cover; each experience's own photo follows.
   const list = [settingUrl("travel_image"), C.safeUrl(pages.travel || "")].filter(Boolean);
-  if (!list.length) list.push(HERO_PHOTO);
+  if (!list.length && !orlando()) list.push(HERO_PHOTO);
   featuredFirst(upcomingTrips()).forEach(p => list.push(C.safeUrl(p.image_url)));
-  return list.filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).slice(0, 5);
+  const out = list.filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).slice(0, 5);
+  return out.length ? out : [HERO_PHOTO];
 }
 function paintStage() {
   const head = document.querySelector(".ph-travel");
@@ -338,16 +340,30 @@ function paintHome() {
   const all = el("button", { type: "button", class: "hx-all", text: t("homeExpAll") });
   all.addEventListener("click", go);
   const av = availability(p);
-  host.className = "hx-card" + homeCls(homeImg());
+  const own = orlando() && C.safeUrl(p.image_url);   // Orlando: the experience's own photo, as before
+  host.className = "hx-card" + (own ? "" : homeCls(homeImg()));
   const bg = el("span", { class: "hx-bg", "aria-hidden": "true" });
-  bg.style.backgroundImage = 'url("' + homeImg().replace(/"/g, "%22") + '")';
+  bg.style.backgroundImage = 'url("' + (own || homeImg()).replace(/"/g, "%22") + '")';
   bg.style.setProperty("--img", bg.style.backgroundImage);
-  host.replaceChildren(bg, homeImg() === HERO_PHOTO ? seaBtn() : null, el("div", { class: "hx-txt" }, brand,
+  host.replaceChildren(bg, (!own && homeImg() === HERO_PHOTO) ? seaBtn() : null, el("div", { class: "hx-txt" }, brand,
     el("small", { class: "hx-meta", text: [t(TYPE_KEY[C.tripTypeOf(p)]), dateRange(p), place(p)].filter(Boolean).join(" · ") }),
     el("h2", { class: "hx-title", text: C.pick(p, "title") || "—" }),
     shortStory(p) ? el("p", { class: "hx-p", text: shortStory(p) }) : null,
     av ? el("span", { class: "camp-status " + av.cls, text: av.text }) : null,
-    el("div", { class: "hx-acts" }, open, all)));
+    el("div", { class: "hx-acts" }, open, all),
+    moreRows(p)));
+}
+// the other upcoming experiences of this city, right on Home (so a city with 3 shows all 3 up front)
+function moreRows(first) {
+  if (orlando()) return null;
+  const others = featuredFirst(upcomingTrips()).filter(x => x.id !== first.id).slice(0, 2);
+  if (!others.length) return null;
+  return el("div", { class: "hx-more" }, el("small", { class: "hx-more-t", text: t("homeExpMore") }),
+    ...others.map(x => {
+      const b = el("button", { type: "button", class: "hx-row" }, el("span", { class: "hx-row-d", text: dateRange(x) || "" }), el("b", { class: "hx-row-n", text: C.pick(x, "title") || "—" }), el("span", { class: "hx-row-go", "aria-hidden": "true", text: "›" }));
+      b.addEventListener("click", () => C.openDetail(x.id, b));
+      return b;
+    }));
 }
 
 // ---------- Wellness: admin shortcut on the page ----------
