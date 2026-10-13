@@ -128,10 +128,11 @@ function campaignCard(p) {
 let slideTimer = null;
 function stageImages() {
   const pages = (C.setting && C.setting("page_images")) || {};
-  const list = [settingUrl("travel_image"), C.safeUrl(pages.travel || "")];
+  // The Código Experiences look (the women by the sea) always comes first, unless the admin chose another cover; each experience's own photo follows.
+  const list = [settingUrl("travel_image"), C.safeUrl(pages.travel || "")].filter(Boolean);
+  if (!list.length) list.push(HERO_PHOTO);
   featuredFirst(upcomingTrips()).forEach(p => list.push(C.safeUrl(p.image_url)));
-  const out = list.filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).slice(0, 5);
-  return out.length ? out : [HERO_PHOTO];
+  return list.filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).slice(0, 5);
 }
 function paintStage() {
   const head = document.querySelector(".ph-travel");
@@ -337,11 +338,11 @@ function paintHome() {
   const all = el("button", { type: "button", class: "hx-all", text: t("homeExpAll") });
   all.addEventListener("click", go);
   const av = availability(p);
-  host.className = "hx-card" + (C.safeUrl(p.image_url) ? "" : homeCls(homeImg()));
+  host.className = "hx-card" + homeCls(homeImg());
   const bg = el("span", { class: "hx-bg", "aria-hidden": "true" });
-  bg.style.backgroundImage = 'url("' + (C.safeUrl(p.image_url) || homeImg()).replace(/"/g, "%22") + '")';
+  bg.style.backgroundImage = 'url("' + homeImg().replace(/"/g, "%22") + '")';
   bg.style.setProperty("--img", bg.style.backgroundImage);
-  host.replaceChildren(bg, (!C.safeUrl(p.image_url) && homeImg() === HERO_PHOTO) ? seaBtn() : null, el("div", { class: "hx-txt" }, brand,
+  host.replaceChildren(bg, homeImg() === HERO_PHOTO ? seaBtn() : null, el("div", { class: "hx-txt" }, brand,
     el("small", { class: "hx-meta", text: [t(TYPE_KEY[C.tripTypeOf(p)]), dateRange(p), place(p)].filter(Boolean).join(" · ") }),
     el("h2", { class: "hx-title", text: C.pick(p, "title") || "—" }),
     shortStory(p) ? el("p", { class: "hx-p", text: shortStory(p) }) : null,
