@@ -47,7 +47,8 @@ const EN = {
 const TYPE_KEY = { trip: "expTrip", retreat: "expRetreat", party: "expParty", dining: "expDining", nature: "expNature" };
 const DEFAULT_TRAVEL = "paradise-sunset.svg";
 const HERO_PHOTO = "travel-experiences.jpg";
-const homeImg = () => stageImages()[0];
+// The Home card keeps its cover (the women by the sea) unless the admin chose another one; trip / event / restaurant photos never replace it.
+const homeImg = () => { const pages = (C.setting && C.setting("page_images")) || {}; return settingUrl("travel_image") || C.safeUrl(pages.travel || "") || HERO_PHOTO; };
 const homeCls = img => img === HERO_PHOTO ? " is-art is-photo" : img === DEFAULT_TRAVEL ? " is-art" : "";
 const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "function" ? v(...args) : (v || key); };
 const el = (...a) => C.el(...a);
