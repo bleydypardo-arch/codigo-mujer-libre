@@ -620,6 +620,7 @@ function viewCity() {
   return KNOWN_CITIES.includes(mine) ? mine : "all";   // unknown / "other" city: sees everything
 }
 function shownTo(p) {
+  if (p.kind === "trip" && !sideTrip(p)) return true;   // real trips (Código Viajemos Juntas) are the same for every city
   const show = cityKey(planTag(p.id).show);
   if (!show) return true;
   const v = viewCity();
@@ -865,10 +866,12 @@ const isTestContent = (...texts) => texts.some(x => /\btest(ing)?\b/i.test(Strin
 let previewPlan = null, previewTag = null;   // admin "Vista previa": an unsaved plan shown in the detail sheet
 function planTag(id) { if (previewPlan && id === previewPlan.id) return previewTag || {}; const all = settings.plan_tags; return (all && typeof all === "object" && all[id]) || {}; }
 const EVENT_CATS = ["social", "dining", "wellness"];   // the "Descubre" page; paid events / deals ("events") live in their own page
-const sideTrip = p => p.kind === "trip" && ["dining", "party"].includes(planTag(p.id).cat);   // a restaurant / rooftop typed as an experience: shown in Descubre, never in the trips module
+// A "trip" that is really a local outing (restaurant, rooftop, party, or anything tied to one city) is not a travel experience:
+// it lives in Descubre (restaurants / happy hours) or in Eventos y promociones. Código Viajemos Juntas shows only real trips (no city tag).
+const sideTrip = p => p.kind === "trip" && (["dining", "party"].includes(planTag(p.id).cat) || !!cityKey(planTag(p.id).show));
 function eventCategory(p) {
   if (p.kind === "wellness") return "wellness";
-  if (sideTrip(p)) return planTag(p.id).cat === "dining" ? "dining" : "social";
+  if (sideTrip(p)) { const c = planTag(p.id).cat; return c === "dining" ? "dining" : c === "party" ? "social" : "events"; }
   const cat = planTag(p.id).cat;
   if (EVENT_CATS.includes(cat) || cat === "events") return cat;
   if (p.code === "Wellness") return "wellness";
@@ -1315,7 +1318,7 @@ function renderUpcoming() {
   if (!host) return;
   const today = todayStr();
   const shown = null;
-  const next = session ? plans.filter(p => p.kind === "event" && eventCategory(p) === "events" && (!p.event_date || p.event_date >= today)).sort(byDate).slice(0, 3) : [];
+  const next = session ? plans.filter(p => (p.kind === "event" || sideTrip(p)) && eventCategory(p) === "events" && (!p.event_date || p.event_date >= today)).sort(byDate).slice(0, 3) : [];
   host.hidden = !next.length;
   if (!next.length) return host.replaceChildren();
   const all = el("button", { type: "button", class: "see-all", text: t("seeAll") + " →" });
@@ -1328,7 +1331,7 @@ function renderAgenda() {
   const list = byId("agendaList");
   if (!list) return;
   const today = todayStr();
-  const evs = plans.filter(p => p.kind === "event" && eventCategory(p) === "events" && (!p.event_date || p.event_date >= today)).sort(byDate);
+  const evs = plans.filter(p => (p.kind === "event" || sideTrip(p)) && eventCategory(p) === "events" && (!p.event_date || p.event_date >= today)).sort(byDate);
   if (!evs.length) return list.replaceChildren(session ? emptyState("🎟️", t("agEmptyTitle"), t("agEmptyText")) : "");
   list.replaceChildren(...evs.map(p => eventCard(p)));
 }

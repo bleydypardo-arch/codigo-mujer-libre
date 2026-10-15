@@ -55,7 +55,7 @@ const el = (...a) => C.el(...a);
 const reduced = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 const settingUrl = key => { const v = C.setting ? C.setting(key) : null; return v && v.url ? C.safeUrl(v.url) : ""; };
 // Only real trips: a restaurant / rooftop / party typed as an "experience" never shows in this module (it lives in Descubre).
-const trips = () => (C.session() ? C.homeData().plans.filter(p => p.kind === "trip" && !["dining", "party"].includes(C.planTag(p.id).cat)).sort(C.byDate) : []);
+const trips = () => (C.session() ? C.homeData().plans.filter(p => p.kind === "trip" && !(C.sideTrip && C.sideTrip(p))).sort(C.byDate) : []);
 const orlando = () => true;   // every city behaves exactly like Orlando (same cards, same photos, same buttons)
 const upcomingTrips = () => { const today = C.todayStr(); return trips().filter(p => !p.event_date || p.event_date >= today); };
 function featuredFirst(list) { return list.slice().sort((a, b) => (C.planTag(b.id).featured ? 1 : 0) - (C.planTag(a.id).featured ? 1 : 0)); }
