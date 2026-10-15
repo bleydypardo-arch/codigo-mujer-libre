@@ -760,7 +760,7 @@ function setLanguage(language, persist = true) {
 // Defaults stay in the code; an empty field means "use the default". Never touches structure or security.
 const COPY_KEYS = ["heroTitle", "heroCta", "eventsTitle", "eventsIntro", "yourSpace", "wellnessIntro", "supTitle", "supIntro",
   "communityTitle", "communityIntro", "travelTitle", "travelLead", "travelIntro", "travelBadge", "maTag", "maIntro", "wcQ", "wcSub",
-  "storyT", "storyP", "homeExpSoon", "homeExpSoonP"];
+  "storyT", "storyP", "homeExpSoon", "homeExpSoonP", "moodQ"];
 const copyDefaults = { es: {}, en: {} };
 function applyCopy() {
   const copy = settings.copy && typeof settings.copy === "object" ? settings.copy : {};

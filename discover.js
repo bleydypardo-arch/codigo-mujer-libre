@@ -145,7 +145,7 @@ function renderWellness() {
   if (!host || !C) return;
   if (!C.session()) { host.hidden = true; host.replaceChildren(); if (up) { up.hidden = true; up.replaceChildren(); } return; }
   const { plans } = C.homeData();
-  const items = plans.filter(p => p.kind === "wellness");
+  const items = plans.filter(p => p.kind === "wellness" || (p.kind === "event" && C.eventCategory && C.eventCategory(p) === "wellness" && (!p.event_date || p.event_date >= C.todayStr())));   // spas / beauty posted as plans land here too
   const cats = WCATS.filter(c => items.some(p => C.planTag(p.id).cat === c));
   if (wcat !== "all" && !cats.includes(wcat)) wcat = "all";
   const nodes = [el("small", { class: "rose", text: t("wdLabel") }), el("h2", { text: t("wdTitle") })];

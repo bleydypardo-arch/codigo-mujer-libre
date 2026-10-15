@@ -294,16 +294,16 @@ function compose(text) {
 
 // ---------- Wellness: need/mood → prewritten response ----------
 const TIPS = {
-  energy: { es: ["Una caminata corta al sol y un vaso de agua pueden cambiar tu tarde. Mira también los planes de esta semana en Eventos.", "Elige una sola cosa que te ilusione hoy y dale espacio. La energía también se contagia: escribe a una amiga."],
-            en: ["A short walk in the sun and a glass of water can change your afternoon. Check this week's plans in Events, too.", "Pick one thing you're looking forward to today and give it room. Energy is contagious: text a friend."] },
+  energy: { es: ["Una caminata corta al sol y un vaso de agua pueden cambiar tu tarde. Mira también los planes de esta semana en Descubre.", "Elige una sola cosa que te ilusione hoy y dale espacio. La energía también se contagia: escribe a una amiga."],
+            en: ["A short walk in the sun and a glass of water can change your afternoon. Check this week's plans in Discover, too.", "Pick one thing you're looking forward to today and give it room. Energy is contagious: text a friend."] },
   stress: { es: ["Respira: inhala 4, sostén 4, exhala 6, cinco veces. Si quieres hablarlo, ve a Apoyo y toca «Necesito hablar».", "Escribe en una lista lo que te preocupa y elige solo lo próximo. Lo demás puede esperar."],
             en: ["Breathe: in for 4, hold for 4, out for 6, five times. If you'd like to talk, go to Support and tap “I need to talk”.", "Write down what's on your mind and choose only the next step. The rest can wait."] },
   sleep:  { es: ["Esta noche, deja el teléfono 30 minutos antes de dormir y termina el día dando gracias por tres cosas.", "Una luz tenue, una bebida caliente sin cafeína y una oración breve preparan tu descanso."],
             en: ["Tonight, put your phone away 30 minutes before bed and end the day thanking God for three things.", "Dim light, a warm caffeine-free drink and a short prayer help you get ready to rest."] },
   eat:    { es: ["Agrega un color más a tu plato hoy y toma agua con cada comida. Pequeños pasos cuentan.", "Comer acompañada también nutre: invita a alguien a compartir un café o un almuerzo."],
             en: ["Add one more color to your plate today and drink water with each meal. Small steps count.", "Eating with others nourishes too: invite someone to share a coffee or lunch."] },
-  move:   { es: ["Quince minutos de caminata cuentan. Si prefieres compañía, busca un plan de bienestar en Eventos.", "Estira cuello, hombros y espalda dos minutos. Tu cuerpo te lo agradecerá."],
-            en: ["Fifteen minutes of walking counts. If you'd like company, look for a wellness plan in Events.", "Stretch your neck, shoulders and back for two minutes. Your body will thank you."] },
+  move:   { es: ["Quince minutos de caminata cuentan. Si prefieres compañía, busca un plan de bienestar en Descubre.", "Estira cuello, hombros y espalda dos minutos. Tu cuerpo te lo agradecerá."],
+            en: ["Fifteen minutes of walking counts. If you'd like company, look for a wellness plan in Discover.", "Stretch your neck, shoulders and back for two minutes. Your body will thank you."] },
   peace:  { es: ["Haz una pausa: voltea tu Código de hoy en Inicio, o comparte una petición en el muro de oración (en Apoyo).", "Busca un lugar tranquilo, cierra los ojos un minuto y entrega a Dios lo que te pesa."],
             en: ["Take a pause: flip Your Code for Today on Home, or share a request on the prayer wall (in Support).", "Find a quiet spot, close your eyes for a minute and hand over to God what weighs on you."] }
 };
@@ -325,8 +325,9 @@ const RESET = {
 const MOOD_LABEL = { energy: "moodEnergy", stress: "moodStress", sleep: "moodSleep", eat: "moodEat", move: "moodMove", peace: "moodPeace" };
 let mood = null;
 function moodAction(k) {
-  const go = RESET[k].go;
-  if (go === "discover") {
+  const ovr = ((C.setting && C.setting("wellness_moods")) || {})[k];
+  const go = (ovr && ovr.go) || RESET[k].go;
+  if (go === "discover" || go === "spas") {
     const target = document.getElementById(k === "move" && !document.getElementById("wellUpcoming").hidden ? "wellUpcoming" : "wellDiscover");
     if (target && !target.hidden) target.scrollIntoView({ behavior: "smooth", block: "start" });
     return;

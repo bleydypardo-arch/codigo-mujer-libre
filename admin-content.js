@@ -15,7 +15,7 @@ const T = {
     dailyIntro: "Cada día a las 12:00 a. m. (hora de Orlando) la tarjeta cambia a la siguiente entrada publicada. Cada entrada incluye todo: afirmación, reverso, versículo, referencia y mensaje de hoy, siempre emparejados en ES/EN.",
     rotation: n => n + " publicadas en rotación", todayIs: "Hoy se muestra:",
     moodsIntro: "Edita cada meta y sus recomendaciones. Lo que dejes vacío usa el texto original (en gris). En «Recomendaciones» escribe una por línea: se alternan cada día. En «Pasos» escribe una línea por paso.",
-    mLabel: "Nombre de la meta", mTitle: "Título de la respuesta", mText: "Recomendaciones (una por línea)", mSteps: "Mini reinicio: pasos (una línea por paso)", mAction: "Texto del botón", mReset: "Volver al original",
+    mLabel: "Nombre de la meta", mTitle: "Título de la respuesta", mText: "Recomendaciones (una por línea)", mSteps: "Mini reinicio: pasos (una línea por paso)", mAction: "Texto del botón", mGo: "¿A dónde lleva el botón?", go_: "Lo original de esta meta", go_events: "Descubre (happy hours, restaurantes y wellness)", go_agenda: "Eventos y promociones (de pago)", go_spas: "Los spas y wellness de esta misma página", go_support: "Apoyo", go_home: "Inicio (Código de hoy)", go_travel: "Código Experiencias", mReset: "Volver al original",
     m_energy: "Más energía", m_stress: "Menos estrés", m_sleep: "Dormir mejor", m_eat: "Comer mejor", m_move: "Mover mi cuerpo", m_peace: "Necesito paz",
     rIntro: "Una tarjeta que se voltea en el Rincón Matcha & Arte. Al frente: título y adelanto. Atrás: tu receta (imagen ya terminada y texto corto).",
     rTitle: "Título", rTeaser: "Adelanto (frente)", rText: "Texto corto (reverso)", rImage: "Imagen de la receta (reverso)", rLink: "Enlace a la receta completa (opcional)", rRemove: "Quitar receta", rPub: "Publicada (visible para las miembros)",
@@ -41,7 +41,7 @@ const T = {
     dailyIntro: "Every day at 12:00 AM (Orlando time) the card moves to the next published entry. Each entry holds everything: affirmation, back, verse, reference and Today's Message, always matched in ES/EN.",
     rotation: n => n + " published in rotation", todayIs: "Showing today:",
     moodsIntro: "Edit each goal and its recommendations. Anything left empty uses the original text (shown in grey). In “Recommendations” write one per line: they alternate daily. In “Steps” write one line per step.",
-    mLabel: "Goal name", mTitle: "Answer title", mText: "Recommendations (one per line)", mSteps: "Mini reset: steps (one line per step)", mAction: "Button text", mReset: "Back to original",
+    mLabel: "Goal name", mTitle: "Answer title", mText: "Recommendations (one per line)", mSteps: "Mini reset: steps (one line per step)", mAction: "Button text", mGo: "Where does the button go?", go_: "This goal's original", go_events: "Discover (happy hours, restaurants & wellness)", go_agenda: "Events & deals (paid)", go_spas: "The spas & wellness on this same page", go_support: "Support", go_home: "Home (Code for today)", go_travel: "Código Experiences", mReset: "Back to original",
     m_energy: "More energy", m_stress: "Less stress", m_sleep: "Sleep better", m_eat: "Eat better", m_move: "Move my body", m_peace: "I need peace",
     rIntro: "A flip card on the Matcha & Art Corner. Front: title and teaser. Back: your recipe (a finished image and short text).",
     rTitle: "Title", rTeaser: "Teaser (front)", rText: "Short text (back)", rImage: "Recipe image (back)", rLink: "Link to the full recipe (optional)", rRemove: "Remove recipe", rPub: "Published (visible to members)",
@@ -225,13 +225,16 @@ async function moodsTab() {
       pair(tx("mSteps"), "steps", cur, { rows: 4, ph: l => ph("steps", l) }),
       pair(tx("mAction"), "action", cur, { line: true, max: 60, ph: l => ph("action", l) })];
     forms[k] = rows;
+    const goSel = el("select", {}, ...["", "events", "agenda", "spas", "support", "home", "travel"].map(v => el("option", { value: v, text: tx("go_" + v) })));
+    goSel.value = cur.go || "";
+    rows.push({ node: el("label", { class: "field" }, el("span", { text: tx("mGo") }), goSel), val: () => (goSel.value ? { go: goSel.value } : {}), single: true, es: { value: "" }, en: { value: "" } });
     const fb = feedbackNode();
     wrap.appendChild(el("details", { class: "rf-group", "data-mood": k }, el("summary", { text: tx("m_" + k) + (Object.keys(cur).length ? " ✓" : "") }),
       ...rows.map(r => r.node), fb,
       el("div", { class: "admin-bar" },
         K.button(tx("save"), "primary", async () => {
           const value = Object.assign({}, ...rows.map(r => r.val()));
-          if (rows.some(half)) return say(fb, tx("bothLangs"));
+          if (rows.some(r => !r.single && half(r))) return say(fb, tx("bothLangs"));
           const clean = Object.fromEntries(Object.entries(value).filter(([, v]) => v));
           try { await K.setMap("wellness_moods", k, Object.keys(clean).length ? clean : null); } catch (e) { console.error(e); return say(fb, tx("saveFail")); }
           K.toast(tx("saved"));
@@ -239,7 +242,7 @@ async function moodsTab() {
         K.button(tx("mReset"), "secondary", async () => {
           if (!await confirmed(tx("confirmReset"))) return;
           try { await K.setMap("wellness_moods", k, null); } catch { return say(fb, tx("saveFail")); }
-          rows.forEach(r => { r.es.value = ""; r.en.value = ""; }); K.toast(tx("saved"));
+          rows.forEach(r => { r.es.value = ""; r.en.value = ""; }); goSel.value = ""; K.toast(tx("saved"));
         }))));
   });
   return wrap;
