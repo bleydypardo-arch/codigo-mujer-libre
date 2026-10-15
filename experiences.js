@@ -5,15 +5,15 @@
 "use strict";
 let C = null;
 const ES = {
-  expBrandK: "CÓDIGO", expBrand: "Experiencias",
+  expBrandK: "CÓDIGO", expBrand: "Viajemos Juntas",
   storyK: "NUESTRA PROMESA", storyT: "Dos veces al año dejamos la rutina para vivir algo extraordinario. Juntas.",
   storyP: "No son simples viajes: son capítulos que vas a contar durante años. Lugares que te cambian, mujeres que se vuelven familia y momentos que solo pasan cuando decides vivirlos.",
   storyI: "I", storyII: "II", storySoon: "Próximamente", storySoonT: "Se anunciará muy pronto", storyOpen: "Descubrir",
   campCta: "Descubrir la experiencia", campInterested: n => n === 1 ? "1 mujer interesada" : n + " mujeres interesadas",
   campGoing: n => n === 1 ? "1 confirmada" : n + " confirmadas",
-  homeExpK: "CÓDIGO EXPERIENCIAS", homeExpSoon: "Nuestra próxima gran experiencia se anunciará pronto",
+  homeExpK: "CÓDIGO VIAJEMOS JUNTAS", homeExpSoon: "Nuestra próxima gran experiencia se anunciará pronto",
   homeExpSoonP: "Dos veces al año nos reunimos para vivir algo inolvidable. ¿A dónde vamos ahora?",
-  homeExpAll: "Ver todas las experiencias", homeExpMore: "También próximamente", homeExpGo: "Descubrir la experiencia",
+  homeExpAll: "Ver todos los viajes", homeExpMore: "También próximamente", homeExpGo: "Descubrir la experiencia",
   typesK: "EXPLORA POR TIPO", typesNote: "Toca un tipo para ver solo esas experiencias. Toca de nuevo para ver todas.",
   wellPick: "Código Pick", wellBook: "Reservar", wellSee: "Ver experiencia", wellUntil: d => "Hasta el " + d,
   addWellness: "+ Agregar experiencia de bienestar", addExperience: "+ Crear experiencia",
@@ -25,15 +25,15 @@ const ES = {
   dve: "Venecia, Italia", dveP: "Canales, luz de oro y una cena que no se olvida."
 };
 const EN = {
-  expBrandK: "CÓDIGO", expBrand: "Experiences",
+  expBrandK: "CÓDIGO", expBrand: "Let's Travel Together",
   storyK: "OUR PROMISE", storyT: "Twice a year we step out of routine to live something extraordinary. Together.",
   storyP: "These aren't just trips: they're chapters you'll be telling for years. Places that change you, women who become family and moments that only happen when you decide to live them.",
   storyI: "I", storyII: "II", storySoon: "Coming soon", storySoonT: "To be announced very soon", storyOpen: "Discover",
   campCta: "Discover the experience", campInterested: n => n === 1 ? "1 woman interested" : n + " women interested",
   campGoing: n => n === 1 ? "1 confirmed" : n + " confirmed",
-  homeExpK: "CÓDIGO EXPERIENCES", homeExpSoon: "Our next big experience will be announced soon",
+  homeExpK: "CÓDIGO LET'S TRAVEL TOGETHER", homeExpSoon: "Our next big experience will be announced soon",
   homeExpSoonP: "Twice a year, we come together for something unforgettable. Where should we go next?",
-  homeExpAll: "See all experiences", homeExpMore: "Also coming up", homeExpGo: "Discover the experience",
+  homeExpAll: "See all trips", homeExpMore: "Also coming up", homeExpGo: "Discover the experience",
   typesK: "EXPLORE BY TYPE", typesNote: "Tap a type to see only those experiences. Tap again to see them all.",
   wellPick: "Código Pick", wellBook: "Book", wellSee: "See experience", wellUntil: d => "Until " + d,
   addWellness: "+ Add wellness experience", addExperience: "+ Create experience",
@@ -54,7 +54,8 @@ const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "
 const el = (...a) => C.el(...a);
 const reduced = () => !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 const settingUrl = key => { const v = C.setting ? C.setting(key) : null; return v && v.url ? C.safeUrl(v.url) : ""; };
-const trips = () => (C.session() ? C.homeData().plans.filter(p => p.kind === "trip").sort(C.byDate) : []);
+// Only real trips: a restaurant / rooftop / party typed as an "experience" never shows in this module (it lives in Descubre).
+const trips = () => (C.session() ? C.homeData().plans.filter(p => p.kind === "trip" && !["dining", "party"].includes(C.planTag(p.id).cat)).sort(C.byDate) : []);
 const orlando = () => true;   // every city behaves exactly like Orlando (same cards, same photos, same buttons)
 const upcomingTrips = () => { const today = C.todayStr(); return trips().filter(p => !p.event_date || p.event_date >= today); };
 function featuredFirst(list) { return list.slice().sort((a, b) => (C.planTag(b.id).featured ? 1 : 0) - (C.planTag(a.id).featured ? 1 : 0)); }

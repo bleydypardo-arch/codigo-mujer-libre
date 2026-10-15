@@ -865,14 +865,16 @@ const isTestContent = (...texts) => texts.some(x => /\btest(ing)?\b/i.test(Strin
 let previewPlan = null, previewTag = null;   // admin "Vista previa": an unsaved plan shown in the detail sheet
 function planTag(id) { if (previewPlan && id === previewPlan.id) return previewTag || {}; const all = settings.plan_tags; return (all && typeof all === "object" && all[id]) || {}; }
 const EVENT_CATS = ["social", "dining", "wellness"];   // the "Descubre" page; paid events / deals ("events") live in their own page
+const sideTrip = p => p.kind === "trip" && ["dining", "party"].includes(planTag(p.id).cat);   // a restaurant / rooftop typed as an experience: shown in Descubre, never in the trips module
 function eventCategory(p) {
   if (p.kind === "wellness") return "wellness";
+  if (sideTrip(p)) return planTag(p.id).cat === "dining" ? "dining" : "social";
   const cat = planTag(p.id).cat;
   if (EVENT_CATS.includes(cat) || cat === "events") return cat;
   if (p.code === "Wellness") return "wellness";
   return p.code === "Social" || p.code === "Connection" ? "social" : "events";
 }
-const upcomingEvents = () => { const today = todayStr(); return plans.filter(p => (p.kind === "event" || p.kind === "wellness") && (!p.event_date || p.event_date >= today) && EVENT_CATS.includes(eventCategory(p))); };
+const upcomingEvents = () => { const today = todayStr(); return plans.filter(p => (p.kind === "event" || p.kind === "wellness" || sideTrip(p)) && (!p.event_date || p.event_date >= today) && EVENT_CATS.includes(eventCategory(p))); };
 let catSel = "all";
 let codeSel = "";          // set from "¿Cuál es tu código esta semana?" on Home
 const CAT_ICON = {
@@ -1342,7 +1344,7 @@ function renderEvents() {
   if (!list) return;
   const today = todayStr();
   const events = plans
-    .filter(p => (p.kind === "event" || p.kind === "wellness") && EVENT_CATS.includes(eventCategory(p)) && (!p.event_date || p.event_date >= today))
+    .filter(p => (p.kind === "event" || p.kind === "wellness" || sideTrip(p)) && EVENT_CATS.includes(eventCategory(p)) && (!p.event_date || p.event_date >= today))
     .sort(byDate);
   renderWeeklyCode();
   if (!events.length) {
@@ -1407,7 +1409,7 @@ const tripTypeOf = p => (TRIP_TYPES.includes(planTag(p.id).cat) ? planTag(p.id).
 function renderTrips() {
   const block = byId("tripsBlock"), list = byId("tripsList");
   if (!block || !list) return;
-  const trips = plans.filter(p => p.kind === "trip").sort(byDate);
+  const trips = plans.filter(p => p.kind === "trip" && !sideTrip(p)).sort(byDate);
   block.hidden = !session;
   const shown = trips.filter(p => tripType === "all" || tripTypeOf(p) === tripType);
   if (!shown.length) {
@@ -2140,7 +2142,7 @@ function initialize() {
     t, lang: () => currentLanguage, loc,
     session: () => session, profile: () => profile,
     isAdmin, isSuper, isContentAdmin, isStaff, announce, viewCity, hostTier, hostBadge, TIERS,
-    refreshPublic: async () => { if (session) await loadAll(); }, discoverPick, todayStr, eventCategory,
+    refreshPublic: async () => { if (session) await loadAll(); }, discoverPick, todayStr, eventCategory, sideTrip,
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,
     setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,

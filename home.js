@@ -283,7 +283,7 @@ function renderDiscover() {
   // Every week a different happy hour, restaurant and wellness idea (rotating through what the admin has already loaded)
   const wk = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / (7 * DAY));
   const weekly = list => { const L = list.slice().sort((x, y) => String(x.id).localeCompare(String(y.id))); return L.length ? L[((wk % L.length) + L.length) % L.length] : null; };
-  const live = plans.filter(p => (p.kind === "event" || p.kind === "wellness") && (!p.event_date || p.event_date >= C.todayStr()));
+  const live = plans.filter(p => (p.kind === "event" || p.kind === "wellness" || (C.sideTrip && C.sideTrip(p))) && (!p.event_date || p.event_date >= C.todayStr()));
   const slots = [
     { p: weekly(live.filter(p => C.eventCategory(p) === "social")), k: t("discHappyK"), code: "Social", fb: [t("discHappyT"), t("discHappySub"), "events"] },
     { p: weekly(live.filter(p => C.eventCategory(p) === "dining")), k: t("discDineK"), code: "Social", fb: [t("discDineT"), t("discDineSub"), "events"] },
