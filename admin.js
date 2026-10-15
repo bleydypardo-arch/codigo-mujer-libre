@@ -20,7 +20,7 @@ const S = {
     useMyPhoto: "Usar mi foto de perfil", useMyPhotoNone: "Primero sube tu foto en Mi perfil.", useMyPhotoFail: "No se pudo copiar la foto. Intenta de nuevo.", imgFounderTitle: "Foto de la fundadora", imgFounderHelp: "Aparece en «Nuestra Historia». Mejor una foto vertical o cuadrada. Sube una nueva cuando quieras cambiarla.",
     imgDefault: "Quitar y usar la predeterminada",
     imgMatchaTitle: "Imagen de Matcha y Arte", imgMatchaHelp: "Aparece en la tarjeta de Inicio y en la página de la colección.",
-    fType: "Tipo de plan (filtros de Eventos)", fTypeAuto: "Automático (según el código)", fType_social: "Happy hour y social", fType_dining: "Restaurante y comida", fType_events: "Evento o plan (conciertos, mercados, festivales, exposiciones, concursos…)",
+    fType: "Tipo de plan (filtros de Eventos)", fTypeAuto: "Automático (según el código)", fType_social: "Happy hour y social", fType_dining: "Restaurante y comida", fType_wellness: "Wellness (spa, masajes, belleza)", fType_events: "Evento o promoción de pago (concierto, teatro, descuentos…) — va a Eventos y promociones",
     fWcat: "Categoría de bienestar", fWcatNone: "— Sin categoría —", fMatcha: "Incluir en la colección «Matcha y Arte»",
     fUrlOffer: "Enlace de la oferta o reserva (https://…)",
     imgRemove: "Quitar imagen", fTripType: "Tipo de experiencia", fTripTypeHelp: "Define en qué tipo aparece en Viajes y Experiencias.",
@@ -88,7 +88,7 @@ const S = {
     useMyPhoto: "Use my profile photo", useMyPhotoNone: "Upload your photo in My profile first.", useMyPhotoFail: "Could not copy the photo. Please try again.", imgFounderTitle: "Founder photo", imgFounderHelp: "Shown on “Our Story”. A portrait or square photo works best. Upload a new one anytime to change it.",
     imgDefault: "Remove and use the default",
     imgMatchaTitle: "Matcha & Art image", imgMatchaHelp: "Shown on the Home card and on the collection page.",
-    fType: "Plan type (Events filters)", fTypeAuto: "Automatic (from the code)", fType_social: "Happy hour & social", fType_dining: "Restaurant & food", fType_events: "Event or thing to do (concerts, markets, festivals, exhibitions, contests…)",
+    fType: "Plan type (Events filters)", fTypeAuto: "Automatic (from the code)", fType_social: "Happy hour & social", fType_dining: "Restaurant & food", fType_wellness: "Wellness (spa, massage, beauty)", fType_events: "Paid event or deal (concert, theater, discounts…) — goes to Events & deals",
     fWcat: "Wellness category", fWcatNone: "— No category —", fMatcha: "Include in the “Matcha & Art” collection",
     fUrlOffer: "Offer or booking link (https://…)",
     imgRemove: "Remove image", fTripType: "Experience type", fTripTypeHelp: "Sets which type it appears under in Travel & Experiences.",
@@ -238,7 +238,7 @@ function groupsFor() {
   return base.map(([g, keys]) => [g, keys.filter(k => allowedTabs().includes(k))]).filter(([, keys]) => keys.length);
 }
 const CODES = ["Social", "Wellness", "Faith", "Adventure", "Family", "Connection", "Support", "Recharge"];
-const EVENT_TYPES = ["social", "dining", "events"];
+const EVENT_TYPES = ["social", "dining", "wellness", "events"];
 const WCATS = ["spa", "massage", "facial", "skincare", "nails", "hair", "beauty", "gym", "fitness", "pilates", "yoga", "movement", "meditation", "mind", "retreat", "food", "workshop", "offer", "promo", "other"];
 const WCATS_LEGACY = ["movement", "mind"];   // older combined categories: kept for existing items, not offered for new ones
 const TRIP_TYPES = ["trip", "retreat", "party", "dining", "nature"];

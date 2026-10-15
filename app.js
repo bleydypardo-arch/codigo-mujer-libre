@@ -32,8 +32,8 @@ const translations = {
     articleTitle: "Volver a hacer amigas de adulta",
     articleBody: "Conversaciones, ideas y recomendaciones para crear conexiones reales.",
     discover: "DESCUBRE",
-    eventsTitle: "Eventos",
-    eventsIntro: "Conciertos, festivales, mercados y encuentros con fecha.",
+    eventsTitle: "Descubre lo mejor de tu ciudad",
+    eventsIntro: "Happy hours, restaurantes y bienestar para disfrutar cerca de ti.",
     communitySection: "COMUNIDAD",
     communityTitle: "Nuestra comunidad",
     communityIntro: "Conoce mujeres, comparte intereses y crea conexiones reales.",
@@ -59,7 +59,7 @@ const translations = {
     familySub: "Planes y actividades familiares",
     supportNote: "Este espacio ofrece apoyo comunitario y no reemplaza servicios profesionales o de emergencia.",
     home: "Inicio",
-    events: "Eventos",
+    events: "Descubre",
     communityNav: "Comunidad",
     messages: "Mensajes",
     wellness: "Bienestar",
@@ -87,8 +87,8 @@ const translations = {
     articleTitle: "Making friends again as an adult",
     articleBody: "Conversations, ideas and recommendations for creating real connections.",
     discover: "DISCOVER",
-    eventsTitle: "Events",
-    eventsIntro: "Concerts, festivals, markets and gatherings with a date.",
+    eventsTitle: "Discover the best of your city",
+    eventsIntro: "Happy hours, restaurants and wellness to enjoy near you.",
     communitySection: "COMMUNITY",
     communityTitle: "Our community",
     communityIntro: "Meet women, share interests and build real connections.",
@@ -114,7 +114,7 @@ const translations = {
     familySub: "Family plans and activities",
     supportNote: "This space offers community support and does not replace professional or emergency services.",
     home: "Home",
-    events: "Events",
+    events: "Discover",
     communityNav: "Community",
     messages: "Messages",
     wellness: "Wellness",
@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  upcomingTitle: "Próximos eventos", seeAll: "Ver todas",
+  upcomingTitle: "Eventos y promociones", seeAll: "Ver todos", agendaTitle: "Eventos y promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  upcomingTitle: "Upcoming events", seeAll: "See all",
+  upcomingTitle: "Events & deals", seeAll: "See all", agendaTitle: "Events & deals", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -378,7 +378,7 @@ Object.assign(translations.es, {
   justNow: "Ahora mismo", minsAgo: n => "Hace " + n + " min",
   noMessages: "Tu buzón privado", noMessagesText: "Aquí verás los mensajes que le envíes a la administradora y sus respuestas. Solo ella puede leerlos.",
   msgAnswered: "Respondido",
-  catsLabel: "¿Qué te apetece?", cat_social: "Happy hours y social", cat_dining: "Restaurantes y comida", cat_events: "Eventos y planes",
+  catsLabel: "¿Qué te apetece?", cat_social: "Happy hours y social", cat_dining: "Restaurantes y comida", cat_events: "Eventos y promociones", cat_wellness: "Wellness", catDesc_wellness: "Spas, masajes y belleza", catEmpty_wellness: "Pronto recomendaremos lugares de bienestar",
   catDesc_social: "Brindis, terrazas, noches", catDesc_dining: "Brunch, cenas, cafés", catDesc_events: "Conciertos, mercados, festivales, exposiciones",
   catCount: n => n === 1 ? "1 plan" : n + " planes",
   catEmpty_social: "Pronto habrá nuevos happy hours", catEmpty_dining: "Pronto recomendaremos restaurantes", catEmpty_events: "Pronto habrá nuevos eventos",
@@ -418,7 +418,7 @@ Object.assign(translations.en, {
   justNow: "Just now", minsAgo: n => n + " min ago",
   noMessages: "Your private inbox", noMessagesText: "Here you'll see the messages you send to the administrator and her replies. Only she can read them.",
   msgAnswered: "Answered",
-  catsLabel: "What are you in the mood for?", cat_social: "Happy hours & social", cat_dining: "Restaurants & food", cat_events: "Events & things to do",
+  catsLabel: "What are you in the mood for?", cat_social: "Happy hours & social", cat_dining: "Restaurants & food", cat_events: "Events & deals", cat_wellness: "Wellness", catDesc_wellness: "Spas, massage and beauty", catEmpty_wellness: "Wellness picks are coming soon",
   catDesc_social: "Drinks, rooftops, nights out", catDesc_dining: "Brunch, dinners, cafés", catDesc_events: "Concerts, markets, festivals, exhibitions",
   catCount: n => n === 1 ? "1 plan" : n + " plans",
   catEmpty_social: "New happy hours are coming soon", catEmpty_dining: "Restaurant picks are coming soon", catEmpty_events: "New events are coming soon",
@@ -776,6 +776,7 @@ function renderAll() {
   renderQuote();
   renderFeatured();
   renderEvents();
+  renderAgenda();
   renderUpcoming();
   paintSheet(true);
   renderTrips();
@@ -863,26 +864,28 @@ function renderQuote() {
 const isTestContent = (...texts) => texts.some(x => /\btest(ing)?\b/i.test(String(x || "")));
 let previewPlan = null, previewTag = null;   // admin "Vista previa": an unsaved plan shown in the detail sheet
 function planTag(id) { if (previewPlan && id === previewPlan.id) return previewTag || {}; const all = settings.plan_tags; return (all && typeof all === "object" && all[id]) || {}; }
-const EVENT_CATS = ["social", "dining", "events"];
+const EVENT_CATS = ["social", "dining", "wellness"];   // the "Descubre" page; paid events / deals ("events") live in their own page
 function eventCategory(p) {
+  if (p.kind === "wellness") return "wellness";
   const cat = planTag(p.id).cat;
-  if (EVENT_CATS.includes(cat)) return cat;
+  if (EVENT_CATS.includes(cat) || cat === "events") return cat;
+  if (p.code === "Wellness") return "wellness";
   return p.code === "Social" || p.code === "Connection" ? "social" : "events";
 }
-const upcomingEvents = () => { const today = todayStr(); return plans.filter(p => p.kind === "event" && (!p.event_date || p.event_date >= today)); };
+const upcomingEvents = () => { const today = todayStr(); return plans.filter(p => (p.kind === "event" || p.kind === "wellness") && (!p.event_date || p.event_date >= today) && EVENT_CATS.includes(eventCategory(p))); };
 let catSel = "all";
 let codeSel = "";          // set from "¿Cuál es tu código esta semana?" on Home
 const CAT_ICON = {
   social: "M8 3h8l-1 7a3 3 0 0 1-6 0zM12 13v6M8.5 21h7",
   dining: "M7 3v8a2 2 0 0 0 2 2v8M7 3v5M11 3v5M17 3c-1.7 1-3 3-3 6v4h3v8",
+  wellness: "M12 21c-4-3-7-6-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 4-3 7-7 10z",
   events: "M12 3l2.4 5.2 5.6.6-4.2 3.8 1.2 5.6L12 15.4 6.9 18.2l1.2-5.6L4 8.8l5.6-.6z"
 };
 function renderWeeklyCode() {            // (name kept: renderAll calls it) → Events discovery categories
   const box = byId("evCats");
   if (!box) return;
   const evs = session ? upcomingEvents() : [];
-  box.hidden = true; box.replaceChildren(); catSel = "all";
-  if (true) return;
+  box.hidden = !session;
   if (!EVENT_CATS.includes(catSel)) catSel = "all";
   box.replaceChildren(...EVENT_CATS.map(cat => {
     const n = evs.filter(p => eventCategory(p) === cat).length;
@@ -1310,14 +1313,22 @@ function renderUpcoming() {
   if (!host) return;
   const today = todayStr();
   const shown = null;
-  const next = session ? plans.filter(p => p.kind === "event" && p.event_date && p.event_date >= today && eventCategory(p) === "events").sort(byDate).slice(0, 3) : [];
+  const next = session ? plans.filter(p => p.kind === "event" && eventCategory(p) === "events" && (!p.event_date || p.event_date >= today)).sort(byDate).slice(0, 3) : [];
   host.hidden = !next.length;
   if (!next.length) return host.replaceChildren();
   const all = el("button", { type: "button", class: "see-all", text: t("seeAll") + " →" });
-  all.addEventListener("click", () => showPage("events"));
+  all.addEventListener("click", () => showPage("agenda"));
   host.replaceChildren(
     el("div", { class: "section-head" }, el("h2", { text: t("upcomingTitle") }), all),
     el("div", { class: "ev-grid" }, ...next.map(p => eventCard(p, true))));
+}
+function renderAgenda() {
+  const list = byId("agendaList");
+  if (!list) return;
+  const today = todayStr();
+  const evs = plans.filter(p => p.kind === "event" && eventCategory(p) === "events" && (!p.event_date || p.event_date >= today)).sort(byDate);
+  if (!evs.length) return list.replaceChildren(session ? emptyState("🎟️", t("agEmptyTitle"), t("agEmptyText")) : "");
+  list.replaceChildren(...evs.map(p => eventCard(p)));
 }
 function byDate(a, b) {
   if (a.event_date && b.event_date) return a.event_date < b.event_date ? -1 : a.event_date > b.event_date ? 1 : 0;
@@ -1331,7 +1342,7 @@ function renderEvents() {
   if (!list) return;
   const today = todayStr();
   const events = plans
-    .filter(p => p.kind === "event" && eventCategory(p) === "events" && (!p.event_date || p.event_date >= today))
+    .filter(p => (p.kind === "event" || p.kind === "wellness") && EVENT_CATS.includes(eventCategory(p)) && (!p.event_date || p.event_date >= today))
     .sort(byDate);
   renderWeeklyCode();
   if (!events.length) {
@@ -1447,7 +1458,7 @@ async function respond(planId, status) {
   if (current === status) mine.delete(planId);
   else { mine.set(planId, status); c[status] += 1; }
   counts.set(planId, c);
-  renderEvents(); renderTrips(); renderFeatured(); renderWellnessCards(); renderUpcoming(); paintSheet(true); homeRefresh();
+  renderEvents(); renderAgenda(); renderTrips(); renderFeatured(); renderWellnessCards(); renderUpcoming(); paintSheet(true); homeRefresh();
   try {
     let result;
     if (current === status) {
@@ -1466,7 +1477,7 @@ async function respond(planId, status) {
     announce("respondFail");
     try { await loadResponses(); await refreshCounts(); } catch { /* keep optimistic state */ }
   }
-  renderEvents(); renderTrips(); renderFeatured(); renderWellnessCards(); renderUpcoming(); paintSheet(true); homeRefresh();
+  renderEvents(); renderAgenda(); renderTrips(); renderFeatured(); renderWellnessCards(); renderUpcoming(); paintSheet(true); homeRefresh();
 }
 async function loadResponses() {
   const { data, error } = await db.from("responses").select("plan_id,status").eq("user_id", session.user.id);
