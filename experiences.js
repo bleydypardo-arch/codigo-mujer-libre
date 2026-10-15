@@ -322,8 +322,6 @@ function paintHome() {
   if (!C.session()) { host.hidden = true; host.replaceChildren(); return; }
   host.hidden = false;
   const p = featuredFirst(upcomingTrips())[0];
-  // outside Orlando the city's experiences live in Home "Algo distinto esta semana": no separate card here
-  if (!orlando() && p) { host.hidden = true; host.replaceChildren(); return; }
   const go = () => { if (window.CMLRedesign) window.CMLRedesign.paintTravel(); C.showPage("travel"); };
   // same small brand signature as the Travel page header (icon + CÓDIGO EXPERIENCES)
   const brand = el("span", { class: "hx-sig" }, el("span", { class: "hx-ic", "aria-hidden": "true" }), el("span", { class: "hx-sig-t", text: t("travelKicker") }));
@@ -352,8 +350,7 @@ function paintHome() {
     el("h2", { class: "hx-title", text: C.pick(p, "title") || "—" }),
     shortStory(p) ? el("p", { class: "hx-p", text: shortStory(p) }) : null,
     av ? el("span", { class: "camp-status " + av.cls, text: av.text }) : null,
-    el("div", { class: "hx-acts" }, open, all),
-    moreRows(p)));
+    el("div", { class: "hx-acts" }, open, all)));
 }
 // the other upcoming experiences of this city, right on Home (so a city with 3 shows all 3 up front)
 function moreRows(first) {

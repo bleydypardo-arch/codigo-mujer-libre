@@ -32,8 +32,8 @@ const translations = {
     articleTitle: "Volver a hacer amigas de adulta",
     articleBody: "Conversaciones, ideas y recomendaciones para crear conexiones reales.",
     discover: "DESCUBRE",
-    eventsTitle: "Planes & Eventos",
-    eventsIntro: "Descubre actividades para conectar, compartir y disfrutar juntas.",
+    eventsTitle: "Eventos",
+    eventsIntro: "Conciertos, festivales, mercados y encuentros con fecha.",
     communitySection: "COMUNIDAD",
     communityTitle: "Nuestra comunidad",
     communityIntro: "Conoce mujeres, comparte intereses y crea conexiones reales.",
@@ -87,8 +87,8 @@ const translations = {
     articleTitle: "Making friends again as an adult",
     articleBody: "Conversations, ideas and recommendations for creating real connections.",
     discover: "DISCOVER",
-    eventsTitle: "Plans & Events",
-    eventsIntro: "Discover activities where we can connect, share and enjoy time together.",
+    eventsTitle: "Events",
+    eventsIntro: "Concerts, festivals, markets and gatherings with a date.",
     communitySection: "COMMUNITY",
     communityTitle: "Our community",
     communityIntro: "Meet women, share interests and build real connections.",
@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  upcomingTitle: "Próximas experiencias", seeAll: "Ver todas",
+  upcomingTitle: "Próximos eventos", seeAll: "Ver todas",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  upcomingTitle: "Upcoming experiences", seeAll: "See all",
+  upcomingTitle: "Upcoming events", seeAll: "See all",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -748,7 +748,7 @@ function setLanguage(language, persist = true) {
   ["langBtn", "authLang", "pendLang", "welLang"].forEach(id => {
     const button = byId(id);
     if (button) {
-      button.textContent = currentLanguage === "es" ? "EN" : "ES";
+      button.replaceChildren(Object.assign(document.createElement("span"), { className: "lg" + (currentLanguage === "es" ? " on" : ""), textContent: "ES" }), Object.assign(document.createElement("span"), { className: "lg" + (currentLanguage === "en" ? " on" : ""), textContent: "EN" }));
       button.setAttribute("aria-label", t("switchLanguage"));
     }
   });
@@ -881,7 +881,8 @@ function renderWeeklyCode() {            // (name kept: renderAll calls it) → 
   const box = byId("evCats");
   if (!box) return;
   const evs = session ? upcomingEvents() : [];
-  box.hidden = !session;
+  box.hidden = true; box.replaceChildren(); catSel = "all";
+  if (true) return;
   if (!EVENT_CATS.includes(catSel)) catSel = "all";
   box.replaceChildren(...EVENT_CATS.map(cat => {
     const n = evs.filter(p => eventCategory(p) === cat).length;
@@ -1308,8 +1309,8 @@ function renderUpcoming() {
   const host = byId("homeUpcoming");
   if (!host) return;
   const today = todayStr();
-  const shown = discoverPick();   // already featured above in "Algo distinto": not repeated here
-  const next = session ? plans.filter(p => p.kind === "event" && p.event_date && p.event_date >= today && !(shown && p.id === shown.id)).sort(byDate).slice(0, 3) : [];
+  const shown = null;
+  const next = session ? plans.filter(p => p.kind === "event" && p.event_date && p.event_date >= today && eventCategory(p) === "events").sort(byDate).slice(0, 3) : [];
   host.hidden = !next.length;
   if (!next.length) return host.replaceChildren();
   const all = el("button", { type: "button", class: "see-all", text: t("seeAll") + " →" });
@@ -1330,7 +1331,7 @@ function renderEvents() {
   if (!list) return;
   const today = todayStr();
   const events = plans
-    .filter(p => p.kind === "event" && (!p.event_date || p.event_date >= today))
+    .filter(p => p.kind === "event" && eventCategory(p) === "events" && (!p.event_date || p.event_date >= today))
     .sort(byDate);
   renderWeeklyCode();
   if (!events.length) {
@@ -2128,7 +2129,7 @@ function initialize() {
     t, lang: () => currentLanguage, loc,
     session: () => session, profile: () => profile,
     isAdmin, isSuper, isContentAdmin, isStaff, announce, viewCity, hostTier, hostBadge, TIERS,
-    refreshPublic: async () => { if (session) await loadAll(); }, discoverPick,
+    refreshPublic: async () => { if (session) await loadAll(); }, discoverPick, todayStr, eventCategory,
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,
     setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,

@@ -23,7 +23,7 @@ const ES = {
   weekBirthdays: "CUMPLEAÑOS",
   discLabel: "HAZ ALGO NUEVO", discTitle: "Algo distinto para esta semana", discNewCode: "PRUEBA ALGO DISTINTO", discForYou: "PARA TI",
   discEvents: "Planes y eventos", discEventsSub: "Mira todo lo que viene", discTravelK: "VIAJES Y EXPERIENCIAS",
-  discWellK: "BIENESTAR", discWellTitle: "¿Cómo te sientes hoy?", discWellSub: "Una idea sencilla para cuidarte",
+  discWellK: "BIENESTAR", discHappyK: "HAPPY HOUR DE LA SEMANA", discHappyT: "Happy hours", discHappySub: "Pronto: uno distinto cada semana", discDineK: "RESTAURANTE DE LA SEMANA", discDineT: "Restaurantes", discDineSub: "Pronto: uno distinto cada semana", discWellTitle: "¿Cómo te sientes hoy?", discWellSub: "Una idea sencilla para cuidarte",
   talkLabel: "HABLEMOS", talkCta: "Compartir mi respuesta",
   ckTitle: "Completa tu perfil", ckSub: "Así las demás te reconocen en eventos y en la comunidad.", ckOf: (a, b) => a + " de " + b,
   ckPhoto: "Foto", ckBirthday: "Cumpleaños", ckInterests: "Intereses", ckHide: "Ocultar"
@@ -42,7 +42,7 @@ const EN = {
   weekBirthdays: "BIRTHDAYS",
   discLabel: "TRY SOMETHING NEW", discTitle: "Something different this week", discNewCode: "TRY SOMETHING DIFFERENT", discForYou: "FOR YOU",
   discEvents: "Plans & events", discEventsSub: "See everything coming up", discTravelK: "TRAVEL & EXPERIENCES",
-  discWellK: "WELLNESS", discWellTitle: "How are you feeling today?", discWellSub: "A simple idea to take care of yourself",
+  discWellK: "WELLNESS", discHappyK: "HAPPY HOUR OF THE WEEK", discHappyT: "Happy hours", discHappySub: "Soon: a different one every week", discDineK: "RESTAURANT OF THE WEEK", discDineT: "Restaurants", discDineSub: "Soon: a different one every week", discWellTitle: "How are you feeling today?", discWellSub: "A simple idea to take care of yourself",
   talkLabel: "LET'S TALK", talkCta: "Share my answer",
   ckTitle: "Complete your profile", ckSub: "So others recognize you at events and in the community.", ckOf: (a, b) => a + " of " + b,
   ckPhoto: "Photo", ckBirthday: "Birthday", ckInterests: "Interests", ckHide: "Hide"
@@ -280,34 +280,22 @@ function renderDiscover() {
   const today = day0().getTime();
   const tried = new Set(plans.filter(p => mine.has(p.id) && p.code).map(p => p.code));
   const rows = [];
-  const cityTrips = (!(C.viewCity && C.viewCity() === "orlando") && window.CMLExp && window.CMLExp.cityTrips) ? window.CMLExp.cityTrips().slice(0, 3) : [];
-  if (cityTrips.length) {
-    // a city other than Orlando: its upcoming experiences ARE "Algo distinto esta semana" (up to 3)
-    const fallback = window.CMLRedesign ? window.CMLRedesign.travelImage() : "";
-    cityTrips.forEach(x => {
-      const img = C.safeUrl((C.planTag(x.id) || {}).homeImg || "") || C.safeUrl(x.image_url) || window.CMLExp.heroPhoto() || fallback;
-      rows.push(disc(thumb(img, "Adventure", false, window.CMLExp.heroPhoto()), "Código Experiences", C.pick(x, "title") || "—",
-        [window.CMLExp.dateRange(x), x.location].filter(Boolean).join(" · "), () => C.openDetail(x.id)));
-    });
-    host.hidden = false;
-    host.replaceChildren(el("small", { class: "rose", text: t("discLabel") }), el("h2", { text: t("discTitle") }), el("div", { class: "disc-list" }, ...rows));
-    return;
-  }
-  const ev = C.discoverPick();
-  if (ev) {
-    const evTag = C.planTag(ev.id), homeImg = C.safeUrl(evTag.homeImg || "");
-    rows.push(disc(thumb(homeImg || C.safeUrl(ev.image_url), ev.code, !!homeImg || !!evTag.full), ev.code && !tried.has(ev.code) ? t("discNewCode") : t("discForYou"),
-      C.pick(ev, "title") || "—", ev.event_date ? shortDate(ev.event_date) + (ev.location ? " · " + ev.location : "") : (ev.location || ""),
-      () => C.openDetail(ev.id)));
-  } else rows.push(disc(thumb("", "Social"), t("discForYou"), t("discEvents"), t("discEventsSub"), go2("events")));
-  const trip = plans.find(p => p.kind === "trip");
-  const travelImg = window.CMLRedesign ? window.CMLRedesign.travelImage() : "";
-  rows.push(disc(thumb(travelImg, "Adventure"), t("discTravelK"),
-    trip ? (C.pick(trip, "title") || C.t("travelTitle")) : C.t("travelTitle"),
-    trip ? [trip.location, trip.date_text].filter(Boolean).join(" · ") : C.t("travelTeaser"), go2("travel")));
-  const well = plans.find(p => p.kind === "wellness");
-  rows.push(disc(thumb(well ? C.safeUrl(well.image_url) : "", "Wellness"), t("discWellK"),
-    well ? (C.pick(well, "title") || t("discWellTitle")) : t("discWellTitle"), well ? (C.pick(well, "desc") || t("discWellSub")) : t("discWellSub"), go2("wellness")));
+  // Every week a different happy hour, restaurant and wellness idea (rotating through what the admin has already loaded)
+  const wk = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / (7 * DAY));
+  const weekly = list => { const L = list.slice().sort((x, y) => String(x.id).localeCompare(String(y.id))); return L.length ? L[((wk % L.length) + L.length) % L.length] : null; };
+  const live = plans.filter(p => p.kind === "event" && (!p.event_date || p.event_date >= C.todayStr()));
+  const slots = [
+    { p: weekly(live.filter(p => C.eventCategory(p) === "social")), k: t("discHappyK"), code: "Social", fb: [t("discHappyT"), t("discHappySub"), "events"] },
+    { p: weekly(live.filter(p => C.eventCategory(p) === "dining")), k: t("discDineK"), code: "Social", fb: [t("discDineT"), t("discDineSub"), "events"] },
+    { p: weekly(plans.filter(p => p.kind === "wellness")), k: t("discWellK"), code: "Wellness", fb: [t("discWellTitle"), t("discWellSub"), "wellness"] }
+  ];
+  slots.forEach(s => {
+    if (s.p) {
+      const tag = C.planTag(s.p.id), hi = C.safeUrl(tag.homeImg || "");
+      rows.push(disc(thumb(hi || C.safeUrl(s.p.image_url), s.code, !!hi || !!tag.full), s.k, C.pick(s.p, "title") || "—",
+        [s.p.event_date ? shortDate(s.p.event_date) : "", s.p.location].filter(Boolean).join(" · ") || C.pick(s.p, "desc") || "", () => C.openDetail(s.p.id)));
+    } else rows.push(disc(thumb("", s.code), s.k, s.fb[0], s.fb[1], go2(s.fb[2])));
+  });
   host.hidden = false;
   host.replaceChildren(el("small", { class: "rose", text: t("discLabel") }), el("h2", { text: t("discTitle") }), el("div", { class: "disc-list" }, ...rows));
 }
