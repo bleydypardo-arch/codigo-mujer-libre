@@ -5,13 +5,13 @@
 "use strict";
 let C = null;
 const ES = {
-  expBrandK: "CÓDIGO", expBrand: "Experiences",
+  expBrandK: "CÓDIGO", expBrand: "Experiencias",
   storyK: "NUESTRA PROMESA", storyT: "Dos veces al año dejamos la rutina para vivir algo extraordinario. Juntas.",
   storyP: "No son simples viajes: son capítulos que vas a contar durante años. Lugares que te cambian, mujeres que se vuelven familia y momentos que solo pasan cuando decides vivirlos.",
   storyI: "I", storyII: "II", storySoon: "Próximamente", storySoonT: "Se anunciará muy pronto", storyOpen: "Descubrir",
   campCta: "Descubrir la experiencia", campInterested: n => n === 1 ? "1 mujer interesada" : n + " mujeres interesadas",
   campGoing: n => n === 1 ? "1 confirmada" : n + " confirmadas",
-  homeExpK: "CÓDIGO EXPERIENCES", homeExpSoon: "Nuestra próxima gran experiencia se anunciará pronto",
+  homeExpK: "CÓDIGO EXPERIENCIAS", homeExpSoon: "Nuestra próxima gran experiencia se anunciará pronto",
   homeExpSoonP: "Dos veces al año nos reunimos para vivir algo inolvidable. ¿A dónde vamos ahora?",
   homeExpAll: "Ver todas las experiencias", homeExpMore: "También próximamente", homeExpGo: "Descubrir la experiencia",
   typesK: "EXPLORA POR TIPO", typesNote: "Toca un tipo para ver solo esas experiencias. Toca de nuevo para ver todas.",
@@ -340,7 +340,7 @@ function paintHome() {
   const all = el("button", { type: "button", class: "hx-all", text: t("homeExpAll") });
   all.addEventListener("click", go);
   const av = availability(p);
-  const own = orlando() && C.safeUrl(p.image_url);   // Orlando: the experience's own photo, as before
+  const own = "";   // same Home look in every city (the women by the sea)
   host.className = "hx-card" + (own ? "" : homeCls(homeImg()));
   const bg = el("span", { class: "hx-bg", "aria-hidden": "true" });
   bg.style.backgroundImage = 'url("' + (own || homeImg()).replace(/"/g, "%22") + '")';

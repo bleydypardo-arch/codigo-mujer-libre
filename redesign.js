@@ -21,7 +21,7 @@ const ES = {
   expTrip: "Viaje grupal", expRetreat: "Retiro de bienestar", expParty: "Fiesta temática", expDining: "Experiencia gastronómica", expNature: "Aventura / Naturaleza",
   travelEmpty: "Pronto anunciaremos la próxima gran experiencia.",
   travelNote: "Organizamos alrededor de dos grandes experiencias oficiales al año. Toca un tipo para ver lo que viene.",
-  travelKicker: "CÓDIGO EXPERIENCES", travelLead: "Dos experiencias inolvidables al año. Una comunidad.",
+  travelKicker: "CÓDIGO EXPERIENCIAS", travelLead: "Dos experiencias inolvidables al año. Una comunidad.",
   travelIntro: "Dos veces al año salimos de la pantalla para vivir juntas algo extraordinario.",
   travelBadge: "2 experiencias insignia al año", travelBadge2: "Descubre · Conecta · Viaja · Vive", travelCta: "Ver la próxima experiencia",
   tripsLabel: "EXPERIENCIAS", tripCount: n => n === 1 ? "1 experiencia" : n + " experiencias", tripSoonShort: "Próximamente",

@@ -145,7 +145,7 @@ const S = {
 Object.assign(S.es, {
   newWellness: "+ Agregar experiencia de bienestar", newTrip: "+ Crear experiencia Código", newEvent: "+ Nuevo plan o evento",
   studioWell: "Estudio de Bienestar: publica spas, masajes, gimnasios, pilates, yoga, faciales, uñas, cabello, retiros, comida sana, talleres, ofertas y promociones. Las miembros verán una tarjeta con foto, categoría, precio y botón de acción.",
-  studioTrip: "Estudio de Código Experiences: crea la página completa de cada experiencia. Vista previa antes de publicar; las secciones vacías no se muestran.",
+  studioTrip: "Estudio de Código Experiencias: crea la página completa de cada experiencia. Vista previa antes de publicar; las secciones vacías no se muestran.",
   fStatus: "Estado de inscripción", st_auto: "— Automático (según cupo y fecha límite) —", st_open: "Inscripciones abiertas", st_waitlist: "Lista de espera", st_soldout: "Agotado", st_closed: "Cerrado",
   fFeaturedTrip: "Experiencia destacada (aparece primero y en Inicio)", fFeaturedWell: "Código Pick (destacado, aparece primero)",
   fWcatOther: "Nombre de la categoría (si eliges «Otro»)", fDateTrip: "Fecha de inicio", fTimeTrip: "Hora de inicio",
