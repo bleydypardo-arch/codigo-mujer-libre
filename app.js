@@ -1299,7 +1299,7 @@ function discoverPick() {
   const today = todayStr();
   // an event that is the same outing as an experience already shown in "Código Experiences" is not repeated here
   const tripTitles = new Set(plans.filter(p => p.kind === "trip").map(p => String(p.title_es || p.title_en || "").trim().toLowerCase()).filter(Boolean));
-  const dedupe = viewCity() !== "orlando";   // Orlando keeps its original behaviour
+  const dedupe = false;   // every city behaves like Orlando
   const ok = p => p.kind === "event" && (!p.event_date || p.event_date >= today) && !(dedupe && tripTitles.has(String(p.title_es || p.title_en || "").trim().toLowerCase()));
   const pinned = plans.find(p => ok(p) && planTag(p.id).pin);
   if (pinned) return pinned;
