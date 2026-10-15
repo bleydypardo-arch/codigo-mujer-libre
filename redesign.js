@@ -294,31 +294,31 @@ function compose(text) {
 
 // ---------- Wellness: need/mood → prewritten response ----------
 const TIPS = {
-  energy: { es: ["Una caminata corta al sol y un vaso de agua pueden cambiar tu tarde. Mira también los planes de esta semana en Descubre.", "Elige una sola cosa que te ilusione hoy y dale espacio. La energía también se contagia: escribe a una amiga."],
-            en: ["A short walk in the sun and a glass of water can change your afternoon. Check this week's plans in Discover, too.", "Pick one thing you're looking forward to today and give it room. Energy is contagious: text a friend."] },
+  energy: { es: ["Una caminata corta al sol y un vaso de agua pueden cambiar tu tarde. Mira también los planes de bienestar en esta página.", "Elige una sola cosa que te ilusione hoy y dale espacio. La energía también se contagia: escribe a una amiga."],
+            en: ["A short walk in the sun and a glass of water can change your afternoon. See the wellness plans on this page, too.", "Pick one thing you're looking forward to today and give it room. Energy is contagious: text a friend."] },
   stress: { es: ["Respira: inhala 4, sostén 4, exhala 6, cinco veces. Si quieres hablarlo, ve a Apoyo y toca «Necesito hablar».", "Escribe en una lista lo que te preocupa y elige solo lo próximo. Lo demás puede esperar."],
             en: ["Breathe: in for 4, hold for 4, out for 6, five times. If you'd like to talk, go to Support and tap “I need to talk”.", "Write down what's on your mind and choose only the next step. The rest can wait."] },
   sleep:  { es: ["Esta noche, deja el teléfono 30 minutos antes de dormir y termina el día dando gracias por tres cosas.", "Una luz tenue, una bebida caliente sin cafeína y una oración breve preparan tu descanso."],
             en: ["Tonight, put your phone away 30 minutes before bed and end the day thanking God for three things.", "Dim light, a warm caffeine-free drink and a short prayer help you get ready to rest."] },
   eat:    { es: ["Agrega un color más a tu plato hoy y toma agua con cada comida. Pequeños pasos cuentan.", "Comer acompañada también nutre: invita a alguien a compartir un café o un almuerzo."],
             en: ["Add one more color to your plate today and drink water with each meal. Small steps count.", "Eating with others nourishes too: invite someone to share a coffee or lunch."] },
-  move:   { es: ["Quince minutos de caminata cuentan. Si prefieres compañía, busca un plan de bienestar en Descubre.", "Estira cuello, hombros y espalda dos minutos. Tu cuerpo te lo agradecerá."],
-            en: ["Fifteen minutes of walking counts. If you'd like company, look for a wellness plan in Discover.", "Stretch your neck, shoulders and back for two minutes. Your body will thank you."] },
+  move:   { es: ["Quince minutos de caminata cuentan. Si prefieres compañía, busca un plan de bienestar en esta página.", "Estira cuello, hombros y espalda dos minutos. Tu cuerpo te lo agradecerá."],
+            en: ["Fifteen minutes of walking counts. If you'd like company, look for a wellness plan on this page.", "Stretch your neck, shoulders and back for two minutes. Your body will thank you."] },
   peace:  { es: ["Haz una pausa: voltea tu Código de hoy en Inicio, o comparte una petición en el muro de oración (en Apoyo).", "Busca un lugar tranquilo, cierra los ojos un minuto y entrega a Dios lo que te pesa."],
             en: ["Take a pause: flip Your Code for Today on Home, or share a request on the prayer wall (in Support).", "Find a quiet spot, close your eyes for a minute and hand over to God what weighs on you."] }
 };
 // Richer response card: what she chose, a short suggestion, a 3-step mini reset and one useful next step.
 const RESET = {
-  energy: { es: { t: "Despierta tu energía", steps: ["Toma un vaso de agua", "Sal 10 minutos a la luz del día", "Escríbele a una amiga para un plan"], a: "Ver planes de esta semana" },
-            en: { t: "Wake up your energy", steps: ["Drink a glass of water", "Step outside for 10 minutes of daylight", "Text a friend about a plan"], a: "See this week's plans" }, go: "events", art: "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" },
+  energy: { es: { t: "Despierta tu energía", steps: ["Toma un vaso de agua", "Sal 10 minutos a la luz del día", "Escríbele a una amiga para un plan"], a: "Ver planes de bienestar" },
+            en: { t: "Wake up your energy", steps: ["Drink a glass of water", "Step outside for 10 minutes of daylight", "Text a friend about a plan"], a: "See wellness plans" }, go: "spas", art: "M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" },
   stress: { es: { t: "Un minuto para soltar", steps: ["Inhala 4 segundos", "Sostén 4 segundos", "Exhala 6 segundos · repite 5 veces"], a: "Hablar con alguien" },
             en: { t: "A minute to let go", steps: ["Breathe in for 4 seconds", "Hold for 4 seconds", "Breathe out for 6 · repeat 5 times"], a: "Talk to someone" }, go: "support", art: "M5 19c0-8 5-13 14-14-1 9-6 14-14 14zM5 19l7-7" },
   sleep:  { es: { t: "Prepárate para descansar", steps: ["Deja el teléfono 30 minutos antes", "Luz tenue y una bebida caliente", "Agradece tres cosas de hoy"], a: "Leer tu código de hoy" },
             en: { t: "Get ready to rest", steps: ["Put your phone away 30 minutes before", "Dim light and a warm drink", "Give thanks for three things today"], a: "Read your code for today" }, go: "home", art: "M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z" },
-  eat:    { es: { t: "Nútrete con cariño", steps: ["Agrega un color más a tu plato", "Agua con cada comida", "Come sin pantallas, sin prisa"], a: "Descubrir bienestar" },
-            en: { t: "Nourish yourself kindly", steps: ["Add one more color to your plate", "Water with every meal", "Eat slowly, away from screens"], a: "Discover wellness" }, go: "discover", art: "M12 7c-1-1.5-3-2-4.5-1.2C5 7 4.5 10.5 6 14c1.2 2.8 3 5 4.5 5 .8 0 1-.5 1.5-.5s.7.5 1.5.5c1.5 0 3.3-2.2 4.5-5 1.5-3.5 1-7-1.5-8.2C15 5 13 5.5 12 7zM12 7c0-2 1-3.5 2.5-4" },
+  eat:    { es: { t: "Nútrete con cariño", steps: ["Agrega un color más a tu plato", "Agua con cada comida", "Come sin pantallas, sin prisa"], a: "Leer sobre bienestar" },
+            en: { t: "Nourish yourself kindly", steps: ["Add one more color to your plate", "Water with every meal", "Eat slowly, away from screens"], a: "Read about wellness" }, go: "reads", art: "M12 7c-1-1.5-3-2-4.5-1.2C5 7 4.5 10.5 6 14c1.2 2.8 3 5 4.5 5 .8 0 1-.5 1.5-.5s.7.5 1.5.5c1.5 0 3.3-2.2 4.5-5 1.5-3.5 1-7-1.5-8.2C15 5 13 5.5 12 7zM12 7c0-2 1-3.5 2.5-4" },
   move:   { es: { t: "Mueve tu cuerpo hoy", steps: ["Estira cuello y hombros 2 minutos", "Camina 15 minutos", "Elige un plan activo con la comunidad"], a: "Ver planes de bienestar" },
-            en: { t: "Move your body today", steps: ["Stretch neck and shoulders for 2 minutes", "Walk for 15 minutes", "Pick an active plan with the community"], a: "See wellness plans" }, go: "discover", art: "M6 7v10M3.5 9v6M18 7v10M20.5 9v6M6 12h12" },
+            en: { t: "Move your body today", steps: ["Stretch neck and shoulders for 2 minutes", "Walk for 15 minutes", "Pick an active plan with the community"], a: "See wellness plans" }, go: "spas", art: "M6 7v10M3.5 9v6M18 7v10M20.5 9v6M6 12h12" },
   peace:  { es: { t: "Haz espacio para la paz", steps: ["Busca un lugar tranquilo", "Cierra los ojos un minuto", "Entrega a Dios lo que te pesa"], a: "Pedir oración" },
             en: { t: "Make room for peace", steps: ["Find a quiet spot", "Close your eyes for a minute", "Hand over to God what weighs on you"], a: "Ask for prayer" }, go: "support", art: "M12 20c-4 0-8-2-9-6 3 0 5.5 1 7 3M12 20c4 0 8-2 9-6-3 0-5.5 1-7 3M12 20c-2.5-2-3.5-5-3.5-8 0-2.5 1.5-5 3.5-7 2 2 3.5 4.5 3.5 7 0 3-1 6-3.5 8z" }
 };
@@ -327,9 +327,10 @@ let mood = null;
 function moodAction(k) {
   const ovr = ((C.setting && C.setting("wellness_moods")) || {})[k];
   const go = (ovr && ovr.go) || RESET[k].go;
-  if (go === "discover" || go === "spas") {
-    const target = document.getElementById(k === "move" && !document.getElementById("wellUpcoming").hidden ? "wellUpcoming" : "wellDiscover");
-    if (target && !target.hidden) target.scrollIntoView({ behavior: "smooth", block: "start" });
+  const IN_PAGE = { spas: ["wellDiscover", "wellnessCards", "wellUpcoming"], discover: ["wellDiscover", "wellnessCards"], reads: ["featuredBlock", "wellPodcast"], podcast: ["wellPodcast", "featuredBlock"] };
+  if (IN_PAGE[go]) {   // everything stays inside Wellness: scroll to the first block that has content
+    const target = IN_PAGE[go].map(id => document.getElementById(id)).find(n => n && !n.hidden);
+    if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
     return;
   }
   C.showPage(go);
