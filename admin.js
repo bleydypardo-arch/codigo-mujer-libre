@@ -479,6 +479,11 @@ function planItem(kind, row, c, memIds) {
       return bits.length ? el("span", { class: "badge", text: bits.join(" · ") }) : null; })(),
     el("h3", { text: title }),
     looksLikeTest(row.title_es, row.title_en) ? el("p", { class: "test-flag", text: a("testFlag") }) : null,
+    (() => { const es = String(row.title_es || "").trim(), en = String(row.title_en || "").trim(), esd = String(row.desc_es || "").trim(), end = String(row.desc_en || "").trim();
+      const miss = !es || (end && !esd) ? "es" : (es && es === en) || (esd && esd === end) ? "same" : "";   // Spanish missing, or just a copy of the English
+      if (!miss) return null;
+      const L = C.lang();
+      return el("p", { class: "test-flag", text: miss === "es" ? (L === "es" ? "⚠ Falta el texto en español: las mujeres lo verán en inglés." : "⚠ Spanish text is missing: members will see English.") : (L === "es" ? "⚠ El español es igual al inglés: revisa que esté traducido." : "⚠ The Spanish is identical to the English: check it is translated.") }); })(),
     when ? el("p", { class: "small-note", text: "📅 " + when }) : null,
     row.location ? el("p", { class: "small-note", text: "📍 " + row.location }) : null,
     (kind === "event" || kind === "trip" || kind === "weekend") ? el("p", { class: "small-note", text: a("counts")(c.i, c.g) }) : null);
