@@ -64,6 +64,8 @@ function dateRange(p) {
   const y = new Date(p.event_date + "T12:00:00").getFullYear();
   return f(p.event_date) + (x.end_date && x.end_date !== p.event_date ? " – " + f(x.end_date) : "") + " " + y;
 }
+// The card already carries the "Código Experiencias" signature, so a title typed as "Código Experience: Girls Weekend" shows only "Girls Weekend"
+const ttl = p => (C.pick(p, "title") || "—").replace(/^\s*c[oó]digo\s+experiences?\s*[:\-–—]\s*/i, "").trim() || "—";
 function place(p) { const x = C.richOf(p) || {}; return [p.location, x.city, x.country].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(", "); }
 function shortStory(p) {
   const x = C.richOf(p);
@@ -96,7 +98,7 @@ function media(p, cls) {
 function campaignCard(p) {
   const tag = C.planTag(p.id);
   const card = el("article", { class: "card plan trip-card camp-card" + (tag.featured ? " is-featured" : "") });
-  const cover = el("button", { type: "button", class: "camp-cover", "aria-label": (C.pick(p, "title") || "—") + " · " + t("campCta") });
+  const cover = el("button", { type: "button", class: "camp-cover", "aria-label": (ttl(p)) + " · " + t("campCta") });
   cover.appendChild(media(p, "camp-media"));
   cover.appendChild(el("span", { class: "camp-veil", "aria-hidden": "true" }));
   const av = availability(p);
@@ -108,7 +110,7 @@ function campaignCard(p) {
   const sub = x ? C.richText(x, "subtitle") : "";
   cover.appendChild(el("span", { class: "camp-head" },
     dateRange(p) ? el("span", { class: "camp-date", text: dateRange(p) }) : null,
-    el("span", { class: "camp-title", text: C.pick(p, "title") || "—" }),
+    el("span", { class: "camp-title", text: ttl(p) }),
     sub ? el("span", { class: "camp-sub", text: sub }) : null));
   const body = el("div", { class: "camp-body" });
   if (place(p)) body.appendChild(el("p", { class: "camp-where", text: "📍 " + place(p) }));
@@ -192,7 +194,7 @@ function slot(p, n, idx) {
     el("span", { class: "tv-num", text: n }),
     el("span", { class: "tv-slot-txt" },
       el("small", { text: [dateRange(p), place(p)].filter(Boolean).join(" · ") }),
-      el("b", { text: C.pick(p, "title") || "—" }),
+      el("b", { text: ttl(p) }),
       el("span", { class: "tv-slot-go", text: t("storyOpen") + " →" })));
   b.addEventListener("click", () => C.openDetail(p.id, b));
   return b;
@@ -347,7 +349,7 @@ function paintHome() {
   bg.style.setProperty("--img", bg.style.backgroundImage);
   host.replaceChildren(bg, (!own && homeImg() === HERO_PHOTO) ? seaBtn() : null, el("div", { class: "hx-txt" }, brand,
     el("small", { class: "hx-meta", text: [t(TYPE_KEY[C.tripTypeOf(p)]), dateRange(p), place(p)].filter(Boolean).join(" · ") }),
-    el("h2", { class: "hx-title", text: C.pick(p, "title") || "—" }),
+    el("h2", { class: "hx-title", text: ttl(p) }),
     shortStory(p) ? el("p", { class: "hx-p", text: shortStory(p) }) : null,
     av ? el("span", { class: "camp-status " + av.cls, text: av.text }) : null,
     el("div", { class: "hx-acts" }, open, all)));
@@ -359,7 +361,7 @@ function moreRows(first) {
   if (!others.length) return null;
   return el("div", { class: "hx-more" }, el("small", { class: "hx-more-t", text: t("homeExpMore") }),
     ...others.map(x => {
-      const b = el("button", { type: "button", class: "hx-row" }, el("span", { class: "hx-row-d", text: dateRange(x) || "" }), el("b", { class: "hx-row-n", text: C.pick(x, "title") || "—" }), el("span", { class: "hx-row-go", "aria-hidden": "true", text: "›" }));
+      const b = el("button", { type: "button", class: "hx-row" }, el("span", { class: "hx-row-d", text: dateRange(x) || "" }), el("b", { class: "hx-row-n", text: ttl(x) }), el("span", { class: "hx-row-go", "aria-hidden": "true", text: "›" }));
       b.addEventListener("click", () => C.openDetail(x.id, b));
       return b;
     }));
