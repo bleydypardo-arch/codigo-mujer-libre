@@ -45,22 +45,43 @@ const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "
 const el = (...a) => C.el(...a);
 const tel = (num, text) => el("a", { href: "tel:" + num, class: "safe-link", text });
 
-// ---------- safety card (always visible on Wellness) ----------
-// 911 and 988 are always on screen as large tap-to-call buttons; the longer explanation folds away.
+// ---------- safety card (always visible on Wellness / Support) ----------
+// The big tap-to-call buttons come from Admin → "Líneas de ayuda", per city (settings.help_lines).
+// Without an entry, each city shows safe built-in numbers (US for US cities, Colombia for Bogotá / Medellín).
+const US = [{ num: "911", es: "Emergencias", en: "Emergencies" }, { num: "988", es: "Crisis · llamada o texto, 24 h", en: "Crisis · call or text, 24/7" },
+  { num: "1-800-799-7233", es: "Violencia doméstica · 24 h", en: "Domestic violence · 24/7" }];
+const CO = [{ num: "123", es: "Emergencias (policía, bomberos, ambulancia)", en: "Emergencies (police, fire, ambulance)" },
+  { num: "155", es: "Orientación a mujeres víctimas de violencia · 24 h", en: "Support for women facing violence · 24/7" },
+  { num: "106", es: "Salud mental y crisis · 24 h", en: "Mental health & crisis · 24/7" }];
+const DEFAULTS = { orlando: US, miami: US, newyork: US, boston: US, bogota: CO, medellin: CO.slice(0, 2) };
+const defaultLines = city => (DEFAULTS[city] || US).map(x => Object.assign({}, x));
+const cleanNum = n => String(n || "").replace(/[^0-9+*#]/g, "");
+function helpLines() {
+  const city = C.viewCity() === "all" ? "orlando" : C.viewCity();
+  const all = (C.setting && C.setting("help_lines")) || {};
+  const mine = Array.isArray(all[city]) ? all[city].filter(x => x && x.num && cleanNum(x.num)) : [];
+  return (mine.length ? mine : defaultLines(city)).slice(0, 6);
+}
 function renderSafety() {
   const host = document.getElementById("safetyCard");
   if (!host || !C) return;
-  const big = (num, label, sub) => el("a", { href: "tel:" + num, class: "safe-call" }, el("b", { text: label }), el("small", { text: sub }));
+  const lang = C.lang();
+  const lbl = x => x[lang] || x.es || x.en || "";
+  const lines = helpLines();
+  const big = (x, i) => {
+    const a = el("a", { href: "tel:" + cleanNum(x.num), class: "safe-call" }, el("b", { text: x.num }), el("small", { text: lbl(x) }));
+    if (lines.length % 2 === 1 && i === lines.length - 1) a.style.gridColumn = "1 / -1";
+    return a;
+  };
   host.replaceChildren(
     el("b", { class: "safe-title", text: "🛟 " + t("safeNow") }),
-    el("div", { class: "safe-calls" }, big("911", "911", t("safe911Lbl")), big("988", "988", t("safe988Lbl"))),
+    el("div", { class: "safe-calls" }, ...lines.map(big)),
     el("details", { class: "safe-more" },
       el("summary", { text: t("safeMore") }),
       el("p", { text: t("safeBody") }),
-      el("p", {}, t("safe911") + " ", tel("911", "911"), "."),
-      el("p", {}, t("safe988a") + " ", tel("988", "988"), " " + t("safe988b")),
-      el("p", {}, t("safeDv") + " ", tel("18007997233", "1-800-799-7233"), " " + t("safeDvb"))));
+      ...lines.map(x => el("p", {}, lbl(x) + ": ", tel(cleanNum(x.num), x.num)))));
 }
+window.CMLHelp = { defaults: defaultLines, lines: helpLines, cleanNum };
 
 // ---------- the wall ----------
 let rows = [], loaded = false, anon = true;
@@ -152,12 +173,13 @@ function init() {
   C.addStrings(ES, EN);
   renderSafety();
   document.addEventListener("cml:session", e => {
-    rows = []; loaded = false; draft = "";
+    renderSafety(); rows = []; loaded = false; draft = "";
     if (!C.session() || (e.detail && e.detail.pending)) { paint(); return; }
     load();
   });
+  document.addEventListener("cml:render", () => renderSafety());
   document.addEventListener("cml:lang", () => { renderSafety(); if (C.session()) paint(); });
-  window.CMLFaith = { load, latest: () => rows[0] || null };
+  window.CMLFaith = { renderSafety, load, latest: () => rows[0] || null };
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
 })();

@@ -5,7 +5,7 @@
 "use strict";
 const T = {
   es: {
-    tDaily: "Código de hoy", tMoods: "Metas de bienestar", tRecipe: "Receta del mes", tDyk: "¿Sabías que?", tTalk: "Hablemos", tTravel: "Viajes: próximamente", tPod: "Podcast", tCodeMsgs: "Frases de los códigos",
+    tDaily: "Código de hoy", tMoods: "Metas de bienestar", tRecipe: "Receta del mes", tDyk: "¿Sabías que?", tTalk: "Hablemos", tTravel: "Viajes: próximamente", tPod: "Podcast", tCodeMsgs: "Frases de los códigos", tHelp: "Líneas de ayuda",
     save: "Guardar", cancel: "Cancelar", edit: "Editar", del: "Eliminar", publish: "Publicar", unpublish: "Despublicar", preview: "Vista previa", hidePreview: "Ocultar vista previa",
     published: "Publicado", draft: "Borrador", today: "Hoy", scheduled: "Programado", saved: "Guardado.", saveFail: "No se pudo guardar. Inténtalo de nuevo.", loadFail: "No se pudo cargar.",
     confirmDel: "¿Eliminar esta entrada? No se puede deshacer.", confirmReset: "¿Quitar esta personalización y volver al texto original?", up: "Subir", down: "Bajar", empty: "Todavía no hay entradas.",
@@ -28,10 +28,12 @@ const T = {
     cmNow: "Frase original:", cmAdd: "+ Agregar frase", cmAllMonths: "Todos los meses", cmMonth: "Mes", cmRemove: "Quitar", cmCount: n => n ? n + (n === 1 ? " frase" : " frases") : "frase original",
     cmEs: "Español", cmEn: "English", cmReset: "Volver a las frases originales",
     podIntro: "Podcast «Entre Nosotras». Cada episodio vive en YouTube: pega aquí el enlace. Las integrantes lo ven en Inicio (el próximo o el más reciente) y en Bienestar (todos, con filtro por tema).", podNew: "+ Nuevo episodio", podTitle: "Título del episodio", podDesc: "Descripción corta (opcional)", podTopic: "Tema", podDate: "Fecha y día de estreno", podTime: "Hora (opcional)", podUrl: "Enlace de YouTube del episodio", podTeaser: "Enlace del adelanto de 15 segundos (opcional)", podPub: "Publicado (visible para las integrantes)", podRemove: "Quitar episodio", podBadUrl: "El enlace debe ser de YouTube.", podNeed: "Para publicar, completa el título en español e inglés, la fecha y el enlace de YouTube.", podEmpty: "Todavía no hay episodios. Toca «Nuevo episodio».", podEp: n => "Episodio " + n,
+    helpIntro: "Los botones grandes de ayuda al final de la página de Apoyo. Cada ciudad tiene los suyos. Escribe el número y el nombre en español e inglés (hasta 4). Si dejas una ciudad vacía, se usan los números oficiales que ya vienen cargados (en gris). Verifica siempre cada número antes de guardarlo.",
+    helpCity: "Ciudad", helpNum: "Número", helpLbl: "Nombre del botón", helpReset: "Volver a los números originales", helpLine: n => "Botón " + n, helpBad: "Revisa el número: solo dígitos, +, espacios o guiones.",
     tvTeaser: "Mensaje de anuncio (Inicio y Viajes)", cHomeExpSoon: "Titular", cHomeExpSoonP: "Texto", cStoryT: "Promesa: titular", cStoryP: "Promesa: texto"
   },
   en: {
-    tDaily: "Code for Today", tMoods: "Wellness goals", tRecipe: "Recipe of the Month", tDyk: "Did You Know?", tTalk: "Let's Talk", tTravel: "Travel: coming soon", tPod: "Podcast", tCodeMsgs: "Code phrases",
+    tDaily: "Code for Today", tMoods: "Wellness goals", tRecipe: "Recipe of the Month", tDyk: "Did You Know?", tTalk: "Let's Talk", tTravel: "Travel: coming soon", tPod: "Podcast", tCodeMsgs: "Code phrases", tHelp: "Help lines",
     save: "Save", cancel: "Cancel", edit: "Edit", del: "Delete", publish: "Publish", unpublish: "Unpublish", preview: "Preview", hidePreview: "Hide preview",
     published: "Published", draft: "Draft", today: "Today", scheduled: "Scheduled", saved: "Saved.", saveFail: "Couldn't save. Please try again.", loadFail: "Couldn't load.",
     confirmDel: "Delete this entry? This can't be undone.", confirmReset: "Remove this customization and go back to the original text?", up: "Move up", down: "Move down", empty: "No entries yet.",
@@ -54,6 +56,8 @@ const T = {
     cmNow: "Original phrase:", cmAdd: "+ Add phrase", cmAllMonths: "Every month", cmMonth: "Month", cmRemove: "Remove", cmCount: n => n ? n + (n === 1 ? " phrase" : " phrases") : "original phrase",
     cmEs: "Español", cmEn: "English", cmReset: "Back to the original phrases",
     podIntro: "“Entre Nosotras” podcast. Every episode lives on YouTube: paste its link here. Members see it on Home (the next or latest one) and in Wellness (all of them, filtered by topic).", podNew: "+ New episode", podTitle: "Episode title", podDesc: "Short description (optional)", podTopic: "Topic", podDate: "Release date", podTime: "Time (optional)", podUrl: "YouTube link of the episode", podTeaser: "Link to the 15-second teaser (optional)", podPub: "Published (visible to members)", podRemove: "Remove episode", podBadUrl: "The link must be a YouTube link.", podNeed: "To publish, complete the title in Spanish and English, the date and the YouTube link.", podEmpty: "No episodes yet. Tap “New episode”.", podEp: n => "Episode " + n,
+    helpIntro: "The big help buttons at the bottom of the Support page. Each city has its own. Type the number and the name in Spanish and English (up to 4). If a city is left empty, the built-in official numbers are used (shown in grey). Always verify each number before saving.",
+    helpCity: "City", helpNum: "Number", helpLbl: "Button name", helpReset: "Back to the original numbers", helpLine: n => "Button " + n, helpBad: "Check the number: only digits, +, spaces or dashes.",
     tvTeaser: "Announcement message (Home and Travel)", cHomeExpSoon: "Headline", cHomeExpSoonP: "Text", cStoryT: "Promise: headline", cStoryP: "Promise: text"
   }
 };
@@ -450,6 +454,56 @@ async function codeMsgsTab() {
   return wrap;
 }
 
+// ----- Help lines (settings.help_lines, per city) -----
+async function helpTab() {
+  const H = window.CMLHelp;
+  const all = (await settingsMap()).help_lines || {};
+  const cities = [["orlando", "Orlando"], ["miami", "Miami"], ["newyork", "New York"], ["boston", "Boston"], ["bogota", "Bogotá"], ["medellin", "Medellín"]];
+  const sel = el("select", {}, ...cities.map(([k, n]) => el("option", { value: k, text: n })));
+  const v = C.viewCity(); sel.value = cities.some(c => c[0] === v) ? v : "orlando";
+  const box = el("div", {}), fb = feedbackNode();
+  const wrap = el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("helpIntro") }), field(tx("helpCity"), sel), box, fb);
+  const draw = () => {
+    say(fb, "");
+    const city = sel.value, cur = Array.isArray(all[city]) ? all[city] : [], def = H ? H.defaults(city) : [];
+    const rows = [0, 1, 2, 3].map(i => {
+      const c = cur[i] || {}, d = def[i] || {};
+      const num = el("input", { type: "text", inputmode: "tel", maxlength: 24, placeholder: d.num || "" }); num.value = c.num || "";
+      const es = el("input", { type: "text", maxlength: 70, placeholder: d.es || "" }); es.value = c.es || "";
+      const en = el("input", { type: "text", maxlength: 70, placeholder: d.en || "" }); en.value = c.en || "";
+      return { num, es, en, node: el("div", { class: "rf-pair" }, el("b", { text: tx("helpLine")(i + 1) }),
+        el("label", {}, el("small", { text: tx("helpNum") }), num),
+        el("div", { class: "ac-two" }, el("label", {}, el("small", { text: "Español" }), es), el("label", {}, el("small", { text: "English" }), en))) };
+    });
+    const store = async list => {
+      const next = Object.assign({}, all); if (list.length) next[city] = list; else delete next[city];
+      await putSetting("help_lines", Object.keys(next).length ? next : null);
+      Object.keys(all).forEach(k => delete all[k]); Object.assign(all, next);
+      if (window.CMLFaith && window.CMLFaith.renderSafety) window.CMLFaith.renderSafety();
+    };
+    box.replaceChildren(...rows.map(r => r.node), el("div", { class: "admin-bar" },
+      K.button(tx("save"), "primary", async () => {
+        const list = [];
+        for (const r of rows) {
+          const num = r.num.value.trim(); if (!num && !r.es.value.trim() && !r.en.value.trim()) continue;
+          if (!H || !H.cleanNum(num) || /[^0-9+*#\s().-]/.test(num)) return say(fb, tx("helpBad"));
+          const es = r.es.value.trim(), en = r.en.value.trim();
+          if (!es && !en) return say(fb, tx("bothLangs"));
+          list.push({ num, es: es || en, en: en || es });
+        }
+        try { await store(list); } catch (e) { console.error(e); return say(fb, tx("saveFail")); }
+        K.toast(tx("saved"));
+      }),
+      K.button(tx("helpReset"), "secondary", async () => {
+        if (!await confirmed(tx("confirmReset"))) return;
+        try { await store([]); } catch { return say(fb, tx("saveFail")); }
+        draw(); K.toast(tx("saved"));
+      })));
+  };
+  sel.addEventListener("change", draw); draw();
+  return wrap;
+}
+
 function init() {
   C = window.CML; const A = window.CMLAdmin;
   if (!C || !A || !A.registerTab) return;
@@ -463,6 +517,7 @@ function init() {
   A.registerTab("talk", { group: "content", label: lab(T.es.tTalk, T.en.tTalk), render: async () => talkTab() });
   A.registerTab("codemsgs", { group: "content", label: lab(T.es.tCodeMsgs, T.en.tCodeMsgs), render: async () => codeMsgsTab() });
   A.registerTab("podcast", { group: "content", label: lab(T.es.tPod, T.en.tPod), render: async () => podcastTab() });
+  A.registerTab("help", { group: "content", label: lab(T.es.tHelp, T.en.tHelp), render: async () => helpTab() });
   A.registerTab("travelx", { group: "content", label: lab(T.es.tTravel, T.en.tTravel), render: async () => travelTab() });
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
