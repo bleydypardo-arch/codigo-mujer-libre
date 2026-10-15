@@ -32,6 +32,7 @@
   <link rel="stylesheet" href="home-luxe.css">
   <link rel="stylesheet" href="flipcards.css">
   <link rel="stylesheet" href="pilot.css">
+  <link rel="stylesheet" href="florece.css">
   <link rel="stylesheet" href="reads.css">
   <link rel="stylesheet" href="fx.css">
 </head>
@@ -382,6 +383,9 @@
     <!-- CÓDIGO EXPERIENCES teaser: the next official experience (experiences.js) -->
     <section id="homeExperience" class="hx-card" hidden aria-label="Código Experiences"></section>
 
+    <!-- CRECE & FLORECE entry (florece.js; shown only in Bogotá) -->
+    <div id="floreceEntry" class="fl-entry-wrap" hidden></div>
+
     <div id="homeChecklist" class="card home-checklist" hidden></div>
 
     <div class="home-cols">
@@ -441,6 +445,9 @@
   </section>
 
 
+
+  <!-- CRECE & FLORECE: separate module (florece.js), Bogotá only -->
+  <section id="florece" class="page" hidden></section>
 
   <!-- EVENTOS Y PROMOCIONES: paid events and deals, fully separate from "Descubre" -->
   <section id="agenda" class="page" hidden>
@@ -891,6 +898,7 @@
 <script src="app.js"></script>
 <script src="admin.js"></script>
   <script src="admin-content.js"></script>
+  <script src="florece.js"></script>
   <script src="qrcode.js"></script>
   <script src="invites.js"></script>
   <script src="memories.js"></script>
