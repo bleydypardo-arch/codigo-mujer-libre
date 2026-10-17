@@ -589,6 +589,7 @@ async function importTab() {
     ids.forEach(id => { const tg = {}; if (type !== "wellness") tg.cat = type; else tg.cat = "spa"; if (city) tg.show = city; all[id] = tg; });
     const w = await C.db.from("settings").upsert({ key: "plan_tags", value: all, updated_at: new Date().toISOString() }, { onConflict: "key" });
     if (w.error) throw w.error;
+    lastImport = { ids, published: publish };   // set BEFORE refreshing: the refresh re-draws this tab
     await C.refreshPublic();
     return ids;
   };
@@ -602,7 +603,7 @@ async function importTab() {
         const b = ev.currentTarget; b.disabled = true;
         try { made = await create(rows); } catch (e) { console.error(e); b.disabled = false; return say(fb, tx("saveFail")); }
         area.value = ""; K.toast(tx("impDone")(made.length));
-        lastImport = { ids: made, published: now.checked }; paintDone();
+        paintDone();
       }));
   };
   paintDone();
