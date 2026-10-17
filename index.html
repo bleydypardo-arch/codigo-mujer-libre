@@ -33,6 +33,7 @@
   <link rel="stylesheet" href="flipcards.css">
   <link rel="stylesheet" href="pilot.css">
   <link rel="stylesheet" href="florece.css">
+  <link rel="stylesheet" href="premium.css">
   <link rel="stylesheet" href="chat.css">
   <link rel="stylesheet" href="welcome.css">
   <link rel="stylesheet" href="reads.css">
@@ -385,8 +386,10 @@
     <!-- CÓDIGO EXPERIENCES teaser: the next official experience (experiences.js) -->
     <section id="homeExperience" class="hx-card" hidden aria-label="Código Experiences"></section>
 
-    <!-- CRECE & FLORECE entry (florece.js; shown only in Bogotá) -->
+    <!-- CRECE & FLORECE entry (premium.js draws it; only for people switched on in Admin → Acceso Premium) -->
     <div id="floreceEntry" class="fl-entry-wrap" hidden></div>
+    <!-- SPA VIRTUAL entry (premium.js; only for people switched on in Admin → Acceso Premium) -->
+    <div id="spaEntry" class="px-entry-wrap" hidden></div>
 
     <div id="homeChecklist" class="card home-checklist" hidden></div>
 
@@ -906,6 +909,7 @@
 <script src="admin.js"></script>
   <script src="admin-content.js"></script>
   <script src="florece.js"></script>
+  <script src="premium.js"></script>
   <script src="qrcode.js"></script>
   <script src="invites.js"></script>
   <script src="memories.js"></script>

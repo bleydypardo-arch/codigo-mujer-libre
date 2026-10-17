@@ -48,10 +48,12 @@ const link = u => C.safeUrl(u);
 const icon = (path, cls) => { const n = document.createElementNS("http://www.w3.org/2000/svg", "svg"); n.setAttribute("viewBox", "0 0 24 24"); n.setAttribute("class", cls || "fl-ic"); n.setAttribute("aria-hidden", "true");
   const p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("d", path); n.appendChild(p); return n; };
 const HOME = "M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z", BACK = "M15 6l-6 6 6 6", CHEV = "M9 6l6 6-6 6";
-const active = () => { try { return C.viewCity() === "bogota"; } catch { return false; } };
+const active = () => { try { return !!(window.CMLPremium && window.CMLPremium.can("florece")); } catch { return false; } };
 
 // ---------- the entry card on Home (Bogotá only) ----------
 function renderEntry() {
+  return;   // the Home button is now drawn by premium.js (gold pill, per-person access)
+  // eslint-disable-next-line no-unreachable
   const host = document.getElementById("floreceEntry"); if (!host) return;
   if (!active()) { host.hidden = true; host.replaceChildren(); return; }
   const b = el("button", { type: "button", class: "fl-entry", "aria-label": t("flName") },
