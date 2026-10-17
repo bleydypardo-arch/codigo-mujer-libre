@@ -632,10 +632,35 @@ async function importTab() {
       }));
   };
   paintDone();
+  // ---- Add photos to places that already exist: one line per place "Nombre | https://link-de-la-foto" ----
+  const norm = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const phArea = el("textarea", { rows: 6, placeholder: "Palo de Mango | https://.../foto.jpg" });
+  const phFb = feedbackNode(), phOut = el("div", {});
+  const phRun = async () => {
+    say(phFb, ""); phOut.replaceChildren();
+    const rows = phArea.value.split("\n").map(l => l.trim()).filter(Boolean).map(l => { const p = l.split("|").map(x => x.trim()); return { name: p[0], url: p[p.length - 1] }; });
+    if (!rows.length) return say(phFb, "Pega primero la lista de nombres y fotos.");
+    const bad = rows.find(r => !r.name || !C.safeUrl(r.url)); if (bad) return say(phFb, "Revisa esta línea: " + (bad.name || "?") + ". Cada línea debe ser: Nombre | https://link-de-la-foto");
+    const res = await C.db.from("plans").select("id,title_es,image_url"); if (res.error) return say(phFb, tx("saveFail"));
+    const byName = new Map(); (res.data || []).forEach(p => { const k = norm(p.title_es); if (!byName.has(k)) byName.set(k, []); byName.get(k).push(p); });
+    let ok = 0; const miss = [];
+    for (const r of rows) {
+      const hit = byName.get(norm(r.name));
+      if (!hit) { miss.push(r.name); continue; }
+      for (const p of hit) { const u = await C.db.from("plans").update({ image_url: C.safeUrl(r.url) }).eq("id", p.id); if (u.error) return say(phFb, tx("saveFail")); }
+      ok++;
+    }
+    await C.refreshPublic();
+    phOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + ok + " fotos agregadas." + (miss.length ? " No encontré estos lugares (revisa el nombre): " + miss.join(", ") : "") }));
+  };
   return el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("impIntro") }),
     field(tx("impCity"), citySel), field(tx("impType"), typeSel), area,
     el("label", { class: "check" }, now, tx("impPublishNow")), fb,
-    el("div", { class: "admin-bar" }, K.button(tx("impPreview"), "secondary", showPreview)), out);
+    el("div", { class: "admin-bar" }, K.button(tx("impPreview"), "secondary", showPreview)), out,
+    el("hr", {}),
+    el("h3", { text: "Agregar fotos a lugares que ya creaste" }),
+    el("p", { class: "small-note", text: "Una línea por lugar: Nombre | https://link-de-la-foto. El nombre debe ser igual al del lugar. La foto se agrega al lugar que ya existe, sin duplicarlo." }),
+    phArea, phFb, el("div", { class: "admin-bar" }, K.button("Agregar las fotos", "primary", phRun)), phOut);
 }
 
 // ----- City list (settings.cities = [{name, country}]) -----
