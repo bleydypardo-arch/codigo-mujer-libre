@@ -634,33 +634,33 @@ async function importTab() {
   paintDone();
   // ---- Add photos to places that already exist: one line per place "Nombre | https://link-de-la-foto" ----
   const norm = x => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-  const phArea = el("textarea", { rows: 6, placeholder: "Palo de Mango | https://.../foto.jpg" });
+  const phArea = el("textarea", { rows: 6, placeholder: "Palo de Mango | Carrera 55 #75-67, Barranquilla | https://.../foto.jpg" });
   const phFb = feedbackNode(), phOut = el("div", {});
   const phRun = async () => {
     say(phFb, ""); phOut.replaceChildren();
-    const rows = phArea.value.split("\n").map(l => l.trim()).filter(Boolean).map(l => { const p = l.split("|").map(x => x.trim()); return { name: p[0], url: p[p.length - 1] }; });
+    const rows = phArea.value.split("\n").map(l => l.trim()).filter(Boolean).map(l => { const p = l.split("|").map(x => x.trim()); const hasUrl = p.length > 1 && /^https?:\/\//i.test(p[p.length - 1]); return { name: p[0], url: hasUrl ? p[p.length - 1] : "", addr: p.length >= 3 ? p[1] : (p.length === 2 && !hasUrl ? p[1] : "") }; });
     if (!rows.length) return say(phFb, "Pega primero la lista de nombres y fotos.");
-    const bad = rows.find(r => !r.name || !C.safeUrl(r.url)); if (bad) return say(phFb, "Revisa esta línea: " + (bad.name || "?") + ". Cada línea debe ser: Nombre | https://link-de-la-foto");
+    const bad = rows.find(r => !r.name || (!r.addr && !C.safeUrl(r.url)) || (r.url && !C.safeUrl(r.url))); if (bad) return say(phFb, "Revisa esta línea: " + (bad.name || "?") + ". Debe ser: Nombre | Dirección | https://link-de-la-foto (la dirección o la foto pueden faltar, pero no las dos)");
     const res = await C.db.from("plans").select("id,title_es,image_url"); if (res.error) return say(phFb, tx("saveFail"));
     const byName = new Map(); (res.data || []).forEach(p => { const k = norm(p.title_es); if (!byName.has(k)) byName.set(k, []); byName.get(k).push(p); });
     let ok = 0; const miss = [];
     for (const r of rows) {
       const hit = byName.get(norm(r.name));
       if (!hit) { miss.push(r.name); continue; }
-      for (const p of hit) { const u = await C.db.from("plans").update({ image_url: C.safeUrl(r.url) }).eq("id", p.id); if (u.error) return say(phFb, tx("saveFail")); }
+      for (const p of hit) { const patch = {}; if (r.url) patch.image_url = C.safeUrl(r.url); if (r.addr) patch.location = r.addr.slice(0, 200); const u = await C.db.from("plans").update(patch).eq("id", p.id); if (u.error) return say(phFb, tx("saveFail")); }
       ok++;
     }
     await C.refreshPublic();
-    phOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + ok + " fotos agregadas." + (miss.length ? " No encontré estos lugares (revisa el nombre): " + miss.join(", ") : "") }));
+    phOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + ok + " lugares actualizados." + (miss.length ? " No encontré estos lugares (revisa el nombre): " + miss.join(", ") : "") }));
   };
   return el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("impIntro") }),
     field(tx("impCity"), citySel), field(tx("impType"), typeSel), area,
     el("label", { class: "check" }, now, tx("impPublishNow")), fb,
     el("div", { class: "admin-bar" }, K.button(tx("impPreview"), "secondary", showPreview)), out,
     el("hr", {}),
-    el("h3", { text: "Agregar fotos a lugares que ya creaste" }),
-    el("p", { class: "small-note", text: "Una línea por lugar: Nombre | https://link-de-la-foto. El nombre debe ser igual al del lugar. La foto se agrega al lugar que ya existe, sin duplicarlo." }),
-    phArea, phFb, el("div", { class: "admin-bar" }, K.button("Agregar las fotos", "primary", phRun)), phOut);
+    el("h3", { text: "Completar dirección y foto de lugares que ya creaste" }),
+    el("p", { class: "small-note", text: "Una línea por lugar: Nombre | Dirección | https://link-de-la-foto. El nombre debe ser igual al del lugar. Se completa el lugar que ya existe, sin duplicarlo. También sirve solo con Nombre | Dirección, o solo con Nombre | https://foto." }),
+    phArea, phFb, el("div", { class: "admin-bar" }, K.button("Completar los lugares", "primary", phRun)), phOut);
 }
 
 // ----- City list (settings.cities = [{name, country}]) -----
