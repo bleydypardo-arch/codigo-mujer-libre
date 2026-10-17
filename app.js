@@ -607,8 +607,8 @@ const isStaff = () => isAdmin() || isContentAdmin();
 const cityKey = v => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
 // The city list is editable in Admin (settings.cities = [{name, country}]); without it these built-in cities are used.
 const DEFAULT_CITIES = [
-  { name: "Orlando", country: "US" }, { name: "Miami", country: "US" }, { name: "New York", country: "US" }, { name: "Boston", country: "US" }, { name: "North Carolina", country: "US" },
-  { name: "Bogotá", country: "CO" }, { name: "Medellín", country: "CO" }, { name: "Barranquilla", country: "CO" }, { name: "Cartagena", country: "CO" }
+  { name: "Orlando", country: "US" }, { name: "Bogotá", country: "CO" }, { name: "Barranquilla", country: "CO" }, { name: "Miami", country: "US" },
+  { name: "Medellín", country: "CO" }, { name: "Cartagena", country: "CO" }, { name: "New York", country: "US" }, { name: "Boston", country: "US" }, { name: "North Carolina", country: "US" }
 ];
 function cities() {
   const raw = settings && Array.isArray(settings.cities) ? settings.cities : [];
