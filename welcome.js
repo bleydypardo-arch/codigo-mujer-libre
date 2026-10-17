@@ -12,7 +12,7 @@ const ES = {
   wl3: "Tu foto y tu perfil solo los ven integrantes aprobadas.", wl4: "Puedes reportar o bloquear a quien te incomode. Lo tratamos con discreción.", wl5: "Para un primer encuentro, elige un lugar público y avisa a alguien de confianza.",
   wlPhotoH: "Pon tu foto", wlPhotoP: "Con tu foto, las demás mujeres pueden reconocerte y conectar contigo. Para saludar o escribir a otras, la necesitas.",
   wlPhotoBtn: "Elegir mi foto", wlPhotoChange: "Cambiar mi foto", wlPhotoBusy: "Subiendo…", wlPhotoBad: "Esa imagen no se pudo usar. Prueba con otra foto.", wlPhotoOk: "¡Qué linda! Tu foto está lista.",
-  wlDataH: "Tus datos", wlFounderRole: "Fundadora de Código Mujer Libre",
+  wlDataH: "Tus datos", wlZoom: "Toca para verla grande", wlFounderRole: "Fundadora de Código Mujer Libre",
   wlData: "Autorizo a Código Mujer Libre a recolectar, almacenar, usar y tratar mis datos personales (nombre, ciudad, correo, teléfono, cumpleaños, foto y lo que yo decida compartir) para gestionar mi membresía, mostrar mi perfil a otras integrantes aprobadas, organizar eventos y enviarme avisos de la comunidad. Declaro que mis datos son veraces y que se me informó que tengo derecho a conocerlos, actualizarlos, rectificarlos, pedir que se borren y revocar esta autorización, conforme a la Ley 1581 de 2012 y el Decreto 1377 de 2013 de Colombia (hoy Decreto 1074 de 2015) y a la ley que aplique donde vivo. Compartir datos sensibles (peticiones de oración, fe o salud) siempre es voluntario.",
   wlTerms: "He leído y acepto las normas de la comunidad y los términos de uso.", wlRead: "Aviso de privacidad completo", wlReadTerms: "Términos de uso",
   wlEnter: "Entrar a la comunidad", wlNeed: "Marca las dos casillas para entrar.", wlFail: "No se pudo guardar. Revisa tu conexión e intenta de nuevo.", wlOut: "Salir",
@@ -27,7 +27,7 @@ const EN = {
   wl3: "Only approved members see your photo and profile.", wl4: "You can report or block anyone who makes you uncomfortable. We handle it discreetly.", wl5: "For a first meeting, choose a public place and tell someone you trust.",
   wlPhotoH: "Add your photo", wlPhotoP: "With your photo, other women can recognize you and connect with you. To say hello or write to others, you need it.",
   wlPhotoBtn: "Choose my photo", wlPhotoChange: "Change my photo", wlPhotoBusy: "Uploading…", wlPhotoBad: "That image could not be used. Try another photo.", wlPhotoOk: "Lovely! Your photo is ready.",
-  wlDataH: "Your data", wlFounderRole: "Founder of Código Mujer Libre",
+  wlDataH: "Your data", wlZoom: "Tap to enlarge", wlFounderRole: "Founder of Código Mujer Libre",
   wlData: "I authorize Código Mujer Libre to collect, store, use and process my personal data (name, city, email, phone, birthday, photo and whatever I choose to share) to manage my membership, show my profile to other approved members, organize events and send me community notices. I declare that my data is truthful and that I was informed of my right to know, update, correct and ask for deletion of my data and to revoke this authorization, under Colombian Law 1581 of 2012 and Decree 1377 of 2013 (now Decree 1074 of 2015) and the law that applies where I live. Sharing sensitive data (prayer requests, faith or health) is always voluntary.",
   wlTerms: "I have read and accept the community guidelines and the terms of use.", wlRead: "Full privacy notice", wlReadTerms: "Terms of use",
   wlEnter: "Enter the community", wlNeed: "Tick both boxes to come in.", wlFail: "Could not save. Check your connection and try again.", wlOut: "Log out",
@@ -45,13 +45,35 @@ function founder() {
   const s = (C && C.setting && C.setting("founder_welcome")) || {};
   return { name: (s.name || FOUNDER_DEFAULT.name), text: (s[C.lang()] || s.es || FOUNDER_DEFAULT[C.lang()] || FOUNDER_DEFAULT.es) };
 }
-function founderCard() {
+function zoomCard() {
+  const close = el("button", { type: "button", class: "wl-zclose", "aria-label": "×", text: "×" });
+  const img = el("img", { src: "founder-card.jpg", alt: founder().text, class: "wl-zimg" });
+  const box = el("div", { class: "wl-zoom", role: "dialog", "aria-modal": "true" }, img, close);
+  const done = () => box.remove();
+  close.addEventListener("click", done);
+  box.addEventListener("click", e => { if (e.target === box) done(); });
+  document.body.appendChild(box); close.focus();
+  const toText = () => { box.scrollLeft = box.scrollWidth; box.scrollTop = 0; };
+  toText(); img.addEventListener("load", toText);
+}
+function textCard() {
   const f = founder();
   const ph = el("span", { class: "avatar avatar-lg wl-fph", text: (f.name || "J").trim().charAt(0).toUpperCase() });
   const img = el("img", { src: "founder.jpg", alt: "", class: "wl-fimg" });
   img.addEventListener("load", () => { ph.replaceChildren(img); });
   return el("section", { class: "wl-card wl-founder" }, ph,
     el("div", { class: "wl-ftxt" }, el("p", { class: "wl-fmsg", text: f.text }), el("b", { class: "wl-fname", text: "— " + f.name }), el("small", { text: t("wlFounderRole") })));
+}
+// Spanish: the designed welcome card (image). English, or if the image cannot load: the same message as text.
+function founderCard() {
+  if (C.lang() !== "es") return textCard();
+  const wrap = el("div", { class: "wl-poster" });
+  const img = el("img", { src: "founder-card.jpg", alt: founder().text, class: "wl-pimg" });
+  const btn = el("button", { type: "button", class: "wl-pbtn", "aria-label": t("wlZoom") }, img, el("span", { class: "wl-phint", text: t("wlZoom") }));
+  btn.addEventListener("click", zoomCard);
+  img.addEventListener("error", () => wrap.replaceChildren(textCard()));
+  wrap.appendChild(btn);
+  return wrap;
 }
 let C = null, gate = null, sheet = null, bar = null;
 const t = (k, ...a) => { const v = C ? C.t(k) : ""; return typeof v === "function" ? v(...a) : (v || k); };
