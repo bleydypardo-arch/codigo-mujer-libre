@@ -28,3 +28,6 @@
 .px-sw.on .px-sw-k { background: #b8863a; }
 .px-sw.on .px-sw-k::after { transform: translateX(12px); }
 .px-sw-s { font-weight: 600; font-size: 11px; opacity: .8; }
+.px-all { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #c8a76b; border-radius: 14px; background: #fffaf0; }
+.px-all small { color: #7a6a52; }
+.px-founders { align-self: flex-start; }
