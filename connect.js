@@ -153,7 +153,11 @@
       act.replaceChildren(); note.textContent = "";
       const s = stateOf(m.id);
       if (s === "me") return act.appendChild(el("span", { class: "cn-badge", text: t("cnYou") }));
-      if (s === "connected") { act.appendChild(el("span", { class: "cn-badge ok", text: "✓ " + t("cnConnected") })); const sh = shareNode(m); if (sh) act.appendChild(sh); return; }
+      if (s === "connected") {
+        act.appendChild(el("span", { class: "cn-badge ok", text: "✓ " + t("cnConnected") }));
+        if (window.CMLChat) { const wr = el("button", { type: "button", class: "primary cn-chat", text: "💬 " + C.t("chWrite") + " " + m.first_name }); wr.addEventListener("click", () => { closeSheet(); window.CMLChat.openWith(m.id); }); act.appendChild(wr); }
+        const sh = shareNode(m); if (sh) act.appendChild(sh); return;
+      }
       if (s === "sent") { act.appendChild(el("span", { class: "cn-badge", text: t("cnSent") })); note.textContent = t("cnSentNote", m.first_name); return; }
       if (!enabled) return;
       if (s === "incoming") {
@@ -220,5 +224,6 @@
       .map(([id, l]) => ({ at: new Date(l.created_at).getTime(), name: byId.get(id).first_name }));
   }
 
-  window.CMLConnect = { nameOf: id => (byId.get(id) || {}).first_name || "", load, card, incoming, pending, openSheet };
+  const connectedList = () => [...links.entries()].filter(([id, l]) => l.status === "accepted" && byId.has(id)).map(([id]) => byId.get(id));
+  window.CMLConnect = { member: id => byId.get(id) || null, connected: connectedList, nameOf: id => (byId.get(id) || {}).first_name || "", load, card, incoming, pending, openSheet };
 })();

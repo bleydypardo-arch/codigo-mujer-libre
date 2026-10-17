@@ -280,8 +280,8 @@ function renderDiscover() {
   const today = day0().getTime();
   const tried = new Set(plans.filter(p => mine.has(p.id) && p.code).map(p => p.code));
   const rows = [];
-  // Every week a different happy hour, restaurant and wellness idea (rotating through what the admin has already loaded)
-  const wk = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / (7 * DAY));
+  // Every 3 days a different happy hour, restaurant and wellness idea (rotating through what the admin has already loaded; same rule in every city)
+  const wk = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / (3 * DAY));
   const weekly = list => { const L = list.slice().sort((x, y) => String(x.id).localeCompare(String(y.id))); return L.length ? L[((wk % L.length) + L.length) % L.length] : null; };
   const live = plans.filter(p => (p.kind === "event" || p.kind === "wellness" || (C.sideTrip && C.sideTrip(p))) && (!p.event_date || p.event_date >= C.todayStr()));
   const slots = [
@@ -335,6 +335,15 @@ function talkItem() {
   if (s && typeof s === "object" && s.published) {
     const q = String(s["body_" + lang] || s["body_" + other] || "").trim();
     if (q) return [String(s["title_" + lang] || s["title_" + other] || "").trim(), q];
+  }
+  // Library pasted in Admin (settings.talk_library): a new phrase every 2 days. Without it, the built-in few rotate weekly.
+  const lib = C.setting && C.setting("talk_library");
+  const items = Array.isArray(lib) ? lib.filter(x => x && x.es && x.es[1]) : [];
+  if (items.length) {
+    const n = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / (2 * DAY));
+    const it = items[((n % items.length) + items.length) % items.length];
+    const pick = it[lang] && it[lang][1] ? it[lang] : it.es;
+    return [pick[0] || "", pick[1]];
   }
   const week = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / (7 * DAY));
   return TALK[((week % TALK.length) + TALK.length) % TALK.length][lang] || TALK[0].es;

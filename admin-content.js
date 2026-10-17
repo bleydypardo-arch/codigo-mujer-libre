@@ -30,6 +30,8 @@ const T = {
     podIntro: "Podcast «Entre Nosotras». Cada episodio vive en YouTube: pega aquí el enlace. Las integrantes lo ven en Inicio (el próximo o el más reciente) y en Bienestar (todos, con filtro por tema).", podNew: "+ Nuevo episodio", podTitle: "Título del episodio", podDesc: "Descripción corta (opcional)", podTopic: "Tema", podDate: "Fecha y día de estreno", podTime: "Hora (opcional)", podUrl: "Enlace de YouTube del episodio", podTeaser: "Enlace del adelanto de 15 segundos (opcional)", podPub: "Publicado (visible para las integrantes)", podRemove: "Quitar episodio", podBadUrl: "El enlace debe ser de YouTube.", podNeed: "Para publicar, completa el título en español e inglés, la fecha y el enlace de YouTube.", podEmpty: "Todavía no hay episodios. Toca «Nuevo episodio».", podEp: n => "Episodio " + n,
     helpIntro: "Los botones grandes de ayuda al final de la página de Apoyo. Cada ciudad tiene los suyos. Escribe el número y el nombre en español e inglés (hasta 4). Si dejas una ciudad vacía, se usan los números oficiales que ya vienen cargados (en gris). Verifica siempre cada número antes de guardarlo.",
     tCityList: "Mis ciudades", cityIntro: "Estas son las ciudades de la app: aparecen en el registro, en el botón de ciudad y al etiquetar contenido. Agrega la ciudad nueva, elige su país y guarda. Las líneas de ayuda de cada ciudad se editan en \"Líneas de ayuda\".", cityName: "Ciudad", cityCountry: "País", cityCO: "Colombia", cityUS: "Estados Unidos", cityOther: "Otro país", cityAdd: "+ Agregar ciudad", cityRemove: "Quitar", cityNone: "Deja al menos una ciudad.", cityDefault: "Volver a la lista original", cityPh: "Ej.: Cali",
+    tTalkLib: "Hablemos: frases (lista)", talkLibIntro: "Pega aquí todas las frases de Hablemos, una por línea, así: Título ES | Pregunta ES | Title EN | Question EN. Rotan solas, una nueva cada 2 días. Si en inglés dejas vacío, se muestra el español. La pestaña \"Hablemos\" sigue sirviendo para fijar una pregunta especial por encima de la lista.", talkLibCount: n => n + " frases guardadas", talkLibBad: n => "Línea " + n + ": faltan el título o la pregunta en español.", talkLibClear: "Borrar la lista",
+    tImport: "Importar lista", impIntro: "Pega una lista de lugares, uno por línea: Nombre | Dirección | Enlace | Descripción en español | Description in English. Solo el nombre es obligatorio. Se crean como borradores y los publicas con un botón.", impCity: "Ciudad", impAllCities: "Todas las ciudades", impType: "Tipo", impHappy: "Happy hour", impDine: "Restaurante", impSpa: "Spa o bienestar", impPublishNow: "Publicar de una vez (sin revisar)", impPaste: "Pega aquí la lista", impPreview: "Ver cómo quedará", impCreate: n => "Crear " + n + " lugares", impRows: n => n + " lugares listos", impNone: "No encontré ningún lugar en la lista.", impBadUrl: n => "Línea " + n + ": el enlace no es válido (debe empezar con https://).", impDone: n => "Listo: " + n + " lugares creados.", impPublishAll: "Publicar todos los que acabo de crear", impPublished: "Publicados.", impTooMany: "Máximo 100 por vez.",
     helpCity: "Ciudad", helpNum: "Número", helpLbl: "Nombre del botón", helpReset: "Volver a los números originales", helpLine: n => "Botón " + n, helpBad: "Revisa el número: solo dígitos, +, espacios o guiones.",
     tvTeaser: "Mensaje de anuncio (Inicio y Viajes)", cHomeExpSoon: "Titular", cHomeExpSoonP: "Texto", cStoryT: "Promesa: titular", cStoryP: "Promesa: texto"
   },
@@ -59,6 +61,8 @@ const T = {
     podIntro: "“Entre Nosotras” podcast. Every episode lives on YouTube: paste its link here. Members see it on Home (the next or latest one) and in Wellness (all of them, filtered by topic).", podNew: "+ New episode", podTitle: "Episode title", podDesc: "Short description (optional)", podTopic: "Topic", podDate: "Release date", podTime: "Time (optional)", podUrl: "YouTube link of the episode", podTeaser: "Link to the 15-second teaser (optional)", podPub: "Published (visible to members)", podRemove: "Remove episode", podBadUrl: "The link must be a YouTube link.", podNeed: "To publish, complete the title in Spanish and English, the date and the YouTube link.", podEmpty: "No episodes yet. Tap “New episode”.", podEp: n => "Episode " + n,
     helpIntro: "The big help buttons at the bottom of the Support page. Each city has its own. Type the number and the name in Spanish and English (up to 4). If a city is left empty, the built-in official numbers are used (shown in grey). Always verify each number before saving.",
     tCityList: "My cities", cityIntro: "These are the app's cities: they appear at sign-up, in the city button and when tagging content. Add the new city, choose its country and save. Each city's help lines are edited in \"Help lines\".", cityName: "City", cityCountry: "Country", cityCO: "Colombia", cityUS: "United States", cityOther: "Other country", cityAdd: "+ Add city", cityRemove: "Remove", cityNone: "Keep at least one city.", cityDefault: "Back to the original list", cityPh: "E.g.: Cali",
+    tTalkLib: "Let's Talk: phrases (list)", talkLibIntro: "Paste all the Let's Talk phrases here, one per line: Title ES | Question ES | Title EN | Question EN. They rotate on their own, a new one every 2 days. If English is left empty, Spanish is shown. The \"Let's Talk\" tab can still pin one special question above the list.", talkLibCount: n => n + " phrases saved", talkLibBad: n => "Line " + n + ": the Spanish title or question is missing.", talkLibClear: "Clear the list",
+    tImport: "Import list", impIntro: "Paste a list of places, one per line: Name | Address | Link | Description in Spanish | Description in English. Only the name is required. They are created as drafts and you publish them with one button.", impCity: "City", impAllCities: "All cities", impType: "Type", impHappy: "Happy hour", impDine: "Restaurant", impSpa: "Spa or wellness", impPublishNow: "Publish right away (no review)", impPaste: "Paste the list here", impPreview: "See how it will look", impCreate: n => "Create " + n + " places", impRows: n => n + " places ready", impNone: "I found no places in the list.", impBadUrl: n => "Line " + n + ": the link is not valid (it must start with https://).", impDone: n => "Done: " + n + " places created.", impPublishAll: "Publish all the ones I just created", impPublished: "Published.", impTooMany: "Maximum 100 at a time.",
     helpCity: "City", helpNum: "Number", helpLbl: "Button name", helpReset: "Back to the original numbers", helpLine: n => "Button " + n, helpBad: "Check the number: only digits, +, spaces or dashes.",
     tvTeaser: "Announcement message (Home and Travel)", cHomeExpSoon: "Headline", cHomeExpSoonP: "Text", cStoryT: "Promise: headline", cStoryP: "Promise: text"
   }
@@ -506,6 +510,108 @@ async function helpTab() {
   return wrap;
 }
 
+// ----- Let's Talk phrase library (settings.talk_library = [{es:[title,q], en:[title,q]}]; a new one every 2 days) -----
+async function talkLibTab() {
+  const cur = (await settingsMap()).talk_library;
+  const list = Array.isArray(cur) ? cur : [];
+  const area = el("textarea", { rows: 14, placeholder: "Gratitud | ¿Por qué estás agradecida hoy? | Gratitude | What are you grateful for today?" });
+  area.value = list.map(x => [(x.es && x.es[0]) || "", (x.es && x.es[1]) || "", (x.en && x.en[0]) || "", (x.en && x.en[1]) || ""].join(" | ")).join("\n");
+  const count = el("p", { class: "small-note", text: tx("talkLibCount")(list.length) }), fb = feedbackNode();
+  const parse = () => {
+    const out = []; const lines = area.value.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      const raw = lines[i].trim(); if (!raw) continue;
+      const p = raw.split("|").map(x => x.trim());
+      if (!p[0] || !p[1]) { say(fb, tx("talkLibBad")(i + 1)); return null; }
+      out.push({ es: [p[0].slice(0, 80), p[1].slice(0, 300)], en: [(p[2] || "").slice(0, 80), (p[3] || "").slice(0, 300)] });
+    }
+    return out.slice(0, 200);
+  };
+  return el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("talkLibIntro") }), area, count, fb,
+    el("div", { class: "admin-bar" },
+      K.button(tx("save"), "primary", async () => {
+        say(fb, ""); const v = parse(); if (!v) return;
+        try { await putSetting("talk_library", v.length ? v : null); } catch (e) { console.error(e); return say(fb, tx("saveFail")); }
+        count.textContent = tx("talkLibCount")(v.length); K.toast(tx("saved"));
+      }),
+      K.button(tx("talkLibClear"), "danger", async () => {
+        if (!await confirmed(tx("confirmReset"))) return;
+        try { await putSetting("talk_library", null); } catch { return say(fb, tx("saveFail")); }
+        area.value = ""; count.textContent = tx("talkLibCount")(0); K.toast(tx("saved"));
+      })));
+}
+
+// ----- Import a list of places (restaurants, happy hours, spas) as drafts in one go -----
+let lastImport = null;
+async function importTab() {
+  const citySel = el("select", {}, el("option", { value: "", text: tx("impAllCities") }), ...C.cities().map(c => el("option", { value: c.name, text: c.name })));
+  const cv = C.cityName ? C.cityName(C.viewCity()) : ""; if (cv) citySel.value = cv;
+  const typeSel = el("select", {}, el("option", { value: "dining", text: tx("impDine") }), el("option", { value: "social", text: tx("impHappy") }), el("option", { value: "wellness", text: tx("impSpa") }));
+  const area = el("textarea", { rows: 10, placeholder: "Nombre | Dirección | https://enlace | Descripción en español | Description in English" });
+  const now = el("input", { type: "checkbox" });
+  const out = el("div", {}), fb = feedbackNode();
+  let made = [];
+  // The app re-draws Admin after saving, so the result (and the publish button) is rebuilt from lastImport.
+  const paintDone = () => {
+    if (!lastImport) return;
+    const kids = [el("p", { class: "small-note", text: tx("impDone")(lastImport.ids.length) })];
+    if (!lastImport.published) kids.push(K.button(tx("impPublishAll"), "primary", async e2 => {
+      e2.currentTarget.disabled = true;
+      try { const u = await C.db.from("plans").update({ published: true }).in("id", lastImport.ids); if (u.error) throw u.error; lastImport = null; await C.refreshPublic(); } catch (e) { console.error(e); e2.currentTarget.disabled = false; return say(fb, tx("saveFail")); }
+      K.toast(tx("impPublished")); out.replaceChildren(el("p", { class: "small-note", text: tx("impPublished") }));
+    }));
+    out.replaceChildren(...kids);
+  };
+  const parse = () => {
+    const rows = []; const lines = area.value.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+      const raw = lines[i].trim(); if (!raw) continue;
+      const p = raw.split("|").map(x => x.trim());
+      if (!p[0]) continue;
+      if (p[2] && !C.safeUrl(p[2])) { say(fb, tx("impBadUrl")(i + 1)); return null; }
+      rows.push({ name: p[0].slice(0, 120), address: (p[1] || "").slice(0, 200), url: p[2] ? C.safeUrl(p[2]) : "", des: (p[3] || "").slice(0, 600), den: (p[4] || "").slice(0, 600) });
+    }
+    return rows;
+  };
+  const create = async rows => {
+    const type = typeSel.value, city = citySel.value, publish = now.checked;
+    const payloads = rows.map(r => ({
+      kind: type === "wellness" ? "wellness" : "event", code: type === "wellness" ? "Wellness" : "Social", published: publish,
+      title_es: r.name, title_en: r.name, desc_es: r.des || r.den, desc_en: r.den || r.des,
+      location: r.address, url: r.url, event_date: null, event_time: "", date_text: "", price: "", details: "", image_url: ""
+    }));
+    const ins = await C.db.from("plans").insert(payloads).select("id");
+    if (ins.error) throw ins.error;
+    const ids = (ins.data || []).map(x => x.id);
+    const cur = await C.db.from("settings").select("key,value").eq("key", "plan_tags").maybeSingle();
+    if (cur.error) throw cur.error;
+    const all = Object.assign({}, (cur.data && cur.data.value) || {});
+    ids.forEach(id => { const tg = {}; if (type !== "wellness") tg.cat = type; else tg.cat = "spa"; if (city) tg.show = city; all[id] = tg; });
+    const w = await C.db.from("settings").upsert({ key: "plan_tags", value: all, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (w.error) throw w.error;
+    await C.refreshPublic();
+    return ids;
+  };
+  const showPreview = () => {
+    say(fb, ""); const rows = parse(); if (!rows) return;
+    if (!rows.length) { out.replaceChildren(); return say(fb, tx("impNone")); }
+    if (rows.length > 100) return say(fb, tx("impTooMany"));
+    const list = el("ul", { class: "small-note" }, ...rows.slice(0, 100).map(r => el("li", { text: r.name + (r.address ? " · " + r.address : "") })));
+    out.replaceChildren(el("p", { class: "small-note", text: tx("impRows")(rows.length) }), list,
+      K.button(tx("impCreate")(rows.length), "primary", async ev => {
+        const b = ev.currentTarget; b.disabled = true;
+        try { made = await create(rows); } catch (e) { console.error(e); b.disabled = false; return say(fb, tx("saveFail")); }
+        area.value = ""; K.toast(tx("impDone")(made.length));
+        lastImport = { ids: made, published: now.checked }; paintDone();
+      }));
+  };
+  paintDone();
+  return el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("impIntro") }),
+    field(tx("impCity"), citySel), field(tx("impType"), typeSel), area,
+    el("label", { class: "check" }, now, tx("impPublishNow")), fb,
+    el("div", { class: "admin-bar" }, K.button(tx("impPreview"), "secondary", showPreview)), out);
+}
+
 // ----- City list (settings.cities = [{name, country}]) -----
 async function cityListTab() {
   const saved = (await settingsMap()).cities;
@@ -554,6 +660,8 @@ function init() {
   A.registerTab("talk", { group: "content", label: lab(T.es.tTalk, T.en.tTalk), render: async () => talkTab() });
   A.registerTab("codemsgs", { group: "content", label: lab(T.es.tCodeMsgs, T.en.tCodeMsgs), render: async () => codeMsgsTab() });
   A.registerTab("podcast", { group: "content", label: lab(T.es.tPod, T.en.tPod), render: async () => podcastTab() });
+  A.registerTab("talkLib", { group: "content", label: lab(T.es.tTalkLib, T.en.tTalkLib), render: async () => talkLibTab() });
+  A.registerTab("import", { group: "content", label: lab(T.es.tImport, T.en.tImport), render: async () => importTab() });
   A.registerTab("cityList", { group: "content", label: lab(T.es.tCityList, T.en.tCityList), render: async () => cityListTab() });
   A.registerTab("help", { group: "content", label: lab(T.es.tHelp, T.en.tHelp), render: async () => helpTab() });
   A.registerTab("travelx", { group: "content", label: lab(T.es.tTravel, T.en.tTravel), render: async () => travelTab() });

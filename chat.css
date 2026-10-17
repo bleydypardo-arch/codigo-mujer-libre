@@ -1,0 +1,33 @@
+/* Chat between connected women — scoped to .ch-* and #chat */
+#chat .ch-wrap { max-width: 640px; margin: 0 auto; padding: 8px 4px 24px; }
+#chat .ch-back { margin: 4px 0 8px; min-height: 44px; }
+#chat .ch-h1 { font-family: "Playfair Display", serif; font-weight: 500; font-size: 28px; margin: 0 0 14px; }
+.ch-entry { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; min-height: 64px; margin: 12px 0 0; padding: 12px 16px; background: #FBEFEF; border: 1px solid #E9CFD3; border-radius: 18px; cursor: pointer; }
+.ch-entry .ch-ic { font-size: 22px; }
+.ch-entry .ch-txt { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.ch-entry .ch-txt b { font-family: "Playfair Display", serif; font-weight: 500; font-size: 17px; color: #4A2F36; }
+.ch-entry .ch-txt small { color: #7A5A62; font-size: 12.5px; line-height: 1.35; }
+.ch-badge { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: #B85F68; color: #fff; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.ch-list, .ch-more { display: flex; flex-direction: column; gap: 8px; }
+.ch-more { margin-top: 20px; }
+.ch-more h2 { font-size: 15px; margin: 0 0 4px; color: #6B3A44; }
+.ch-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 60px; padding: 8px 12px; text-align: left; background: #fff; border: 1px solid #F0DFDA; border-radius: 16px; cursor: pointer; }
+.ch-rtxt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ch-rtxt b { font-size: 15px; }
+.ch-rtxt small { color: #7A6A6E; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ch-go { color: #A4506A; font-size: 13px; font-weight: 600; }
+.ch-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.ch-head .ch-back { margin: 0; }
+.ch-name { font-family: "Playfair Display", serif; font-weight: 500; font-size: 19px; }
+.ch-safe { font-size: 12.5px; line-height: 1.4; color: #7A5A62; background: #FBEFEF; border-radius: 12px; padding: 8px 12px; margin: 6px 0 10px; }
+.ch-msgs { display: flex; flex-direction: column; gap: 6px; height: min(52vh, 460px); overflow-y: auto; padding: 8px 4px; background: #FFFAF8; border: 1px solid #F0DFDA; border-radius: 16px; }
+.ch-hint { text-align: center; padding: 24px 16px; }
+.ch-day { align-self: center; font-size: 11.5px; color: #8A7377; margin: 6px 0 2px; }
+.ch-b { max-width: 82%; padding: 8px 12px 6px; border-radius: 16px; font-size: 15px; line-height: 1.4; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ch-b small { display: block; margin-top: 2px; font-size: 10.5px; opacity: .7; text-align: right; }
+.ch-b.mine { align-self: flex-end; background: #B85F68; color: #fff; border-bottom-right-radius: 5px; }
+.ch-b.theirs { align-self: flex-start; background: #fff; border: 1px solid #F0DFDA; color: #3A2E33; border-bottom-left-radius: 5px; }
+.ch-compose { display: flex; gap: 8px; align-items: flex-end; margin-top: 10px; }
+.ch-input { flex: 1; min-height: 48px; max-height: 120px; resize: none; border-radius: 14px; border: 1.5px solid #E6C9CE; padding: 10px 12px; font: inherit; font-size: 16px; }
+.ch-send { min-height: 48px; padding: 0 18px; }
+@media (prefers-reduced-motion: reduce) { .ch-msgs { scroll-behavior: auto; } }
