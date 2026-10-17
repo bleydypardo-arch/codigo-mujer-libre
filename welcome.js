@@ -45,9 +45,10 @@ function founder() {
   const s = (C && C.setting && C.setting("founder_welcome")) || {};
   return { name: (s.name || FOUNDER_DEFAULT.name), text: (s[C.lang()] || s.es || FOUNDER_DEFAULT[C.lang()] || FOUNDER_DEFAULT.es) };
 }
+const cardSrc = () => (C.lang() === "en" ? "founder-card-en.jpg" : "founder-card.jpg");
 function zoomCard() {
   const close = el("button", { type: "button", class: "wl-zclose", "aria-label": "×", text: "×" });
-  const img = el("img", { src: "founder-card.jpg", alt: founder().text, class: "wl-zimg" });
+  const img = el("img", { src: cardSrc(), alt: founder().text, class: "wl-zimg" });
   const box = el("div", { class: "wl-zoom", role: "dialog", "aria-modal": "true" }, img, close);
   const done = () => box.remove();
   close.addEventListener("click", done);
@@ -64,11 +65,10 @@ function textCard() {
   return el("section", { class: "wl-card wl-founder" }, ph,
     el("div", { class: "wl-ftxt" }, el("p", { class: "wl-fmsg", text: f.text }), el("b", { class: "wl-fname", text: "— " + f.name }), el("small", { text: t("wlFounderRole") })));
 }
-// Spanish: the designed welcome card (image). English, or if the image cannot load: the same message as text.
+// The designed welcome card (image) in the member's language; if the image cannot load: the same message as text.
 function founderCard() {
-  if (C.lang() !== "es") return textCard();
   const wrap = el("div", { class: "wl-poster" });
-  const img = el("img", { src: "founder-card.jpg", alt: founder().text, class: "wl-pimg" });
+  const img = el("img", { src: cardSrc(), alt: founder().text, class: "wl-pimg" });
   const btn = el("button", { type: "button", class: "wl-pbtn", "aria-label": t("wlZoom") }, img, el("span", { class: "wl-phint", text: t("wlZoom") }));
   btn.addEventListener("click", zoomCard);
   img.addEventListener("error", () => wrap.replaceChildren(textCard()));
