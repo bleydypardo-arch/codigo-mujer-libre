@@ -1406,8 +1406,11 @@ function renderEvents() {
       chipHost.append(el("span", { text: tf("codeFiltering", t(codeLabels[codeSel])) }), x);
     }
   }
-  const months = [...new Set(events.filter(p => p.event_date).map(p => monthKey(p.event_date)))].sort();
-  const hasTbd = events.some(p => !p.event_date);
+  // Month chips follow the chosen category; fixed places (restaurants, happy hours, spas) have no date, so they never create a "date to confirm" chip.
+  const inCat = events.filter(p => cat === "all" || eventCategory(p) === cat);
+  const isFixedPlace = p => p.kind === "event" && !p.event_date && ["dining", "social", "spa"].includes(planTag(p.id).cat);
+  const months = [...new Set(inCat.filter(p => p.event_date).map(p => monthKey(p.event_date)))].sort();
+  const hasTbd = inCat.some(p => !p.event_date && !isFixedPlace(p));
   const options = ["all", ...months, ...(hasTbd ? ["tbd"] : [])];
   if (!options.includes(monthSel)) monthSel = "all";
   if (filter) {
