@@ -639,7 +639,9 @@ async function importTab() {
   const phRun = async () => {
     say(phFb, ""); phOut.replaceChildren();
     const rows = phArea.value.split("\n").map(l => l.trim()).filter(Boolean).map(l => { const p = l.split("|").map(x => x.trim()); const hasUrl = p.length > 1 && /^https?:\/\//i.test(p[p.length - 1]); return { name: p[0], url: hasUrl ? p[p.length - 1] : "", addr: p.length >= 3 ? p[1] : (p.length === 2 && !hasUrl ? p[1] : "") }; });
+    const skipped = [];
     if (!rows.length) return say(phFb, "Pega primero la lista de nombres y fotos.");
+    for (let i = rows.length - 1; i >= 0; i--) if (rows[i].name && !rows[i].addr && !rows[i].url) { skipped.push(rows[i].name); rows.splice(i, 1); }
     const bad = rows.find(r => !r.name || (!r.addr && !C.safeUrl(r.url)) || (r.url && !C.safeUrl(r.url))); if (bad) return say(phFb, "Revisa esta línea: " + (bad.name || "?") + ". Debe ser: Nombre | Dirección | https://link-de-la-foto (la dirección o la foto pueden faltar, pero no las dos)");
     const res = await C.db.from("plans").select("id,title_es,image_url"); if (res.error) return say(phFb, tx("saveFail"));
     const byName = new Map(); (res.data || []).forEach(p => { const k = norm(p.title_es); if (!byName.has(k)) byName.set(k, []); byName.get(k).push(p); });
@@ -651,7 +653,7 @@ async function importTab() {
       ok++;
     }
     await C.refreshPublic();
-    phOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + ok + " lugares actualizados." + (miss.length ? " No encontré estos lugares (revisa el nombre): " + miss.join(", ") : "") }));
+    phOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + ok + " lugares actualizados." + (miss.length ? " No encontré estos lugares (revisa el nombre): " + miss.join(", ") + "." : "") + (skipped.length ? " Sin cambios (no traían dirección ni foto): " + skipped.join(", ") + "." : "") }));
   };
   return el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("impIntro") }),
     field(tx("impCity"), citySel), field(tx("impType"), typeSel), area,
