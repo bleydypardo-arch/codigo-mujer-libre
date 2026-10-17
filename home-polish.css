@@ -17,3 +17,7 @@
 #homeWeek{border:1px solid var(--cml-gold);box-shadow:0 6px 18px rgba(156,123,78,.14)}
 #homeWeek small.rose{font:500 21px/1.1 var(--font-display)!important;letter-spacing:0!important;text-transform:none;color:var(--cml-ink)!important}
 #homeWeek small.rose::before{width:18px;height:3px}
+/* Fixed places (restaurants, happy hours, spas): no date, no RSVP, just map + info */
+.ev-place .place-acts{display:flex;gap:8px;flex-wrap:wrap}
+.place-btn{flex:1 1 auto;text-align:center;padding:9px 12px;border-radius:999px;background:var(--cml-blush);color:var(--cml-rose-d);font-weight:600;font-size:13px;text-decoration:none;border:1px solid transparent}
+.place-btn.alt{background:#fff;border-color:var(--cml-gold);color:var(--cml-gold-ink)}

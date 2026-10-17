@@ -1069,7 +1069,7 @@ function eventMedia(p, cls) {
   if (!image && p.kind === "trip") image = "tuscany.jpg";   // trips without their own photo: Tuscany, never the plane on wine
   const box = el("div", { class: "ev-media " + cls + (image ? "" : " ev-ph " + toneOf(p.code)) + (image && planTag(p.id).full ? " is-full" : "") });
   if (image) {
-    const img = el("img", { src: image, alt: pick(p, "title") || "", loading: "lazy" });
+    const img = el("img", { src: image, alt: pick(p, "title") || "", loading: "lazy", referrerpolicy: "no-referrer" });
     img.addEventListener("error", () => { img.remove(); box.classList.add("ev-ph", "is-broken", toneOf(p.code)); box.classList.remove("is-full"); box.dataset.img = "broken"; box.prepend(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) })); });
     box.appendChild(img);
   } else box.appendChild(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) }));
@@ -1084,11 +1084,24 @@ function eventCard(p, mini) {
   const body = el("div", { class: "ev-body" });
   const title = pick(p, "title");
   body.appendChild(el("h2", { class: "ev-title", text: title || "—" }));
+  // A fixed place (restaurant, happy hour, spa) has no date and nothing to RSVP to: show where it is and how to get there.
+  const isPlace = p.kind === "event" && !p.event_date && ["dining", "social", "spa"].includes(planTag(p.id).cat);
+  if (isPlace) {
+    const bdg = media.querySelector(".ev-badge"); if (bdg) bdg.remove();
+    card.classList.add("ev-place");
+    if (p.location) body.appendChild(el("p", { class: "ev-where", text: "📍 " + p.location }));
+    const acts = el("div", { class: "resp-row place-acts" });
+    const murl = safeUrl(p.url);
+    if (p.location) acts.appendChild(el("a", { class: "place-btn", href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent((title || "") + " " + p.location), target: "_blank", rel: "noopener noreferrer", text: t("viewOnMap") + " ↗" }));
+    if (murl) acts.appendChild(el("a", { class: "place-btn alt", href: murl, target: "_blank", rel: "noopener noreferrer", text: t("moreInfo") + " ↗" }));
+    if (acts.children.length) body.appendChild(acts);
+  } else {
   body.appendChild(el("p", { class: "ev-when", text: "📅 " + shortWhen(p) }));
   if (p.location) body.appendChild(el("p", { class: "ev-where", text: "📍 " + p.location }));
   body.appendChild(avatarStack(p.id));
   const attr = mini ? "data-resp-home" : "data-resp";
   body.appendChild(el("div", { class: "resp-row" }, respondButton(p, "interested", attr), respondButton(p, "going", attr)));
+  }
   const more = el("button", { type: "button", class: "ev-more", text: t("viewDetails") + " →" });
   more.addEventListener("click", () => openDetail(p.id, more));
   body.appendChild(more);
