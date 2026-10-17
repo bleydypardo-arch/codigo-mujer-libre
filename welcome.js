@@ -12,7 +12,7 @@ const ES = {
   wl3: "Tu foto y tu perfil solo los ven integrantes aprobadas.", wl4: "Puedes reportar o bloquear a quien te incomode. Lo tratamos con discreción.", wl5: "Para un primer encuentro, elige un lugar público y avisa a alguien de confianza.",
   wlPhotoH: "Pon tu foto", wlPhotoP: "Con tu foto, las demás mujeres pueden reconocerte y conectar contigo. Para saludar o escribir a otras, la necesitas.",
   wlPhotoBtn: "Elegir mi foto", wlPhotoChange: "Cambiar mi foto", wlPhotoBusy: "Subiendo…", wlPhotoBad: "Esa imagen no se pudo usar. Prueba con otra foto.", wlPhotoOk: "¡Qué linda! Tu foto está lista.",
-  wlDataH: "Tus datos", wlZoom: "Toca para verla grande", wlFounderRole: "Fundadora de Código Mujer Libre",
+  wlDataH: "Tus datos", wlPreviewNote: "Vista previa: así la ve cada mujer la primera vez que entra. No se guarda nada.", wlPreviewClose: "Cerrar vista previa", wlZoom: "Toca para verla grande", wlFounderRole: "Fundadora de Código Mujer Libre",
   wlData: "Autorizo a Código Mujer Libre a recolectar, almacenar, usar y tratar mis datos personales (nombre, ciudad, correo, teléfono, cumpleaños, foto y lo que yo decida compartir) para gestionar mi membresía, mostrar mi perfil a otras integrantes aprobadas, organizar eventos y enviarme avisos de la comunidad. Declaro que mis datos son veraces y que se me informó que tengo derecho a conocerlos, actualizarlos, rectificarlos, pedir que se borren y revocar esta autorización, conforme a la Ley 1581 de 2012 y el Decreto 1377 de 2013 de Colombia (hoy Decreto 1074 de 2015) y a la ley que aplique donde vivo. Compartir datos sensibles (peticiones de oración, fe o salud) siempre es voluntario.",
   wlTerms: "He leído y acepto las normas de la comunidad y los términos de uso.", wlRead: "Aviso de privacidad completo", wlReadTerms: "Términos de uso",
   wlEnter: "Entrar a la comunidad", wlNeed: "Marca las dos casillas para entrar.", wlFail: "No se pudo guardar. Revisa tu conexión e intenta de nuevo.", wlOut: "Salir",
@@ -27,7 +27,7 @@ const EN = {
   wl3: "Only approved members see your photo and profile.", wl4: "You can report or block anyone who makes you uncomfortable. We handle it discreetly.", wl5: "For a first meeting, choose a public place and tell someone you trust.",
   wlPhotoH: "Add your photo", wlPhotoP: "With your photo, other women can recognize you and connect with you. To say hello or write to others, you need it.",
   wlPhotoBtn: "Choose my photo", wlPhotoChange: "Change my photo", wlPhotoBusy: "Uploading…", wlPhotoBad: "That image could not be used. Try another photo.", wlPhotoOk: "Lovely! Your photo is ready.",
-  wlDataH: "Your data", wlZoom: "Tap to enlarge", wlFounderRole: "Founder of Código Mujer Libre",
+  wlDataH: "Your data", wlPreviewNote: "Preview: this is how each woman sees it the first time she enters. Nothing is saved.", wlPreviewClose: "Close preview", wlZoom: "Tap to enlarge", wlFounderRole: "Founder of Código Mujer Libre",
   wlData: "I authorize Código Mujer Libre to collect, store, use and process my personal data (name, city, email, phone, birthday, photo and whatever I choose to share) to manage my membership, show my profile to other approved members, organize events and send me community notices. I declare that my data is truthful and that I was informed of my right to know, update, correct and ask for deletion of my data and to revoke this authorization, under Colombian Law 1581 of 2012 and Decree 1377 of 2013 (now Decree 1074 of 2015) and the law that applies where I live. Sharing sensitive data (prayer requests, faith or health) is always voluntary.",
   wlTerms: "I have read and accept the community guidelines and the terms of use.", wlRead: "Full privacy notice", wlReadTerms: "Terms of use",
   wlEnter: "Enter the community", wlNeed: "Tick both boxes to come in.", wlFail: "Could not save. Check your connection and try again.", wlOut: "Log out",
@@ -107,17 +107,20 @@ function photoBlock(onDone) {
 }
 
 // ---- the welcome gate (once per member) ----
-function showGate() {
-  if (gate || !init() || !isMember() || consented()) return;
+function showGate(preview) {
+  if (gate || !init()) return;
+  if (!preview && (!isMember() || consented())) return;
   const name = (prof().first_name || "").trim();
   const c1 = el("input", { type: "checkbox", id: "wlC1" }), c2 = el("input", { type: "checkbox", id: "wlC2" });
-  const go = el("button", { type: "button", class: "wl-btn wl-btn-main", text: t("wlEnter"), disabled: "" });
+  const go = el("button", { type: "button", class: "wl-btn wl-btn-main", text: preview ? t("wlPreviewClose") : t("wlEnter"), disabled: preview ? null : "" });
+  if (preview) go.disabled = false;
   const fb = el("p", { class: "wl-fb", role: "alert", hidden: "" });
-  const sync = () => { go.disabled = !(c1.checked && c2.checked); fb.hidden = true; };
+  const sync = () => { if (!preview) go.disabled = !(c1.checked && c2.checked); fb.hidden = true; };
   c1.addEventListener("change", sync); c2.addEventListener("change", sync);
   const link = (kind, key) => { const b = el("button", { type: "button", class: "wl-link", text: t(key) }); b.setAttribute("data-legal", kind); return b; };
   const li = k => el("li", { text: t(k) });
   const panel = el("div", { class: "wl-panel", role: "dialog", "aria-modal": "true", "aria-labelledby": "wlH" },
+    preview ? el("p", { class: "wl-prev", text: t("wlPreviewNote") }) : "",
     el("h2", { id: "wlH", class: "wl-h", text: t("wlTitle", name || "") }),
     founderCard(),
     el("p", { class: "wl-sub", text: t("wlSub") }),
@@ -128,10 +131,11 @@ function showGate() {
       el("div", { class: "wl-links" }, link("privacy", "wlRead"), link("terms", "wlReadTerms")),
       el("label", { class: "wl-check" }, c2, el("span", { text: t("wlTerms") }))),
     fb, go,
-    (() => { const out = el("button", { type: "button", class: "wl-link wl-out", text: t("wlOut") }); out.addEventListener("click", () => C.signOut()); return out; })());
+    (() => { if (preview) return ""; const out = el("button", { type: "button", class: "wl-link wl-out", text: t("wlOut") }); out.addEventListener("click", () => C.signOut()); return out; })());
   gate = el("div", { class: "wl-back" }, panel);
   document.body.appendChild(gate); lockScroll(true);
   go.addEventListener("click", async () => {
+    if (preview) { gate.remove(); gate = null; lockScroll(false); return; }
     if (!(c1.checked && c2.checked)) { fb.textContent = t("wlNeed"); fb.hidden = false; return; }
     go.disabled = true;
     const p = prof();
@@ -207,5 +211,5 @@ document.addEventListener("cml:session", e => {
   if (!C.session() || d.pending || d.staff || d.admin || d.super) { if (gate) { gate.remove(); gate = null; lockScroll(false); } paintBar(); return; }
   showGate(); paintBar();
 });
-window.CMLWelcome = { ensurePhoto, hasPhoto, founderDefault: FOUNDER_DEFAULT };
+window.CMLWelcome = { ensurePhoto, hasPhoto, founderDefault: FOUNDER_DEFAULT, preview: () => { init(); showGate(true); } };
 })();
