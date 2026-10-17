@@ -12,7 +12,7 @@ const ES = {
   podK: "PODCAST", podNew: "NUEVO EPISODIO", podNext: "PRÓXIMO ESTRENO", podSoonT: "Muy pronto: nuestro primer episodio", podSoonP: "Amor, salud, dinero, bienestar, belleza, propósito y emprendimiento. Conversaciones que importan.",
   podListen: "Escuchar el podcast", podTopicsLine: "Amor · Salud · Dinero · Bienestar · Belleza · Propósito · Emprendimiento · Vida", podPlay: "Reproducir", podCal: "Agregar al calendario", podShare: "Compartir", podAll: "Todos", podMore: "Ver más episodios", podNone: "No hay episodios de este tema todavía.",
   podLibK: "PODCAST", podLibT: "Entre Nosotras", podOpenYt: "Abrir en YouTube", podClose: "Cerrar", podShareMsg: n => "Escucha «" + n + "» en Entre Nosotras, el podcast de Código Mujer Libre:",
-  podSoonK: "MUY PRONTO", podLatest: "ÚLTIMO EPISODIO", podMeet: "Conocer el podcast", podMoreEps: "Más episodios", podSeeAll: "Ver todos los episodios",
+  podSoonK: "MUY PRONTO", podLatest: "ÚLTIMO EPISODIO", podMeet: "Conoce el podcast", podMoreEps: "Más episodios", podSeeAll: "Ver todos los episodios",
   podSoonP2: "Amor, salud, dinero, bienestar, belleza, espiritualidad y emprendimiento: cada semana un tema distinto, en una conversación entre dos voces.", podWeekly: "Un episodio nuevo cada semana. Aquí lo escuchas y no te pierdes ninguno.",
   podNote: "Contenido informativo y de inspiración; no sustituye el consejo de un profesional de la salud, legal o financiero. Imagen ilustrativa.",
   podAt: "a las", podCount: n => n === 1 ? "1 episodio" : n + " episodios",
