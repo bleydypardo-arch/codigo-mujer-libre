@@ -970,6 +970,26 @@ render=function(k){if(k!=="promises")prStop();_render4(k);var b=$("#shB"),t=L(),
  else if(k==="games"){var tip=$("#gtip",b);if(tip){tip.insertAdjacentHTML("afterend",slpHTML(t));var sl=$("#slp",b);sl.style.display=gKind==="lanterns"?"":"none";sl.querySelectorAll("[data-sl]").forEach(function(x){x.onclick=function(){var m=+x.getAttribute("data-sl");if(m)sleepStart(m);else sleepCancel()}});paintSlp()}}};
 var _cs4=closeSheet;closeSheet=function(){prStop();_cs4()};$("#shX").onclick=closeSheet;$("#veil").onclick=closeSheet;
 
+/* ---- v14: content set from the app's Admin (stored by the app in localStorage "cml_spa_content") ---- */
+var SC=null;try{SC=JSON.parse(localStorage.getItem("cml_spa_content")||"null")}catch(e){SC=null}
+function okHttps(u){u=String(u||"").trim();return /^https:\/\/[^\s"'<>]+$/.test(u)?u:""}
+function ytId(u){u=okHttps(u);if(!u)return null;var m;if((m=u.match(/^https:\/\/youtu\.be\/([\w-]{6,})/)))return{v:m[1]};if(!/^https:\/\/((www|m|music)\.)?youtube(-nocookie)?\.com\//.test(u))return null;if((m=u.match(/[?&]list=([\w-]+)/))&&!/[?&]v=/.test(u))return{l:m[1]};if((m=u.match(/[?&]v=([\w-]{6,})/)))return{v:m[1]};if((m=u.match(/\/(?:embed|shorts|live)\/([\w-]{6,})/)))return{v:m[1]};return null}
+function ytEmbed(u){var i=ytId(u);if(!i)return"";var src=i.v?"https://www.youtube-nocookie.com/embed/"+i.v+"?rel=0&playsinline=1":"https://www.youtube-nocookie.com/embed/videoseries?list="+i.l+"&rel=0&playsinline=1";return '<div class="vid" style="padding:0;aspect-ratio:16/9;overflow:hidden"><iframe src="'+src+'" title="YouTube" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen loading="lazy" style="width:100%;height:100%;border:0"></iframe></div>'}
+function esc5(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var PMURL="";
+if(SC){
+ if(Array.isArray(SC.promises)){var addP=SC.promises.filter(function(p){return p&&(p.es||p.en)}).map(function(p){return [["paz","fuerza","esperanza","proteccion"].indexOf(p.tag)>=0?p.tag:"paz",p.es||p.en,p.en||p.es,p.refEs||p.refEn||"",p.refEn||p.refEs||""]});if(addP.length)PROM=SC.promMode==="add"?PROM.concat(addP):addP}
+ if(Array.isArray(SC.sounds))SC.sounds.forEach(function(s,i){var u=okHttps(s&&s.url);if(u)CUSTOM_SOUNDS.push({id:"u"+i,es:s.es||s.en||"Sonido",en:s.en||s.es||"Sound",url:u})});
+ PMURL=okHttps(SC.promAudio)}
+var PMA=null;
+function promAudio(on){worshipOn=on;if(on&&!PMA){PMA=new Audio(PMURL);PMA.loop=true;PMA.volume=Math.min(1,vol);PMA.play().catch(function(){})}else if(!on&&PMA){PMA.pause();PMA=null}}
+var _w5=worship;worship=function(on){if(PMURL){promAudio(on);return}_w5(on)};
+var _prHTML5=prHTML;prHTML=function(t,en){var h=_prHTML5(t,en);var e=SC&&ytEmbed(SC.promVideo);if(e){var k=h.lastIndexOf('<div class="card"><h3>'+t.vidT);if(k>=0)h=h.slice(0,k)+'<div class="card"><h3>'+t.vidT+'</h3>'+e+'</div>'}return h};
+var _mu5=muHTML;muHTML=function(t,en){if(!SC||!SC.videos)return _mu5(t,en);
+ return '<p class="sub">'+t.muIntro+'</p>'+MU.map(function(m,i){var its=(SC.videos[i]||[]).filter(function(v){return v&&ytId(v.url)});
+  var body=its.length?its.map(function(v){return '<a class="btn ghost" target="_blank" rel="noopener" style="text-align:left;text-decoration:none;display:block" href="'+esc5(okHttps(v.url))+'">▶ '+esc5(v.title||"YouTube")+'</a>'}).join(""):'<div class="vid"><span>▶ '+m.ex[en]+'<br><span class="note">'+t.muTag+'</span></span></div><button class="btn ghost" disabled>'+t.yt+' · '+t.ytWait+'</button>';
+  return '<div class="card"><h3>'+m.cat[en]+'</h3>'+body+'</div>'}).join("")+'<div class="card"><h3>'+t.padT+'</h3><p class="sub">'+t.padD+'</p><button class="btn" id="padb">'+(pad?t.off:t.on)+'</button></div>'};
+
 /* gate */
 var gate=$("#gate"),hub=$("#hub");
 function openDoor(){if(gate.classList.contains("open"))return;ctx();chime();startAmb();gate.classList.add("open");hub.classList.add("in");setTimeout(function(){gate.classList.add("gone")},2700)}

@@ -31,3 +31,11 @@
 .px-all { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #c8a76b; border-radius: 14px; background: #fffaf0; }
 .px-all small { color: #7a6a52; }
 .px-founders { align-self: flex-start; }
+.sa { display: flex; flex-direction: column; gap: 14px; }
+.sa-sec { display: flex; flex-direction: column; gap: 10px; }
+.sa-list { display: flex; flex-direction: column; gap: 10px; }
+.sa-row { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 1px solid var(--line, #e6dccb); border-radius: 12px; background: #fffdf8; }
+.sa-row input, .sa-row select, .sa-sec input, .sa-sec select, .sa-sec textarea { width: 100%; min-width: 0; font: inherit; font-size: 15px; padding: 9px 10px; border: 1px solid #d9ccb4; border-radius: 10px; background: #fff; color: inherit; }
+.sa-del { align-self: flex-end; }
+.sa-sub { display: flex; flex-direction: column; gap: 8px; padding-top: 6px; }
+.sa-lbl { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #6a5f64; }
