@@ -622,7 +622,7 @@ async function importTab() {
     say(fb, ""); const rows = parse(); if (!rows) return;
     if (!rows.length) { out.replaceChildren(); return say(fb, tx("impNone")); }
     if (rows.length > 100) return say(fb, tx("impTooMany"));
-    const list = el("ul", { class: "small-note" }, ...rows.slice(0, 100).map(r => el("li", { text: r.name + (r.address ? " · " + r.address : "") })));
+    const list = el("ul", { class: "small-note" }, ...rows.slice(0, 100).map(r => el("li", { text: r.name + (r.address ? " · " + r.address : "") + (r.url ? " · 🔗 " + (r.url.replace(/^https?:\/\/(www\.)?/, "").split("/")[0]) : " · (sin enlace)") + (r.img ? " · 🖼️" : "") })));
     out.replaceChildren(el("p", { class: "small-note", text: tx("impRows")(rows.length) }), list,
       K.button(tx("impCreate")(rows.length), "primary", async ev => {
         const b = ev.currentTarget; b.disabled = true;
