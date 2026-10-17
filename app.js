@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  upcomingTitle: "Eventos y promociones", seeAll: "Ver todos", agendaTitle: "Eventos y promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
+  upcomingTitle: "Eventos & Promociones", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  upcomingTitle: "Events & deals", seeAll: "View all", agendaTitle: "Events & deals", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
+  upcomingTitle: "Events & Promotions", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -378,7 +378,7 @@ Object.assign(translations.es, {
   justNow: "Ahora mismo", minsAgo: n => "Hace " + n + " min",
   noMessages: "Tu buzón privado", noMessagesText: "Aquí verás los mensajes que le envíes a la administradora y sus respuestas. Solo ella puede leerlos.",
   msgAnswered: "Respondido",
-  catsLabel: "¿Qué te apetece?", cat_social: "Happy hours y social", cat_dining: "Restaurantes y comida", cat_events: "Eventos y promociones", cat_wellness: "Wellness", catDesc_wellness: "Spas, masajes y belleza", catEmpty_wellness: "Pronto recomendaremos lugares de bienestar",
+  catsLabel: "¿Qué te apetece?", cat_social: "Happy hours y social", cat_dining: "Restaurantes y comida", cat_events: "Eventos & Promociones", cat_wellness: "Wellness", catDesc_wellness: "Spas, masajes y belleza", catEmpty_wellness: "Pronto recomendaremos lugares de bienestar",
   catDesc_social: "Brindis, terrazas, noches", catDesc_dining: "Brunch, cenas, cafés", catDesc_events: "Conciertos, mercados, festivales, exposiciones",
   catCount: n => n === 1 ? "1 plan" : n + " planes",
   catEmpty_social: "Pronto habrá nuevos happy hours", catEmpty_dining: "Pronto recomendaremos restaurantes", catEmpty_events: "Pronto habrá nuevos eventos",
@@ -418,7 +418,7 @@ Object.assign(translations.en, {
   justNow: "Just now", minsAgo: n => n + " min ago",
   noMessages: "Your private inbox", noMessagesText: "Here you'll see the messages you send to the administrator and her replies. Only she can read them.",
   msgAnswered: "Answered",
-  catsLabel: "What are you in the mood for?", cat_social: "Happy hours & social", cat_dining: "Restaurants & food", cat_events: "Events & deals", cat_wellness: "Wellness", catDesc_wellness: "Spas, massage and beauty", catEmpty_wellness: "Wellness picks are coming soon",
+  catsLabel: "What are you in the mood for?", cat_social: "Happy hours & social", cat_dining: "Restaurants & food", cat_events: "Events & Promotions", cat_wellness: "Wellness", catDesc_wellness: "Spas, massage and beauty", catEmpty_wellness: "Wellness picks are coming soon",
   catDesc_social: "Drinks, rooftops, nights out", catDesc_dining: "Brunch, dinners, cafés", catDesc_events: "Concerts, markets, festivals, exhibitions",
   catCount: n => n === 1 ? "1 plan" : n + " plans",
   catEmpty_social: "New happy hours are coming soon", catEmpty_dining: "Restaurant picks are coming soon", catEmpty_events: "New events are coming soon",
@@ -879,7 +879,7 @@ let previewPlan = null, previewTag = null;   // admin "Vista previa": an unsaved
 function planTag(id) { if (previewPlan && id === previewPlan.id) return previewTag || {}; const all = settings.plan_tags; return (all && typeof all === "object" && all[id]) || {}; }
 const EVENT_CATS = ["social", "dining", "wellness"];   // the "Descubre" page; paid events / deals ("events") live in their own page
 // A "trip" that is really a local outing (restaurant, rooftop, party, or anything tied to one city) is not a travel experience:
-// it lives in Descubre (restaurants / happy hours) or in Eventos y promociones. Código Viajemos Juntas shows only real trips (no city tag).
+// it lives in Descubre (restaurants / happy hours) or in Eventos & Promociones. Código Viajemos Juntas shows only real trips (no city tag).
 const sideTrip = p => p.kind === "trip" && (["dining", "party"].includes(planTag(p.id).cat) || !!cityKey(planTag(p.id).show));
 function eventCategory(p) {
   if (p.kind === "wellness") return "wellness";

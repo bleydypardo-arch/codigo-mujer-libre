@@ -473,7 +473,7 @@ function planItem(kind, row, c, memIds) {
       if (kind === "event" && EVENT_TYPES.includes(tg.cat)) bits.push(a("fType_" + tg.cat).split(" (")[0]);
       if ((kind === "event" || kind === "wellness") && C.eventCategory) { const ec = C.eventCategory(row); const es = C.lang() === "es";
         const nm = { social: es ? "Happy hours" : "Happy hours", dining: es ? "Restaurantes" : "Restaurants", wellness: "Wellness" }[ec];
-        bits.push("➜ " + (ec === "events" ? (es ? "Aparece en: Eventos y promociones" : "Shown in: Events & deals") : (es ? "Aparece en: Descubre · " : "Shown in: Discover · ") + nm)); }
+        bits.push("➜ " + (ec === "events" ? (es ? "Aparece en: Eventos & Promociones" : "Shown in: Events & Promotions") : (es ? "Aparece en: Descubre · " : "Shown in: Discover · ") + nm)); }
       if (kind === "wellness" && WCATS.includes(tg.cat)) bits.push(tg.cat === "other" && tg.label ? tg.label : C.t("wcat_" + tg.cat));
       if ((kind === "wellness" || kind === "trip") && tg.featured) bits.push("✦ " + (kind === "trip" ? a("fFeaturedTrip").split(" (")[0] : "Código Pick"));
       if (kind === "trip") bits.push(C.t(TRIP_TYPE_KEY[TRIP_TYPES.includes(tg.cat) ? tg.cat : "trip"]));
