@@ -91,6 +91,7 @@
 
   async function openThread(id) {
     if (!init()) return;
+    if (window.CMLWelcome && !(await window.CMLWelcome.ensurePhoto())) return;
     partner = id; C.showPage("chat", false);
     if (!all.length) await fetchAll();
     paintThread(true); markRead(); start();

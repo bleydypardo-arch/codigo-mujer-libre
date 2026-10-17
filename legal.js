@@ -13,6 +13,7 @@ const DOC = {
       ["Servicios que usamos", "Supabase (cuentas y base de datos), Resend (envío de correos, como el aviso de aprobación y el de recuperar tu contraseña), GitHub Pages (alojamiento de la aplicación), Google Fonts (tipografías) y, para algunas imágenes por defecto, Unsplash. El equipo puede usar un asistente de IA para pulir textos de eventos y buscar ideas; no se le envían datos personales de las miembros."],
       ["Cuánto tiempo", "Guardamos tus datos mientras seas miembro. Si pides que los borremos, eliminamos tu cuenta y tu contenido."],
       ["Tus derechos", "Puedes pedir ver, corregir o borrar tus datos, o cerrar tu cuenta. Escríbenos desde Aquí para ti → «Necesito hablar» y lo atendemos."],
+      ["Autorización y derechos (Colombia y otros países)", "Al entrar, aceptas expresamente que Código Mujer Libre trate tus datos para las finalidades de este aviso. Cumplimos la Ley 1581 de 2012 y el Decreto 1377 de 2013 de Colombia (hoy Decreto 1074 de 2015) y la ley que aplique donde vives. Tienes derecho a conocer tus datos, actualizarlos, rectificarlos, pedir que se borren, revocar tu autorización y presentar una queja ante la autoridad de tu país. Compartir datos sensibles (peticiones de oración, fe o salud) es siempre voluntario. Esta app es solo para mujeres de 18 años o más. Para ejercer tus derechos, escríbenos desde Aquí para ti → «Necesito hablar»."],
       ["Cambios", "Si este aviso cambia de forma importante, lo verás aquí con una nueva fecha."]
     ] },
     en: { title: "Privacy Notice", updated: "Updated: October 2026", s: [
@@ -23,6 +24,7 @@ const DOC = {
       ["Services we use", "Supabase (accounts and database), Resend (sending emails, such as the approval notice and password reset), GitHub Pages (hosting the app), Google Fonts (typefaces) and, for some default images, Unsplash. The team may use an AI assistant to polish event text and look for ideas; no member personal data is sent to it."],
       ["How long", "We keep your data while you are a member. If you ask us to delete it, we remove your account and your content."],
       ["Your rights", "You can ask to see, correct or delete your data, or close your account. Write to us from Here for you → “I need to talk” and we will take care of it."],
+      ["Authorization and rights (Colombia and other countries)", "By joining, you expressly agree that Código Mujer Libre processes your data for the purposes in this notice. We follow Colombian Law 1581 of 2012 and Decree 1377 of 2013 (now Decree 1074 of 2015) and the law that applies where you live. You have the right to know your data, update it, correct it, ask for it to be deleted, revoke your authorization and file a complaint with the authority in your country. Sharing sensitive data (prayer requests, faith or health) is always voluntary. This app is only for women aged 18 or older. To use your rights, write to us from Here for you → “I need to talk”."],
       ["Changes", "If this notice changes in an important way, you will see it here with a new date."]
     ] }
   },

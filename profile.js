@@ -58,6 +58,17 @@ async function toSquareJpeg(file) {
   return new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error("photo")), "image/jpeg", 0.85));
 }
 const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+async function uploadMyPhoto(file) {
+  if (!/^image\//.test(file.type)) throw new Error("photo");
+  const me = C.profile(); const blob = await toSquareJpeg(file);
+  const path = me.id + "/" + uuid() + ".jpg";
+  const up = await C.db.storage.from(BUCKET).upload(path, blob, { contentType: "image/jpeg", cacheControl: "3600", upsert: false });
+  if (up.error) throw up.error;
+  const r = await C.db.from("profiles").update({ avatar_path: path }).eq("id", me.id);
+  if (r.error) { await C.db.storage.from(BUCKET).remove([path]); throw r.error; }
+  const old = me.avatar_path; me.avatar_path = path;
+  if (old) C.db.storage.from(BUCKET).remove([old]).catch(() => {});
+}
 function avatarNode(path, name, cls) {
   const box = el("span", { class: "avatar " + (cls || ""), "aria-hidden": "true", text: (name || "?").trim().charAt(0).toUpperCase() });
   if (path) {
@@ -230,7 +241,7 @@ function init() {
     const p = page(); if (p && p.classList.contains("active")) renderProfile();
     homeRender();
   });
-  window.CMLProfile = { renderBirthdays, birthdays, avatarNode, signed };
+  window.CMLProfile = { renderBirthdays, birthdays, avatarNode, signed, uploadMyPhoto };
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
 })();

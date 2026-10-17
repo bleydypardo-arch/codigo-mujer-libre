@@ -1,0 +1,32 @@
+/* Welcome after approval, photo ask, and reminder pill — scoped to .wl-* */
+.wl-back { position: fixed; inset: 0; z-index: 80; display: flex; align-items: flex-start; justify-content: center; overflow-y: auto; background: #F6F0EB; padding: 0; }
+.wl-panel { width: 100%; max-width: 520px; box-sizing: border-box; padding: 28px 18px 40px; }
+.wl-panel.wl-small { align-self: center; background: #FFFAF8; border-radius: 24px; margin: 20px; padding: 26px 20px 22px; width: calc(100% - 40px); box-shadow: 0 10px 40px rgba(60, 40, 40, .18); }
+.wl-back:has(.wl-small) { background: rgba(43, 32, 32, .45); align-items: center; }
+.wl-h { font-family: "Playfair Display", serif; font-weight: 500; font-size: 28px; line-height: 1.25; margin: 0 0 8px; color: #4A2F36; }
+.wl-sub { margin: 0 0 18px; color: #6F5A60; font-size: 15px; line-height: 1.5; }
+.wl-card { background: #fff; border: 1px solid #F0DFDA; border-radius: 20px; padding: 16px 16px 14px; margin: 0 0 14px; }
+.wl-card h3 { font-family: "Playfair Display", serif; font-weight: 500; font-size: 19px; margin: 0 0 8px; color: #4A2F36; }
+.wl-card p { margin: 0 0 12px; font-size: 14.5px; line-height: 1.5; color: #5A464C; }
+.wl-safe { background: #FBEFEF; border-color: #E9CFD3; }
+.wl-safe ul { margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; line-height: 1.45; color: #5A464C; }
+.wl-photo { display: flex; align-items: center; gap: 14px; }
+.wl-photoact { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.wl-photomsg { margin: 0 !important; font-size: 13px !important; color: #6B3A44 !important; }
+.wl-check { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; line-height: 1.5; color: #5A464C; margin: 0 0 10px; }
+.wl-check input { flex: none; width: 24px; height: 24px; margin-top: 2px; accent-color: #B85F68; }
+.wl-links { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0 0 12px 34px; }
+.wl-link { background: none; border: 0; padding: 10px 0; min-height: 44px; color: #A4506A; font-size: 13.5px; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.wl-out { display: block; margin: 8px auto 0; color: #8A7377; font-weight: 500; }
+.wl-btn { min-height: 48px; padding: 0 22px; border-radius: 999px; border: 0; font-size: 15px; font-weight: 600; cursor: pointer; }
+.wl-btn-main { width: 100%; background: #B85F68; color: #fff; }
+.wl-btn-main[disabled] { background: #D9C2C5; cursor: not-allowed; }
+.wl-btn-soft { background: #FBEFEF; color: #6B3A44; border: 1px solid #E9CFD3; }
+.wl-fb { margin: 0 0 10px; font-size: 13.5px; color: #9A3B4B; text-align: center; }
+.wl-bar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); z-index: 40; display: flex; align-items: center; background: #4A2F36; color: #fff; border-radius: 999px; box-shadow: 0 6px 20px rgba(60, 40, 40, .28); max-width: calc(100% - 24px); }
+.wl-barbtn { background: none; border: 0; color: #fff; min-height: 44px; padding: 0 6px 0 18px; font-size: 14px; font-weight: 600; cursor: pointer; }
+.wl-barx { background: none; border: 0; color: #E9CFD3; min-width: 44px; min-height: 44px; font-size: 20px; cursor: pointer; }
+.wl-adminrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 0; border-bottom: 1px solid #F0DFDA; }
+.wl-adminrow small { display: block; color: #7A6A6E; }
+.wl-adminact { display: flex; gap: 8px; flex-wrap: wrap; }
+.lg-back { z-index: 90; }

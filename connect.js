@@ -57,12 +57,15 @@
     if (l.status === "declined") return l.from_user === me() ? "sent" : "none";
     return l.from_user === me() ? "sent" : "incoming";
   };
+  async function needPhoto() { if (window.CMLWelcome && !(await window.CMLWelcome.ensurePhoto())) throw new Error("nophoto"); }
   async function greet(m) {
+    await needPhoto();
     const r = await C.db.from("connections").insert({ from_user: me(), to_user: m.id }).select("id,from_user,to_user,status,created_at,from_share,to_share").single();
     if (r.error) throw r.error;
     links.set(m.id, r.data); changed();
   }
   async function answer(m, status) {
+    if (status === "accepted") await needPhoto();
     const l = links.get(m.id); if (!l) return;
     const r = await C.db.from("connections").update({ status }).eq("id", l.id);
     if (r.error) throw r.error;
@@ -163,14 +166,14 @@
       if (s === "incoming") {
         const ok = el("button", { type: "button", class: "primary", text: t("cnAccept") });
         const no = el("button", { type: "button", class: "secondary", text: t("cnLater") });
-        ok.addEventListener("click", async () => { try { await answer(m, "accepted"); note.textContent = t("cnNowConnected", m.first_name); paintAct(); note.textContent = t("cnNowConnected", m.first_name); } catch { note.textContent = t("cnFail"); } });
+        ok.addEventListener("click", async () => { try { await answer(m, "accepted"); note.textContent = t("cnNowConnected", m.first_name); paintAct(); note.textContent = t("cnNowConnected", m.first_name); } catch (e) { note.textContent = e && e.message === "nophoto" ? "" : t("cnFail"); } });
         no.addEventListener("click", async () => { try { await answer(m, "declined"); closeSheet(); } catch { note.textContent = t("cnFail"); } });
         return act.append(ok, no);
       }
       const hi = el("button", { type: "button", class: "primary cn-hi", text: "👋 " + t("cnHello") });
       hi.addEventListener("click", async () => {
         hi.disabled = true;
-        try { await greet(m); paintAct(); } catch { hi.disabled = false; note.textContent = t("cnFail"); }
+        try { await greet(m); paintAct(); } catch (e) { hi.disabled = false; note.textContent = e && e.message === "nophoto" ? "" : t("cnFail"); }
       });
       act.appendChild(hi);
     };
