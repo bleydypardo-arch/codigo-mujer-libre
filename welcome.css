@@ -43,5 +43,5 @@
 .wl-pimg { display: block; width: 100%; height: auto; }
 .wl-phint { position: absolute; right: 10px; bottom: 10px; background: rgba(74, 47, 54, .82); color: #fff; font-size: 12.5px; padding: 7px 12px; border-radius: 999px; }
 .wl-zoom { position: fixed; inset: 0; z-index: 95; overflow: auto; background: rgba(30, 20, 22, .92); -webkit-overflow-scrolling: touch; }
-.wl-zimg { display: block; width: 900px; max-width: none; height: auto; margin: 0 auto; }
+.wl-zimg { display: block; width: 780px; max-width: none; height: auto; margin: 0 auto; }
 .wl-zclose { position: fixed; top: 12px; right: 12px; width: 46px; height: 46px; border-radius: 50%; border: 0; background: #fff; color: #4A2F36; font-size: 26px; line-height: 1; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,.3); }

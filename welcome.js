@@ -53,7 +53,7 @@ function zoomCard() {
   close.addEventListener("click", done);
   box.addEventListener("click", e => { if (e.target === box) done(); });
   document.body.appendChild(box); close.focus();
-  const toText = () => { box.scrollLeft = box.scrollWidth; box.scrollTop = 0; };
+  const toText = () => { box.scrollLeft = Math.max(0, Math.round(img.offsetWidth * 0.488) - 4); box.scrollTop = 0; };
   toText(); img.addEventListener("load", toText);
 }
 function textCard() {
