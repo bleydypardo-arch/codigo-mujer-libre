@@ -1,10 +1,11 @@
 /* Premium access: the two gold pill buttons on Home + the Admin switches. */
 .fl-entry-wrap, .px-entry-wrap { order: 6; margin: 12px 0 0; }
 .px-entry-wrap { order: 7; margin-top: 8px; }
-.px-pill { position: relative; display: block; width: 100%; aspect-ratio: 1100 / 205; border: 0; padding: 0; margin: 0; background-color: transparent; background-size: 100% 100%; background-repeat: no-repeat; border-radius: 999px; cursor: pointer; text-align: left; font: inherit; color: inherit; overflow: hidden;
+.px-pill { position: relative; display: block; width: 100%; aspect-ratio: 1100 / 205; border: 0; padding: 0; margin: 0; background: transparent; border-radius: 999px; cursor: pointer; text-align: left; font: inherit; color: inherit; overflow: hidden;
   filter: drop-shadow(0 3px 5px rgba(120,95,45,.22)); -webkit-tap-highlight-color: transparent; }
-.px-florece { background-image: url(pill-florece.webp); }
-.px-spa { background-image: url(pill-spa.webp); }
+.px-pill::before { content: ""; position: absolute; inset: 0; background-size: 100% 100%; background-repeat: no-repeat; filter: saturate(.7) brightness(1.02); }   /* softer gold: calmer next to the rose/ivory Home */
+.px-florece::before { background-image: url(pill-florece.webp); }
+.px-spa::before { background-image: url(pill-spa.webp); }
 .px-pill:active { transform: scale(.985); }
 .px-pill:focus-visible { outline: 3px solid #b8863a; outline-offset: 3px; }
 .px-tx { position: absolute; left: 23%; width: 38%; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 3px; }
