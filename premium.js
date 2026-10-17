@@ -24,7 +24,9 @@ const map = () => { const d = C && C.setting(KEY); return d && typeof d === "obj
 function can(mod) {
   try {
     const s = C && C.session && C.session(); if (!s || !s.user) return false;
-    const mine = map()[s.user.id]; return !!(mine && mine[mod]);
+    const mine = map()[s.user.id];
+    if (mine && mod in mine) return !!mine[mod];     // an explicit On/Off always wins
+    return !!(C.isStaff && C.isStaff());              // no choice saved: Jazz and Amilú see them by default
   } catch { return false; }
 }
 const DEFS = {
@@ -64,12 +66,13 @@ async function adminTab() {
   let rows; try { rows = await members(); } catch { return el("p", { class: "small-note", text: t("pxFail") }); }
   const search = el("input", { type: "search", placeholder: t("pxSearch"), "aria-label": t("pxSearch") });
   const list = el("div", { class: "px-list" });
+  const eff = (u, mod) => { const m = map()[u.id]; return m && mod in m ? !!m[mod] : !!u.staff; };
   const sw = (u, mod) => {
-    const on = !!(map()[u.id] && map()[u.id][mod]);
+    const on = eff(u, mod);
     const b = el("button", { type: "button", class: "px-sw" + (on ? " on" : ""), role: "switch", "aria-checked": on ? "true" : "false", "aria-label": t(DEFS[mod].title) },
       el("span", { class: "px-sw-k" }), el("span", { class: "px-sw-l", text: t(DEFS[mod].title) }), el("span", { class: "px-sw-s", text: on ? t("pxOn") : t("pxOff") }));
     b.addEventListener("click", async () => {
-      const cur = Object.assign({}, map()[u.id] || {}); cur[mod] = !on; if (!cur[mod]) delete cur[mod];
+      const cur = Object.assign({}, map()[u.id] || {}); cur[mod] = !on; if (cur[mod] === !!u.staff) delete cur[mod];   // back to the default: no entry needed
       b.disabled = true;
       try {
         await window.CMLAdmin.setMapEntry(KEY, u.id, Object.keys(cur).length ? cur : null);
@@ -82,7 +85,7 @@ async function adminTab() {
   };
   function paint() {
     const q = search.value.trim().toLowerCase();
-    const have = id => { const m = map()[id]; return m && (m.florece || m.spa); };
+    const have = id => { const u = rows.find(r => r.id === id); return u && (eff(u, "florece") || eff(u, "spa")); };
     const shown = rows.filter(u => !q || (u.name + " " + u.sub).toLowerCase().includes(q)).sort((a, b) => (have(b.id) ? 1 : 0) - (have(a.id) ? 1 : 0));
     list.replaceChildren(...(shown.length ? shown.map(u => el("div", { class: "px-row" + (have(u.id) ? " has" : "") },
       el("div", { class: "px-who" }, el("b", { text: u.name }), u.sub ? el("small", { text: u.sub }) : null),
