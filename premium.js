@@ -44,9 +44,12 @@ function pill(mod) {
 }
 function render() {
   MODS.forEach(mod => {
-    const host = document.getElementById(DEFS[mod].host); if (!host) return;
-    if (!can(mod)) { host.hidden = true; host.replaceChildren(); return; }
-    host.replaceChildren(pill(mod)); host.hidden = false;
+    const hosts = [DEFS[mod].host].concat(mod === "spa" ? ["spaEntryWell"] : []);
+    hosts.forEach(id => {
+      const host = document.getElementById(id); if (!host) return;
+      if (!can(mod)) { host.hidden = true; host.replaceChildren(); return; }
+      host.replaceChildren(pill(mod)); host.hidden = false;
+    });
   });
 }
 // ---------- Admin tab ----------
