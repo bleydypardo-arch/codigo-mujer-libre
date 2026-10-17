@@ -12,7 +12,7 @@ const ES = {
   wl3: "Tu foto y tu perfil solo los ven integrantes aprobadas.", wl4: "Puedes reportar o bloquear a quien te incomode. Lo tratamos con discreción.", wl5: "Para un primer encuentro, elige un lugar público y avisa a alguien de confianza.",
   wlPhotoH: "Pon tu foto", wlPhotoP: "Con tu foto, las demás mujeres pueden reconocerte y conectar contigo. Para saludar o escribir a otras, la necesitas.",
   wlPhotoBtn: "Elegir mi foto", wlPhotoChange: "Cambiar mi foto", wlPhotoBusy: "Subiendo…", wlPhotoBad: "Esa imagen no se pudo usar. Prueba con otra foto.", wlPhotoOk: "¡Qué linda! Tu foto está lista.",
-  wlDataH: "Tus datos",
+  wlDataH: "Tus datos", wlFounderRole: "Fundadora de Código Mujer Libre",
   wlData: "Autorizo a Código Mujer Libre a recolectar, almacenar, usar y tratar mis datos personales (nombre, ciudad, correo, teléfono, cumpleaños, foto y lo que yo decida compartir) para gestionar mi membresía, mostrar mi perfil a otras integrantes aprobadas, organizar eventos y enviarme avisos de la comunidad. Declaro que mis datos son veraces y que se me informó que tengo derecho a conocerlos, actualizarlos, rectificarlos, pedir que se borren y revocar esta autorización, conforme a la Ley 1581 de 2012 y el Decreto 1377 de 2013 de Colombia (hoy Decreto 1074 de 2015) y a la ley que aplique donde vivo. Compartir datos sensibles (peticiones de oración, fe o salud) siempre es voluntario.",
   wlTerms: "He leído y acepto las normas de la comunidad y los términos de uso.", wlRead: "Aviso de privacidad completo", wlReadTerms: "Términos de uso",
   wlEnter: "Entrar a la comunidad", wlNeed: "Marca las dos casillas para entrar.", wlFail: "No se pudo guardar. Revisa tu conexión e intenta de nuevo.", wlOut: "Salir",
@@ -27,7 +27,7 @@ const EN = {
   wl3: "Only approved members see your photo and profile.", wl4: "You can report or block anyone who makes you uncomfortable. We handle it discreetly.", wl5: "For a first meeting, choose a public place and tell someone you trust.",
   wlPhotoH: "Add your photo", wlPhotoP: "With your photo, other women can recognize you and connect with you. To say hello or write to others, you need it.",
   wlPhotoBtn: "Choose my photo", wlPhotoChange: "Change my photo", wlPhotoBusy: "Uploading…", wlPhotoBad: "That image could not be used. Try another photo.", wlPhotoOk: "Lovely! Your photo is ready.",
-  wlDataH: "Your data",
+  wlDataH: "Your data", wlFounderRole: "Founder of Código Mujer Libre",
   wlData: "I authorize Código Mujer Libre to collect, store, use and process my personal data (name, city, email, phone, birthday, photo and whatever I choose to share) to manage my membership, show my profile to other approved members, organize events and send me community notices. I declare that my data is truthful and that I was informed of my right to know, update, correct and ask for deletion of my data and to revoke this authorization, under Colombian Law 1581 of 2012 and Decree 1377 of 2013 (now Decree 1074 of 2015) and the law that applies where I live. Sharing sensitive data (prayer requests, faith or health) is always voluntary.",
   wlTerms: "I have read and accept the community guidelines and the terms of use.", wlRead: "Full privacy notice", wlReadTerms: "Terms of use",
   wlEnter: "Enter the community", wlNeed: "Tick both boxes to come in.", wlFail: "Could not save. Check your connection and try again.", wlOut: "Log out",
@@ -36,6 +36,23 @@ const EN = {
   wsTab: "No photo", wsIntro: "Approved members who do not have a photo yet. Copy the message and send it by WhatsApp.", wsNone: "Every member has a photo. 🌸", wsCopy: "Copy message", wsCopied: "Copied", wsWa: "Open WhatsApp", wsCount: n => n + (n === 1 ? " member without a photo" : " members without a photo"),
   wsMsg: n => "Hi " + n + " 🌸 This is Código Mujer Libre. So other women can recognize you and connect with you, could you add your profile photo? Open the app → Profile → Choose photo. Only approved members see it. Thank you!"
 };
+const FOUNDER_DEFAULT = {
+  name: "Jazz",
+  es: "Hola, soy Jazz, la fundadora. Qué alegría que estés aquí 🌸 Esto lo creamos para que las mujeres se conozcan, se apoyen y vivan cosas bonitas juntas. Para que podamos reconocernos y conectar, pon tu foto: es lo que más ayuda a que esto se sienta como una comunidad de verdad. Solo la ven las integrantes aprobadas. Bienvenida a casa.",
+  en: "Hi, I'm Jazz, the founder. I'm so glad you're here 🌸 We created this so women can meet, support each other and live beautiful things together. So we can recognize each other and connect, add your photo: it is what most helps this feel like a real community. Only approved members see it. Welcome home."
+};
+function founder() {
+  const s = (C && C.setting && C.setting("founder_welcome")) || {};
+  return { name: (s.name || FOUNDER_DEFAULT.name), text: (s[C.lang()] || s.es || FOUNDER_DEFAULT[C.lang()] || FOUNDER_DEFAULT.es) };
+}
+function founderCard() {
+  const f = founder();
+  const ph = el("span", { class: "avatar avatar-lg wl-fph", text: (f.name || "J").trim().charAt(0).toUpperCase() });
+  const img = el("img", { src: "founder.jpg", alt: "", class: "wl-fimg" });
+  img.addEventListener("load", () => { ph.replaceChildren(img); });
+  return el("section", { class: "wl-card wl-founder" }, ph,
+    el("div", { class: "wl-ftxt" }, el("p", { class: "wl-fmsg", text: f.text }), el("b", { class: "wl-fname", text: "— " + f.name }), el("small", { text: t("wlFounderRole") })));
+}
 let C = null, gate = null, sheet = null, bar = null;
 const t = (k, ...a) => { const v = C ? C.t(k) : ""; return typeof v === "function" ? v(...a) : (v || k); };
 const el = (...a) => C.el(...a);
@@ -80,6 +97,7 @@ function showGate() {
   const li = k => el("li", { text: t(k) });
   const panel = el("div", { class: "wl-panel", role: "dialog", "aria-modal": "true", "aria-labelledby": "wlH" },
     el("h2", { id: "wlH", class: "wl-h", text: t("wlTitle", name || "") }),
+    founderCard(),
     el("p", { class: "wl-sub", text: t("wlSub") }),
     el("section", { class: "wl-card wl-safe" }, el("h3", { text: t("wlSafeH") }), el("ul", {}, li("wl1"), li("wl2"), li("wl3"), li("wl4"), li("wl5"))),
     el("section", { class: "wl-card" }, el("h3", { text: t("wlPhotoH") }), el("p", { text: t("wlPhotoP") }), photoBlock()),
@@ -167,5 +185,5 @@ document.addEventListener("cml:session", e => {
   if (!C.session() || d.pending || d.staff || d.admin || d.super) { if (gate) { gate.remove(); gate = null; lockScroll(false); } paintBar(); return; }
   showGate(); paintBar();
 });
-window.CMLWelcome = { ensurePhoto, hasPhoto };
+window.CMLWelcome = { ensurePhoto, hasPhoto, founderDefault: FOUNDER_DEFAULT };
 })();
