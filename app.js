@@ -1437,7 +1437,17 @@ function renderEvents() {
       ? emptyState("✨", t("catEmpty_" + cat), t("catEmptyText"), el("div", { class: "empty-acts" }, idea, all))
       : emptyState("🔎", t("evNoMatch"), "", all);
     list.replaceChildren(empty);
+  } else if (cat === "all") {
+    // Each type lives only in its own column, under its own tile: happy hours | restaurants | wellness
+    const cols = EVENT_CATS.map(c => {
+      const mine = shown.filter(p => eventCategory(p) === c);
+      return mine.length ? el("div", { class: "ev-col", "data-cat": c }, el("h3", { class: "ev-col-h", text: t("cat_" + c) }), ...mine.map(p => eventCard(p))) : null;
+    }).filter(Boolean);
+    const rest = shown.filter(p => !EVENT_CATS.includes(eventCategory(p)));
+    if (rest.length) cols.push(el("div", { class: "ev-col" }, ...rest.map(p => eventCard(p))));
+    list.replaceChildren(el("div", { class: "ev-cols" }, ...cols));
   } else list.replaceChildren(...shown.map(p => eventCard(p)));
+  list.classList.toggle("is-cols", !!list.querySelector(":scope > .ev-cols"));
   restoreFocus();
 }
 // Admin "Vista previa": shows an unsaved plan in the real detail sheet (no RSVP, no chat, nothing is written)

@@ -21,3 +21,12 @@
 .ev-place .place-acts{display:flex;gap:8px;flex-wrap:wrap}
 .place-btn{flex:1 1 auto;text-align:center;padding:9px 12px;border-radius:999px;background:var(--cml-blush);color:var(--cml-rose-d);font-weight:600;font-size:13px;text-decoration:none;border:1px solid transparent}
 .place-btn.alt{background:#fff;border-color:var(--cml-gold);color:var(--cml-gold-ink)}
+/* Descubre: one column per type (happy hours | restaurants | wellness) */
+#eventsList.is-cols{display:block}
+.ev-cols{display:grid;grid-template-columns:minmax(0,1fr);gap:22px;align-items:start}
+.ev-col{display:grid;gap:12px;min-width:0;align-content:start}
+.ev-col-h{margin:6px 0 0;font:500 20px/1.2 var(--font-display);color:var(--cml-ink)}
+@media (min-width:900px){
+  .ev-cols{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+  .ev-col-h{display:none}
+}
