@@ -312,7 +312,7 @@ function meetForm() {
   const inp = (id, type, val, ph, extra) => el("input", Object.assign({ id, type, value: val || "", placeholder: ph || "" }, extra || {}));
   // Light suggestions from places/cities the community already uses; any other text is still accepted.
   const known = C.homeData().plans.filter(p => C.planTag(p.id).matcha || p.kind === "event");
-  const citySet = [...new Set(["Orlando", "Miami", "New York", "Boston", "Bogotá", "Medellín", ...known.map(cityOf), ...(C.homeData().posts || []).map(parseMeetup).filter(Boolean).map(m => m.city)].filter(Boolean))].slice(0, 30);
+  const citySet = [...new Set([...C.cities().map(c => c.name), ...known.map(cityOf), ...(C.homeData().posts || []).map(parseMeetup).filter(Boolean).map(m => m.city)].filter(Boolean))].slice(0, 30);
   const place = inp("meetPlace", "text", d.place, t("maPlacePh"), { maxlength: 80, autocomplete: "off" });
   // City is a simple picker (no typing, no autocomplete popup: that made the phone keyboard glitch)
   const cityList = [...citySet]; if (d.city && !cityList.some(c => c.toLowerCase() === d.city.toLowerCase())) cityList.push(d.city);

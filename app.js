@@ -479,7 +479,7 @@ Object.assign(translations.es, {
   joinBday: "Tu cumpleaños", optional: "(opcional)", month: "Mes", day: "Día",
   joinBdayHint: "🎂 Solo el día y el mes, para celebrarte. Nunca pedimos el año.", joinPassword: "Crea una contraseña",
   memCityAll: "Todas", memCityAria: "Filtrar por ciudad",
-  viewAsLabel: "Viendo la app como", viewAsAll: "Todas las ciudades",
+  viewAsLabel: "Viendo la app como", viewAsAll: "Todas las ciudades", cityBarLabel: "Estás viendo",
   tier_owner: "Fundadora", tier_founder: "Anfitriona Fundadora", tier_host: "Anfitriona", hostsTitle: "Tus anfitrionas", hostsSub: "Mujeres que te reciben y cuidan el Club en tu ciudad.",
   cityPick: "Elige tu ciudad", cityOther: "Otra ciudad", cityOtherLbl: "¿Cuál es tu ciudad?", cityHint: "Solo la ciudad. Nunca pedimos tu dirección.",
   joinQDoes: "2 · ¿A qué te dedicas hoy?", joinQDoesPh: "Soy maestra, cuido mi hogar, tengo un negocio, busco empleo…",
@@ -512,7 +512,7 @@ Object.assign(translations.en, {
   joinBday: "Your birthday", optional: "(optional)", month: "Month", day: "Day",
   joinBdayHint: "🎂 Just the day and month, so we can celebrate you. We never ask for the year.", joinPassword: "Create a password",
   memCityAll: "All", memCityAria: "Filter by city",
-  viewAsLabel: "Viewing the app as", viewAsAll: "All cities",
+  viewAsLabel: "Viewing the app as", viewAsAll: "All cities", cityBarLabel: "You\u2019re viewing",
   tier_owner: "Founder", tier_founder: "Founding Host", tier_host: "Host", hostsTitle: "Your hosts", hostsSub: "Women who welcome you and look after the Club in your city.",
   cityPick: "Choose your city", cityOther: "Another city", cityOtherLbl: "What is your city?", cityHint: "Just the city. We never ask for your address.",
   joinQDoes: "2 · What do you do today?", joinQDoesPh: "I'm a teacher, I care for my home, I run a business, I'm looking for work…",
@@ -605,19 +605,30 @@ const isContentAdmin = () => !!profile && profile.role === "content_admin";
 const isStaff = () => isAdmin() || isContentAdmin();
 // Cities: content tagged for one city ("¿Dónde se muestra?") is shown to women of that city; untagged content ("Todas") to everyone.
 const cityKey = v => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
-const KNOWN_CITIES = ["orlando", "miami", "newyork", "boston", "bogota", "medellin"];
-// Staff can preview the app as another city ("Viendo como"); by default they see their own city like everyone else.
+// The city list is editable in Admin (settings.cities = [{name, country}]); without it these built-in cities are used.
+const DEFAULT_CITIES = [
+  { name: "Orlando", country: "US" }, { name: "Miami", country: "US" }, { name: "New York", country: "US" }, { name: "Boston", country: "US" },
+  { name: "Bogotá", country: "CO" }, { name: "Medellín", country: "CO" }, { name: "Barranquilla", country: "CO" }
+];
+function cities() {
+  const raw = settings && Array.isArray(settings.cities) ? settings.cities : [];
+  const seen = new Set();
+  const list = raw.filter(c => c && typeof c.name === "string" && cityKey(c.name) && !seen.has(cityKey(c.name)) && seen.add(cityKey(c.name)))
+    .map(c => ({ name: c.name.trim().slice(0, 40), country: String(c.country || "").toUpperCase().slice(0, 3) }));
+  return list.length ? list : DEFAULT_CITIES.map(c => Object.assign({}, c));
+}
+const knownCities = () => cities().map(c => cityKey(c.name));
+const cityName = key => { const c = cities().find(x => cityKey(x.name) === key); return c ? c.name : ""; };
+const cityCountry = key => { const c = cities().find(x => cityKey(x.name) === key); return c ? c.country : ""; };
+// Anyone can look at any city's content: the city button ("cml_viewas" on this device) wins; otherwise her own profile city.
 const viewAs = () => { try { return localStorage.getItem("cml_viewas") || ""; } catch { return ""; } };
 function viewCity() {
-  if (isStaff()) {
-    const v = viewAs();
-    if (v === "all") return "all";
-    if (v) return cityKey(v);
-    const mine = cityKey(profile && profile.city);
-    return KNOWN_CITIES.includes(mine) ? mine : "orlando";
-  }
+  const v = viewAs();
+  if (v === "all") return "all";
+  if (v && knownCities().includes(cityKey(v))) return cityKey(v);
   const mine = cityKey(profile && profile.city);
-  return KNOWN_CITIES.includes(mine) ? mine : "all";   // unknown / "other" city: sees everything
+  if (knownCities().includes(mine)) return mine;
+  return isStaff() ? "orlando" : "all";   // unknown / "other" city: sees everything
 }
 function shownTo(p) {
   if (p.kind === "trip" && !sideTrip(p)) return true;   // real trips (Código Viajemos Juntas) are the same for every city
@@ -628,13 +639,14 @@ function shownTo(p) {
 }
 function viewBar() {
   const old = document.getElementById("viewAsBar"); if (old) old.remove();
-  if (!isStaff()) return;
+  if (!session) return;
+  const staff = isStaff();
   const cur = viewAs() || (viewCity() === "all" ? "all" : "");
-  const names = { orlando: "Orlando", miami: "Miami", newyork: "New York", boston: "Boston", bogota: "Bogotá", medellin: "Medellín" };
-  const sel = el("select", { "aria-label": t("viewAsLabel") }, ...KNOWN_CITIES.map(k => el("option", { value: names[k], text: names[k] })), el("option", { value: "all", text: t("viewAsAll") }));
-  sel.value = cur || (Object.values(names).find(n => cityKey(n) === viewCity()) || "Orlando");
+  const list = cities();
+  const sel = el("select", { "aria-label": t(staff ? "viewAsLabel" : "cityBarLabel") }, ...list.map(c => el("option", { value: c.name, text: c.name })), el("option", { value: "all", text: t("viewAsAll") }));
+  sel.value = cur === "all" ? "all" : (cityName(viewCity()) || (cur && list.some(c => c.name === cur) ? cur : "all"));
   sel.addEventListener("change", async () => { try { localStorage.setItem("cml_viewas", sel.value); } catch { /* ignore */ } await loadAll(); });
-  const bar = el("div", { id: "viewAsBar", class: "view-as-bar" }, el("span", { text: t("viewAsLabel") }), sel);
+  const bar = el("div", { id: "viewAsBar", class: "view-as-bar" + (staff ? "" : " city-bar") }, el("span", { text: staff ? t("viewAsLabel") : "📍 " + t("cityBarLabel") }), sel);
   const hdr = document.querySelector("#appShell > header");
   if (hdr) hdr.after(bar);
 }
@@ -2076,7 +2088,23 @@ async function handleSignup(event) {
 // ==============================
 // Start-up
 // ==============================
+// Sign-up city list: the built-in cities, or the Admin-edited list (settings are readable before logging in).
+function fillSignupCities() {
+  const sel = byId("suCitySel"); if (!sel) return;
+  const keep = sel.value;
+  const first = sel.options[0], last = [...sel.options].find(o => o.value === "__other");
+  sel.replaceChildren(first, ...cities().map(c => el("option", { value: c.name, text: c.name })), ...(last ? [last] : []));
+  if (keep && [...sel.options].some(o => o.value === keep)) sel.value = keep;
+}
+async function loadPublicCities() {
+  try {
+    const r = await db.from("settings").select("value").eq("key", "cities").maybeSingle();
+    if (r && r.data && Array.isArray(r.data.value) && r.data.value.length) settings.cities = r.data.value;
+  } catch { /* built-in list is used */ }
+  fillSignupCities();
+}
 function initialize() {
+  fillSignupCities(); loadPublicCities();
   const toggleLanguage = () => setLanguage(currentLanguage === "es" ? "en" : "es");
   byId("langBtn")?.addEventListener("click", toggleLanguage);
   byId("authLang")?.addEventListener("click", toggleLanguage);
@@ -2144,7 +2172,7 @@ function initialize() {
     db, el, pick, safeUrl, fmtDate, monthLabel, todayStr, codeLabels,
     t, lang: () => currentLanguage, loc,
     session: () => session, profile: () => profile,
-    isAdmin, isSuper, isContentAdmin, isStaff, announce, viewCity, hostTier, hostBadge, TIERS,
+    isAdmin, isSuper, isContentAdmin, isStaff, announce, viewCity, cities, cityKey, cityName, cityCountry, hostTier, hostBadge, TIERS,
     refreshPublic: async () => { if (session) await loadAll(); }, discoverPick, todayStr, eventCategory, sideTrip,
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,

@@ -53,8 +53,12 @@ const US = [{ num: "911", es: "Emergencias", en: "Emergencies" }, { num: "988", 
 const CO = [{ num: "123", es: "Emergencias (policía, bomberos, ambulancia)", en: "Emergencies (police, fire, ambulance)" },
   { num: "155", es: "Orientación a mujeres víctimas de violencia · 24 h", en: "Support for women facing violence · 24/7" },
   { num: "106", es: "Salud mental y crisis · 24 h", en: "Mental health & crisis · 24/7" }];
-const DEFAULTS = { orlando: US, miami: US, newyork: US, boston: US, bogota: CO, medellin: CO.slice(0, 2) };
-const defaultLines = city => (DEFAULTS[city] || US).map(x => Object.assign({}, x));
+// By country: Colombia's 106 mental-health line is Bogotá's, so other Colombian cities start with 123 and 155 only.
+const defaultLines = city => {
+  const country = C && C.cityCountry ? C.cityCountry(city) : "";
+  const base = country === "CO" ? (city === "bogota" ? CO : CO.slice(0, 2)) : US;
+  return base.map(x => Object.assign({}, x));
+};
 const cleanNum = n => String(n || "").replace(/[^0-9+*#]/g, "");
 function helpLines() {
   const city = C.viewCity() === "all" ? "orlando" : C.viewCity();

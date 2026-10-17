@@ -637,3 +637,7 @@ header .brand .brand-club { font-style: italic; font-weight: 400; color: #A8832F
 #langBtn, .langBtnAlt { display: inline-flex; align-items: center; gap: 0; padding: 3px; }
 #langBtn .lg, .langBtnAlt .lg { padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: .03em; color: #9a8286; line-height: 1.2; }
 #langBtn .lg.on, .langBtnAlt .lg.on { background: #b85f68; color: #fff; }
+
+/* City button for every member: a quiet blush bar under the header (staff keep the yellow "view as" bar) */
+.view-as-bar.city-bar { background: #FBEFEF; border-bottom: 1px solid #F0DFDA; color: #6B3A44; justify-content: center; }
+.view-as-bar.city-bar select { background: #fff; border: 1px solid #E6C9CE; color: #4A2F36; font-weight: 600; min-height: 34px; }

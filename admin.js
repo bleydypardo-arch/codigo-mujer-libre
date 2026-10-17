@@ -763,7 +763,7 @@ function formView() {
     featuredBox = el("input", { type: "checkbox" }); featuredBox.checked = !!oldTag.featured;
     form.appendChild(el("label", { class: "check" }, featuredBox, a("fFeatured")));
     cityIn = el("input", { type: "text", maxlength: 40, value: oldTag.city || "", placeholder: "Orlando, Bogotá…", list: "cmlCityList", autocomplete: "off" });
-    form.appendChild(el("datalist", { id: "cmlCityList" }, ...["Orlando", "Miami", "New York", "Boston", "Bogotá", "Medellín"].map(v => el("option", { value: v }))));
+    form.appendChild(el("datalist", { id: "cmlCityList" }, ...C.cities().map(c => c.name).map(v => el("option", { value: v }))));
   }
   if (kind === "trip" || kind === "wellness") {
     featBox = el("input", { type: "checkbox" }); featBox.checked = !!oldTag.featured;
@@ -793,9 +793,9 @@ function formView() {
     matchaBox = el("input", { type: "checkbox" }); matchaBox.checked = !!oldTag.matcha;
     form.appendChild(el("label", { class: "check" }, matchaBox, a("fMatcha")));
   }
-  const SHOW_CITIES = ["Orlando", "Miami", "New York", "Boston", "Bogotá", "Medellín"];
+  const SHOW_CITIES = C.cities().map(c => c.name);
   const showSel = el("select", {}, el("option", { value: "", text: a("fShowAll") }), SHOW_CITIES.map(c => el("option", { value: c, text: c })));
-  showSel.value = SHOW_CITIES.includes(oldTag.show) ? oldTag.show : "";
+  showSel.value = SHOW_CITIES.find(n => C.cityKey(n) === C.cityKey(oldTag.show)) || "";
   form.appendChild(field(a("fShow"), showSel, a("fShowHelp")));
   // Spanish and English side by side, so it's always clear which text matches which
   form.appendChild(el("div", { class: "lang-pairs" },

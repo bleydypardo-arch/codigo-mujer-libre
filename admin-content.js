@@ -29,6 +29,7 @@ const T = {
     cmEs: "Español", cmEn: "English", cmReset: "Volver a las frases originales",
     podIntro: "Podcast «Entre Nosotras». Cada episodio vive en YouTube: pega aquí el enlace. Las integrantes lo ven en Inicio (el próximo o el más reciente) y en Bienestar (todos, con filtro por tema).", podNew: "+ Nuevo episodio", podTitle: "Título del episodio", podDesc: "Descripción corta (opcional)", podTopic: "Tema", podDate: "Fecha y día de estreno", podTime: "Hora (opcional)", podUrl: "Enlace de YouTube del episodio", podTeaser: "Enlace del adelanto de 15 segundos (opcional)", podPub: "Publicado (visible para las integrantes)", podRemove: "Quitar episodio", podBadUrl: "El enlace debe ser de YouTube.", podNeed: "Para publicar, completa el título en español e inglés, la fecha y el enlace de YouTube.", podEmpty: "Todavía no hay episodios. Toca «Nuevo episodio».", podEp: n => "Episodio " + n,
     helpIntro: "Los botones grandes de ayuda al final de la página de Apoyo. Cada ciudad tiene los suyos. Escribe el número y el nombre en español e inglés (hasta 4). Si dejas una ciudad vacía, se usan los números oficiales que ya vienen cargados (en gris). Verifica siempre cada número antes de guardarlo.",
+    tCityList: "Mis ciudades", cityIntro: "Estas son las ciudades de la app: aparecen en el registro, en el botón de ciudad y al etiquetar contenido. Agrega la ciudad nueva, elige su país y guarda. Las líneas de ayuda de cada ciudad se editan en \"Líneas de ayuda\".", cityName: "Ciudad", cityCountry: "País", cityCO: "Colombia", cityUS: "Estados Unidos", cityOther: "Otro país", cityAdd: "+ Agregar ciudad", cityRemove: "Quitar", cityNone: "Deja al menos una ciudad.", cityDefault: "Volver a la lista original", cityPh: "Ej.: Cali",
     helpCity: "Ciudad", helpNum: "Número", helpLbl: "Nombre del botón", helpReset: "Volver a los números originales", helpLine: n => "Botón " + n, helpBad: "Revisa el número: solo dígitos, +, espacios o guiones.",
     tvTeaser: "Mensaje de anuncio (Inicio y Viajes)", cHomeExpSoon: "Titular", cHomeExpSoonP: "Texto", cStoryT: "Promesa: titular", cStoryP: "Promesa: texto"
   },
@@ -57,6 +58,7 @@ const T = {
     cmEs: "Español", cmEn: "English", cmReset: "Back to the original phrases",
     podIntro: "“Entre Nosotras” podcast. Every episode lives on YouTube: paste its link here. Members see it on Home (the next or latest one) and in Wellness (all of them, filtered by topic).", podNew: "+ New episode", podTitle: "Episode title", podDesc: "Short description (optional)", podTopic: "Topic", podDate: "Release date", podTime: "Time (optional)", podUrl: "YouTube link of the episode", podTeaser: "Link to the 15-second teaser (optional)", podPub: "Published (visible to members)", podRemove: "Remove episode", podBadUrl: "The link must be a YouTube link.", podNeed: "To publish, complete the title in Spanish and English, the date and the YouTube link.", podEmpty: "No episodes yet. Tap “New episode”.", podEp: n => "Episode " + n,
     helpIntro: "The big help buttons at the bottom of the Support page. Each city has its own. Type the number and the name in Spanish and English (up to 4). If a city is left empty, the built-in official numbers are used (shown in grey). Always verify each number before saving.",
+    tCityList: "My cities", cityIntro: "These are the app's cities: they appear at sign-up, in the city button and when tagging content. Add the new city, choose its country and save. Each city's help lines are edited in \"Help lines\".", cityName: "City", cityCountry: "Country", cityCO: "Colombia", cityUS: "United States", cityOther: "Other country", cityAdd: "+ Add city", cityRemove: "Remove", cityNone: "Keep at least one city.", cityDefault: "Back to the original list", cityPh: "E.g.: Cali",
     helpCity: "City", helpNum: "Number", helpLbl: "Button name", helpReset: "Back to the original numbers", helpLine: n => "Button " + n, helpBad: "Check the number: only digits, +, spaces or dashes.",
     tvTeaser: "Announcement message (Home and Travel)", cHomeExpSoon: "Headline", cHomeExpSoonP: "Text", cStoryT: "Promise: headline", cStoryP: "Promise: text"
   }
@@ -458,7 +460,7 @@ async function codeMsgsTab() {
 async function helpTab() {
   const H = window.CMLHelp;
   const all = (await settingsMap()).help_lines || {};
-  const cities = [["orlando", "Orlando"], ["miami", "Miami"], ["newyork", "New York"], ["boston", "Boston"], ["bogota", "Bogotá"], ["medellin", "Medellín"]];
+  const cities = C.cities().map(c => [C.cityKey(c.name), c.name]);
   const sel = el("select", {}, ...cities.map(([k, n]) => el("option", { value: k, text: n })));
   const v = C.viewCity(); sel.value = cities.some(c => c[0] === v) ? v : "orlando";
   const box = el("div", {}), fb = feedbackNode();
@@ -504,6 +506,41 @@ async function helpTab() {
   return wrap;
 }
 
+// ----- City list (settings.cities = [{name, country}]) -----
+async function cityListTab() {
+  const saved = (await settingsMap()).cities;
+  let list = (Array.isArray(saved) && saved.length ? saved : C.cities()).map(c => ({ name: c.name, country: c.country || "" }));
+  const box = el("div", {}), fb = feedbackNode();
+  const draw = () => {
+    say(fb, "");
+    const rows = list.map((c, i) => {
+      const name = el("input", { type: "text", maxlength: 40, placeholder: tx("cityPh"), value: c.name });
+      name.addEventListener("input", () => { c.name = name.value; });
+      const country = el("select", {}, el("option", { value: "CO", text: tx("cityCO") }), el("option", { value: "US", text: tx("cityUS") }), el("option", { value: "", text: tx("cityOther") }));
+      country.value = c.country === "CO" || c.country === "US" ? c.country : "";
+      country.addEventListener("change", () => { c.country = country.value; });
+      const rm = K.button(tx("cityRemove"), "secondary", () => { list.splice(i, 1); draw(); });
+      return el("div", { class: "rf-pair" }, el("label", {}, el("small", { text: tx("cityName") }), name), el("label", {}, el("small", { text: tx("cityCountry") }), country), rm);
+    });
+    box.replaceChildren(...rows, el("div", { class: "admin-bar" },
+      K.button(tx("cityAdd"), "secondary", () => { if (list.length < 40) { list.push({ name: "", country: "CO" }); draw(); } }),
+      K.button(tx("save"), "primary", async () => {
+        const clean = [], seen = new Set();
+        list.forEach(c => { const n = String(c.name || "").trim().slice(0, 40), k = C.cityKey(n); if (k && !seen.has(k)) { seen.add(k); clean.push({ name: n, country: c.country || "" }); } });
+        if (!clean.length) return say(fb, tx("cityNone"));
+        try { await putSetting("cities", clean); } catch (e) { console.error(e); return say(fb, tx("saveFail")); }
+        list = clean.map(c => Object.assign({}, c)); draw(); K.toast(tx("saved"));
+      }),
+      K.button(tx("cityDefault"), "secondary", async () => {
+        if (!await confirmed(tx("confirmReset"))) return;
+        try { await putSetting("cities", null); } catch { return say(fb, tx("saveFail")); }
+        list = C.cities().map(c => Object.assign({}, c)); draw(); K.toast(tx("saved"));
+      })), fb);
+  };
+  draw();
+  return el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("cityIntro") }), box);
+}
+
 function init() {
   C = window.CML; const A = window.CMLAdmin;
   if (!C || !A || !A.registerTab) return;
@@ -517,6 +554,7 @@ function init() {
   A.registerTab("talk", { group: "content", label: lab(T.es.tTalk, T.en.tTalk), render: async () => talkTab() });
   A.registerTab("codemsgs", { group: "content", label: lab(T.es.tCodeMsgs, T.en.tCodeMsgs), render: async () => codeMsgsTab() });
   A.registerTab("podcast", { group: "content", label: lab(T.es.tPod, T.en.tPod), render: async () => podcastTab() });
+  A.registerTab("cityList", { group: "content", label: lab(T.es.tCityList, T.en.tCityList), render: async () => cityListTab() });
   A.registerTab("help", { group: "content", label: lab(T.es.tHelp, T.en.tHelp), render: async () => helpTab() });
   A.registerTab("travelx", { group: "content", label: lab(T.es.tTravel, T.en.tTravel), render: async () => travelTab() });
 }
