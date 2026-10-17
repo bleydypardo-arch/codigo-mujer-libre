@@ -21,7 +21,7 @@ const ES = {
   weekLabel: "Tu semana", weekGoing: "Vas", weekInterested: "Te interesa", weekNoPlans: "Aún no tienes planes confirmados",
   weekNoPlansSub: "Mira lo que viene y elige algo para ti", weekVote: "Tu voto cuenta", weekVoteCloses: d => "Tu voto cuenta · cierra " + d,
   weekBirthdays: "CUMPLEAÑOS",
-  discAll: "Ver todo", discLabel: "Visitemos esta semana", discTitle: "Algo distinto para esta semana", discNewCode: "PRUEBA ALGO DISTINTO", discForYou: "PARA TI",
+  discAll: "Ver todo", discLabel: "Nuestra Recomendación", discTitle: "Un lugar especial cada semana para disfrutar", discNewCode: "PRUEBA ALGO DISTINTO", discForYou: "PARA TI",
   discEvents: "Planes y eventos", discEventsSub: "Mira todo lo que viene", discTravelK: "VIAJES Y EXPERIENCIAS",
   discWellK: "BIENESTAR", discHappyK: "HAPPY HOUR DE LA SEMANA", discHappyT: "Happy hours", discHappySub: "Pronto: uno distinto cada semana", discDineK: "RESTAURANTE DE LA SEMANA", discDineT: "Restaurantes", discDineSub: "Pronto: uno distinto cada semana", discWellTitle: "¿Cómo te sientes hoy?", discWellSub: "Una idea sencilla para cuidarte",
   talkLabel: "HABLEMOS", talkCta: "Compartir mi respuesta",
@@ -40,7 +40,7 @@ const EN = {
   weekLabel: "Your week", weekGoing: "Going", weekInterested: "Interested", weekNoPlans: "No plans confirmed yet",
   weekNoPlansSub: "See what's coming up and pick something for you", weekVote: "Your vote counts", weekVoteCloses: d => "Your vote counts · closes " + d,
   weekBirthdays: "BIRTHDAYS",
-  discAll: "View all", discLabel: "Let's visit this week", discTitle: "Something different this week", discNewCode: "TRY SOMETHING DIFFERENT", discForYou: "FOR YOU",
+  discAll: "View all", discLabel: "Our Recommendation", discTitle: "A special place every week to enjoy", discNewCode: "TRY SOMETHING DIFFERENT", discForYou: "FOR YOU",
   discEvents: "Plans & events", discEventsSub: "See everything coming up", discTravelK: "TRAVEL & EXPERIENCES",
   discWellK: "WELLNESS", discHappyK: "HAPPY HOUR OF THE WEEK", discHappyT: "Happy hours", discHappySub: "Soon: a different one every week", discDineK: "RESTAURANT OF THE WEEK", discDineT: "Restaurants", discDineSub: "Soon: a different one every week", discWellTitle: "How are you feeling today?", discWellSub: "A simple idea to take care of yourself",
   talkLabel: "LET'S TALK", talkCta: "Share my answer",
@@ -299,7 +299,7 @@ function renderDiscover() {
   host.hidden = false;
   const all = el("button", { type: "button", class: "see-all", text: t("discAll") + " →" });
   all.addEventListener("click", () => { if (C.showEventsCode) C.showEventsCode(""); else C.showPage("events"); });   // Descubre: the complete list of happy hours, restaurants and wellness
-  host.replaceChildren(el("small", { class: "rose", text: t("discLabel") }), el("div", { class: "section-head disc-head" }, el("h2", { text: t("discTitle") }), all), el("div", { class: "disc-list" }, ...rows));
+  host.replaceChildren(window.cmlSecHead("leaf", "gold", t("discLabel"), t("discTitle"), all), el("div", { class: "disc-list" }, ...rows));
 }
 
 // Soft rain of hearts only inside the Let's Talk card when the envelope opens (decorative, skipped for reduced motion)

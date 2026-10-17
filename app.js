@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  upcomingTitle: "Eventos & Promociones", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
+  upcomingTitle: "Eventos Especiales", upcomingSub: "Planes que te inspiran, experiencias que te conectan", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  upcomingTitle: "Events & Promotions", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
+  upcomingTitle: "Special Events", upcomingSub: "Plans that inspire you, experiences that connect you", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -1325,6 +1325,19 @@ function discoverPick() {
     .sort((a, b) => (tried.has(a.code) - tried.has(b.code)) || String(a.event_date || "9").localeCompare(String(b.event_date || "9"))
       || String(b.created_at || "").localeCompare(String(a.created_at || "")))[0] || null;
 }
+
+// Home section header: icon circle, two-tone title (last word in italic rose), tracked subtitle, "see all" link.
+const SEC_ICONS = {
+  cal: '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></svg>',
+  leaf: '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M16.5 7.5c-5 .3-8 2.7-8.6 6.2-.2 1.2.1 2.3.8 3 .7.7 1.8 1 3 .8 3.5-.6 5.6-3.6 4.8-10z"/><path d="M8.6 16.6c1.8-2.6 3.8-4.2 6-5"/></svg>'
+};
+window.cmlSecHead = function (icon, tone, title, sub, allBtn) {
+  const words = String(title).trim().split(/\s+/), last = words.pop();
+  const h = el("h2", { class: "sec-title" }, words.length ? words.join(" ") + " " : "", el("em", { text: last }));
+  const ic = el("span", { class: "sec-ic " + tone }); ic.innerHTML = SEC_ICONS[icon] || "";
+  return el("div", { class: "sec-head" }, ic,
+    el("div", { class: "sec-tx" }, h, el("small", { class: "sec-sub", text: sub })), allBtn);
+};
 function renderUpcoming() {
   const host = byId("homeUpcoming");
   if (!host) return;
@@ -1336,7 +1349,7 @@ function renderUpcoming() {
   const all = el("button", { type: "button", class: "see-all", text: t("seeAll") + " →" });
   all.addEventListener("click", () => showPage("agenda"));
   host.replaceChildren(
-    el("div", { class: "section-head" }, el("h2", { text: t("upcomingTitle") }), all),
+    window.cmlSecHead("cal", "rose", t("upcomingTitle"), t("upcomingSub"), all),
     el("div", { class: "ev-grid" }, ...next.map(p => eventCard(p, true))));
 }
 function renderAgenda() {
