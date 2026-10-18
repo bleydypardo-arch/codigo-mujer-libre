@@ -33,7 +33,7 @@ const ES = {
   maPlans: "PRÓXIMOS ENCUENTROS", maPlansEmpty: "Pronto: catas de matcha, talleres de cerámica y tardes de pintura.",
   maPropose: "Proponer una idea", maShares: "DE LA COMUNIDAD", maSharesIntro: "Tu café favorito, algo que creaste, un taller que te encantó.",
   maShare: "Compartir algo creativo", maSharesEmpty: "Sé la primera en compartir tu café favorito o algo que creaste.",
-  maPrefix: "🍵 Matcha & Arte · ", maOpen: "Entrar al rincón",
+  maPrefix: "🍵 Matcha & Arte · ", maOpen: "Entrar al rincón", maBar: "Entrar al Bar de Matcha & Café", maBarSub: "Prepara tu propio matcha o café",
   maIntro2: "", maPast: "ya pasó", maBy: n => "Propuesto por " + n, maNextMeet: (p, w) => "¿Matcha? " + p + " · " + w,
   maWeek: "MATCHA DE LA SEMANA", mtype_spot: "CAFÉ O SALÓN DE TÉ", mtype_place: "LUGAR CREATIVO", mtype_recipe: "RECETA", mtype_offer: "OFERTA ESPECIAL",
   maRecipeOpen: "Ver receta o video", maLinkOpen: "Ver más", maMeetHere: "Proponer encuentro aquí",
@@ -72,7 +72,7 @@ const EN = {
   maPlans: "UPCOMING GATHERINGS", maPlansEmpty: "Coming soon: matcha tastings, pottery workshops and painting afternoons.",
   maPropose: "Suggest an idea", maShares: "FROM THE COMMUNITY", maSharesIntro: "Your favorite café, something you made, a workshop you loved.",
   maShare: "Share something creative", maSharesEmpty: "Be the first to share your favorite café or something you made.",
-  maPrefix: "🍵 Matcha & Art · ", maOpen: "Step into the corner",
+  maPrefix: "🍵 Matcha & Art · ", maOpen: "Step into the corner", maBar: "Step into the Matcha & Café Bar", maBarSub: "Make your own matcha or coffee",
   maIntro2: "", maPast: "past", maBy: n => "Proposed by " + n, maNextMeet: (p, w) => "Matcha? " + p + " · " + w,
   maWeek: "MATCHA OF THE WEEK", mtype_spot: "CAFÉ OR TEA ROOM", mtype_place: "CREATIVE PLACE", mtype_recipe: "RECIPE", mtype_offer: "SPECIAL OFFER",
   maRecipeOpen: "See recipe or video", maLinkOpen: "Learn more", maMeetHere: "Propose a meetup here",
@@ -418,6 +418,16 @@ function searchRow(count) {
   inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
   return el("div", { class: "ma-searchrow" }, inp);
 }
+// Bar de Matcha & Café: a separate page (bar/) like the Spa Virtual, opened in its own tab; recipes stay on the visitor's phone
+function barBtn() {
+  const b = el("button", { type: "button", class: "ma-bar-btn" },
+    el("span", { class: "mb-door", "aria-hidden": "true", text: "🚪" }),
+    el("span", { class: "mb-tx" }, el("b", { text: t("maBar") }), el("small", { text: t("maBarSub") })),
+    el("span", { class: "mb-go", "aria-hidden": "true", text: "→" }));
+  b.addEventListener("click", openBar);
+  return b;
+}
+function openBar() { window.open("bar/index.html", "_blank", "noopener"); }
 function renderMatchaPage() {
   const hero = document.getElementById("matchaHero"), body = document.getElementById("matchaBody");
   if (!hero || !body || !C) return;
@@ -434,6 +444,7 @@ function renderMatchaPage() {
       el("h1", { text: t("maName") }),
       el("p", { class: "ma-tag", text: t("maTag") }),
       el("p", { class: "ma-intro", text: t("maIntro") }),
+      C.session() ? barBtn() : null,
       cityRow));
   if (!C.session()) { body.replaceChildren(); return; }
   const shown = items.filter(p => inCity(cityOf(p)));

@@ -164,3 +164,15 @@
 #homeMatcha .matcha-txt b { order: 2; font: italic 400 19px/1.2 var(--font-display); color: #55634F; }
 #homeMatcha .matcha-sub { order: 3; font-size: 13px; color: #5d6b57; max-width: 30ch; margin: 0 auto; }
 #homeMatcha .matcha-go { order: 4; margin-top: 10px; padding: 0 28px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: linear-gradient(135deg, #5E7F58, #3F5F3C); color: #fff; font: 600 14.5px var(--font-ui); letter-spacing: .02em; box-shadow: 0 6px 14px rgba(63, 95, 60, .3); }
+
+/* Bar de Matcha & Café entry button (Rincón Matcha page) */
+.ma-bar-btn{display:flex;align-items:center;gap:12px;width:100%;margin:14px 0 4px;padding:14px 16px;border:1.5px solid #D9BE7A;border-radius:20px;background:linear-gradient(135deg,#2f4a33,#3F5F3C 60%,#56784f);color:#fff;text-align:left;box-shadow:0 10px 22px rgba(47,74,51,.35),inset 0 1px 0 rgba(255,255,255,.18);position:relative;overflow:hidden;cursor:pointer;font:inherit}
+.ma-bar-btn::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,236,170,.28) 50%,transparent 60%);transform:translateX(-120%);animation:mbShine 4.5s ease-in-out infinite}
+@keyframes mbShine{60%,100%{transform:translateX(120%)}}
+.ma-bar-btn .mb-door{font-size:30px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
+.ma-bar-btn .mb-tx{flex:1;display:grid;gap:2px}
+.ma-bar-btn .mb-tx b{font:500 17px/1.2 Georgia,serif;letter-spacing:.04em}
+.ma-bar-btn .mb-tx small{font:italic 13px Georgia,serif;color:#F0E2B5}
+.ma-bar-btn .mb-go{font-size:22px;color:#F0D9A0}
+.ma-bar-btn:active{transform:scale(.98)}
+@media (prefers-reduced-motion:reduce){.ma-bar-btn::after{animation:none}}
