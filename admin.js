@@ -282,6 +282,7 @@ async function saveTag(planId, tag) {
   if (tag.homeImg) clean.homeImg = tag.homeImg;
   if (tag.imgEn) clean.imgEn = tag.imgEn;
   if (tag.lang === "es" || tag.lang === "en") clean.lang = tag.lang;
+  if (tag.promo) { clean.promo = tag.promo; if (tag.promoUntil) clean.promoUntil = tag.promoUntil; if (tag.promoHome) clean.promoHome = true; }
   if (tag.pin) {   // only one card can be pinned to Home: unpin the others in the same write
     clean.pin = true;
     const r = await C.db.from("settings").select("key,value").eq("key", "plan_tags").maybeSingle();
@@ -774,6 +775,15 @@ function formView() {
     fullBox = el("input", { type: "checkbox" }); fullBox.checked = !!oldTag.full;
     form.appendChild(el("label", { class: "check" }, fullBox, a("fFull")));
   }
+  let promoIn = null, promoUntilIn = null, promoHomeBox = null;
+  if (kind === "event") {
+    promoIn = el("input", { type: "text", maxlength: 80, value: oldTag.promo || "", placeholder: "2x1 en cócteles · 20% off" });
+    promoUntilIn = el("input", { type: "date", value: oldTag.promoUntil || "" });
+    promoHomeBox = el("input", { type: "checkbox" }); promoHomeBox.checked = !!oldTag.promoHome;
+    form.appendChild(el("fieldset", {}, el("legend", { text: a("fPromo") }), el("p", { class: "small-note", text: a("fPromoHelp") }),
+      field(a("fPromoText"), promoIn), field(a("fPromoUntil"), promoUntilIn),
+      el("label", { class: "check" }, promoHomeBox, a("fPromoHome"))));
+  }
   let pinBox = null, homePicker = null, enPicker = null;
   let langSel = null;
   if (kind === "home") {
@@ -864,7 +874,7 @@ function formView() {
     ? Object.assign({ matcha: true, mtype: mtypeSel.value, featured: featuredBox.checked, city: cityIn.value.trim() }, oldTag.full ? { full: true } : {})
     : { cat: typeSel ? (kind === "trip" && typeSel.value === "trip" ? "" : typeSel.value) : "", matcha: !!(matchaBox && matchaBox.checked),
         featured: !!(featBox && featBox.checked), full: !!(fullBox && fullBox.checked),
-        pin: !!(pinBox && pinBox.checked), homeImg: homePicker && C.safeUrl(homePicker.value) ? homePicker.value : "", imgEn: enPicker && C.safeUrl(enPicker.value) ? enPicker.value : "", lang: langSel ? langSel.value : "", label: labelIn && typeSel && typeSel.value === "other" ? labelIn.value.trim() : "" };
+        pin: !!(pinBox && pinBox.checked), homeImg: homePicker && C.safeUrl(homePicker.value) ? homePicker.value : "", imgEn: enPicker && C.safeUrl(enPicker.value) ? enPicker.value : "", lang: langSel ? langSel.value : "", promo: promoIn ? promoIn.value.trim() : "", promoUntil: promoIn && promoIn.value.trim() && promoUntilIn ? promoUntilIn.value : "", promoHome: !!(promoIn && promoIn.value.trim() && promoHomeBox && promoHomeBox.checked), label: labelIn && typeSel && typeSel.value === "other" ? labelIn.value.trim() : "" };
   const previewBtn = (kind === "event" || kind === "trip" || kind === "wellness") && C.openPreview
     ? button(a("preview"), "secondary studio-preview", () => {
         feedback.hidden = true;
@@ -883,6 +893,12 @@ function formView() {
     const url = val("url"), image = picker ? picker.value : "";
     if ((url && !C.safeUrl(url)) || (image && !C.safeUrl(image)) || (richEditor && richEditor.bad && richEditor.bad().length)) return fail("badUrl");
     if (ai && published.checked && !reviewed.checked) return fail("aiNeedReview");
+    if (kind === "event" && !row) {
+      const nm = v => String(v || "").toLowerCase().replace(/[^a-z0-9áéíóúñ]/g, "");
+      const mine = nm(val("title_es") || val("title_en"));
+      const dup = mine && ((C.homeData && C.homeData().plans) || []).find(p => p.kind === "event" && [nm(p.title_es), nm(p.title_en)].includes(mine));
+      if (dup && !await window.cmlConfirm(a("dupWarn"))) return;
+    }
     const payload = buildPayload();
     saveBtn.disabled = true;
     const res = row ? await C.db.from("plans").update(payload).eq("id", row.id)
@@ -1397,4 +1413,6 @@ async function citiesTab() {
 }
 registerTab("cities", { group: "content", label: { es: S.es.csTab, en: S.en.csTab }, render: async () => citiesTab() });
 registerTab("homepin", { group: "content", label: { es: S.es.hpTab, en: S.en.hpTab }, render: async () => homePinTab() });
+Object.assign(S.es, { fPromo: "Promoción especial (opcional)", fPromoHelp: "Úsala para un descuento o evento en este lugar (ej. promo de Navidad). Se ve como una etiqueta dorada en el lugar y desaparece sola después de la fecha. No hace falta crear otra tarjeta.", fPromoText: "Promoción", fPromoUntil: "Válida hasta", fPromoHome: "Mostrar también en “Eventos Especiales” del Home", dupWarn: "Ya existe un plan con este nombre. ¿Quieres crear otro igual? Si es una promoción, mejor edita el lugar y llena “Promoción especial”." });
+Object.assign(S.en, { fPromo: "Special promotion (optional)", fPromoHelp: "Use it for a discount or event at this place (e.g. a Christmas promo). It shows as a gold tag on the place and disappears by itself after the date. No need to create another card.", fPromoText: "Promotion", fPromoUntil: "Valid until", fPromoHome: "Also show in Home “Special Events”", dupWarn: "A plan with this name already exists. Create another one anyway? If it is a promotion, edit the place and fill in “Special promotion” instead." });
 })();

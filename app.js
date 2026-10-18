@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  upcomingTitle: "Eventos Especiales", upcomingSub: "Planes que te inspiran, experiencias que te conectan", soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
+  upcomingTitle: "Eventos Especiales", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  upcomingTitle: "Special Events", upcomingSub: "Plans that inspire you, experiences that connect you", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
+  upcomingTitle: "Special Events", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -1079,6 +1079,9 @@ function eventMedia(p, cls) {
   if (p.code && codeLabels[p.code]) box.appendChild(el("span", { class: "ev-badge", text: t(codeLabels[p.code]) }));
   return box;
 }
+// A promotion lives inside the place itself (tag fields promo / promoUntil / promoHome) and leaves by itself after its date.
+function activePromo(p) { const tg = planTag(p.id); return tg.promo && (!tg.promoUntil || tg.promoUntil >= todayStr()) ? tg : null; }
+function promoLine(tg) { return "✦ " + tg.promo + (tg.promoUntil ? " · " + t("promoUntil") + " " + fmtDate(tg.promoUntil) : ""); }
 function eventCard(p, mini) {
   const card = el("article", { class: "ev-card" + (mini ? " ev-mini" : " card plan") });
   const media = eventMedia(p, "ev-cover");
@@ -1092,6 +1095,8 @@ function eventCard(p, mini) {
   if (isPlace) {
     const bdg = media.querySelector(".ev-badge"); if (bdg) bdg.remove();
     card.classList.add("ev-place");
+    const pr = activePromo(p);
+    if (pr) body.appendChild(el("p", { class: "ev-promo", text: promoLine(pr) }));
     if (p.location) body.appendChild(el("p", { class: "ev-where", text: "📍 " + p.location }));
     const acts = el("div", { class: "resp-row place-acts" });
     const murl = safeUrl(p.url);
@@ -1365,8 +1370,11 @@ function renderUpcoming() {
   // Same rule as the rest of Home: every 3 days the windows move on to the next plans (same period number in every city).
   const n0 = new Date(); const period = Math.floor((new Date(n0.getFullYear(), n0.getMonth(), n0.getDate()) - new Date(2026, 0, 5)) / (3 * 86400000));
   const rotate = (list, count) => { const L = list.length; if (L <= count) return list; return Array.from({ length: count }, (_, i) => list[(((period * count) + i) % L + L) % L]); };
-  const well = rotate(plans.filter(p => dated(p) && eventCategory(p) === "wellness").sort(byDate), 1)[0] || null;
-  const specials = rotate(plans.filter(p => dated(p) && eventCategory(p) === "events").sort(byDate), 2);
+  const promoHome = p => p.kind === "event" && !p.event_date && ["dining", "social", "spa"].includes(planTag(p.id).cat) && planTag(p.id).promoHome && activePromo(p);
+  const untilOf = p => planTag(p.id).promoUntil || "9999";
+  const byUntil = (x, y) => untilOf(x).localeCompare(untilOf(y));
+  const well = rotate(plans.filter(p => (dated(p) && eventCategory(p) === "wellness") || (promoHome(p) && planTag(p.id).cat === "spa")).sort((x, y) => (x.event_date || untilOf(x)).localeCompare(y.event_date || untilOf(y))), 1)[0] || null;
+  const specials = rotate(plans.filter(p => (dated(p) && eventCategory(p) === "events") || (promoHome(p) && planTag(p.id).cat !== "spa")).sort((x, y) => (x.event_date || untilOf(x)).localeCompare(y.event_date || untilOf(y))), 2);
   host.hidden = false;
   const all = el("button", { type: "button", class: "see-all", text: t("seeAll") + " →" });
   all.addEventListener("click", () => showPage("agenda"));

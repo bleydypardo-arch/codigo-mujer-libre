@@ -77,3 +77,9 @@
 .ev-card.ev-mini.ev-soon { display: flex !important; flex-direction: column !important; grid-template-columns: none !important; align-items: center; justify-content: center; }
 .ev-card.ev-mini.ev-soon > * { grid-column: auto !important; grid-row: auto !important; }
 .ev-card.ev-mini.ev-soon .place-btn { flex: 0 0 auto; width: 100%; max-width: 230px; }
+
+/* Promotion living inside a place: gold tag that disappears by itself after its date */
+.ev-promo { margin: 0; align-self: flex-start; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1.4;
+  color: #6b4a12; background: linear-gradient(135deg, #f6e7bd, #ecd391); border: 1px solid #d9b866; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ev-promo { color: #f3deaa; background: #4a3a17; border-color: #8a6d2b; } }
+:root[data-theme="dark"] .ev-promo { color: #f3deaa; background: #4a3a17; border-color: #8a6d2b; }
