@@ -1362,8 +1362,11 @@ function renderUpcoming() {
   // Three windows. 1 = the next wellness plan or promotion (same source as Bienestar → "Próximos planes de bienestar").
   // 2 and 3 = the next two special events with a date (concerts, galas...). Trips stay out for now. Dated items leave by themselves the day after.
   const dated = p => p.kind === "event" && !sideTrip(p) && p.event_date && p.event_date >= today;
-  const well = plans.filter(p => dated(p) && eventCategory(p) === "wellness").sort(byDate)[0] || null;
-  const specials = plans.filter(p => dated(p) && eventCategory(p) === "events").sort(byDate).slice(0, 2);
+  // Same rule as the rest of Home: every 3 days the windows move on to the next plans (same period number in every city).
+  const n0 = new Date(); const period = Math.floor((new Date(n0.getFullYear(), n0.getMonth(), n0.getDate()) - new Date(2026, 0, 5)) / (3 * 86400000));
+  const rotate = (list, count) => { const L = list.length; if (L <= count) return list; return Array.from({ length: count }, (_, i) => list[(((period * count) + i) % L + L) % L]); };
+  const well = rotate(plans.filter(p => dated(p) && eventCategory(p) === "wellness").sort(byDate), 1)[0] || null;
+  const specials = rotate(plans.filter(p => dated(p) && eventCategory(p) === "events").sort(byDate), 2);
   host.hidden = false;
   const all = el("button", { type: "button", class: "see-all", text: t("seeAll") + " →" });
   all.addEventListener("click", () => showPage("agenda"));
