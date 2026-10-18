@@ -682,7 +682,7 @@ async function importTab() {
       const test = u => new Promise(ok => { const im = new Image(); let done = false; const fin = v => { if (!done) { done = true; ok(v); } }; im.referrerPolicy = "no-referrer"; im.onload = () => fin(im.naturalWidth > 1); im.onerror = () => fin(false); setTimeout(() => fin(false), 12000); im.src = u; });
       const bad = []; let good = 0, i = 0;
       const queue = withImg.slice();
-      const worker = async () => { while (queue.length) { const p = queue.shift(); const ok = C.safeUrl(p.image_url) ? await test(C.safeUrl(p.image_url)) : false; if (ok) good++; else bad.push(p); i++; chkOut.firstChild && (chkOut.firstChild.textContent = "Revisando… " + i + " de " + withImg.length); } };
+      const worker = async () => { while (queue.length) { const p = queue.shift(); const u0 = C.safeUrl(p.image_url); const ok = u0 ? (await test(u0) || await test("https://wsrv.nl/?url=" + encodeURIComponent(u0.replace(/^https?:\/\//i, "")) + "&w=800&output=jpg")) : false; if (ok) good++; else bad.push(p); i++; chkOut.firstChild && (chkOut.firstChild.textContent = "Revisando… " + i + " de " + withImg.length); } };
       await Promise.all([worker(), worker(), worker(), worker(), worker()]);
       const kids = [el("p", { class: "small-note", text: "Lugares y planes en total: " + all.length + ". Con foto guardada: " + withImg.length + ". Sin foto: " + noImg.length + ". Fotos que SÍ cargan: " + good + ". Fotos que NO cargan: " + bad.length + "." })];
       if (bad.length) {

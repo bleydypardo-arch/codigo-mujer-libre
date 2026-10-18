@@ -1070,7 +1070,10 @@ function eventMedia(p, cls) {
   const box = el("div", { class: "ev-media " + cls + (image ? "" : " ev-ph " + toneOf(p.code)) + (image && planTag(p.id).full ? " is-full" : "") });
   if (image) {
     const img = el("img", { src: image, alt: pick(p, "title") || "", loading: "lazy", referrerpolicy: "no-referrer" });
-    img.addEventListener("error", () => { img.remove(); box.classList.add("ev-ph", "is-broken", toneOf(p.code)); box.classList.remove("is-full"); box.dataset.img = "broken"; box.prepend(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) })); });
+    img.addEventListener("error", () => {
+      // Many restaurant sites block other sites from showing their photos: retry once through a free image relay before giving up.
+      if (!img.dataset.relay && /^https?:/i.test(image)) { img.dataset.relay = "1"; img.src = "https://wsrv.nl/?url=" + encodeURIComponent(image.replace(/^https?:\/\//i, "")) + "&w=800&output=jpg"; return; }
+      img.remove(); box.classList.add("ev-ph", "is-broken", toneOf(p.code)); box.classList.remove("is-full"); box.dataset.img = "broken"; box.prepend(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) })); });
     box.appendChild(img);
   } else box.appendChild(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) }));
   if (p.code && codeLabels[p.code]) box.appendChild(el("span", { class: "ev-badge", text: t(codeLabels[p.code]) }));
