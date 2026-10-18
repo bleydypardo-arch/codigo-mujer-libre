@@ -35,3 +35,17 @@
 .ph-wellness h1 { text-wrap: balance; letter-spacing: .005em; }
 .ph-wellness .ph-intro { text-wrap: balance; max-width: 34ch; }
 .wd-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+
+/* Bienestar / Descubre bienestar cards: compact, same height, buttons side by side (like the restaurant cards) */
+.wd-photo .wd-media { aspect-ratio: 16 / 10; }
+.wd-card .wd-body { padding: 14px 16px 16px; gap: 6px; }
+.wd-card .wd-title { font-size: 19px; line-height: 1.2; }
+.wd-card .wd-where { font-size: 13px; line-height: 1.35; }
+.wd-card .wd-desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin: 2px 0 0; font-size: 13.5px; line-height: 1.45; }
+.wd-card .wd-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; padding-top: 12px; align-items: stretch; }
+.wd-card .wd-acts .wd-map, .wd-card .wd-acts .wd-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 10px; border-radius: 999px; font: 600 13px var(--font-ui); text-align: center; text-decoration: none; white-space: nowrap; }
+.wd-card .wd-acts .wd-map { order: 1; border: 1px solid #E8C7CC; background: #FBE9EA; color: #9A4A54; }
+.wd-card .wd-acts .wd-cta { order: 2; border: 1px solid #C9AE76; background: #fff; color: #7A5E2B; box-shadow: none; }
+.wd-card .wd-acts .wd-more { order: 3; grid-column: 1 / -1; justify-self: center; min-height: 32px; }
+.wd-card .wd-acts:not(:has(.wd-map)) .wd-cta { grid-column: 1 / -1; }
+.wd-recommend { display: block; margin: 12px auto 0; padding: 10px 22px; border: 1px solid #E8C7CC; border-radius: 999px; background: #fff; color: #9A4A54; font: 600 14px var(--font-ui); cursor: pointer; }
