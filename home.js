@@ -260,7 +260,10 @@ function thumb(src, code, whole, fb) {
   if (src) {
     const img = el("img", { src, alt: "", loading: "lazy" });
     if (whole) box.style.setProperty("--th-bg", 'url("' + String(src).replace(/["\\()\s]/g, encodeURIComponent) + '")');
-    img.addEventListener("error", () => { if (fb && img.getAttribute("src") !== fb) { box.classList.remove("is-whole"); box.style.removeProperty("--th-bg"); img.src = fb; return; } img.remove(); box.classList.add("tone-none"); box.textContent = emojiOf(code); });
+    img.addEventListener("error", () => {
+      // Restaurant sites often block other sites from showing their photos: retry once through a free image relay.
+      if (!img.dataset.relay && /^https?:/i.test(src) && !(fb && img.getAttribute("src") === fb)) { img.dataset.relay = "1"; const rl = "https://wsrv.nl/?url=" + encodeURIComponent(String(src).replace(/^https?:\/\//i, "")) + "&w=800&output=jpg"; if (whole) box.style.setProperty("--th-bg", 'url("' + rl + '")'); img.src = rl; return; }
+      if (fb && img.getAttribute("src") !== fb) { box.classList.remove("is-whole"); box.style.removeProperty("--th-bg"); img.src = fb; return; } img.remove(); box.classList.add("tone-none"); box.textContent = emojiOf(code); });
     box.appendChild(img);
   } else box.textContent = emojiOf(code);
   return box;
