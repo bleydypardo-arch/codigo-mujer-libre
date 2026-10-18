@@ -672,7 +672,32 @@ async function importTab() {
     K.toast("Publicados: " + ids.length);
     pubOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + ids.length + " lugares de " + city + " publicados." }));
   };
+  // ---- Photo check: reads every place's saved photo link and tests whether the browser can really show it ----
+  const chkOut = el("div", {}), chkFb = feedbackNode();
+  const chkRun = async e0 => {
+    const btn = e0.currentTarget; btn.disabled = true; say(chkFb, ""); chkOut.replaceChildren(el("p", { class: "small-note", text: "Revisando…" }));
+    try {
+      const res = await C.db.from("plans").select("id,title_es,image_url,published,kind"); if (res.error) throw res.error;
+      const all = res.data || [], withImg = all.filter(p => p.image_url && String(p.image_url).trim()), noImg = all.filter(p => !(p.image_url && String(p.image_url).trim()));
+      const test = u => new Promise(ok => { const im = new Image(); let done = false; const fin = v => { if (!done) { done = true; ok(v); } }; im.referrerPolicy = "no-referrer"; im.onload = () => fin(im.naturalWidth > 1); im.onerror = () => fin(false); setTimeout(() => fin(false), 12000); im.src = u; });
+      const bad = []; let good = 0, i = 0;
+      const queue = withImg.slice();
+      const worker = async () => { while (queue.length) { const p = queue.shift(); const ok = C.safeUrl(p.image_url) ? await test(C.safeUrl(p.image_url)) : false; if (ok) good++; else bad.push(p); i++; chkOut.firstChild && (chkOut.firstChild.textContent = "Revisando… " + i + " de " + withImg.length); } };
+      await Promise.all([worker(), worker(), worker(), worker(), worker()]);
+      const kids = [el("p", { class: "small-note", text: "Lugares y planes en total: " + all.length + ". Con foto guardada: " + withImg.length + ". Sin foto: " + noImg.length + ". Fotos que SÍ cargan: " + good + ". Fotos que NO cargan: " + bad.length + "." })];
+      if (bad.length) {
+        kids.push(el("p", { class: "small-note", text: "Estas fotos están guardadas pero no se pueden mostrar (el link no es una imagen directa o el sitio la bloquea). Abre el link en otra pestaña: si no ves solo la foto, hay que cambiarlo por otro o subir la foto desde el computador." }));
+        kids.push(el("ul", { class: "small-note" }, ...bad.slice(0, 80).map(p => el("li", { text: (p.title_es || "?") + " → " + String(p.image_url).slice(0, 110) }))));
+      }
+      chkOut.replaceChildren(...kids);
+    } catch (err) { console.error(err); chkOut.replaceChildren(); say(chkFb, tx("saveFail")); }
+    btn.disabled = false;
+  };
   return el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("impIntro") }),
+    el("h3", { text: "Revisar las fotos guardadas" }),
+    el("p", { class: "small-note", text: "Cuenta cuántos lugares tienen foto guardada y prueba si cada foto realmente se puede mostrar en la app." }),
+    chkFb, el("div", { class: "admin-bar" }, K.button("Revisar las fotos ahora", "secondary", chkRun)), chkOut,
+    el("hr", {}),
     el("h3", { text: "Publicar los borradores de una ciudad" }),
     el("p", { class: "small-note", text: "Si ya creaste los lugares pero siguen como Borrador, elige la ciudad y toca el botón. Se publican todos de una vez." }),
     field("Ciudad", pubCity), pubFb, el("div", { class: "admin-bar" }, K.button("Publicar todos los borradores de esta ciudad", "primary", pubRun)), pubOut,
