@@ -150,7 +150,7 @@ function renderWellness() {
   if (!host || !C) return;
   if (!C.session()) { host.hidden = true; host.replaceChildren(); if (up) { up.hidden = true; up.replaceChildren(); } return; }
   const { plans } = C.homeData();
-  const items = plans.filter(p => p.kind === "wellness" || (p.kind === "event" && C.eventCategory && C.eventCategory(p) === "wellness" && (!p.event_date || p.event_date >= C.todayStr())));   // spas / beauty posted as plans land here too
+  const items = plans.filter(p => p.kind === "wellness" || (p.kind === "event" && C.eventCategory && C.eventCategory(p) === "wellness" && !p.event_date));   // spas / beauty posted as plans land here too
   const cats = WCATS.filter(c => items.some(p => C.planTag(p.id).cat === c));
   if (wcat !== "all" && !cats.includes(wcat)) wcat = "all";
   const nodes = [el("small", { class: "rose", text: t("wdLabel") }), el("h2", { text: t("wdTitle") })];
@@ -168,7 +168,8 @@ function renderWellness() {
   host.hidden = false;
   host.replaceChildren(...nodes);
   if (up) {
-    const evs = plans.filter(p => p.kind === "event" && upcoming(p) && (p.code === "Wellness" || p.code === "Recharge")).sort(C.byDate).slice(0, 4);
+    // Only real dated plans here (a yoga class, a workshop). Fixed places such as spas live in "Experiencias para cuidarte" above and never repeat here.
+    const evs = plans.filter(p => p.kind === "event" && p.event_date && upcoming(p) && (p.code === "Wellness" || p.code === "Recharge" || (C.eventCategory && C.eventCategory(p) === "wellness"))).sort(C.byDate).slice(0, 4);
     up.hidden = !evs.length;
     up.replaceChildren(...(evs.length ? [el("small", { class: "rose", text: t("wuLabel") }), el("div", { class: "ev-grid" }, ...evs.map(p => C.eventCard(p, true)))] : []));
   }
