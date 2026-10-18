@@ -12,6 +12,7 @@ const ES = {
   wdOffer: "Ver oferta o reservar", wdMore: "Ver detalles", wdEmptyTitle: "Pronto compartiremos experiencias de bienestar",
   wdEmptyText: "Spas, masajes, yoga, retiros y lugares para cuidarte. ¿Conoces uno especial? Recomiéndalo.",
   wdRecommend: "Recomendar un lugar",
+  wdSeeAll: "Ver todos", wdLess: "Ver menos",
   wuLabel: "PRÓXIMOS PLANES DE BIENESTAR",
   wcat_spa: "Spa y relajación", wcat_beauty: "Belleza y cuidado", wcat_movement: "Yoga y movimiento", wcat_mind: "Meditación y fe",
   wcat_retreat: "Retiros", wcat_food: "Alimentación sana", wcat_workshop: "Talleres",
@@ -50,6 +51,7 @@ const EN = {
   wdOffer: "See offer or book", wdMore: "See details", wdEmptyTitle: "Wellness experiences are coming soon",
   wdEmptyText: "Spas, massages, yoga, retreats and places to take care of yourself. Know a special one? Recommend it.",
   wdRecommend: "Recommend a place",
+  wdSeeAll: "See all", wdLess: "See less",
   wuLabel: "UPCOMING WELLNESS PLANS",
   wcat_spa: "Spa & relaxation", wcat_beauty: "Beauty & self-care", wcat_movement: "Yoga & movement", wcat_mind: "Meditation & faith",
   wcat_retreat: "Retreats", wcat_food: "Healthy food", wcat_workshop: "Workshops",
@@ -104,6 +106,7 @@ function emptyBox(icon, title, text, action) {
 
 // ---------- Wellness discovery ----------
 let wcat = "all";
+let wAll = false;
 function wellCard(p) {
   // photo card: category · Código Pick · title · where · short description · price / promo · clear action
   const tag = C.planTag(p.id);
@@ -155,23 +158,29 @@ function renderWellness() {
   if (wcat !== "all" && !cats.includes(wcat)) wcat = "all";
   const nodes = [el("small", { class: "rose", text: t("wdLabel") }), el("h2", { text: t("wdTitle") })];
   if (cats.length > 1) {
-    const chip = (key, label) => btn(label, "chip" + (wcat === key ? " selected" : ""), () => { wcat = key; renderWellness(); });
+    const chip = (key, label) => btn(label, "chip" + (wcat === key ? " selected" : ""), () => { wcat = key; wAll = false; renderWellness(); });
     const row = el("div", { class: "chips wd-chips", role: "group" }, chip("all", t("wdAll")), ...cats.map(c => chip(c, t("wcat_" + c))));
     row.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", String(b.classList.contains("selected"))));
     nodes.push(row);
   }
   const shown = items.filter(p => wcat === "all" || C.planTag(p.id).cat === wcat)
     .sort((a, b) => (C.planTag(b.id).featured ? 1 : 0) - (C.planTag(a.id).featured ? 1 : 0));
-  if (shown.length) nodes.push(el("div", { class: "wd-list" }, ...shown.map(wellCard)),
+  const vis = wAll ? shown : shown.slice(0, 3);
+  if (shown.length) nodes.push(el("div", { class: "wd-list" }, ...vis.map(wellCard)),
+    ...(shown.length > 3 ? [btn(wAll ? t("wdLess") : t("wdSeeAll") + " (" + shown.length + ") →", "link-btn wd-all", () => { wAll = !wAll; renderWellness(); })] : []),
     btn(t("wdRecommend"), "link-btn wd-recommend", () => C.openModal("idea")));   // always reachable, not only when the list is empty
   else nodes.push(emptyBox("🌿", t("wdEmptyTitle"), t("wdEmptyText"), btn(t("wdRecommend"), "secondary", () => C.openModal("idea"))));
   host.hidden = false;
   host.replaceChildren(...nodes);
   if (up) {
     // Only real dated plans here (a yoga class, a workshop). Fixed places such as spas live in "Experiencias para cuidarte" above and never repeat here.
-    const evs = plans.filter(p => p.kind === "event" && p.event_date && upcoming(p) && (p.code === "Wellness" || p.code === "Recharge" || (C.eventCategory && C.eventCategory(p) === "wellness"))).sort(C.byDate).slice(0, 4);
-    up.hidden = !evs.length;
-    up.replaceChildren(...(evs.length ? [el("small", { class: "rose", text: t("wuLabel") }), el("div", { class: "ev-grid" }, ...evs.map(p => C.eventCard(p, true)))] : []));
+    const evs = plans.filter(p => p.kind === "event" && p.event_date && upcoming(p) && (p.code === "Wellness" || p.code === "Recharge" || (C.eventCategory && C.eventCategory(p) === "wellness"))).sort(C.byDate).slice(0, 3);
+    const promos = plans.filter(p => p.kind === "event" && !p.event_date && C.planTag(p.id).cat === "spa" && C.activePromo(p)).slice(0, 3 - evs.length);
+    const win = evs.concat(promos).slice(0, 3);
+    up.hidden = false;
+    const cards = win.map(p => C.eventCard(p, true));
+    while (cards.length < 3) cards.push(C.soonCard(t("soonWellT"), t("soonWellD")));
+    up.replaceChildren(el("small", { class: "rose", text: t("wuLabel") }), el("div", { class: "ev-grid" }, ...cards));
   }
 }
 

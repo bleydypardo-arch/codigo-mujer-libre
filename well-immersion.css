@@ -129,3 +129,4 @@
 #wellDiscover .wd-recommend::before { content: ""; width: 16px; height: 16px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12zm0-9a3 3 0 1 1 0-6 3 3 0 0 1 0 6z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12zm0-9a3 3 0 1 1 0-6 3 3 0 0 1 0 6z'/%3E%3C/svg%3E") center / contain no-repeat; }
 .px-spa .px-tx { width: 56%; }
 .px-spa .px-tx small { white-space: nowrap; letter-spacing: .05em; font-size: clamp(8px, 2.3vw, 9.5px); }
+#wellDiscover .wd-all { display: flex; align-items: center; justify-content: center; width: 100%; margin: 14px 0 0; padding: 10px; border: 0; background: none; color: #4A6646; font: 600 14px var(--font-ui); }
