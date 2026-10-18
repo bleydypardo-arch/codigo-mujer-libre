@@ -70,7 +70,6 @@
 
 /* Home "Eventos Especiales": the calm "coming soon" window keeps the row at three */
 .ev-card.ev-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 22px 18px; border: 1px dashed #E3C3C7; background: linear-gradient(180deg, #FFF9F7, #FDF1F0); box-shadow: none; }
-.home-upcoming .ev-card.ev-soon { flex: 0 0 min(78%, 320px); scroll-snap-align: start; }
 .ev-soon-ic { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; background: #FBE3E1; font-size: 22px; }
 .ev-soon .ev-title { font: 500 19px/1.2 var(--font-display, serif); color: #3A2A2C; }
 .ev-soon-d { margin: 0; font-size: 13.5px; line-height: 1.45; color: #7C6A6C; max-width: 24ch; }
