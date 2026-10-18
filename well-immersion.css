@@ -131,3 +131,17 @@
 .px-pill .px-tx { left: 21%; width: 54%; }
 .px-pill .px-tx b { font-size: clamp(18px, 5.4vw, 22px); font-weight: 700; color: #2F3A28; text-shadow: 0 1px 0 rgba(255, 255, 255, .65); }
 .px-pill .px-tx small { font-size: clamp(8.5px, 2.4vw, 9.5px); letter-spacing: .05em; font-weight: 600; color: #4C5640; white-space: nowrap; }
+
+/* ---- Home section icons: alive and tappable (same 52px circle) ---- */
+.sec-ic-go { border: 0; padding: 0; cursor: pointer; position: relative; font: inherit; -webkit-tap-highlight-color: transparent; }
+.sec-ic.rose.sec-ic-go { background: radial-gradient(circle at 35% 28%, #fff 0, #FBE3E6 62%, #F4CBD1 100%); box-shadow: 0 5px 12px rgba(184, 95, 104, .22), inset 0 1px 0 #fff; animation: icBob 4.5s ease-in-out infinite; }
+.sec-ic.gold.sec-ic-go { background: radial-gradient(circle at 35% 28%, #fff 0, #FFF8E6 70%, #F6E7BC 100%); box-shadow: 0 5px 12px rgba(184, 141, 58, .22), inset 0 1px 0 #fff; animation: icBob 4.5s ease-in-out infinite -2s; }
+.sec-ic-go:active, .sec-ic-go.pop { animation: icPop .42s ease-out; }
+.sec-ic-go:focus-visible { outline: 3px solid #b85f68; outline-offset: 3px; }
+@keyframes icBob { 50% { transform: translateY(-3px); } }
+@keyframes icPop { 40% { transform: scale(1.18) rotate(-6deg); } 100% { transform: scale(1); } }
+.ic-ring { animation: icRing 3.6s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes icRing { 0%, 80%, 100% { transform: rotate(0); } 86% { transform: rotate(-9deg); } 92% { transform: rotate(7deg); } }
+.ic-sp { animation: cmlQr 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.ic-lf { transform-box: view-box; transform-origin: 50% 85%; animation: oSway 3.8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .sec-ic-go, .sec-ic-go * { animation: none !important; } }

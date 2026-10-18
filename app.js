@@ -1349,13 +1349,15 @@ function discoverPick() {
 
 // Home section header: icon circle, two-tone title (last word in italic rose), tracked subtitle, "see all" link.
 const SEC_ICONS = {
-  cal: '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17h.01M12 17h.01"/></svg>',
-  leaf: '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M16.5 7.5c-5 .3-8 2.7-8.6 6.2-.2 1.2.1 2.3.8 3 .7.7 1.8 1 3 .8 3.5-.6 5.6-3.6 4.8-10z"/><path d="M8.6 16.6c1.8-2.6 3.8-4.2 6-5"/></svg>'
+  cal: '<svg class="ic-cal" viewBox="0 0 28 28" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="21" height="19" rx="4" fill="#fff" fill-opacity=".7"/><path d="M3.5 11.5h21"/><path class="ic-ring" d="M9.5 3v5M18.5 3v5"/><text class="ic-day" x="14" y="21" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor" stroke="none">__DAY__</text><path class="ic-sp" d="M23.5 3.2l.6 1.5 1.5.6-1.5.6-.6 1.5-.6-1.5-1.5-.6 1.5-.6z" fill="currentColor" stroke="none"/></svg>',
+  leaf: '<svg class="ic-leaf" viewBox="0 0 28 28" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><g class="ic-lf"><path d="M20.5 6.5c-6.5.4-10.5 3.6-11.2 8-.3 1.6.1 3 1 3.9.9.9 2.3 1.3 3.9 1 4.5-.8 7.2-4.700 6.3-12.900z"/><path d="M9.7 20.3c2.300-3.300 5-5.400 7.800-6.500"/></g><path class="ic-sp" d="M6 4.500l.6 1.500 1.500.6-1.500.6-.6 1.500-.6-1.500-1.500-.6 1.500-.6z" fill="currentColor" stroke="none"/></svg>'
 };
 window.cmlSecHead = function (icon, tone, title, sub, allBtn) {
   const words = String(title).trim().split(/\s+/), last = words.pop();
   const h = el("h2", { class: "sec-title" }, words.length ? words.join(" ") + " " : "", el("em", { text: last }));
-  const ic = el("span", { class: "sec-ic " + tone }); ic.innerHTML = SEC_ICONS[icon] || "";
+  const ic = el(allBtn ? "button" : "span", { class: "sec-ic " + tone + (allBtn ? " sec-ic-go" : ""), ...(allBtn ? { type: "button", "aria-label": allBtn.textContent.replace(/\s*→\s*$/, "") } : {}) });
+  ic.innerHTML = (SEC_ICONS[icon] || "").replace("__DAY__", String(new Date().getDate()));
+  if (allBtn) ic.addEventListener("click", () => { ic.classList.remove("pop"); void ic.offsetWidth; ic.classList.add("pop"); setTimeout(() => allBtn.click(), 220); });
   return el("div", { class: "sec-head" }, ic,
     el("div", { class: "sec-tx" }, h, el("small", { class: "sec-sub", text: sub })), allBtn);
 };
