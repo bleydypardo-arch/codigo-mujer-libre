@@ -258,7 +258,7 @@ function renderWeek() {
 function thumb(src, code, whole, fb) {
   const box = el("span", { class: "disc-th" + (whole && src ? " is-whole" : "") + (src ? "" : " tone-" + (C.codeLabels[code] ? code : "none")), "aria-hidden": "true" });
   if (src) {
-    const img = el("img", { src, alt: "", loading: "lazy" });
+    const img = el("img", { src, alt: "", loading: "lazy", referrerpolicy: "no-referrer" });
     if (whole) box.style.setProperty("--th-bg", 'url("' + String(src).replace(/["\\()\s]/g, encodeURIComponent) + '")');
     img.addEventListener("error", () => {
       // Restaurant sites often block other sites from showing their photos: retry once through a free image relay.
