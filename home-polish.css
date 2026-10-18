@@ -67,3 +67,14 @@
 .wd-card .wd-acts .wd-more { order: 2; grid-column: auto; justify-self: stretch; display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 10px; border: 1px solid #C9AE76; border-radius: 999px; background: #fff; color: #7A5E2B; font: 600 13px var(--font-ui); text-decoration: none; }
 .wd-card .wd-acts:not(:has(.wd-map)) .wd-more { grid-column: 1 / -1; }
 .wd-photo .wd-media.tone-Wellness { aspect-ratio: 16 / 9; }
+
+/* Home "Eventos Especiales": the calm "coming soon" window keeps the row at three */
+.ev-card.ev-soon { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-align: center; padding: 22px 18px; border: 1px dashed #E3C3C7; background: linear-gradient(180deg, #FFF9F7, #FDF1F0); box-shadow: none; }
+.home-upcoming .ev-card.ev-soon { flex: 0 0 min(78%, 320px); scroll-snap-align: start; }
+.ev-soon-ic { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; background: #FBE3E1; font-size: 22px; }
+.ev-soon .ev-title { font: 500 19px/1.2 var(--font-display, serif); color: #3A2A2C; }
+.ev-soon-d { margin: 0; font-size: 13.5px; line-height: 1.45; color: #7C6A6C; max-width: 24ch; }
+.ev-soon .place-btn { margin-top: 6px; }
+.ev-card.ev-mini.ev-soon { display: flex !important; flex-direction: column !important; grid-template-columns: none !important; align-items: center; justify-content: center; }
+.ev-card.ev-mini.ev-soon > * { grid-column: auto !important; grid-row: auto !important; }
+.ev-card.ev-mini.ev-soon .place-btn { flex: 0 0 auto; width: 100%; max-width: 230px; }

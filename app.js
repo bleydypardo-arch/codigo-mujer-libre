@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  upcomingTitle: "Eventos Especiales", upcomingSub: "Planes que te inspiran, experiencias que te conectan", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
+  upcomingTitle: "Eventos Especiales", upcomingSub: "Planes que te inspiran, experiencias que te conectan", soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  upcomingTitle: "Special Events", upcomingSub: "Plans that inspire you, experiences that connect you", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
+  upcomingTitle: "Special Events", upcomingSub: "Plans that inspire you, experiences that connect you", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -1366,7 +1366,16 @@ function renderUpcoming() {
   all.addEventListener("click", () => showPage("agenda"));
   host.replaceChildren(
     window.cmlSecHead("cal", "rose", t("upcomingTitle"), t("upcomingSub"), all),
-    el("div", { class: "ev-grid" }, ...next.map(p => eventCard(p, true))));
+    el("div", { class: "ev-grid" }, ...next.map(p => eventCard(p, true)), ...Array.from({ length: Math.max(0, 3 - next.length) }, soonCard)));
+}
+// Home always shows three windows: real events first, then a calm "coming soon" card that invites members to suggest a plan.
+function soonCard() {
+  const go = el("button", { type: "button", class: "place-btn alt", text: t("soonCta") });
+  go.addEventListener("click", () => openModal("idea"));
+  return el("article", { class: "ev-card ev-mini ev-soon" },
+    el("span", { class: "ev-soon-ic", "aria-hidden": "true", text: "✨" }),
+    el("b", { class: "ev-title", text: t("soonT") }),
+    el("p", { class: "ev-soon-d", text: t("soonD") }), go);
 }
 function renderAgenda() {
   const list = byId("agendaList");
