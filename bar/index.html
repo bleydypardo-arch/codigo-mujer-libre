@@ -184,6 +184,28 @@ class BarAudio {
   }
 }
 
+
+// ---------- Idioma: lee el que la mujer eligió en la app (ES / EN) ----------
+let LANG='es';try{LANG=localStorage.getItem('language')==='en'?'en':'es'}catch{}
+const EN={
+'Un rincón hecho para ti.':'A corner made for you.','Pasa, escoge tu vaso y prepara tu momento.':'Come in, pick your glass and make your moment.','Entrar':'Enter','TOCA PARA ABRIR LA PUERTA':'TAP TO OPEN THE DOOR',
+'Bar de Matcha & Café':'Matcha & Café Bar','Prepara tu propia bebida':'Make your own drink','¿Con qué vaso quieres prepararla?':'Which glass would you like to use?',
+'Fría':'Cold','Caliente':'Hot','Sin tapa':'No lid','Con tapa':'With lid','Clásica':'Classical','Italiana':'Italian','Francesa':'French',
+'Deshacer':'Undo','Vaciar':'Empty','Licuar':'Blend','Listo →':'Done →','← Seguir':'← Keep going','Guardar foto':'Save photo','♡ Guardar mi receta':'♡ Save my recipe','Ponle nombre a tu receta':'Name your recipe','Salir':'Exit',
+'Mi creación':'My creation','Tu vaso está vacío':'Your glass is empty','En la licuadora: ':'In the blender: ',
+'Leches':'Milks','Sabores':'Flavors','Matcha':'Matcha','Café':'Coffee','Licuadora':'Blender','Helados':'Ice cream','Toppings':'Toppings',
+'Toca una botella para servir tu leche':'Tap a bottle to pour your milk','Toca un jarabe: cada toque da dos bombeadas':'Tap a syrup: each tap gives two pumps','Toca un polvo: se bate con el chasen y se sirve':'Tap a powder: it is whisked with the chasen and served','Toca un café: la máquina lo prepara en tu vaso':'Tap a coffee: the machine makes it in your glass','Echa frutas y hielo a la licuadora, luego toca Licuar':'Add fruit and ice to the blender, then tap Blend','Toca un helado o la crema para decorar tu bebida':'Tap an ice cream or the cream to decorate your drink','Toca un topping para espolvorear tu bebida':'Tap a topping to sprinkle on your drink',
+'El vaso alto con tapa y pitillo':'The tall glass with lid and straw','La taza de cristal acanalada':'The ribbed glass cup','La taza lisa, dorada y serena':'The smooth, golden, serene cup','Elegir':'Choose',
+'Con la tapa puesta no se puede decorar. Toca "Sin tapa"':'You cannot decorate with the lid on. Tap "No lid"','Con la tapa se quitó la decoración':'The decoration was removed with the lid','El vaso está lleno':'The glass is full','Falta su foto: la estamos creando':'Its photo is coming soon','Foto guardada':'Photo saved','La licuadora está llena':'The blender is full','No hay espacio para guardar':'No space left to save','Primero sirve una bebida':'Pour a drink first','Receta lista: puedes cambiarla o prepararla igual':'Recipe ready: change it or make it again','Sirve algo en tu vaso':'Pour something in your glass','Ya tiene suficiente decoración':'Already decorated enough',
+'Mis recetas':'My recipes','Preparar otra vez':'Make again','Borrar':'Delete','Preparada en el vaso ':'Made in the glass ',
+'Ya tienes 5 recetas guardadas. Borra una en "Mis recetas" para guardar otra.':'You already have 5 saved recipes. Delete one in "My recipes" to save another.','Receta guardada ♡ ':'Recipe saved ♡ ','. Se borra sola si no la abres en 90 días.':'. It deletes itself if you do not open it in 90 days.',
+'Entera':'Whole milk','Avena':'Oat milk','Almendras':'Almond milk','Coco':'Coconut milk','Soya':'Soy milk','Sin lactosa':'Lactose-free milk','Pistacho':'Pistachio','Vainilla':'Vanilla','Caramelo':'Caramel','Fresa':'Strawberry','Lavanda':'Lavender','Rosas':'Rose','Avellana':'Hazelnut','Miel':'Honey',
+'Matcha ceremonial':'Ceremonial matcha','Matcha latte':'Matcha latte','Hojicha':'Hojicha','Espresso':'Espresso','Americano':'Americano','Cold brew':'Cold brew','Mango':'Mango','Fresas':'Strawberries','Arándanos':'Blueberries','Banana':'Banana','Hielo':'Ice',
+'Helado de vainilla':'Vanilla ice cream','Helado de chocolate':'Chocolate ice cream','Helado de fresa':'Strawberry ice cream','Helado de pistacho':'Pistachio ice cream','Crema batida':'Whipped cream','Granola':'Granola','Chispas de chocolate':'Chocolate chips','Pistachos':'Pistachios','Pétalos de flor':'Flower petals','Canela':'Cinnamon','Matcha en polvo':'Matcha powder','Topping':'Topping','Helado':'Ice cream'};
+const T=s=>LANG==='en'&&EN[s]||s;
+const TN=n=>{if(LANG!=='en')return n;if(n.startsWith('Licuado de '))return 'Blend of '+n.slice(11).split(' y ').map(x=>TN(x)).join(' & ');return T(n)};
+function trDom(root){if(LANG!=='en')return;document.documentElement.lang='en';const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){const k=n.nodeValue.trim();if(k&&EN[k])n.nodeValue=n.nodeValue.replace(k,EN[k])}
+ root.querySelectorAll('[placeholder],[aria-label],[alt]').forEach(e=>{['placeholder','aria-label','alt'].forEach(a=>{const v=e.getAttribute(a);if(v&&EN[v])e.setAttribute(a,EN[v])})})}
 const audio = new BarAudio(); const $ = id => document.getElementById(id);
 const CUPS={
  aura:{n:'AURA',d:'El vaso alto con tapa y pitillo',w:357,h:717,box:[38,170,318,683],hot:false,lid:true,th:330},
@@ -245,10 +267,10 @@ function paint(root,sc,k,state){const liqs=root.querySelectorAll('.liq');const l
 const scene=$('scene');
 $('enter').onclick=()=>{audio.init();audio.sfx('sparkle');setTimeout(()=>audio.sfx('clink'),500);$('intro').classList.add('go');setTimeout(()=>{$('intro').style.display='none'},2400);const w=$('welcome');w.animate([{opacity:0},{opacity:1,offset:.25},{opacity:1,offset:.7},{opacity:0}],{duration:2600,delay:900,fill:'forwards'})};
 
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600)}
+function toast(m){const t=$('toast');t.textContent=T(m);t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1600)}
 function px(el,x,y,w,h){el.style.left=x*U+'px';el.style.top=y*U+'px';if(w!=null){el.style.width=w*U+'px';el.style.height=h*U+'px'}}
 let slots=[],hots=[];
-function buildZone(){slots.forEach(e=>e.remove());hots.forEach(e=>e.remove());slots=[];hots=[];const z=ZONES[Z];scene.style.backgroundImage=`url(${z.img})`;$('hint').textContent=z.hint;
+function buildZone(){slots.forEach(e=>e.remove());hots.forEach(e=>e.remove());slots=[];hots=[];const z=ZONES[Z];scene.style.backgroundImage=`url(${z.img})`;$('hint').textContent=T(z.hint);
  z.items.forEach((m,i)=>{const n=m[0];const sl=document.createElement('div');sl.className='slot';if(z.nosprite)sl.style.display='none';sl.style.clipPath=z.poly;scene.appendChild(sl);slots.push(sl);
  const b=document.createElement('button');b.className='hot';b.setAttribute('aria-label',n);b.innerHTML='<i></i>';b.onclick=()=>pour(i);scene.appendChild(b);hots.push(b)});layout()}
 const shadow=document.createElement('div');shadow.className='cshadow';scene.appendChild(shadow);
@@ -260,21 +282,21 @@ function placeCup(){const c=CUPS[S.cup];SC=U*c.th/c.h;const w=c.w*SC,h=c.h*SC;cu
  shadow.style.left=(CUPX*U-w*.62)+'px';shadow.style.width=w*1.24+'px';shadow.style.top=(CUPBASE*U-14*U)+'px';shadow.style.height=34*U+'px'}
 new ResizeObserver(layout).observe(scene);
 // pick
-$('pickList').innerHTML=['aura','bella','serena'].map(k=>`<button class="vcard" data-k="${k}"><span class="vi"><img src="${k}.png" alt=""></span><span><b>${CUPS[k].n}</b><small>${CUPS[k].d}</small><em>Elegir ${CUPS[k].n[0]+CUPS[k].n.slice(1).toLowerCase()}</em></span></button>`).join('');
+$('pickList').innerHTML=['aura','bella','serena'].map(k=>`<button class="vcard" data-k="${k}"><span class="vi"><img src="${k}.png" alt=""></span><span><b>${CUPS[k].n}</b><small>${T(CUPS[k].d)}</small><em>${T('Elegir')} ${CUPS[k].n[0]+CUPS[k].n.slice(1).toLowerCase()}</em></span></button>`).join('');
 renderRecipes();buildZone();
 document.querySelectorAll('.vcard').forEach(b=>b.onclick=()=>{audio.init();audio.sfx('click');const kk=b.dataset.k==='aura'?'auraopen':b.dataset.k;S={cup:kk,layers:[],ice:0,tops:[],tops2:[],hot:CUPS[kk].hot,blended:false};$('pick').style.display='none';buildCup();audio.setGenre(audio.genre)});
 function buildCup(){lidRefresh();cupbox.innerHTML=cupHTML(S.cup,SC||1);layout();cupbox.innerHTML=cupHTML(S.cup,SC);paintCup()}
-function paintCup(){const tot=paint(cupbox,SC,S.cup,S);layoutTops(cupbox,SC,S.cup,tot,S.tops2);const names=S.layers.map(l=>l.name);$('recipe').textContent=names.length?names.join(' · '):'Tu vaso está vacío';$('tCold').classList.toggle('on',!S.hot);$('tHot').classList.toggle('on',S.hot);return tot}
+function paintCup(){const tot=paint(cupbox,SC,S.cup,S);layoutTops(cupbox,SC,S.cup,tot,S.tops2);const names=S.layers.map(l=>TN(l.name));$('recipe').textContent=names.length?names.join(' · '):T('Tu vaso está vacío');$('tCold').classList.toggle('on',!S.hot);$('tHot').classList.toggle('on',S.hot);return tot}
 
 function lidRefresh(){const isA=S.cup==='aura'||S.cup==='auraopen';$('lidp').style.display=isA?'flex':'none';document.querySelectorAll('#lidp button').forEach(b=>b.classList.toggle('on',(b.dataset.l==='1')===(S.cup==='aura')))}
 document.querySelectorAll('#lidp button').forEach(b=>b.onclick=()=>{if(busy||!S.cup)return;const lid=b.dataset.l==='1';const want=lid?'aura':'auraopen';if(S.cup===want)return;audio.sfx('click');if(lid&&S.tops2.length){S.tops2=[];toast('Con la tapa se quitó la decoración')}S.cup=want;buildCup();lidRefresh()});
 // music pill
-function renderMusic(){const o=[['jazz','Jazz'],['classical','Clásica'],['italian','Italiana'],['french','Francesa'],['off','🔇']];$('mus').innerHTML=o.map(([k,l])=>`<button data-g="${k}" class="${audio.genre===k?'on':''}">${l}</button>`).join('');document.querySelectorAll('#mus button').forEach(b=>b.onclick=()=>{audio.init();audio.setGenre(b.dataset.g);renderMusic();audio.sfx('click')})}
+function renderMusic(){const o=[['jazz','Jazz'],['classical','Clásica'],['italian','Italiana'],['french','Francesa'],['off','🔇']];$('mus').innerHTML=o.map(([k,l])=>`<button data-g="${k}" class="${audio.genre===k?'on':''}">${T(l)}</button>`).join('');document.querySelectorAll('#mus button').forEach(b=>b.onclick=()=>{audio.init();audio.setGenre(b.dataset.g);renderMusic();audio.sfx('click')})}
 renderMusic();
 $('tCold').onclick=()=>{S.hot=false;paintCup()};$('tHot').onclick=()=>{S.hot=true;paintCup()};
 // zone tabs (only Leches has its photo for now)
 const ZT=[['🥛','Leches','leches'],['🍯','Sabores','sabores'],['🍵','Matcha','matcha'],['☕','Café','cafe'],['🍓','Licuadora','licu'],['🍦','Helados','hel'],['✨','Toppings','top']];
-function renderTabs(){$('tabs').innerHTML=ZT.map(([i,t,k])=>`<button class="tab ${k?(Z===k?'on':''):'soon'}" data-k="${k||''}"><i>${i}</i>${t}</button>`).join('');
+function renderTabs(){$('tabs').innerHTML=ZT.map(([i,t,k])=>`<button class="tab ${k?(Z===k?'on':''):'soon'}" data-k="${k||''}"><i>${i}</i>${T(t)}</button>`).join('');
  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{if(!b.dataset.k){toast('Falta su foto: la estamos creando');return}if(busy||b.dataset.k===Z)return;audio.sfx('click');Z=b.dataset.k;scene.animate([{filter:'brightness(.4)'},{filter:'brightness(1)'}],{duration:450});buildZone();renderTabs();blendRefresh()})}
 renderTabs();
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -374,7 +396,7 @@ async function blendAdd(i){if(busy||!S.cup)return;const [name,color,x,y,w,h,,,am
  for(let k=0;k<(t==='i'?5:6);k++){const d=document.createElement('div');const sz=(t==='i'?24:20)*U;d.style.cssText=`position:absolute;z-index:24;width:${sz}px;height:${sz}px;border-radius:${t==='i'?'22%':'50%'};background:${color};left:${(x+w/2+(Math.random()-.5)*70)*U}px;top:${(y+h/2)*U}px;pointer-events:none;box-shadow:inset 0 -3px 5px rgba(0,0,0,.2)`;scene.appendChild(d);
   const ex=(450-(x+w/2)+(Math.random()-.5)*60)*U;d.animate([{transform:'translate(0,0)',opacity:1},{transform:`translate(${ex*.5}px,${-(y+h/2-470)*U}px)`,opacity:1,offset:.5},{transform:`translate(${ex}px,${(640-(y+h/2))*U}px)`,opacity:1}],{duration:700,delay:k*70,easing:'ease-in-out',fill:'forwards'}).finished.then(()=>{d.remove();audio.sfx('drop')})}
  await sleep(1050);const n=t==='i'?2:2;for(let k=0;k<n;k++)BL.push({name,color,amt:amt/n,k:1,t,rx:Math.random()*.8,ry:Math.random()*.7+.2});drawJarFill();busy=false;blendRefresh();
- $('recipe').textContent='En la licuadora: '+[...new Set(BL.map(b=>b.name))].join(' · ')}
+ $('recipe').textContent=T('En la licuadora: ')+[...new Set(BL.map(b=>TN(b.name)))].join(' · ')}
 function mixCol(){let r=0,g=0,b=0,t=0;BL.forEach(l=>{const v=[1,3,5].map(i=>parseInt(l.color.slice(i,i+2),16));r+=v[0]*l.amt;g+=v[1]*l.amt;b+=v[2]*l.amt;t+=l.amt});return `rgb(${r/t|0},${g/t|0},${b/t|0})`}
 async function blendServe(){if(busy||!BL.length||!S.cup)return;busy=true;$('bBlend').style.display='none';audio.init();audio.sfx('click');const c=CUPS[S.cup];
  const names=[...new Set(BL.map(b=>b.name))];const col=mixCol();const amt=BL.reduce((a,b)=>a+b.amt,0);
@@ -460,38 +482,39 @@ async function makeCard(st,name){const W=1080,H=1350;const cv=document.createEle
  const vg=g.createRadialGradient(W/2,H*.5,100,W/2,H*.5,H*.75);vg.addColorStop(0,'rgba(20,14,8,.15)');vg.addColorStop(1,'rgba(14,10,6,.78)');g.fillStyle=vg;g.fillRect(0,0,W,H);
  g.strokeStyle='rgba(233,201,122,.75)';g.lineWidth=3;g.strokeRect(34,34,W-68,H-68);g.lineWidth=1;g.strokeRect(46,46,W-92,H-92);
  g.textAlign='center';g.fillStyle='#E9C97A';g.font='600 30px Georgia,serif';if('letterSpacing' in g)g.letterSpacing='9px';g.fillText('CÓDIGO MUJER LIBRE',W/2,120);
- g.font='italic 26px Georgia,serif';if('letterSpacing' in g)g.letterSpacing='3px';g.fillStyle='#F3E4BF';g.fillText('Bar de Matcha & Café',W/2,164);
+ g.font='italic 26px Georgia,serif';if('letterSpacing' in g)g.letterSpacing='3px';g.fillStyle='#F3E4BF';g.fillText(T('Bar de Matcha & Café'),W/2,164);
  // shelf + shadow + cup
  const cup=await cupCanvas(st,CUPS[st.cup].lid?760:520);const baseY=H-420;
  const sh=g.createRadialGradient(W/2,baseY+10,10,W/2,baseY+10,cup.width*.7);sh.addColorStop(0,'rgba(0,0,0,.55)');sh.addColorStop(1,'rgba(0,0,0,0)');g.save();g.translate(0,baseY);g.scale(1,.18);g.translate(0,-baseY);g.fillStyle=sh;g.fillRect(0,baseY-200,W,500);g.restore();
  const mg=g.createLinearGradient(0,baseY,0,H-60);mg.addColorStop(0,'rgba(245,238,226,.85)');mg.addColorStop(1,'rgba(210,198,176,.55)');g.fillStyle=mg;g.fillRect(60,baseY,W-120,H-60-baseY-120);
  g.drawImage(cup,W/2-cup.width/2,baseY-cup.height+14);
  // text
- g.fillStyle='#2f2a20';g.font='500 70px Georgia,serif';if('letterSpacing' in g)g.letterSpacing='1px';let nm=(name||'Mi creación');while(g.measureText(nm).width>W-200&&nm.length>6)nm=nm.slice(0,-1);g.fillText(nm,W/2,baseY+100);
- g.fillStyle='#8a7440';g.font='italic 30px Georgia,serif';g.fillText('Preparada en el vaso '+CUPS[st.cup].n[0]+CUPS[st.cup].n.slice(1).toLowerCase(),W/2,baseY+148);
- const names=[...new Set(st.layers.map(l=>l.name).concat((st.tops2||[]).map(t=>t.kind==='cream'?'Crema batida':t.kind==='dust'?(t.name||'Topping'):(t.name||'Helado'))))];
+ g.fillStyle='#2f2a20';g.font='500 70px Georgia,serif';if('letterSpacing' in g)g.letterSpacing='1px';let nm=(name||T('Mi creación'));while(g.measureText(nm).width>W-200&&nm.length>6)nm=nm.slice(0,-1);g.fillText(nm,W/2,baseY+100);
+ g.fillStyle='#8a7440';g.font='italic 30px Georgia,serif';g.fillText(T('Preparada en el vaso ')+CUPS[st.cup].n[0]+CUPS[st.cup].n.slice(1).toLowerCase(),W/2,baseY+148);
+ const names=[...new Set(st.layers.map(l=>TN(l.name)).concat((st.tops2||[]).map(t=>T(t.kind==='cream'?'Crema batida':t.kind==='dust'?(t.name||'Topping'):(t.name||'Helado')))))];
  g.fillStyle='#5b5340';g.font='26px system-ui,sans-serif';if('letterSpacing' in g)g.letterSpacing='0px';const line=names.join(' · ');let ln=line;while(g.measureText(ln).width>W-220&&ln.length>10)ln=ln.slice(0,-2);g.fillText(ln+(ln!==line?'…':''),W/2,baseY+196);
  g.fillStyle='#8a7440';g.font='600 22px system-ui,sans-serif';if('letterSpacing' in g)g.letterSpacing='7px';g.fillText('♡  CÓDIGO MUJER LIBRE  ♡',W/2,H-92);
  return cv}
 let cardCv=null,cardTimer=0;
-async function refreshCard(){const name=$('nm').value.trim()||'Mi creación';cardCv=await makeCard(S,name);$('cardimg').src=cardCv.toDataURL('image/jpeg',.9)}
+async function refreshCard(){const name=$('nm').value.trim()||T('Mi creación');cardCv=await makeCard(S,name);$('cardimg').src=cardCv.toDataURL('image/jpeg',.9)}
 // ---------- Recetas guardadas: en el teléfono, máximo 5, se borran a los 90 días sin abrir ----------
 const RKEY='cml_bar_recipes',MAXR=5,DAYS=90;
 function loadRec(){let a=[];try{a=JSON.parse(localStorage.getItem(RKEY)||'[]')}catch{}const now=Date.now();const keep=a.filter(r=>now-(r.last||r.date)<DAYS*864e5);if(keep.length!==a.length)saveRec(keep);return keep}
 function saveRec(a){try{localStorage.setItem(RKEY,JSON.stringify(a))}catch{toast('No hay espacio para guardar')}}
 function thumbOf(cv){const t=document.createElement('canvas');t.width=360;t.height=450;t.getContext('2d').drawImage(cv,0,0,360,450);return t.toDataURL('image/jpeg',.72)}
 function renderRecipes(){const a=loadRec();const box=$('mine');if(!a.length){box.innerHTML='';return}
- box.innerHTML='<h3>Mis recetas ('+a.length+'/'+MAXR+')</h3><div class="rgrid">'+a.map((r,i)=>`<div class="rc"><img src="${r.thumb}" alt=""><b>${r.name.replace(/</g,'&lt;')}</b><div class="rb"><button data-o="${i}">Preparar otra vez</button><button data-d="${i}" class="del">Borrar</button></div></div>`).join('')+'</div>';
+ box.innerHTML='<h3>'+T('Mis recetas')+' ('+a.length+'/'+MAXR+')</h3><div class="rgrid">'+a.map((r,i)=>`<div class="rc"><img src="${r.thumb}" alt=""><b>${r.name.replace(/</g,'&lt;')}</b><div class="rb"><button data-o="${i}">${T('Preparar otra vez')}</button><button data-d="${i}" class="del">${T('Borrar')}</button></div></div>`).join('')+'</div>';
  box.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const a2=loadRec();a2.splice(+b.dataset.d,1);saveRec(a2);renderRecipes()});
  box.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{const a2=loadRec();const r=a2[+b.dataset.o];r.last=Date.now();saveRec(a2);audio.init();S={cup:r.cup,layers:JSON.parse(JSON.stringify(r.layers)),ice:0,tops:[],tops2:JSON.parse(JSON.stringify(r.tops2||[])),hot:CUPS[r.cup].hot,blended:false};$('pick').style.display='none';buildCup();toast('Receta lista: puedes cambiarla o prepararla igual')})}
 $('bDone').onclick=async()=>{if(busy)return;if(!S.layers.length){toast('Sirve algo en tu vaso');return}audio.sfx('done');$('final').style.display='block';$('cardimg').removeAttribute('src');$('nm').value='';$('fnote').textContent='';await refreshCard()};
 $('nm').oninput=()=>{clearTimeout(cardTimer);cardTimer=setTimeout(refreshCard,250)};
 $('fback').onclick=()=>$('final').style.display='none';
-$('fsave').onclick=async()=>{if(!cardCv)return;cardCv.toBlob(async blob=>{const name=($('nm').value.trim()||'mi-creacion').replace(/[^\w\-áéíóúñÁÉÍÓÚÑ ]+/g,'').replace(/\s+/g,'-').toLowerCase()+'.png';const file=new File([blob],name,{type:'image/png'});
+$('fsave').onclick=async()=>{if(!cardCv)return;cardCv.toBlob(async blob=>{const name=($('nm').value.trim()||(LANG==='en'?'my-creation':'mi-creacion')).replace(/[^\w\-áéíóúñÁÉÍÓÚÑ ]+/g,'').replace(/\s+/g,'-').toLowerCase()+'.png';const file=new File([blob],name,{type:'image/png'});
   try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Mi creación · Código Mujer Libre'});return}}catch(e){if(e&&e.name==='AbortError')return}
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);toast('Foto guardada')},'image/png')};
-$('frecipe').onclick=()=>{if(!cardCv)return;const a=loadRec();if(a.length>=MAXR){$('fnote').textContent='Ya tienes 5 recetas guardadas. Borra una en "Mis recetas" para guardar otra.';return}
- a.push({name:$('nm').value.trim()||'Mi creación',cup:S.cup,layers:S.layers,tops2:S.tops2,date:Date.now(),last:Date.now(),thumb:thumbOf(cardCv)});saveRec(a);$('fnote').textContent='Receta guardada ♡ ('+a.length+'/'+MAXR+'). Se borra sola si no la abres en 90 días.';renderRecipes()};
+$('frecipe').onclick=()=>{if(!cardCv)return;const a=loadRec();if(a.length>=MAXR){$('fnote').textContent=T('Ya tienes 5 recetas guardadas. Borra una en "Mis recetas" para guardar otra.');return}
+ a.push({name:$('nm').value.trim()||T('Mi creación'),cup:S.cup,layers:S.layers,tops2:S.tops2,date:Date.now(),last:Date.now(),thumb:thumbOf(cardCv)});saveRec(a);$('fnote').textContent=T('Receta guardada ♡ ')+'('+a.length+'/'+MAXR+')'+T('. Se borra sola si no la abres en 90 días.');renderRecipes()};
 $('wrap').appendChild($('final'));$('exitbar').onclick=()=>{if(window.opener){window.close();setTimeout(()=>{location.href='../index.html'},250)}else location.href='../index.html'};
+trDom(document.body);
 window.__t={spr:sprinkle,sAdd:scoopAdd,bAdd:blendAdd,bServe:blendServe,mach:machinePour,bowl:bowlPour,setZone:k=>{Z=k;buildZone();renderTabs()},pour,S:()=>S,pick:k=>document.querySelector('.vcard[data-k='+k+']').click()};
 </script></body></html>
