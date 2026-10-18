@@ -655,7 +655,28 @@ async function importTab() {
     await C.refreshPublic();
     phOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + ok + " lugares actualizados." + (miss.length ? " No encontré estos lugares (revisa el nombre): " + miss.join(", ") + "." : "") + (skipped.length ? " Sin cambios (no traían dirección ni foto): " + skipped.join(", ") + "." : "") }));
   };
+  // ---- Publish every draft place of one city in one tap (for lists that were created but not published) ----
+  const pubCity = el("select", {}, ...C.cities().map(c => el("option", { value: c.name, text: c.name })));
+  if (cv) pubCity.value = cv;
+  const pubFb = feedbackNode(), pubOut = el("div", {});
+  const pubRun = async () => {
+    say(pubFb, ""); pubOut.replaceChildren();
+    const city = pubCity.value; if (!city) return;
+    const tg = await C.db.from("settings").select("value").eq("key", "plan_tags").maybeSingle(); if (tg.error) return say(pubFb, tx("saveFail"));
+    const tags = (tg.data && tg.data.value) || {};
+    const dr = await C.db.from("plans").select("id").eq("published", false); if (dr.error) return say(pubFb, tx("saveFail"));
+    const ids = (dr.data || []).map(x => x.id).filter(id => tags[id] && tags[id].show === city);
+    if (!ids.length) return say(pubFb, "No hay borradores de " + city + ".");
+    if (!await confirmed("¿Publicar " + ids.length + " lugares de " + city + "?")) return;
+    try { const u = await C.db.from("plans").update({ published: true }).in("id", ids); if (u.error) throw u.error; await C.refreshPublic(); } catch (e) { console.error(e); return say(pubFb, tx("saveFail")); }
+    K.toast("Publicados: " + ids.length);
+    pubOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + ids.length + " lugares de " + city + " publicados." }));
+  };
   return el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("impIntro") }),
+    el("h3", { text: "Publicar los borradores de una ciudad" }),
+    el("p", { class: "small-note", text: "Si ya creaste los lugares pero siguen como Borrador, elige la ciudad y toca el botón. Se publican todos de una vez." }),
+    field("Ciudad", pubCity), pubFb, el("div", { class: "admin-bar" }, K.button("Publicar todos los borradores de esta ciudad", "primary", pubRun)), pubOut,
+    el("hr", {}),
     field(tx("impCity"), citySel), field(tx("impType"), typeSel), area,
     el("label", { class: "check" }, now, tx("impPublishNow")), fb,
     el("div", { class: "admin-bar" }, K.button(tx("impPreview"), "secondary", showPreview)), out,
