@@ -30,3 +30,8 @@
   .ev-cols{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
   .ev-col-h{display:none}
 }
+
+/* Bienestar page hero: balanced two-line title */
+.ph-wellness h1 { text-wrap: balance; letter-spacing: .005em; }
+.ph-wellness .ph-intro { text-wrap: balance; max-width: 34ch; }
+.wd-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }

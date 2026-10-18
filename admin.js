@@ -472,7 +472,7 @@ function planItem(kind, row, c, memIds) {
     (() => { const tg = C.planTag ? C.planTag(row.id) : {}; const bits = [];
       if (kind === "event" && EVENT_TYPES.includes(tg.cat)) bits.push(a("fType_" + tg.cat).split(" (")[0]);
       if ((kind === "event" || kind === "wellness") && C.eventCategory) { const ec = C.eventCategory(row); const es = C.lang() === "es";
-        const nm = { social: es ? "Happy hours" : "Happy hours", dining: es ? "Restaurantes" : "Restaurants", wellness: "Wellness" }[ec];
+        const nm = { social: es ? "Happy hours" : "Happy hours", dining: es ? "Restaurantes" : "Restaurants", wellness: es ? "Bienestar" : "Wellness" }[ec];
         bits.push("➜ " + (ec === "events" ? (es ? "Aparece en: Eventos & Promociones" : "Shown in: Events & Promotions") : (es ? "Aparece en: Descubre · " : "Shown in: Discover · ") + nm)); }
       if (kind === "wellness" && WCATS.includes(tg.cat)) bits.push(tg.cat === "other" && tg.label ? tg.label : C.t("wcat_" + tg.cat));
       if ((kind === "wellness" || kind === "trip") && tg.featured) bits.push("✦ " + (kind === "trip" ? a("fFeaturedTrip").split(" (")[0] : "Código Pick"));

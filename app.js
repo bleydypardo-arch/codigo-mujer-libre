@@ -378,7 +378,7 @@ Object.assign(translations.es, {
   justNow: "Ahora mismo", minsAgo: n => "Hace " + n + " min",
   noMessages: "Tu buzón privado", noMessagesText: "Aquí verás los mensajes que le envíes a la administradora y sus respuestas. Solo ella puede leerlos.",
   msgAnswered: "Respondido",
-  catsLabel: "¿Qué te apetece?", cat_social: "Happy hours y social", cat_dining: "Restaurantes y comida", cat_events: "Eventos & Promociones", cat_wellness: "Wellness", catDesc_wellness: "Spas, masajes y belleza", catEmpty_wellness: "Pronto recomendaremos lugares de bienestar",
+  catsLabel: "¿Qué te apetece?", cat_social: "Happy hours y social", cat_dining: "Restaurantes y comida", cat_events: "Eventos & Promociones", cat_wellness: "Bienestar", catDesc_wellness: "Spas, masajes y belleza", catEmpty_wellness: "Pronto recomendaremos lugares de bienestar",
   catDesc_social: "Brindis, terrazas, noches", catDesc_dining: "Brunch, cenas, cafés", catDesc_events: "Conciertos, mercados, festivales, exposiciones",
   catCount: n => n === 1 ? "1 plan" : n + " planes",
   catEmpty_social: "Pronto habrá nuevos happy hours", catEmpty_dining: "Pronto recomendaremos restaurantes", catEmpty_events: "Pronto habrá nuevos eventos",
@@ -401,7 +401,7 @@ Object.assign(translations.es, {
   tripsSoonText: "Estamos preparando experiencias de este tipo. Cuéntanos a dónde te gustaría ir.",
   tripSuggestCta: "Sugerir un destino", tripOpen: "Ver la experiencia",
   meetLabel: "¿MATCHA?", meetIn: "Me apunto", meetInOn: "✓ Me apunto", meetCount: n => n === 1 ? "1 se apunta" : n + " se apuntan",
-  wellnessLabel: "BIENESTAR", yourSpace: "Cuídate a tu manera", wellnessIntro: "Elige cómo quieres sentirte hoy y descubre experiencias para cuidarte."
+  wellnessLabel: "BIENESTAR", yourSpace: "Cuídate hoy, florece siempre", wellnessIntro: "Elige cómo quieres sentirte hoy y descubre lugares y experiencias para ti."
 });
 Object.assign(translations.en, {
   chooseCode: "Tap a code to see only those plans.",
@@ -441,7 +441,7 @@ Object.assign(translations.en, {
   tripsSoonText: "We're preparing experiences like this. Tell us where you'd love to go.",
   tripSuggestCta: "Suggest a destination", tripOpen: "See the experience",
   meetLabel: "MATCHA?", meetIn: "I'm in", meetInOn: "✓ I'm in", meetCount: n => n === 1 ? "1 is in" : n + " are in",
-  wellnessLabel: "WELLNESS", yourSpace: "Care for yourself, your way", wellnessIntro: "Choose how you want to feel today and discover experiences to take care of yourself."
+  wellnessLabel: "WELLNESS", yourSpace: "Care today, bloom always", wellnessIntro: "Choose how you want to feel today and discover places and experiences for you."
 });
 
 // Creative pass: experience studio fields (bilingual)

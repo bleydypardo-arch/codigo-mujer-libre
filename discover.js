@@ -113,8 +113,12 @@ function wellCard(p) {
   const more = btn(t("wellSee") + " →", "link-btn wd-more", () => C.openDetail(p.id, more));
   const media = el("button", { type: "button", class: "wd-media" + (img ? "" : " tone-Wellness") + (img && tag.full ? " is-full" : ""), "aria-label": (C.pick(p, "title") || "—") + " · " + t("wellSee") });
   if (img) {
-    const i = el("img", { src: img, alt: "", loading: "lazy" });
-    i.addEventListener("error", () => { i.remove(); media.classList.add("tone-Wellness"); });
+    const i = el("img", { src: img, alt: "", loading: "lazy", referrerpolicy: "no-referrer" });
+    i.addEventListener("error", () => {
+      // Many sites block other sites from showing their photos: retry once through a free image relay before giving up.
+      if (!i.dataset.relay && /^https?:/i.test(img)) { i.dataset.relay = "1"; i.src = "https://wsrv.nl/?url=" + encodeURIComponent(img.replace(/^https?:\/\//i, "")) + "&w=800&output=jpg"; return; }
+      i.remove(); media.classList.add("tone-Wellness");
+    });
     media.appendChild(i);
   } else media.appendChild(el("span", { class: "wd-ph", "aria-hidden": "true", text: "🌿" }));
   media.appendChild(el("span", { class: "wd-veil", "aria-hidden": "true" }));
@@ -134,6 +138,7 @@ function wellCard(p) {
     el("b", { text: x.promo_price || p.price }),
     x.offer_until ? el("small", { text: t("wellUntil", C.fmtDate(x.offer_until)) }) : null));
   const acts = el("div", { class: "wd-acts" }, more);
+  if (p.location && !p.event_date) acts.appendChild(el("a", { class: "link-btn wd-map", href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent((C.pick(p, "title") || "") + " " + p.location), target: "_blank", rel: "noopener noreferrer", text: C.t("viewOnMap") + " ↗" }));
   const url = C.safeUrl(p.url);
   if (url) acts.appendChild(el("a", { class: "primary wd-cta", href: url, target: "_blank", rel: "noopener noreferrer", text: t("wellBook") + " ↗" }));
   body.appendChild(acts);
