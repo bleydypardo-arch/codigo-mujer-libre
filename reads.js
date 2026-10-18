@@ -9,13 +9,25 @@ const ES = {
   rdK: "BIENESTAR", rdTitle: "Lecturas de Bienestar", rdNow: "Leer ahora", rdNew: "Nueva",
   rdIntro: "Ideas cortas sobre longevidad, alimentación, salud de la mujer y hábitos.",
   rdLibK: "Biblioteca", rdLibP: "Todas las lecturas anteriores, para volver a ellas cuando quieras.",
-  rdEmpty: "Pronto compartiremos aquí nuestra primera lectura.", rdOpen: "Abrir lectura", rdShare: "Compartir con la comunidad"
+  rdEmpty: "Pronto compartiremos aquí nuestra primera lectura.", rdOpen: "Abrir lectura", rdShare: "Compartir con la comunidad",
+  bkBrand: "CÓDIGO MUJER LIBRE", bkC1: "LECTURAS", bkC2: "de Bienestar", bkTag: "UN LIBRO DE VIDA", bkN: "DE 5",
+  bk1T: "Bienestar Espiritual", bk1D: "Dios, fe, oración, gratitud, esperanza, reflexiones bíblicas y paz interior.", bk1X: "vive con fe",
+  bk2T: "Bienestar Emocional y Mental", bk2D: "Estrés, ansiedad, emociones, autoestima y equilibrio mental.", bk2X: "respira y siente",
+  bk3T: "Energía y Vitalidad", bk3D: "Descanso, sueño reparador, ejercicio, movimiento y hábitos saludables.", bk3X: "hoy, energía",
+  bk4T: "Nutrición, Belleza y Longevidad", bk4D: "Alimentación, salud hormonal, cuidado de la piel y envejecimiento saludable.", bk4X: "nútrete bien",
+  bk5T: "El Arte de Vivir Bien", bk5D: "Relaciones sanas, límites personales, felicidad, propósito de vida y crecimiento personal.", bk5X: "vive con propósito"
 };
 const EN = {
   rdK: "WELLNESS", rdTitle: "Wellness Reads", rdNow: "Read now", rdNew: "New",
   rdIntro: "Short ideas on longevity, healthy eating, women's health and habits.",
   rdLibK: "Library", rdLibP: "Every earlier read, to come back to whenever you like.",
-  rdEmpty: "Soon we'll share our first read here.", rdOpen: "Open read", rdShare: "Share with the community"
+  rdEmpty: "Soon we'll share our first read here.", rdOpen: "Open read", rdShare: "Share with the community",
+  bkBrand: "CÓDIGO MUJER LIBRE", bkC1: "WELLNESS", bkC2: "Reads", bkTag: "A BOOK OF LIFE", bkN: "OF 5",
+  bk1T: "Spiritual Wellness", bk1D: "God, faith, prayer, gratitude, hope, biblical reflections and inner peace.", bk1X: "live with faith",
+  bk2T: "Emotional & Mental Wellness", bk2D: "Stress, anxiety, emotions, self-esteem and mental balance.", bk2X: "breathe and feel",
+  bk3T: "Energy & Vitality", bk3D: "Rest, restorative sleep, exercise, movement and healthy habits.", bk3X: "energy today",
+  bk4T: "Nutrition, Beauty & Longevity", bk4D: "Healthy eating, hormonal health, skin care and healthy aging.", bk4X: "nourish yourself",
+  bk5T: "The Art of Living Well", bk5D: "Healthy relationships, personal boundaries, happiness, life purpose and personal growth.", bk5X: "live on purpose"
 };
 const t = k => (C ? C.t(k) : k);
 const el = (...a) => C.el(...a);
@@ -57,13 +69,35 @@ function renderCard() {
   if (!C.session()) return box.replaceChildren();
   const latest = list[0];
   const sub = latest ? (C.pick(latest, "title") || t("rdIntro")) : t("rdIntro");
-  const vis = el("span", { class: "reads-vis", "aria-hidden": "true" },
-    el("i", { class: "rv-aurora" }), el("i", { class: "rv-ring" }), el("i", { class: "rv-glow" }),
-    el("i", { class: "rv-leaf rv-l1" }), el("i", { class: "rv-leaf rv-l2" }), el("i", { class: "rv-leaf rv-l3" }), el("i", { class: "rv-leaf rv-l4" }), whiteOrchid(),
-    el("i", { class: "rv-sp rv-s1" }), el("i", { class: "rv-sp rv-s2" }), el("i", { class: "rv-sp rv-s3" }));
-  const card = el("button", { type: "button", class: "reads-card", "data-go": "reads" }, vis,
+  const leaf = c => el("i", { class: "bk-lf " + c });
+  const page = (n, cls) => el("span", { class: "bk-pg " + cls },
+    el("span", { class: "bk-face bk-paper bk-front" },
+      el("small", { class: "bk-num", text: n + " " + t("bkN") }),
+      el("b", { class: "bk-pt", text: t("bk" + n + "T") }),
+      el("i", { class: "bk-orn", text: "✦" }),
+      el("span", { class: "bk-pd", text: t("bk" + n + "D") }),
+      el("i", { class: "bk-ln" }), el("i", { class: "bk-ln bk-s" }), el("i", { class: "bk-ln" })),
+    el("span", { class: "bk-face bk-paper bk-paperL bk-backface" },
+      el("img", { src: "well-book-" + n + ".webp", alt: "", loading: "lazy", decoding: "async" }),
+      el("small", { class: "bk-cap", text: t("bk" + n + "X") })));
+  const med = el("span", { class: "bk-med" }, whiteOrchid());
+  const cover = el("span", { class: "bk-pg bk-cover" },
+    el("span", { class: "bk-face bk-cov" },
+      el("span", { class: "bk-spine" }, el("i"), el("i"), el("i"), el("i")),
+      el("span", { class: "bk-cv" },
+        el("small", { class: "bk-foil bk-brand", text: t("bkBrand") }), med,
+        el("b", { class: "bk-foil bk-c1", text: t("bkC1") }), el("em", { class: "bk-foil bk-c2", text: t("bkC2") }),
+        el("span", { class: "bk-dv" }, el("i"), el("span", { class: "bk-foil", text: "❖" }), el("i")),
+        el("small", { class: "bk-foil bk-tag", text: t("bkTag") }))),
+    el("span", { class: "bk-ribbon" }),
+    el("span", { class: "bk-face bk-paper bk-paperL bk-backface bk-orchid-page" }, whiteOrchid()));
+  const base = el("span", { class: "bk-pg bk-base" }, el("span", { class: "bk-edge" }),
+    el("span", { class: "bk-face bk-paper" }, el("i", { class: "bk-photo" }), el("b", { class: "bk-pt bk-last", text: t("rdTitle") }), el("i", { class: "bk-ln" }), el("i", { class: "bk-ln bk-s" }), el("i", { class: "bk-ln" })));
+  const stage = el("span", { class: "bk-stage", "aria-hidden": "true" },
+    el("i", { class: "bk-aura" }), leaf("bk-l1"), leaf("bk-l2"), leaf("bk-l3"), el("i", { class: "bk-sp bk-s1" }), el("i", { class: "bk-sp bk-s2" }), el("i", { class: "bk-sp bk-s3" }),
+    el("span", { class: "bk-book" }, base, page(5, "bk-p6"), page(4, "bk-p5"), page(3, "bk-p4"), page(2, "bk-p3"), page(1, "bk-p2"), cover));
+  const card = el("button", { type: "button", class: "reads-card bk", "data-go": "reads", "aria-label": t("rdTitle") }, stage,
     el("span", { class: "reads-txt" },
-      el("small", { class: "rose", text: t("rdK") }),
       el("b", { text: t("rdTitle") }),
       el("span", { class: "reads-sub", text: sub }),
       el("span", { class: "reads-btn", text: t("rdNow") })));

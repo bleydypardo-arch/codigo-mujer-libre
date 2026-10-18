@@ -401,7 +401,7 @@ Object.assign(translations.es, {
   tripsSoonText: "Estamos preparando experiencias de este tipo. Cuéntanos a dónde te gustaría ir.",
   tripSuggestCta: "Sugerir un destino", tripOpen: "Ver la experiencia",
   meetLabel: "¿MATCHA?", meetIn: "Me apunto", meetInOn: "✓ Me apunto", meetCount: n => n === 1 ? "1 se apunta" : n + " se apuntan",
-  wellnessLabel: "BIENESTAR", yourSpace: "Cuídate hoy, florece siempre", wellnessIntro: "Elige cómo quieres sentirte hoy y descubre lugares y experiencias para ti."
+  wellnessLabel: "BIENESTAR", yourSpace: "Cuídate hoy y florece siempre", wellnessIntro: "Elige cómo quieres sentirte hoy y descubre lugares y experiencias para ti."
 });
 Object.assign(translations.en, {
   chooseCode: "Tap a code to see only those plans.",
@@ -441,7 +441,7 @@ Object.assign(translations.en, {
   tripsSoonText: "We're preparing experiences like this. Tell us where you'd love to go.",
   tripSuggestCta: "Suggest a destination", tripOpen: "See the experience",
   meetLabel: "MATCHA?", meetIn: "I'm in", meetInOn: "✓ I'm in", meetCount: n => n === 1 ? "1 is in" : n + " are in",
-  wellnessLabel: "WELLNESS", yourSpace: "Care today, bloom always", wellnessIntro: "Choose how you want to feel today and discover places and experiences for you."
+  wellnessLabel: "WELLNESS", yourSpace: "Care today and bloom always", wellnessIntro: "Choose how you want to feel today and discover places and experiences for you."
 });
 
 // Creative pass: experience studio fields (bilingual)
