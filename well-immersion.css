@@ -105,13 +105,9 @@
 @media (prefers-reduced-motion: reduce) { .mood .orb, .mood .orb * { animation: none !important; } }
 
 /* ---- Spa Virtual: calmer gold, clearer letters ---- */
-.px-spa::before { filter: saturate(.42) brightness(1.04) !important; }
-.px-spa .px-tx { left: 23%; width: 50%; }
-.px-spa .px-tx b { font-size: clamp(18px, 5.6vw, 23px); font-weight: 700; color: #2F3A28; text-shadow: 0 1px 0 rgba(255, 255, 255, .65); }
-.px-spa .px-tx small { font-size: clamp(8.5px, 2.5vw, 10px); letter-spacing: .1em; font-weight: 600; color: #4C5640; }
-.px-spa::after { content: ""; position: absolute; top: 0; bottom: 0; width: 11%; left: -20%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .6), transparent); transform: skewX(-20deg); animation: pxShine 4.5s ease-in-out infinite; pointer-events: none; }
+.px-pill::after { content: ""; position: absolute; top: 0; bottom: 0; width: 11%; left: -20%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .6), transparent); transform: skewX(-20deg); animation: pxShine 4.5s ease-in-out infinite; pointer-events: none; }
 @keyframes pxShine { 0%, 55% { left: -20%; } 100% { left: 120%; } }
-@media (prefers-reduced-motion: reduce) { .px-spa::after { animation: none; display: none; } }
+@media (prefers-reduced-motion: reduce) { .px-pill::after { animation: none; display: none; } }
 
 /* ---- places: two equal columns, centered headings, wide recommend button ---- */
 #wellDiscover > .rose { display: none !important; }
@@ -127,6 +123,11 @@
 #wellDiscover .wd-card .wd-acts .wd-map, #wellDiscover .wd-card .wd-acts .wd-cta, #wellDiscover .wd-card .wd-acts .wd-more { min-height: 36px; font-size: 12px; padding: 0 8px; grid-column: auto; }
 #wellDiscover .wd-recommend { display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; margin: 18px 0 0; padding: 14px; border: 1.5px solid #E2B3B8; border-radius: 999px; background: #fff; color: #9F4A5B; font: 600 15px var(--font-ui); }
 #wellDiscover .wd-recommend::before { content: ""; width: 16px; height: 16px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12zm0-9a3 3 0 1 1 0-6 3 3 0 0 1 0 6z'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12zm0-9a3 3 0 1 1 0-6 3 3 0 0 1 0 6z'/%3E%3C/svg%3E") center / contain no-repeat; }
-.px-spa .px-tx { width: 56%; }
-.px-spa .px-tx small { white-space: nowrap; letter-spacing: .05em; font-size: clamp(8px, 2.3vw, 9.5px); }
 #wellDiscover .wd-all { display: flex; align-items: center; justify-content: center; width: 100%; margin: 14px 0 0; padding: 10px; border: 0; background: none; color: #4A6646; font: 600 14px var(--font-ui); }
+
+/* ---- Premium entry pills (Home + Bienestar): soft rounded rectangle, calmer gold, identical type on both ---- */
+.px-pill { border-radius: 18px; box-shadow: 0 0 0 1px rgba(184, 141, 58, .45), 0 4px 10px rgba(120, 95, 45, .12); filter: none; }
+.px-pill::before { inset: -3% -3.2%; background-size: 100% 100%; filter: saturate(.4) brightness(1.05) !important; }
+.px-pill .px-tx { left: 21%; width: 54%; }
+.px-pill .px-tx b { font-size: clamp(18px, 5.4vw, 22px); font-weight: 700; color: #2F3A28; text-shadow: 0 1px 0 rgba(255, 255, 255, .65); }
+.px-pill .px-tx small { font-size: clamp(8.5px, 2.4vw, 9.5px); letter-spacing: .05em; font-weight: 600; color: #4C5640; white-space: nowrap; }
