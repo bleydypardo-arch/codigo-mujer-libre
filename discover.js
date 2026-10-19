@@ -474,7 +474,8 @@ function renderMatchaPage() {
   } else plansBox.appendChild(el("p", { class: "small-note", text: t("maPlansEmpty") }));
   plansBox.appendChild(btn(t("maPropose"), "link-btn ma-propose", () => C.openModal("idea")));
   colB.push(plansBox);
-  if (recipes.length) colB.push(section(t("maRecipesK"), t("maRecipesTitle"), el("div", { class: "ma-items recipes" }, ...recipes.map(p => itemCard(p)))));
+  // (the "Recipes & ideas" library section is hidden on purpose; items stay saved)
+  if (false && recipes.length) colB.push(section(t("maRecipesK"), t("maRecipesTitle"), el("div", { class: "ma-items recipes" }, ...recipes.map(p => itemCard(p)))));
   const posts = matchaPosts().slice(0, 8);
   const sharesBox = (section(t("maShares"), t("maCreateTitle"),
     el("p", { class: "small-note", text: posts.length ? t("maSharesIntro") : t("maSharesEmpty") }),

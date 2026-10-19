@@ -41,10 +41,18 @@ function recipeSoonNode() {
     el("span", { class: "rc-cta", text: C.t("rcSoonTag") })));
   return card;
 }
+function posterNode(src, spare, alt) {
+  const im = el("img", { class: "rc-img", src, alt, loading: "lazy" });
+  im.addEventListener("error", () => { if (spare && im.getAttribute("src") !== spare) im.src = spare; else im.remove(); }, { once: false });
+  return im;
+}
 function recipeNode() {
   const r = recipe();
   if (!r) return C && C.session() ? recipeSoonNode() : null;
-  const img = C.safeUrl(r.image);
+  // The poster: the image saved in "Receta del mes"; if it is missing or broken, fall back to the poster of the newest recipe saved in the corner.
+  let spare = null;
+  try { const hd = C.homeData(); const rp = ((hd && hd.plans) || []).filter(p => { const tg = C.planTag(p.id); return tg.matcha && tg.mtype === "recipe" && C.safeUrl(p.image_url); }).sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")))[0]; spare = rp ? C.safeUrl(rp.image_url) : null; } catch { spare = null; }
+  const img = C.safeUrl(r.image) || spare;
   const link = C.safeUrl(r.link);
   const card = el("section", { class: "rc-card" + (flipped ? " is-flipped" : ""), "aria-label": C.t("rcK") });
   const flip = el("div", { class: "rc-flip" });
@@ -60,8 +68,8 @@ function recipeNode() {
     openBtn);
   const back = el("div", { class: "rc-face rc-back" },
     closeBtn,
-    img ? el("img", { class: "rc-img", src: img, alt: pickLang(r, "title"), loading: "lazy" }) : null,
-    pickLang(r, "text") ? el("span", { class: "rc-text", text: pickLang(r, "text") }) : null,
+    img ? posterNode(img, spare, pickLang(r, "title")) : null,
+    !img && pickLang(r, "text") ? el("span", { class: "rc-text", text: pickLang(r, "text") }) : null,   // the poster already carries both languages, so no extra text under it
     closeBtn2);
   flip.append(el("div", { class: "rc-inner" }, front, back));
   const sync = on => {
