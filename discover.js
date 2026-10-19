@@ -42,7 +42,7 @@ const ES = {
   maMeetPropose: "Proponer un Encuentro", maPlace: "Lugar", maPlacePh: "Café, salón de té o taller", maCity: "Ciudad", maCityPh: "Orlando, Bogotá…",
   maDate: "Día", maTime: "Hora", maNote: "Nota (opcional)", maNotePh: "Ej.: ¡traigan su cuaderno de dibujo!",
   maMeetSend: "Publicar encuentro", maMeetNeed: "Escribe el lugar y el día.", maMeetFail: "No se pudo publicar. Inténtalo de nuevo.", maMeetDone: "¡Listo! Tu encuentro ya aparece en el rincón y en Comunidad.",
-  maPollK: "DECIDAMOS JUNTAS", maPollTitle: "¿Dónde nos vemos?", maAllCities: "Todas las ciudades", maSearchPh: "Buscar un lugar o ciudad…", maPickK: "Lugares", maPickCount: "lugares", maPickHint: "Toca un lugar para ver más. Desliza para ver todos.", maSeePlaces: "Ver los lugares", maNoMatch: "No encontramos lugares con esa búsqueda.",
+  maPollK: "DECIDAMOS JUNTAS", maPollTitle: "¿Dónde nos vemos?", maAllCities: "Todas las ciudades", maSearchPh: "Buscar un café, lugar o ciudad…", maPickK: "Cafés y lugares favoritos", maPickCount: "lugares", maPickHint: "Escribe el nombre de un café, lugar o ciudad para encontrarlo. Toca uno para ver más.", maSeePlaces: "Ver los lugares", maNoMatch: "No encontramos lugares con esa búsqueda.",
   maSpotsK: "LUGARES FAVORITOS", maSpotsTitle: "Cafés y rincones creativos", maRecipesK: "RECETAS E IDEAS", maRecipesTitle: "Para preparar en casa",
   maCreateTitle: "Crea algo"
 };
@@ -81,7 +81,7 @@ const EN = {
   maMeetPropose: "Propose a Meetup", maPlace: "Place", maPlacePh: "Café, tea room or studio", maCity: "City", maCityPh: "Orlando, Bogotá…",
   maDate: "Day", maTime: "Time", maNote: "Note (optional)", maNotePh: "e.g. bring your sketchbook!",
   maMeetSend: "Post meetup", maMeetNeed: "Write the place and the day.", maMeetFail: "Could not post. Please try again.", maMeetDone: "Done! Your meetup now shows in the corner and in Community.",
-  maPollK: "LET'S DECIDE TOGETHER", maPollTitle: "Where should we meet?", maAllCities: "All cities", maSearchPh: "Search a place or city…", maPickK: "Places", maPickCount: "places", maPickHint: "Tap a place for details. Scroll to see them all.", maSeePlaces: "See the places", maNoMatch: "No places match that search.",
+  maPollK: "LET'S DECIDE TOGETHER", maPollTitle: "Where should we meet?", maAllCities: "All cities", maSearchPh: "Search a café, place or city…", maPickK: "Favorite cafés & places", maPickCount: "places", maPickHint: "Type the name of a café, place or city to find it. Tap one for details.", maSeePlaces: "See the places", maNoMatch: "No places match that search.",
   maSpotsK: "FAVORITE PLACES", maSpotsTitle: "Cafés and creative corners", maRecipesK: "RECIPES & IDEAS", maRecipesTitle: "To make at home",
   maCreateTitle: "Create something"
 };
@@ -438,9 +438,7 @@ function renderMatchaPage() {
   const cityRow = cities.length > 1 ? el("div", { class: "chips ma-cities", role: "group", "aria-label": t("maCity") },
     ...["all", ...cities].map(c => { const b = btn(c === "all" ? t("maAllCities") : c, "chip" + (maCity === c ? " selected" : ""), () => { maCity = c; renderMatchaPage(); }); b.setAttribute("aria-pressed", String(maCity === c)); return b; })) : null;
   hero.replaceChildren(
-    (window.CMLFeatured && window.CMLFeatured.recipeLive && window.CMLFeatured.recipeLive() && !settingUrl("matcha_image") && C.session())
-      ? el("div", { class: "ma-hero-img is-none", "aria-hidden": "true" })   // recipe of the month is on show: no second stock matcha cup
-      : el("div", { class: "ma-hero-img" + (settingUrl("matcha_image") ? " is-custom" : "") }, imgNode(matchaImage()), el("span", { class: "ma-foam", "aria-hidden": "true" })),
+    el("div", { class: "ma-hero-img" + (settingUrl("matcha_image") ? " is-custom" : "") }, imgNode(matchaImage()), el("span", { class: "ma-foam", "aria-hidden": "true" })),
     el("div", { class: "ma-hero-txt" },
       el("small", { class: "rose", text: t("maKicker") }),
       el("h1", { text: t("maName") }),
@@ -450,7 +448,7 @@ function renderMatchaPage() {
       cityRow));
   if (!C.session()) { body.replaceChildren(); return; }
   const shown = items.filter(p => inCity(cityOf(p)));
-  const featured = shown.find(p => C.planTag(p.id).featured);
+  const featured = shown.find(p => C.planTag(p.id).featured && C.planTag(p.id).mtype !== "recipe");   // recipes live in "Recipe of the Month" + the library, never as a second big card
   const spots = shown.filter(p => p !== featured && C.planTag(p.id).mtype !== "recipe");
   const recipes = shown.filter(p => p !== featured && C.planTag(p.id).mtype === "recipe");
   const evs = matchaPlans().filter(p => inCity(cityFrom(p.location)));
