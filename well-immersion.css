@@ -176,3 +176,28 @@
 .ma-bar-btn .mb-go{font-size:22px;color:#F0D9A0}
 .ma-bar-btn:active{transform:scale(.98)}
 @media (prefers-reduced-motion:reduce){.ma-bar-btn::after{animation:none}}
+
+/* ---------- Home · Matcha card: compact, whole cup + steam on the left, text on the right ---------- */
+#homeMatcha .matcha-card { grid-template-columns: clamp(128px, 37%, 190px) minmax(0, 1fr); text-align: left; align-items: stretch; min-height: 0; border-radius: 24px; }
+#homeMatcha .matcha-card::after { inset: 6px; border-radius: 19px; }
+#homeMatcha .matcha-img { aspect-ratio: auto; min-height: 150px; height: 100%; width: 100%; }
+#homeMatcha .matcha-img > img { object-fit: cover; object-position: 50% 42%; }
+#homeMatcha .matcha-img { -webkit-mask-image: linear-gradient(90deg, #000 78%, transparent 100%); mask-image: linear-gradient(90deg, #000 78%, transparent 100%); }
+#homeMatcha .matcha-img::after { display: none; }
+#homeMatcha .matcha-txt { align-items: flex-start; justify-content: center; gap: 5px; padding: 14px 16px 14px 6px; }
+#homeMatcha .matcha-txt .rose { font: 600 11px/1.25 var(--font-ui); letter-spacing: .15em; padding-bottom: 0; text-wrap: balance; }
+#homeMatcha .matcha-txt .rose::after { display: none; }
+#homeMatcha .matcha-txt b { font: italic 400 19px/1.15 var(--font-display); color: #3E5A3B; }
+#homeMatcha .matcha-sub { font-size: 12.5px; line-height: 1.35; max-width: none; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+#homeMatcha .matcha-go { margin-top: 6px; min-height: 38px; padding: 0 18px; font-size: 13.5px; align-self: flex-start; }
+@media (max-width: 360px) { #homeMatcha .matcha-card { grid-template-columns: 112px minmax(0, 1fr); } #homeMatcha .matcha-txt b { font-size: 17px; } }
+/* steam rising from the matcha surface (clearly visible, gentle) */
+#homeMatcha .matcha-img::before { left: 0; right: 0; top: 0; bottom: 0; height: 100%; z-index: 3; filter: blur(3.5px); mix-blend-mode: normal;
+  background:
+    radial-gradient(9% 26% at 36% 42%, #fff, rgba(255, 255, 255, 0) 74%),
+    radial-gradient(10% 30% at 46% 38%, #fff, rgba(255, 255, 255, 0) 74%),
+    radial-gradient(9% 28% at 56% 42%, #fff, rgba(255, 255, 255, 0) 74%),
+    radial-gradient(8% 24% at 64% 40%, #fff, rgba(255, 255, 255, 0) 74%);
+  animation: cmlSteamHome 3.6s ease-in-out infinite; }
+@keyframes cmlSteamHome { 0% { transform: translateY(4%) scaleX(.92); opacity: 0; } 20% { opacity: 1; } 60% { transform: translateY(-20%) scaleX(1.06) skewX(-7deg); opacity: .85; } 100% { transform: translateY(-42%) scaleX(1.16) skewX(6deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { #homeMatcha .matcha-img::before { animation: none; opacity: .6; transform: translateY(-12%); } }

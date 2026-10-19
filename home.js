@@ -248,6 +248,8 @@ function renderWeek() {
         el("span", { class: "bd-text", text: x.text }), acts));
     });
   }
+  // nothing to show (no plans, no pending votes, no birthdays): hide the card instead of an empty-looking box
+  if (!myPlans.length && !pending.length && !bdays.length) { host.hidden = true; host.replaceChildren(); return; }
   host.hidden = false;
   host.replaceChildren(
     el("div", { class: "week-head" }, el("small", { class: "rose", text: t("weekLabel") }), el("span", { class: "week-range", text: weekRange() })),
