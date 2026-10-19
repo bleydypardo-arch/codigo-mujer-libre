@@ -438,7 +438,9 @@ function renderMatchaPage() {
   const cityRow = cities.length > 1 ? el("div", { class: "chips ma-cities", role: "group", "aria-label": t("maCity") },
     ...["all", ...cities].map(c => { const b = btn(c === "all" ? t("maAllCities") : c, "chip" + (maCity === c ? " selected" : ""), () => { maCity = c; renderMatchaPage(); }); b.setAttribute("aria-pressed", String(maCity === c)); return b; })) : null;
   hero.replaceChildren(
-    el("div", { class: "ma-hero-img" + (settingUrl("matcha_image") ? " is-custom" : "") }, imgNode(matchaImage()), el("span", { class: "ma-foam", "aria-hidden": "true" })),
+    (window.CMLFeatured && window.CMLFeatured.recipeLive && window.CMLFeatured.recipeLive() && !settingUrl("matcha_image") && C.session())
+      ? el("div", { class: "ma-hero-img is-none", "aria-hidden": "true" })   // recipe of the month is on show: no second stock matcha cup
+      : el("div", { class: "ma-hero-img" + (settingUrl("matcha_image") ? " is-custom" : "") }, imgNode(matchaImage()), el("span", { class: "ma-foam", "aria-hidden": "true" })),
     el("div", { class: "ma-hero-txt" },
       el("small", { class: "rose", text: t("maKicker") }),
       el("h1", { text: t("maName") }),

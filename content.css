@@ -126,3 +126,22 @@
 .rc-card.is-flipped .rc-front { max-height: 0; min-height: 0; padding-top: 0; padding-bottom: 0; border-width: 0; overflow: hidden; box-shadow: none; }
 .rc-front { min-height: 150px; }
 .rc-cta { margin-top: 4px; }
+
+/* Recipe of the Month: clear, big, always-working buttons on both faces */
+.rc-btn { display: inline-flex; align-items: center; justify-content: center; align-self: flex-start; min-height: 46px; padding: 12px 24px; border: 0; border-radius: 999px; font: 700 15px/1 var(--font-ui, inherit); letter-spacing: .02em; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; transition: transform .15s ease, box-shadow .2s ease; }
+.rc-open-btn { margin-top: 8px; color: #fff; background: linear-gradient(135deg, #B45A7C, #8E3F66); box-shadow: 0 10px 22px -10px rgba(142, 63, 102, .7), inset 0 1px 0 rgba(255, 255, 255, .35); }
+.rc-close-btn { color: #7A3358; background: #fff; border: 2px solid #B45A7C; box-shadow: 0 6px 16px -10px rgba(142, 63, 102, .5); }
+.rc-btn:active { transform: scale(.96); }
+.rc-btn:focus-visible { outline: 3px solid var(--cml-gold, #DBC19F); outline-offset: 3px; }
+.rc-close-btn { position: sticky; top: 8px; z-index: 3; }
+.rc-front { cursor: pointer; }
+.rc-flip { display: block; width: 100%; perspective: 1400px; }
+@media (prefers-reduced-motion: no-preference) { .rc-open-btn { animation: rcNudge 2.8s ease-in-out 1.5s infinite; } }
+@keyframes rcNudge { 0%, 70%, 100% { transform: scale(1); } 80% { transform: scale(1.06); } 90% { transform: scale(1); } }
+#matcha .rc-open-btn { background: linear-gradient(135deg, #B45A7C, #8E3F66); color: #fff; }
+#matcha .rc-close-btn { color: #7A3358; }
+
+/* Matcha Corner hero without the stock cup photo (recipe of the month already shows the matcha picture) */
+#matcha .ma-hero-img.is-none { aspect-ratio: auto; min-height: 84px; max-height: 84px; background: linear-gradient(135deg, #E6EFE1 0%, #F1E7F3 100%); }
+#matcha .ma-hero-img.is-none::after { content: "🍵"; opacity: .8; font-size: 34px; }
+@media (min-width: 1024px) { #matcha .ma-hero-img.is-none { min-height: 300px; max-height: none; } }

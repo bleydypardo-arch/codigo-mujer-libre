@@ -5,12 +5,12 @@
 (function () {
 "use strict";
 let C = null, facts = [], factOffset = 0, flipped = false, dykFlipped = false;
-const ES = { rcK: "RECETA DEL MES", rcTap: "Toca para descubrir la receta", rcBack: "Toca para volver", rcOpen: "Ver receta completa",
+const ES = { rcK: "RECETA DEL MES", rcTap: "Toca para descubrir la receta", rcBack: "Toca para volver", rcOpen: "Ver receta completa", rcShow: "Ver la receta", rcHide: "Volver",
   dykK: "¿SABÍAS QUE?", dykNext: "Otro dato", dykAria: "Dato curioso",
   rcSoonT: "Muy pronto: nuestra primera receta", rcSoonP: "Cada mes compartiremos aquí una receta de matcha para disfrutar con calma.", rcSoonTag: "Muy pronto",
   dykSoon: "Muy pronto compartiremos aquí un dato curioso para ti.",
   wellReadsK: "PARA LEER", wellReadsT: "Lecturas de Bienestar", wellReadsP: "Ideas cortas sobre longevidad, alimentación, salud de la mujer y hábitos." };
-const EN = { rcK: "RECIPE OF THE MONTH", rcTap: "Tap to reveal the recipe", rcBack: "Tap to go back", rcOpen: "View the full recipe",
+const EN = { rcK: "RECIPE OF THE MONTH", rcTap: "Tap to reveal the recipe", rcBack: "Tap to go back", rcOpen: "View the full recipe", rcShow: "See the recipe", rcHide: "Back",
   dykK: "DID YOU KNOW?", dykNext: "Another one", dykAria: "Did you know",
   rcSoonT: "Coming soon: our first recipe", rcSoonP: "Every month we'll share a matcha recipe here to enjoy slowly.", rcSoonTag: "Coming soon",
   dykSoon: "Soon we'll share a fun fact here for you.",
@@ -47,26 +47,40 @@ function recipeNode() {
   const img = C.safeUrl(r.image);
   const link = C.safeUrl(r.link);
   const card = el("section", { class: "rc-card" + (flipped ? " is-flipped" : ""), "aria-label": C.t("rcK") });
-  const flip = el("button", { type: "button", class: "rc-flip", "aria-pressed": String(flipped) });
+  const flip = el("div", { class: "rc-flip" });
   const medal = medalNode();
-  const front = el("span", { class: "rc-face rc-front" },
+  const openBtn = el("button", { type: "button", class: "rc-btn rc-open-btn", "aria-expanded": String(flipped), text: C.t("rcShow") });
+  const closeBtn = el("button", { type: "button", class: "rc-btn rc-close-btn", text: "← " + C.t("rcHide") });
+  const closeBtn2 = el("button", { type: "button", class: "rc-btn rc-close-btn rc-close-bottom", text: "← " + C.t("rcHide") });
+  const front = el("div", { class: "rc-face rc-front" },
     medal,
     el("small", { class: "rc-k", text: C.t("rcK") }),
     el("b", { class: "rc-title", text: pickLang(r, "title") }),
     pickLang(r, "teaser") ? el("span", { class: "rc-teaser", text: pickLang(r, "teaser") }) : null,
-    el("span", { class: "rc-cta", text: C.t("rcTap") }));
-  const back = el("span", { class: "rc-face rc-back" },
+    openBtn);
+  const back = el("div", { class: "rc-face rc-back" },
+    closeBtn,
     img ? el("img", { class: "rc-img", src: img, alt: pickLang(r, "title"), loading: "lazy" }) : null,
     pickLang(r, "text") ? el("span", { class: "rc-text", text: pickLang(r, "text") }) : null,
-    el("span", { class: "rc-cta", text: C.t("rcBack") }));
-  flip.append(el("span", { class: "rc-inner" }, front, back));
-  flip.addEventListener("click", () => {
-    flipped = !flipped;
-    card.classList.toggle("is-flipped", flipped);
-    flip.setAttribute("aria-pressed", String(flipped));
-    front.setAttribute("aria-hidden", String(flipped)); back.setAttribute("aria-hidden", String(!flipped));
-  });
-  front.setAttribute("aria-hidden", String(flipped)); back.setAttribute("aria-hidden", String(!flipped));
+    closeBtn2);
+  flip.append(el("div", { class: "rc-inner" }, front, back));
+  const sync = on => {
+    flipped = on;
+    card.classList.toggle("is-flipped", on);
+    openBtn.setAttribute("aria-expanded", String(on));
+    front.setAttribute("aria-hidden", String(on)); back.setAttribute("aria-hidden", String(!on));
+    if ("inert" in front) { front.inert = on; back.inert = !on; }
+  };
+  const toggle = on => {
+    sync(on);
+    (on ? closeBtn : openBtn).focus({ preventScroll: true });
+    card.scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "start" });
+  };
+  openBtn.addEventListener("click", () => toggle(true));
+  front.addEventListener("click", e => { if (!e.target.closest("button")) toggle(true); });
+  closeBtn.addEventListener("click", () => toggle(false));
+  closeBtn2.addEventListener("click", () => toggle(false));
+  sync(flipped);
   card.appendChild(flip);
   if (link) card.appendChild(el("a", { class: "rc-link", href: link, target: "_blank", rel: "noopener noreferrer", text: C.t("rcOpen") + " ↗" }));
   return card;
@@ -115,7 +129,7 @@ async function loadFacts() {
 function init() {
   C = window.CML; if (!C) return;
   C.addStrings(ES, EN);
-  window.CMLFeatured = { recipeNode, paintDyk, loadFacts };
+  window.CMLFeatured = { recipeLive: () => !!recipe(), recipeNode, paintDyk, loadFacts };
   document.addEventListener("cml:session", () => { flipped = false; dykFlipped = false; factOffset = 0; loadFacts(); });
   document.addEventListener("cml:lang", paintDyk);
   document.addEventListener("cml:render", paintDyk);
