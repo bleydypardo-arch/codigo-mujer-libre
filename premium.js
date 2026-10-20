@@ -21,13 +21,14 @@ const EN = {
 };
 const t = k => { const v = C ? C.t(k) : ""; return v || k; };
 const map = () => { const d = C && C.setting(KEY); return d && typeof d === "object" ? d : {}; };
-const allOn = mod => { const a = C && C.setting("premium_all"); return a && typeof a === "object" ? a[mod] !== false : true; };
+// "For all members": Virtual Spa is open to every approved member by default; Crece & Florece stays by invitation until switched on in Admin.
+const allOn = mod => { const a = C && C.setting("premium_all"); const v = a && typeof a === "object" ? a[mod] : undefined; return v === undefined ? mod === "spa" : v !== false; };
 function can(mod) {
   try {
     const s = C && C.session && C.session(); if (!s || !s.user) return false;
     const mine = map()[s.user.id];
     if (mine && mod in mine) return !!mine[mod];     // an explicit On/Off always wins
-    return !!(C.isStaff && C.isStaff());              // no choice saved: Jazz and Amilú see them by default
+    return allOn(mod) || !!(C.isStaff && C.isStaff());   // no personal choice: follow "For all members" (Spa on by default); Jazz and Amilú always see both
   } catch { return false; }
 }
 const DEFS = {
