@@ -28,6 +28,10 @@ function can(mod) {
     const s = C && C.session && C.session(); if (!s || !s.user) return false;
     const mine = map()[s.user.id];
     if (mine && mod in mine) return !!mine[mod];     // an explicit On/Off always wins
+    if (mod === "florece" && !allOn("florece")) {      // Crece & Florece: for now only women whose profile city is Bogotá (staff always)
+      const pr = C.profile && C.profile(), ck = C.cityKey || (v => String(v || "").toLowerCase());
+      if (pr && ck(pr.city) === "bogota") return true;
+    }
     return allOn(mod) || !!(C.isStaff && C.isStaff());   // no personal choice: follow "For all members" (Spa on by default); Jazz and Amilú always see both
   } catch { return false; }
 }
