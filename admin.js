@@ -310,6 +310,8 @@ document.addEventListener("cml:session", event => {
   if (event.detail.staff) { tab = "plans"; editing = null; render(); }
   else if (root()) root().replaceChildren();
 });
+Object.assign(S.es, { waFilter: "💬 Con WhatsApp", waRowNo: "Prefiere no recibir WhatsApp", waRowUnknown: "WhatsApp sin confirmar (se registró antes de la pregunta)" });
+Object.assign(S.en, { waFilter: "💬 With WhatsApp", waRowNo: "Prefers no WhatsApp", waRowUnknown: "WhatsApp not confirmed (joined before the question)" });
 document.addEventListener("cml:lang", () => { if (window.CML && window.CML.isStaff()) { C = window.CML; render(); } });
 
 function toast(text) {
@@ -1047,12 +1049,12 @@ async function usersView() {
     return b;
   };
   wrap.appendChild(el("div", { class: "admin-bar" }, el("b", { text: a("userCount")(data.length) })));
-  wrap.appendChild(el("div", { class: "chips member-filters", role: "group" }, chip("requests", a("f_requests"), requests.length), chip("members", a("f_members")), chip("all", a("f_all"))));
+  wrap.appendChild(el("div", { class: "chips member-filters", role: "group" }, chip("requests", a("f_requests"), requests.length), chip("members", a("f_members")), chip("wa", a("waFilter")), chip("all", a("f_all"))));
   wrap.appendChild(search);
   wrap.appendChild(list);
   const paint = () => {
     const q = search.value.trim().toLowerCase();
-    const shown = data.filter(u => usersFilter === "requests" ? isRequest(u) : usersFilter === "members" ? (u.approved || u.role !== "member") : true)
+    const shown = data.filter(u => usersFilter === "requests" ? isRequest(u) : usersFilter === "members" ? (u.approved || u.role !== "member") : usersFilter === "wa" ? (u.approved && u.role === "member" && u.whatsapp === true && waDigits(u.phone).length >= 7) : true)
       .filter(u => !q || [u.first_name, u.last_name, u.email, u.company, u.city, u.phone].join(" ").toLowerCase().includes(q));
     if (!shown.length) { list.replaceChildren(el("p", { class: "small-note empty-requests", text: usersFilter === "requests" ? a("noRequests") : a("empty") })); return; }
     list.replaceChildren(...shown.map(u => {
@@ -1066,6 +1068,12 @@ async function usersView() {
           el("span", { class: "mc-badges" },
             el("span", { class: "badge" + (u.role !== "member" ? " live" : ""), text: a("role")[u.role] || u.role }),
             u.role === "member" ? el("span", { class: "badge" + (u.approved ? " live" : "") + (req ? " pending" : ""), text: " " + (u.approved ? a("approvedBadge") : (u.rejected ? a("rejectedBadge") : a("pendingBadge"))) }) : null)));
+      if (u.approved && u.role === "member") {   // WhatsApp straight on her card (only if she said yes)
+        const wd = waDigits(u.phone);
+        item.appendChild(u.whatsapp === true && wd.length >= 7
+          ? el("div", { class: "actions" }, el("a", { class: "app-wa", href: "https://wa.me/" + wd, target: "_blank", rel: "noopener noreferrer", text: "💬 " + a("appWa") }))
+          : el("small", { class: "app-nowa", text: a(u.whatsapp === false ? "waRowNo" : "waRowUnknown") }));
+      }
       const { box, hasAnswers } = applicationNode(u);
       if (req) item.appendChild(box);
       else if (hasAnswers) {
