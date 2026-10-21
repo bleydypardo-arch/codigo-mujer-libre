@@ -989,10 +989,18 @@ const WELCOME = {
   en: (n, url) => "Hi " + n + " 💛🌸 You've been approved for Código Mujer Libre! Welcome to the community.\n\nLog in here with the email and password you created when you signed up:\n" + url + "\n\nSave this link or add it to your phone's home screen to get in quickly. If you have any questions, message me here.\n— Código Mujer Libre"
 };
 // WhatsApp needs the country code. A "+" number is used as typed; a 10-digit number is assumed to be US (+1).
-function waDigits(phone) {
-  const raw = String(phone || "").trim(), d = raw.replace(/\D/g, "");
+function waDigits(phone, city) {
+  const raw = String(phone || "").trim();
+  let d = raw.replace(/\D/g, "");
   if (raw.startsWith("+")) return d;
-  return d.length === 10 ? "1" + d : d;
+  if (raw.startsWith("00")) return d.replace(/^00/, "");
+  let cc = "";
+  try { cc = C.cityCountry ? C.cityCountry(C.cityKey(city)) : ""; } catch { cc = ""; }
+  d = d.replace(/^0+/, "");
+  if (cc === "ES" && d.length === 9) return "34" + d;    // Spain: 9-digit numbers
+  if (cc === "CO" && d.length === 10) return "57" + d;   // Colombia: 10-digit mobiles
+  if (d.length === 9 && /^[67]/.test(d)) return "34" + d; // a 9-digit mobile starting 6 or 7 is a Spanish number (US numbers have 10 digits)
+  return d.length === 10 ? "1" + d : d;                  // otherwise a 10-digit number is assumed to be US (+1)
 }
 // Approval email (Resend, via the "send-approval-email" Edge Function). Best effort: approving never depends on it.
 async function sendApprovalEmail(id, force) {
@@ -1002,7 +1010,7 @@ async function sendApprovalEmail(id, force) {
   } catch (e) { return false; }
 }
 function welcomeLink(u) {
-  const d = waDigits(u.phone);
+  const d = waDigits(u.phone, u.city);
   if (u.whatsapp !== true || d.length < 7) return null;
   const lang = u.application && u.application.lang === "en" ? "en" : "es";
   const url = window.location.origin + window.location.pathname;
@@ -1014,7 +1022,7 @@ function applicationNode(u) {
   const rows = [];
   const row = (label, ...val) => rows.push(el("dt", { text: label }), el("dd", {}, ...val));
   if (u.phone) {
-    const digits = String(u.phone).replace(/\D/g, "");
+    const digits = waDigits(u.phone, u.city);
     row(a("appPhone"), el("span", { text: u.phone }),
       u.whatsapp === true && digits.length >= 7 ? el("a", { class: "app-wa", href: "https://wa.me/" + digits, target: "_blank", rel: "noopener noreferrer", text: "💬 " + a("appWa") })
         : u.whatsapp === false ? el("small", { class: "app-nowa", text: a("appNoWa") }) : null);
@@ -1054,7 +1062,7 @@ async function usersView() {
   wrap.appendChild(list);
   const paint = () => {
     const q = search.value.trim().toLowerCase();
-    const shown = data.filter(u => usersFilter === "requests" ? isRequest(u) : usersFilter === "members" ? (u.approved || u.role !== "member") : usersFilter === "wa" ? (u.approved && u.role === "member" && u.whatsapp === true && waDigits(u.phone).length >= 7) : true)
+    const shown = data.filter(u => usersFilter === "requests" ? isRequest(u) : usersFilter === "members" ? (u.approved || u.role !== "member") : usersFilter === "wa" ? (u.approved && u.role === "member" && u.whatsapp === true && waDigits(u.phone, u.city).length >= 7) : true)
       .filter(u => !q || [u.first_name, u.last_name, u.email, u.company, u.city, u.phone].join(" ").toLowerCase().includes(q));
     if (!shown.length) { list.replaceChildren(el("p", { class: "small-note empty-requests", text: usersFilter === "requests" ? a("noRequests") : a("empty") })); return; }
     list.replaceChildren(...shown.map(u => {
@@ -1069,7 +1077,7 @@ async function usersView() {
             el("span", { class: "badge" + (u.role !== "member" ? " live" : ""), text: a("role")[u.role] || u.role }),
             u.role === "member" ? el("span", { class: "badge" + (u.approved ? " live" : "") + (req ? " pending" : ""), text: " " + (u.approved ? a("approvedBadge") : (u.rejected ? a("rejectedBadge") : a("pendingBadge"))) }) : null)));
       if (u.approved && u.role === "member") {   // WhatsApp straight on her card (only if she said yes)
-        const wd = waDigits(u.phone);
+        const wd = waDigits(u.phone, u.city);
         item.appendChild(u.whatsapp === true && wd.length >= 7
           ? el("div", { class: "actions" }, el("a", { class: "app-wa", href: "https://wa.me/" + wd, target: "_blank", rel: "noopener noreferrer", text: "💬 " + a("appWa") }))
           : el("small", { class: "app-nowa", text: a(u.whatsapp === false ? "waRowNo" : "waRowUnknown") }));
