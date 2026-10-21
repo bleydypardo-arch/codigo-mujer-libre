@@ -29,6 +29,11 @@
 @media (min-width:900px){
   .ev-cols{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
   .ev-col-h{display:none}
+  /* a type with nothing in it leaves its slot empty: each list stays under its own tile */
+  .ev-col[data-cat=social]{grid-column:1}
+  .ev-col[data-cat=dining]{grid-column:2}
+  .ev-col[data-cat=wellness]{grid-column:3}
+  .ev-col[data-cat]{grid-row:1}
 }
 
 /* Bienestar page hero: balanced two-line title */

@@ -1062,6 +1062,8 @@ function avatarStack(planId, max = 4) {
   row.appendChild(el("span", { class: "ev-going", text: (extra && shown.length ? "+" + extra + " · " : "") + (c.going ? tf("goingCount", c.going) : t("firstToGo")) }));
   return row;
 }
+// Photo-less place: the picture follows its TYPE (a restaurant gets a plate, not the toast of Happy hour).
+const placeEmoji = p => { const c = planTag(p.id).cat; return p.kind === "event" && !p.event_date && c === "dining" ? "🍽️" : emojiOfCode(p.code); };
 function eventMedia(p, cls) {
   // One post feeds the thumbnail and the detail hero: the main image, else the first gallery photo.
   let image = safeUrl(p.image_url);
@@ -1073,9 +1075,9 @@ function eventMedia(p, cls) {
     img.addEventListener("error", () => {
       // Many restaurant sites block other sites from showing their photos: retry once through a free image relay before giving up.
       if (!img.dataset.relay && /^https?:/i.test(image)) { img.dataset.relay = "1"; img.src = "https://wsrv.nl/?url=" + encodeURIComponent(image.replace(/^https?:\/\//i, "")) + "&w=800&output=jpg"; return; }
-      img.remove(); box.classList.add("ev-ph", "is-broken", toneOf(p.code)); box.classList.remove("is-full"); box.dataset.img = "broken"; box.prepend(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) })); });
+      img.remove(); box.classList.add("ev-ph", "is-broken", toneOf(p.code)); box.classList.remove("is-full"); box.dataset.img = "broken"; box.prepend(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: placeEmoji(p) })); });
     box.appendChild(img);
-  } else box.appendChild(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: emojiOfCode(p.code) }));
+  } else box.appendChild(el("span", { class: "ev-ph-emoji", "aria-hidden": "true", text: placeEmoji(p) }));
   if (p.code && codeLabels[p.code]) box.appendChild(el("span", { class: "ev-badge", text: t(codeLabels[p.code]) }));
   return box;
 }
