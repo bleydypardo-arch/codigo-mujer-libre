@@ -614,6 +614,9 @@ async function importTab() {
     ids.forEach(id => { const tg = {}; if (type !== "wellness") tg.cat = type; else tg.cat = "spa"; if (city) tg.show = city; all[id] = tg; });
     const w = await C.db.from("settings").upsert({ key: "plan_tags", value: all, updated_at: new Date().toISOString() }, { onConflict: "key" });
     if (w.error) throw w.error;
+    const back = await C.db.from("settings").select("value").eq("key", "plan_tags").maybeSingle();   // make sure the type really got saved
+    const got = (back.data && back.data.value) || {};
+    if (back.error || ids.some(id => !got[id] || got[id].cat !== (type !== "wellness" ? type : "spa"))) throw new Error("tags not saved");
     lastImport = { ids, published: publish };   // set BEFORE refreshing: the refresh re-draws this tab
     await C.refreshPublic();
     return ids;
@@ -672,6 +675,33 @@ async function importTab() {
     K.toast("Publicados: " + ids.length);
     pubOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + ids.length + " lugares de " + city + " publicados." }));
   };
+  // ---- Change the type of places already created (e.g. loaded as Happy hour by mistake) ----
+  const rtCity = el("select", {}, ...C.cities().map(c => el("option", { value: c.name, text: c.name })));
+  if (cv) rtCity.value = cv;
+  const rtTo = el("select", {}, el("option", { value: "dining", text: "Restaurantes y comida" }), el("option", { value: "social", text: "Happy hours y social" }), el("option", { value: "spa", text: "Bienestar (spa)" }));
+  const rtText = el("input", { type: "text", placeholder: "Opcional: texto que aparece en la dirección, ej. España" });
+  const guessTxt = () => { let cc = ""; try { cc = C.cityCountry ? C.cityCountry(C.cityKey(rtCity.value)) : ""; } catch { cc = ""; } rtText.value = cc === "ES" ? "España" : ""; };   // finds places whose type tag got lost, by the country written in their address
+  guessTxt(); rtCity.addEventListener("change", guessTxt);
+  const rtFb = feedbackNode(), rtOut = el("div", {});
+  const rtRun = async () => {
+    say(rtFb, ""); rtOut.replaceChildren();
+    const city = rtCity.value, to = rtTo.value, txt = rtText.value.trim().toLowerCase(); if (!city) return;
+    const tg = await C.db.from("settings").select("value").eq("key", "plan_tags").maybeSingle(); if (tg.error) return say(rtFb, tx("saveFail"));
+    const tags = Object.assign({}, (tg.data && tg.data.value) || {});
+    const pl = await C.db.from("plans").select("id,title_es,location,kind,event_date"); if (pl.error) return say(rtFb, tx("saveFail"));
+    const hit = (pl.data || []).filter(x => x.kind === "event" && !x.event_date && ((tags[x.id] && tags[x.id].show === city) || (txt && String(x.location || "").toLowerCase().includes(txt))) && !(tags[x.id] && tags[x.id].cat === to));
+    if (!hit.length) return say(rtFb, "No hay lugares para cambiar en " + city + ".");
+    if (!await confirmed("¿Cambiar " + hit.length + " lugares de " + city + " a «" + rtTo.selectedOptions[0].text + "»?")) return;
+    try {
+      hit.forEach(x => { tags[x.id] = Object.assign({}, tags[x.id] || {}, { cat: to, show: city }); });
+      const kind = to === "spa" ? "wellness" : "event";
+      const u = await C.db.from("plans").update({ kind, code: to === "spa" ? "Wellness" : "Social" }).in("id", hit.map(x => x.id)); if (u.error) throw u.error;
+      const w = await C.db.from("settings").upsert({ key: "plan_tags", value: tags, updated_at: new Date().toISOString() }, { onConflict: "key" }); if (w.error) throw w.error;
+      await C.refreshPublic();
+    } catch (e) { console.error(e); return say(rtFb, tx("saveFail")); }
+    K.toast("Cambiados: " + hit.length);
+    rtOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + hit.length + " lugares de " + city + " ahora están en «" + rtTo.selectedOptions[0].text + "»." }), el("ul", { class: "small-note" }, ...hit.slice(0, 60).map(x => el("li", { text: x.title_es }))));
+  };
   // ---- Photo check: reads every place's saved photo link and tests whether the browser can really show it ----
   const chkOut = el("div", {}), chkFb = feedbackNode();
   const chkRun = async e0 => {
@@ -694,6 +724,11 @@ async function importTab() {
     btn.disabled = false;
   };
   return el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("impIntro") }),
+    el("hr", {}),
+    el("h3", { text: "Cambiar el tipo de lugares ya creados" }),
+    el("p", { class: "small-note", text: "Si cargaste una lista con el tipo equivocado (por ejemplo restaurantes que salieron en Happy hour), elige la ciudad y el tipo correcto y toca el botón. Cambia todos los lugares sin fecha de esa ciudad de una vez." }),
+    field("Ciudad", rtCity), field("Pasar a", rtTo), field("Dirección contiene", rtText), rtFb, el("div", { class: "admin-bar" }, K.button("Cambiar el tipo de estos lugares", "primary", rtRun)), rtOut,
+    el("hr", {}),
     el("h3", { text: "Revisar las fotos guardadas" }),
     el("p", { class: "small-note", text: "Cuenta cuántos lugares tienen foto guardada y prueba si cada foto realmente se puede mostrar en la app." }),
     chkFb, el("div", { class: "admin-bar" }, K.button("Revisar las fotos ahora", "secondary", chkRun)), chkOut,
