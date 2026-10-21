@@ -52,7 +52,7 @@ const S = {
     fDescEs: "Descripción (español)", fDescEn: "Descripción (inglés)", fShortEs: "Descripción corta (español)", fShortEn: "Descripción corta (inglés)", fDate: "Fecha", fDateHelp: "El mes se calcula solo a partir de la fecha. Déjala vacía si aún no hay fecha.", aiToWeekend: "Agregar a ideas de fin de semana", fDateWeekend: "Fin de semana (fecha del sábado; se oculta sola al pasar)",
     fTime: "Hora (ej. 7:00 PM)", fDateText: "Fechas tentativas (ej. mayo, o 15–17 de mayo)", fLocationEvent: "Lugar", fLocationTrip: "Destino",
     fPriceEvent: "Precio aproximado", fPriceTrip: "Precio total", fUrl: "Enlace externo (https://…)", fDetails: "Más detalles / contacto",
-    fImage: "Imagen", fImageUrl: "o pega la dirección de una imagen", uploading: "Subiendo imagen…", imageFail: "No se pudo subir la imagen (usa JPG, PNG o WebP).",
+    fImage: "Imagen", fImageUrl: "o pega la dirección de una imagen", uploading: "Subiendo imagen…", imageFail: "No se pudo subir la imagen (usa JPG, PNG o WebP).", imgType: "Ese archivo no es una imagen JPG, PNG o WebP (los PDF y las fotos HEIC no sirven). Guárdala como JPG o PNG, o toma una captura de pantalla, y vuelve a elegirla.", imgDecode: "No se pudo abrir esa imagen. Toma una captura de pantalla del afiche o guárdala como JPG o PNG y vuelve a elegirla.", imgPerm: "Tu sesión no tiene permiso para subir fotos. Sal de la app, entra de nuevo y vuelve a intentar.", imgNet: "No hubo conexión con el servidor. Revisa tu internet y vuelve a intentar.",
     fPublished: "Publicado (visible para las mujeres)", save: "Guardar", cancel: "Cancelar",
     needTitle: "Escribe un título (en español o en inglés).", badUrl: "El enlace debe empezar con https:// o http://",
     aiBanner: "✨ Preparado por IA a partir de resultados de búsqueda. Verifica fecha, hora, lugar, precio y enlace en la fuente antes de publicar.",
@@ -120,7 +120,7 @@ const S = {
     fDescEs: "Description (Spanish)", fDescEn: "Description (English)", fShortEs: "Short description (Spanish)", fShortEn: "Short description (English)", fDate: "Date", fDateHelp: "The month is worked out from the date. Leave empty if there is no date yet.", aiToWeekend: "Add to weekend ideas", fDateWeekend: "Weekend (Saturday's date; hides itself afterwards)",
     fTime: "Time (e.g. 7:00 PM)", fDateText: "Tentative dates (e.g. May, or May 15–17)", fLocationEvent: "Location", fLocationTrip: "Destination",
     fPriceEvent: "Approximate price", fPriceTrip: "Total price", fUrl: "External link (https://…)", fDetails: "More details / contact",
-    fImage: "Image", fImageUrl: "or paste an image address", uploading: "Uploading image…", imageFail: "Could not upload the image (use JPG, PNG or WebP).",
+    fImage: "Image", fImageUrl: "or paste an image address", uploading: "Uploading image…", imageFail: "Could not upload the image (use JPG, PNG or WebP).", imgType: "That file is not a JPG, PNG or WebP image (PDF and HEIC photos do not work). Save it as JPG or PNG, or take a screenshot, and choose it again.", imgDecode: "That image could not be opened. Take a screenshot of the poster or save it as JPG or PNG and choose it again.", imgPerm: "Your session is not allowed to upload photos. Sign out, sign in again and retry.", imgNet: "Could not reach the server. Check your internet and try again.",
     fPublished: "Published (visible to members)", save: "Save", cancel: "Cancel",
     needTitle: "Enter a title (Spanish or English).", badUrl: "The link must start with https:// or http://",
     aiBanner: "✨ Prepared by AI from search results. Check the date, time, place, price and link at the source before publishing.",
@@ -544,12 +544,20 @@ function planItem(kind, row, c, memIds) {
 
 // ---------- image upload (resized in the browser, stored in Supabase Storage) ----------
 async function resizeToJpeg(file, max = 1600) {
-  if (!/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error("type");
-  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
-  const scale = Math.min(1, max / Math.max(bitmap.width, bitmap.height));
+  if (file.type && !/^image\//.test(file.type)) throw new Error("type");   // empty type (some Android pickers) is tried anyway; anything the browser can open is re-saved as JPEG
+  let bitmap;
+  try { bitmap = await createImageBitmap(file, { imageOrientation: "from-image" }); }
+  catch {
+    try {   // older phones: decode through an <img>
+      const u = URL.createObjectURL(file);
+      bitmap = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error("decode")); im.src = u; });
+    } catch { throw new Error("decode"); }
+  }
+  const scale = Math.min(1, max / Math.max(bitmap.naturalWidth || bitmap.width, bitmap.naturalHeight || bitmap.height));
   const canvas = document.createElement("canvas");
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
+  const bw = bitmap.naturalWidth || bitmap.width, bh = bitmap.naturalHeight || bitmap.height;
+  canvas.width = Math.round(bw * scale);
+  canvas.height = Math.round(bh * scale);
   const ctx = canvas.getContext("2d");
   ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
@@ -566,7 +574,7 @@ function imagePicker(initial) {
   const urlInput = el("input", { type: "url", placeholder: "https://…", value: initial || "", inputmode: "url" });
   const preview = el("img", { class: "preview", alt: "" });
   const status = el("p", { class: "small-note", role: "status" });
-  const fileInput = el("input", { type: "file", accept: "image/jpeg,image/png,image/webp" });
+  const fileInput = el("input", { type: "file", accept: "image/*" });
   const sync = () => {
     const safe = C.safeUrl(urlInput.value);
     if (safe) { preview.src = safe; preview.hidden = false; } else { preview.removeAttribute("src"); preview.hidden = true; }
@@ -577,7 +585,11 @@ function imagePicker(initial) {
     if (!file) return;
     status.textContent = a("uploading");
     try { urlInput.value = await uploadImage(file); status.textContent = ""; sync(); }
-    catch (e) { console.error(e); status.textContent = a("imageFail"); }
+    catch (e) {
+      console.error(e);
+      const m = String((e && e.message) || ""), code = e && (e.statusCode || e.status);
+      status.textContent = a(m === "type" ? "imgType" : m === "decode" ? "imgDecode" : (code == 401 || code == 403 || /row-level|policy|jwt/i.test(m)) ? "imgPerm" : /fetch|network/i.test(m) ? "imgNet" : "imageFail");
+    }
   });
   sync();
   const clear = button(a("imgRemove"), "link-btn img-remove", () => { urlInput.value = ""; sync(); });
