@@ -104,3 +104,9 @@
 .home-upcoming .ali{flex:0 0 min(326px,86%);scroll-snap-align:start}
 @media (min-width:900px){.home-upcoming .ali{flex:none}}
 .ali-dots{position:relative;z-index:4}
+
+/* Aliadas carousel: every slide keeps the same size as the tallest one, so the card never looks smaller */
+.ali-slide{display:flex}
+.ali-slide > .ev-card{flex:1 1 auto;width:100%;height:100%}
+.home-upcoming .ali,.home-upcoming .ali-stack{align-self:stretch}
+.ali-stack{flex:1 1 auto}

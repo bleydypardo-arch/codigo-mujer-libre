@@ -165,9 +165,9 @@ function renderWellness() {
   }
   const shown = items.filter(p => wcat === "all" || C.planTag(p.id).cat === wcat)
     .sort((a, b) => (C.planTag(b.id).featured ? 1 : 0) - (C.planTag(a.id).featured ? 1 : 0));
-  const vis = wAll ? shown : shown.slice(0, 3);
+  const vis = wAll ? shown : shown.slice(0, shown.length >= 4 ? 4 : 3);   // 4 (or 2) cards in two columns: no empty gap
   if (shown.length) nodes.push(el("div", { class: "wd-list" }, ...vis.map(wellCard)),
-    ...(shown.length > 3 ? [btn(wAll ? t("wdLess") : t("wdSeeAll") + " (" + shown.length + ") →", "link-btn wd-all", () => { wAll = !wAll; renderWellness(); })] : []),
+    ...(shown.length > vis.length || wAll ? [btn(wAll ? t("wdLess") : t("wdSeeAll") + " (" + shown.length + ") →", "link-btn wd-all", () => { wAll = !wAll; renderWellness(); })] : []),
     btn(t("wdRecommend"), "link-btn wd-recommend", () => C.openModal("idea")));   // always reachable, not only when the list is empty
   else nodes.push(emptyBox("🌿", t("wdEmptyTitle"), t("wdEmptyText"), btn(t("wdRecommend"), "secondary", () => C.openModal("idea"))));
   host.hidden = false;

@@ -201,3 +201,6 @@
   animation: cmlSteamHome 3.6s ease-in-out infinite; }
 @keyframes cmlSteamHome { 0% { transform: translateY(4%) scaleX(.92); opacity: 0; } 20% { opacity: 1; } 60% { transform: translateY(-20%) scaleX(1.06) skewX(-7deg); opacity: .85; } 100% { transform: translateY(-42%) scaleX(1.16) skewX(6deg); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { #homeMatcha .matcha-img::before { animation: none; opacity: .6; transform: translateY(-12%); } }
+
+/* Odd last card sits centred under the pair (no empty gap) */
+#wellDiscover .wd-list > :last-child:nth-child(odd):not(:only-child){grid-column:1/-1;justify-self:center;box-sizing:border-box;width:calc(50% - 6px)}
