@@ -29,6 +29,7 @@ const T = {
     cmEs: "Español", cmEn: "English", cmReset: "Volver a las frases originales",
     podIntro: "Podcast «Entre Nosotras». Cada episodio vive en YouTube: pega aquí el enlace. Las integrantes lo ven en Inicio (el próximo o el más reciente) y en Bienestar (todos, con filtro por tema).", podNew: "+ Nuevo episodio", podTitle: "Título del episodio", podDesc: "Descripción corta (opcional)", podTopic: "Tema", podDate: "Fecha y día de estreno", podTime: "Hora (opcional)", podUrl: "Enlace de YouTube del episodio", podTeaser: "Enlace del adelanto de 15 segundos (opcional)", podPub: "Publicado (visible para las integrantes)", podRemove: "Quitar episodio", podBadUrl: "El enlace debe ser de YouTube.", podNeed: "Para publicar, completa el título en español e inglés, la fecha y el enlace de YouTube.", podEmpty: "Todavía no hay episodios. Toca «Nuevo episodio».", podEp: n => "Episodio " + n,
     helpIntro: "Los botones grandes de ayuda al final de la página de Apoyo. Cada ciudad tiene los suyos. Escribe el número y el nombre en español e inglés (hasta 4). Si dejas una ciudad vacía, se usan los números oficiales que ya vienen cargados (en gris). Verifica siempre cada número antes de guardarlo.",
+    tInterest: "Interés", intTitle: "Lista de espera y toques (últimos 30 días)", intWait: "Mujeres en la lista de Esencias", intVotes: "Aroma que quieren primero", intTaps: "Toques en promociones", intNone: "Todavía no hay datos.", intFail: "No se pudo leer. ¿Ya corriste el paso de Supabase (migration_interest)?", intTimes: "toques",
     tCityList: "Mis ciudades", cityIntro: "Estas son las ciudades de la app: aparecen en el registro, en el botón de ciudad y al etiquetar contenido. Agrega la ciudad nueva, elige su país y guarda. Las líneas de ayuda de cada ciudad se editan en \"Líneas de ayuda\".", cityName: "Ciudad", cityCountry: "País", cityCO: "Colombia", cityUS: "Estados Unidos", cityOther: "Otro país", cityES: "España", cityAdd: "+ Agregar ciudad", cityRemove: "Quitar", cityNone: "Deja al menos una ciudad.", cityDefault: "Volver a la lista original", cityPh: "Ej.: Cali",
     tFounder: "Mi bienvenida", founderIntro: "Este mensaje lo ve cada mujer, con tu foto, la primera vez que entra a la app. Cámbialo cuando quieras.", founderName: "Tu nombre", founderEs: "Mensaje en español", founderEn: "Mensaje en inglés", founderReset: "Volver al mensaje original", founderPreview: "Ver cómo se ve la bienvenida",
     tTalkLib: "Hablemos: frases (lista)", talkLibIntro: "Pega aquí todas las frases de Hablemos, una por línea, así: Título ES | Pregunta ES | Title EN | Question EN. Rotan solas, una nueva cada 2 días. Si en inglés dejas vacío, se muestra el español. La pestaña \"Hablemos\" sigue sirviendo para fijar una pregunta especial por encima de la lista.", talkLibCount: n => n + " frases guardadas", talkLibBad: n => "Línea " + n + ": faltan el título o la pregunta en español.", talkLibClear: "Borrar la lista",
@@ -61,6 +62,7 @@ const T = {
     cmEs: "Español", cmEn: "English", cmReset: "Back to the original phrases",
     podIntro: "“Entre Nosotras” podcast. Every episode lives on YouTube: paste its link here. Members see it on Home (the next or latest one) and in Wellness (all of them, filtered by topic).", podNew: "+ New episode", podTitle: "Episode title", podDesc: "Short description (optional)", podTopic: "Topic", podDate: "Release date", podTime: "Time (optional)", podUrl: "YouTube link of the episode", podTeaser: "Link to the 15-second teaser (optional)", podPub: "Published (visible to members)", podRemove: "Remove episode", podBadUrl: "The link must be a YouTube link.", podNeed: "To publish, complete the title in Spanish and English, the date and the YouTube link.", podEmpty: "No episodes yet. Tap “New episode”.", podEp: n => "Episode " + n,
     helpIntro: "The big help buttons at the bottom of the Support page. Each city has its own. Type the number and the name in Spanish and English (up to 4). If a city is left empty, the built-in official numbers are used (shown in grey). Always verify each number before saving.",
+    tInterest: "Interest", intTitle: "Waitlist and taps (last 30 days)", intWait: "Women on the Essences list", intVotes: "Scent they want first", intTaps: "Promo taps", intNone: "No data yet.", intFail: "Could not read. Did you run the Supabase step (migration_interest)?", intTimes: "taps",
     tCityList: "My cities", cityIntro: "These are the app's cities: they appear at sign-up, in the city button and when tagging content. Add the new city, choose its country and save. Each city's help lines are edited in \"Help lines\".", cityName: "City", cityCountry: "Country", cityCO: "Colombia", cityUS: "United States", cityOther: "Other country", cityES: "Spain", cityAdd: "+ Add city", cityRemove: "Remove", cityNone: "Keep at least one city.", cityDefault: "Back to the original list", cityPh: "E.g.: Cali",
     tFounder: "My welcome", founderIntro: "Every woman sees this message, with your photo, the first time she enters the app. Change it whenever you like.", founderName: "Your name", founderEs: "Message in Spanish", founderEn: "Message in English", founderReset: "Back to the original message", founderPreview: "See how the welcome looks",
     tTalkLib: "Let's Talk: phrases (list)", talkLibIntro: "Paste all the Let's Talk phrases here, one per line: Title ES | Question ES | Title EN | Question EN. They rotate on their own, a new one every 2 days. If English is left empty, Spanish is shown. The \"Let's Talk\" tab can still pin one special question above the list.", talkLibCount: n => n + " phrases saved", talkLibBad: n => "Line " + n + ": the Spanish title or question is missing.", talkLibClear: "Clear the list",
@@ -747,6 +749,23 @@ async function importTab() {
 }
 
 // ----- City list (settings.cities = [{name, country}]) -----
+async function interestTab() {
+  const box = el("div", { class: "admin-form" }, el("h3", { text: tx("intTitle") }));
+  const r = await C.db.from("interest_log").select("kind,ref,created_at").gte("created_at", new Date(Date.now() - 30 * 864e5).toISOString()).limit(5000);
+  if (r.error) { box.append(el("p", { class: "small-note", text: tx("intFail") })); return box; }
+  const rows = r.data || [], waits = rows.filter(x => x.kind === "essences_waitlist"), taps = rows.filter(x => x.kind === "promo_tap");
+  const count = (list) => { const m = {}; list.forEach(x => { m[x.ref] = (m[x.ref] || 0) + 1; }); return Object.entries(m).sort((a, b) => b[1] - a[1]); };
+  const plans = (C.homeData && C.homeData().plans) || [];
+  const nameOf = id => { const p = plans.find(q => String(q.id) === String(id)); return p ? (p.title || id) : id; };
+  box.append(el("p", { text: tx("intWait") + ": " + waits.length }), el("h4", { text: tx("intVotes") }));
+  const v = count(waits); if (!v.length) box.append(el("p", { class: "small-note", text: tx("intNone") }));
+  v.forEach(([k, n]) => box.append(el("p", { text: k + ": " + n })));
+  box.append(el("h4", { text: tx("intTaps") }));
+  const t = count(taps); if (!t.length) box.append(el("p", { class: "small-note", text: tx("intNone") }));
+  t.forEach(([k, n]) => box.append(el("p", { text: nameOf(k) + ": " + n + " " + tx("intTimes") })));
+  return box;
+}
+
 async function cityListTab() {
   const saved = (await settingsMap()).cities;
   let list = (Array.isArray(saved) && saved.length ? saved : C.cities()).map(c => ({ name: c.name, country: c.country || "" }));
@@ -797,6 +816,7 @@ function init() {
   A.registerTab("founder", { group: "people", label: lab(T.es.tFounder, T.en.tFounder), render: async () => founderTab() });
   A.registerTab("talkLib", { group: "content", label: lab(T.es.tTalkLib, T.en.tTalkLib), render: async () => talkLibTab() });
   A.registerTab("import", { group: "content", label: lab(T.es.tImport, T.en.tImport), render: async () => importTab() });
+  A.registerTab("interest", { group: "content", label: lab(T.es.tInterest, T.en.tInterest), render: async () => interestTab() });
   A.registerTab("cityList", { group: "content", label: lab(T.es.tCityList, T.en.tCityList), render: async () => cityListTab() });
   A.registerTab("help", { group: "content", label: lab(T.es.tHelp, T.en.tHelp), render: async () => helpTab() });
   A.registerTab("travelx", { group: "content", label: lab(T.es.tTravel, T.en.tTravel), render: async () => travelTab() });

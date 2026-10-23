@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  upcomingTitle: "Eventos Especiales", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
+  upcomingTitle: "Eventos Especiales", allyTag: "Aliada", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  upcomingTitle: "Special Events", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
+  upcomingTitle: "Special Events", allyTag: "Partner", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -1093,7 +1093,7 @@ function eventCard(p, mini) {
   const title = pick(p, "title");
   body.appendChild(el("h2", { class: "ev-title", text: title || "—" }));
   // A fixed place (restaurant, happy hour, spa) has no date and nothing to RSVP to: show where it is and how to get there.
-  const isPlace = p.kind === "event" && !p.event_date && ["dining", "social", "spa"].includes(planTag(p.id).cat);
+  const isPlace = (p.kind === "event" || (p.kind === "wellness" && planTag(p.id).cat === "spa")) && !p.event_date && ["dining", "social", "spa"].includes(planTag(p.id).cat);
   if (isPlace) {
     const bdg = media.querySelector(".ev-badge"); if (bdg) bdg.remove();
     card.classList.add("ev-place");
@@ -1104,6 +1104,7 @@ function eventCard(p, mini) {
     const murl = safeUrl(p.url);
     if (p.location) acts.appendChild(el("a", { class: "place-btn", href: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent((title || "") + " " + p.location), target: "_blank", rel: "noopener noreferrer", text: t("viewOnMap") + " ↗" }));
     if (murl) acts.appendChild(el("a", { class: "place-btn alt", href: murl, target: "_blank", rel: "noopener noreferrer", text: t("moreInfo") + " ↗" }));
+    if (pr) acts.querySelectorAll("a").forEach(x => x.addEventListener("click", () => logInterest("promo_tap", p.id)));   // counts taps on a promotion, so a business can see results
     if (acts.children.length) body.appendChild(acts);
   } else {
   body.appendChild(el("p", { class: "ev-when", text: "📅 " + shortWhen(p) }));
@@ -1363,6 +1364,29 @@ window.cmlSecHead = function (icon, tone, title, sub, allBtn) {
   return el("div", { class: "sec-head" }, ic,
     el("div", { class: "sec-tx" }, h, el("small", { class: "sec-sub", text: sub })), allBtn);
 };
+const ALLY_CAP = 5;   // promotions shown at once in the first window (the admin also stops a 6th one)
+let allyTimer = 0;
+function alliesCarousel(list, isPromo) {
+  clearInterval(allyTimer);
+  const slides = list.map(p => {
+    const sp = el("div", { class: "ali-slide" }, eventCard(p, true));
+    if (isPromo(p)) sp.appendChild(el("span", { class: "ali-tag", text: t("allyTag") }));
+    return sp;
+  });
+  if (slides.length === 1) { slides[0].classList.add("on"); return el("div", { class: "ali" }, el("div", { class: "ali-stack" }, slides[0])); }
+  const dots = list.map((_, i) => { const b = el("button", { type: "button", class: "ali-dot", "aria-label": String(i + 1) }); b.addEventListener("click", () => show(i, true)); return b; });
+  const wrap = el("div", { class: "ali" }, el("div", { class: "ali-stack" }, ...slides), el("div", { class: "ali-dots" }, ...dots));
+  let cur = 0, paused = false;
+  function show(i, user) { cur = (i + slides.length) % slides.length; slides.forEach((s, k) => { s.classList.toggle("on", k === cur); dots[k].classList.toggle("on", k === cur); dots[k].setAttribute("aria-current", k === cur ? "true" : "false"); }); if (user) { clearInterval(allyTimer); } }
+  show(0);
+  const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!still) {
+    ["pointerenter", "pointerdown", "focusin"].forEach(ev => wrap.addEventListener(ev, () => { paused = true; }));
+    ["pointerleave", "focusout"].forEach(ev => wrap.addEventListener(ev, () => { paused = false; }));
+    allyTimer = setInterval(() => { if (!wrap.isConnected) return clearInterval(allyTimer); if (!paused && !document.hidden) show(cur + 1); }, 5500);
+  }
+  return wrap;
+}
 function renderUpcoming() {
   const host = byId("homeUpcoming");
   if (!host) return;
@@ -1374,10 +1398,11 @@ function renderUpcoming() {
   // Same rule as the rest of Home: every 3 days the windows move on to the next plans (same period number in every city).
   const n0 = new Date(); const period = Math.floor((new Date(n0.getFullYear(), n0.getMonth(), n0.getDate()) - new Date(2026, 0, 5)) / (3 * 86400000));
   const rotate = (list, count) => { const L = list.length; if (L <= count) return list; return Array.from({ length: count }, (_, i) => list[(((period * count) + i) % L + L) % L]); };
-  const promoHome = p => p.kind === "event" && !p.event_date && ["dining", "social", "spa"].includes(planTag(p.id).cat) && planTag(p.id).promoHome && activePromo(p);
+  const promoHome = p => (p.kind === "event" || (p.kind === "wellness" && planTag(p.id).cat === "spa")) && !p.event_date && ["dining", "social", "spa"].includes(planTag(p.id).cat) && planTag(p.id).promoHome && activePromo(p);
   const untilOf = p => planTag(p.id).promoUntil || "9999";
   const byUntil = (x, y) => untilOf(x).localeCompare(untilOf(y));
-  const well = rotate(plans.filter(p => (dated(p) && eventCategory(p) === "wellness") || (promoHome(p) && planTag(p.id).cat === "spa")).sort((x, y) => (x.event_date || untilOf(x)).localeCompare(y.event_date || untilOf(y))), 1)[0] || null;
+  // Window 1 = "Aliadas": every active wellness promotion / dated wellness plan (at most ALLY_CAP), shown as a gentle carousel.
+  const allies = plans.filter(p => (dated(p) && eventCategory(p) === "wellness") || (promoHome(p) && planTag(p.id).cat === "spa")).sort((x, y) => (x.event_date || untilOf(x)).localeCompare(y.event_date || untilOf(y))).slice(0, ALLY_CAP);
   const specials = rotate(plans.filter(p => (dated(p) && eventCategory(p) === "events") || (promoHome(p) && planTag(p.id).cat !== "spa")).sort((x, y) => (x.event_date || untilOf(x)).localeCompare(y.event_date || untilOf(y))), 2);
   host.hidden = false;
   const all = el("button", { type: "button", class: "see-all", text: t("seeAll") + " →" });
@@ -1385,7 +1410,7 @@ function renderUpcoming() {
   host.replaceChildren(
     window.cmlSecHead("cal", "rose", t("upcomingTitle"), t("upcomingSub"), all),
     el("div", { class: "ev-grid" },
-      well ? eventCard(well, true) : soonCard(t("soonWellT"), t("soonWellD")),
+      allies.length ? alliesCarousel(allies, promoHome) : soonCard(t("soonWellT"), t("soonWellD")),
       specials[0] ? eventCard(specials[0], true) : soonCard(),
       specials[1] ? eventCard(specials[1], true) : soonCard()));
 }
@@ -1441,7 +1466,7 @@ function renderEvents() {
   }
   // Month chips follow the chosen category; fixed places (restaurants, happy hours, spas) have no date, so they never create a "date to confirm" chip.
   const inCat = events.filter(p => cat === "all" || eventCategory(p) === cat);
-  const isFixedPlace = p => p.kind === "event" && !p.event_date && ["dining", "social", "spa"].includes(planTag(p.id).cat);
+  const isFixedPlace = p => (p.kind === "event" || (p.kind === "wellness" && planTag(p.id).cat === "spa")) && !p.event_date && ["dining", "social", "spa"].includes(planTag(p.id).cat);
   const months = [...new Set(inCat.filter(p => p.event_date).map(p => monthKey(p.event_date)))].sort();
   const hasTbd = inCat.some(p => !p.event_date && !isFixedPlace(p));
   const options = ["all", ...months, ...(hasTbd ? ["tbd"] : [])];
@@ -2046,6 +2071,17 @@ async function applySession(s) {
   await loadAll();
   document.dispatchEvent(new CustomEvent("cml:session", { detail: { admin: isAdmin(), super: isSuper(), staff: isStaff(), content: isContentAdmin() } }));
 }
+// Interest log: taps on promotions and the Essences waitlist (the Spa page leaves its request in localStorage; it is sent here).
+async function logInterest(kind, ref) {
+  try { const r = await db.from("interest_log").insert({ kind, ref: String(ref || "").slice(0, 80) }); return !r.error || r.error.code === "23505"; } catch { return false; }
+}
+async function flushInterest() {
+  let q = []; try { q = JSON.parse(localStorage.getItem("cml_pending_interest") || "[]"); } catch { q = []; }
+  if (!Array.isArray(q) || !q.length || !session) return;
+  const left = [];
+  for (const it of q.slice(0, 10)) if (!(it && it.k && await logInterest(it.k, it.r))) left.push(it);
+  try { if (left.length) localStorage.setItem("cml_pending_interest", JSON.stringify(left)); else localStorage.removeItem("cml_pending_interest"); } catch { /* storage unavailable */ }
+}
 async function loadAll() {
   const uid = session.user.id;
   try {
@@ -2063,6 +2099,7 @@ async function loadAll() {
     (st.data || []).forEach(r => { settings[r.key] = r.value; });
     plans = plans.filter(shownTo);
     await Promise.all([loadResponses(), refreshCounts()]);
+    flushInterest();
   } catch {
     announce("loadError");
   }

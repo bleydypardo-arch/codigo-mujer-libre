@@ -790,7 +790,7 @@ function formView() {
     form.appendChild(el("label", { class: "check" }, fullBox, a("fFull")));
   }
   let promoIn = null, promoUntilIn = null, promoHomeBox = null;
-  if (kind === "event") {
+  if (kind === "event" || kind === "wellness") {
     promoIn = el("input", { type: "text", maxlength: 80, value: oldTag.promo || "", placeholder: "2x1 en cócteles · 20% off" });
     promoUntilIn = el("input", { type: "date", value: oldTag.promoUntil || "" });
     promoHomeBox = el("input", { type: "checkbox" }); promoHomeBox.checked = !!oldTag.promoHome;
@@ -886,7 +886,7 @@ function formView() {
   const buildTag = () => Object.assign(buildTag0(), { show: showSel.value });
   const buildTag0 = () => kind === "matcha"
     ? Object.assign({ matcha: true, mtype: mtypeSel.value, featured: featuredBox.checked, city: cityIn.value.trim() }, oldTag.full ? { full: true } : {})
-    : { cat: typeSel ? (kind === "trip" && typeSel.value === "trip" ? "" : typeSel.value) : "", matcha: !!(matchaBox && matchaBox.checked),
+    : { cat: typeSel ? (kind === "trip" && typeSel.value === "trip" ? "" : (kind === "wellness" && oldTag.cat === "spa" && !typeSel.value ? "spa" : typeSel.value)) : "", matcha: !!(matchaBox && matchaBox.checked),
         featured: !!(featBox && featBox.checked), full: !!(fullBox && fullBox.checked),
         pin: !!(pinBox && pinBox.checked), homeImg: homePicker && C.safeUrl(homePicker.value) ? homePicker.value : "", imgEn: enPicker && C.safeUrl(enPicker.value) ? enPicker.value : "", lang: langSel ? langSel.value : "", promo: promoIn ? promoIn.value.trim() : "", promoUntil: promoIn && promoIn.value.trim() && promoUntilIn ? promoUntilIn.value : "", promoHome: !!(promoIn && promoIn.value.trim() && promoHomeBox && promoHomeBox.checked), label: labelIn && typeSel && typeSel.value === "other" ? labelIn.value.trim() : "" };
   const previewBtn = (kind === "event" || kind === "trip" || kind === "wellness") && C.openPreview
@@ -912,6 +912,10 @@ function formView() {
       const mine = nm(val("title_es") || val("title_en"));
       const dup = mine && ((C.homeData && C.homeData().plans) || []).find(p => p.kind === "event" && [nm(p.title_es), nm(p.title_en)].includes(mine));
       if (dup && !await window.cmlConfirm(a("dupWarn"))) return;
+    }
+    if (promoHomeBox && promoHomeBox.checked && promoIn.value.trim() && (kind === "wellness" ? oldTag.cat === "spa" : false)) {   // "Aliadas" window: at most 5 active promotions per city
+      const ck = C.cityKey(showSel.value), live = x => { const g = C.planTag(x.id); return g.cat === "spa" && g.promoHome && g.promo && (!g.promoUntil || g.promoUntil >= C.todayStr()) && C.cityKey(g.show) === ck; };
+      if ((((C.homeData && C.homeData().plans) || []).filter(x => (!row || x.id !== row.id) && live(x))).length >= 5) return fail("allyFull");
     }
     const payload = buildPayload();
     saveBtn.disabled = true;
@@ -1441,6 +1445,6 @@ async function citiesTab() {
 }
 registerTab("cities", { group: "content", label: { es: S.es.csTab, en: S.en.csTab }, render: async () => citiesTab() });
 registerTab("homepin", { group: "content", label: { es: S.es.hpTab, en: S.en.hpTab }, render: async () => homePinTab() });
-Object.assign(S.es, { fPromo: "Promoción especial (opcional)", fPromoHelp: "Úsala para un descuento o evento en este lugar (ej. promo de Navidad). Se ve como una etiqueta dorada en el lugar y desaparece sola después de la fecha. No hace falta crear otra tarjeta.", fPromoText: "Promoción", fPromoUntil: "Válida hasta", fPromoHome: "Mostrar también en “Eventos Especiales” del Home", dupWarn: "Ya existe un plan con este nombre. ¿Quieres crear otro igual? Si es una promoción, mejor edita el lugar y llena “Promoción especial”." });
-Object.assign(S.en, { fPromo: "Special promotion (optional)", fPromoHelp: "Use it for a discount or event at this place (e.g. a Christmas promo). It shows as a gold tag on the place and disappears by itself after the date. No need to create another card.", fPromoText: "Promotion", fPromoUntil: "Valid until", fPromoHome: "Also show in Home “Special Events”", dupWarn: "A plan with this name already exists. Create another one anyway? If it is a promotion, edit the place and fill in “Special promotion” instead." });
+Object.assign(S.es, { allyFull: "Ya hay 5 promociones activas en la ventana «Aliadas» de esta ciudad. Espera a que venza una, o quita «Mostrar también en Eventos Especiales» a otra.", fPromo: "Promoción especial (opcional)", fPromoHelp: "Úsala para un descuento o evento en este lugar (ej. promo de Navidad). Se ve como una etiqueta dorada en el lugar y desaparece sola después de la fecha. No hace falta crear otra tarjeta.", fPromoText: "Promoción", fPromoUntil: "Válida hasta", fPromoHome: "Mostrar también en “Eventos Especiales” del Home", dupWarn: "Ya existe un plan con este nombre. ¿Quieres crear otro igual? Si es una promoción, mejor edita el lugar y llena “Promoción especial”." });
+Object.assign(S.en, { allyFull: "There are already 5 active promotions in this city's “Partners” window. Wait for one to end, or untick “Also show in Home Special Events” on another.", fPromo: "Special promotion (optional)", fPromoHelp: "Use it for a discount or event at this place (e.g. a Christmas promo). It shows as a gold tag on the place and disappears by itself after the date. No need to create another card.", fPromoText: "Promotion", fPromoUntil: "Valid until", fPromoHome: "Also show in Home “Special Events”", dupWarn: "A plan with this name already exists. Create another one anyway? If it is a promotion, edit the place and fill in “Special promotion” instead." });
 })();

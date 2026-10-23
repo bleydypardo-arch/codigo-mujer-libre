@@ -88,3 +88,19 @@
   color: #6b4a12; background: linear-gradient(135deg, #f6e7bd, #ecd391); border: 1px solid #d9b866; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ev-promo { color: #f3deaa; background: #4a3a17; border-color: #8a6d2b; } }
 :root[data-theme="dark"] .ev-promo { color: #f3deaa; background: #4a3a17; border-color: #8a6d2b; }
+
+/* Eventos Especiales, window 1: "Aliadas" carousel (stacked slides that fade, dots below) */
+.ali{position:relative;min-width:0;display:flex;flex-direction:column;gap:6px}
+.ali-stack{display:grid;min-width:0}
+.ali-slide{grid-area:1/1;position:relative;opacity:0;pointer-events:none;transition:opacity .6s ease;min-width:0}
+.ali-slide.on{opacity:1;pointer-events:auto}
+.ali-slide > .ev-card{margin:0}
+.ali-dots{padding-top:4px}
+.ali-tag{position:absolute;top:10px;left:10px;z-index:3;padding:3px 10px;border-radius:999px;background:rgba(255,248,230,.92);color:var(--cml-gold-ink,#7a5a1c);font:600 11px/1.4 var(--font-body,system-ui);letter-spacing:.04em;box-shadow:0 0 0 1px rgba(184,141,58,.55)}
+.ali-dots{display:flex;justify-content:center;gap:6px}
+.ali-dot{width:8px;height:8px;min-width:8px;min-height:8px;padding:0;border-radius:50%;border:0;background:rgba(150,120,90,.35);cursor:pointer}
+.ali-dot.on{background:var(--cml-gold,#b88d3a);width:18px;border-radius:999px}
+@media (prefers-reduced-motion:reduce){.ali-slide{transition:none}}
+.home-upcoming .ali{flex:0 0 min(326px,86%);scroll-snap-align:start}
+@media (min-width:900px){.home-upcoming .ali{flex:none}}
+.ali-dots{position:relative;z-index:4}
