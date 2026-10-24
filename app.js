@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  upcomingTitle: "Eventos Especiales", allyTag: "Aliada", tourK: "Tour", tourGo: "Ver tour", tourAsk: "Consultar fechas", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
+  upcomingTitle: "Eventos Especiales", allyTag: "Aliada", tourK: "Tour", tourGo: "Ver tour", tourAsk: "Consultar fechas", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", wellLess: "Ver menos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  upcomingTitle: "Special Events", allyTag: "Partner", tourK: "Tour", tourGo: "See tour", tourAsk: "Ask for dates", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
+  upcomingTitle: "Special Events", allyTag: "Partner", tourK: "Tour", tourGo: "See tour", tourAsk: "Ask for dates", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", wellLess: "Show less", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -1471,6 +1471,20 @@ function byDate(a, b) {
   if (b.event_date) return 1;
   return 0;
 }
+// Wellness shows only 4 cards (1 promotion or dated event + 3 spas); the rest sits behind "View all".
+let wellAll = false;
+const WELL_CAP = 4;
+function wellPick(list) {
+  if (wellAll || list.length <= WELL_CAP) return list;
+  const pri = list.filter(p => p.event_date || activePromo(p)), rest = list.filter(p => !pri.includes(p));
+  return pri.slice(0, 1).concat(rest, pri.slice(1)).slice(0, WELL_CAP);
+}
+function wellMoreBtn(total, visible, wide) {
+  if (total <= WELL_CAP) return [];
+  const b = el("button", { type: "button", class: "link-btn wd-all", text: wellAll ? t("wellLess") : t("seeAll") + " (" + total + ") →" });
+  b.addEventListener("click", () => { wellAll = !wellAll; renderEvents(); });
+  return [wide ? el("div", { style: "grid-column:1/-1;text-align:center" }, b) : b];
+}
 function renderEvents() {
   const list = byId("eventsList");
   const filter = byId("monthFilter");
@@ -1533,12 +1547,14 @@ function renderEvents() {
     // Each type lives only in its own column, under its own tile: happy hours | restaurants | wellness
     const cols = EVENT_CATS.map(c => {
       const mine = shown.filter(p => eventCategory(p) === c);
+      if (c === "wellness") { const vis = wellPick(mine); return mine.length ? el("div", { class: "ev-col", "data-cat": c }, el("h3", { class: "ev-col-h", text: t("cat_" + c) }), ...vis.map(p => eventCard(p)), ...wellMoreBtn(mine.length, vis.length)) : null; }
       return mine.length ? el("div", { class: "ev-col", "data-cat": c }, el("h3", { class: "ev-col-h", text: t("cat_" + c) }), ...mine.map(p => eventCard(p))) : null;
     }).filter(Boolean);
     const rest = shown.filter(p => !EVENT_CATS.includes(eventCategory(p)));
     if (rest.length) cols.push(el("div", { class: "ev-col" }, ...rest.map(p => eventCard(p))));
     list.replaceChildren(el("div", { class: "ev-cols" }, ...cols));
-  } else list.replaceChildren(...shown.map(p => eventCard(p)));
+  } else if (cat === "wellness") { const vis = wellPick(shown); list.replaceChildren(...vis.map(p => eventCard(p)), ...wellMoreBtn(shown.length, vis.length, true)); }
+  else list.replaceChildren(...shown.map(p => eventCard(p)));
   list.classList.toggle("is-cols", !!list.querySelector(":scope > .ev-cols"));
   restoreFocus();
 }
