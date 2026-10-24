@@ -1395,8 +1395,8 @@ function renderUpcoming() {
   // Three windows. 1 = the next wellness plan or promotion (same source as Bienestar → "Próximos planes de bienestar").
   // 2 and 3 = the next two special events with a date (concerts, galas...). Trips stay out for now. Dated items leave by themselves the day after.
   const dated = p => p.kind === "event" && !sideTrip(p) && p.event_date && p.event_date >= today;
-  // Same rule as the rest of Home: every 3 days the windows move on to the next plans (same period number in every city).
-  const n0 = new Date(); const period = Math.floor((new Date(n0.getFullYear(), n0.getMonth(), n0.getDate()) - new Date(2026, 0, 5)) / (3 * 86400000));
+  // Every day the two special-event windows move on to the next two events (same period number in every city); past events leave by themselves.
+  const n0 = new Date(); const period = Math.floor((new Date(n0.getFullYear(), n0.getMonth(), n0.getDate()) - new Date(2026, 0, 5)) / 86400000);
   const rotate = (list, count) => { const L = list.length; if (L <= count) return list; return Array.from({ length: count }, (_, i) => list[(((period * count) + i) % L + L) % L]); };
   const promoHome = p => (p.kind === "event" || (p.kind === "wellness" && planTag(p.id).cat === "spa")) && !p.event_date && ["dining", "social", "spa"].includes(planTag(p.id).cat) && planTag(p.id).promoHome && activePromo(p);
   const untilOf = p => planTag(p.id).promoUntil || "9999";

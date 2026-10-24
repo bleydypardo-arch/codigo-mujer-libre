@@ -285,8 +285,8 @@ function renderDiscover() {
   const today = day0().getTime();
   const tried = new Set(plans.filter(p => mine.has(p.id) && p.code).map(p => p.code));
   const rows = [];
-  // Every 3 days a different happy hour, restaurant and wellness idea (rotating through what the admin has already loaded; same rule in every city)
-  const wk = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / (3 * DAY));
+  // Twice a day (morning and afternoon) a different happy hour, restaurant and wellness idea (rotating through what the admin has already loaded; same rule in every city)
+  const wk = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / DAY) * 2 + (new Date().getHours() >= 12 ? 1 : 0);
   const weekly = list => { const L = list.slice().sort((x, y) => String(x.id).localeCompare(String(y.id))); return L.length ? L[((wk % L.length) + L.length) % L.length] : null; };
   const live = plans.filter(p => (p.kind === "event" || p.kind === "wellness" || (C.sideTrip && C.sideTrip(p))) && (!p.event_date || p.event_date >= C.todayStr()));
   const slots = [
