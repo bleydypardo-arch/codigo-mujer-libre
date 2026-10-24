@@ -29,6 +29,7 @@ const T = {
     cmEs: "Español", cmEn: "English", cmReset: "Volver a las frases originales",
     podIntro: "Podcast «Entre Nosotras». Cada episodio vive en YouTube: pega aquí el enlace. Las integrantes lo ven en Inicio (el próximo o el más reciente) y en Bienestar (todos, con filtro por tema).", podNew: "+ Nuevo episodio", podTitle: "Título del episodio", podDesc: "Descripción corta (opcional)", podTopic: "Tema", podDate: "Fecha y día de estreno", podTime: "Hora (opcional)", podUrl: "Enlace de YouTube del episodio", podTeaser: "Enlace del adelanto de 15 segundos (opcional)", podPub: "Publicado (visible para las integrantes)", podRemove: "Quitar episodio", podBadUrl: "El enlace debe ser de YouTube.", podNeed: "Para publicar, completa el título en español e inglés, la fecha y el enlace de YouTube.", podEmpty: "Todavía no hay episodios. Toca «Nuevo episodio».", podEp: n => "Episodio " + n,
     helpIntro: "Los botones grandes de ayuda al final de la página de Apoyo. Cada ciudad tiene los suyos. Escribe el número y el nombre en español e inglés (hasta 4). Si dejas una ciudad vacía, se usan los números oficiales que ya vienen cargados (en gris). Verifica siempre cada número antes de guardarlo.",
+    tDeleted: "Borrados", delTitle: "Actividades con fecha borradas automáticamente (últimos 60 días)", delNone: "Todavía no se ha borrado nada.", delFail: "No se pudo leer. ¿Ya corriste el paso de Supabase (borrado automático)?", delWhen: "borrado el",
     tInterest: "Interés", intTitle: "Lista de espera y toques (últimos 30 días)", intWait: "Mujeres en la lista de Esencias", intVotes: "Aroma que quieren primero", intTaps: "Toques en promociones", intNone: "Todavía no hay datos.", intFail: "No se pudo leer. ¿Ya corriste el paso de Supabase (migration_interest)?", intTimes: "toques",
     tCityList: "Mis ciudades", cityIntro: "Estas son las ciudades de la app: aparecen en el registro, en el botón de ciudad y al etiquetar contenido. Agrega la ciudad nueva, elige su país y guarda. Las líneas de ayuda de cada ciudad se editan en \"Líneas de ayuda\".", cityName: "Ciudad", cityCountry: "País", cityCO: "Colombia", cityUS: "Estados Unidos", cityOther: "Otro país", cityES: "España", cityAdd: "+ Agregar ciudad", cityRemove: "Quitar", cityNone: "Deja al menos una ciudad.", cityDefault: "Volver a la lista original", cityPh: "Ej.: Cali",
     tFounder: "Mi bienvenida", founderIntro: "Este mensaje lo ve cada mujer, con tu foto, la primera vez que entra a la app. Cámbialo cuando quieras.", founderName: "Tu nombre", founderEs: "Mensaje en español", founderEn: "Mensaje en inglés", founderReset: "Volver al mensaje original", founderPreview: "Ver cómo se ve la bienvenida",
@@ -62,6 +63,7 @@ const T = {
     cmEs: "Español", cmEn: "English", cmReset: "Back to the original phrases",
     podIntro: "“Entre Nosotras” podcast. Every episode lives on YouTube: paste its link here. Members see it on Home (the next or latest one) and in Wellness (all of them, filtered by topic).", podNew: "+ New episode", podTitle: "Episode title", podDesc: "Short description (optional)", podTopic: "Topic", podDate: "Release date", podTime: "Time (optional)", podUrl: "YouTube link of the episode", podTeaser: "Link to the 15-second teaser (optional)", podPub: "Published (visible to members)", podRemove: "Remove episode", podBadUrl: "The link must be a YouTube link.", podNeed: "To publish, complete the title in Spanish and English, the date and the YouTube link.", podEmpty: "No episodes yet. Tap “New episode”.", podEp: n => "Episode " + n,
     helpIntro: "The big help buttons at the bottom of the Support page. Each city has its own. Type the number and the name in Spanish and English (up to 4). If a city is left empty, the built-in official numbers are used (shown in grey). Always verify each number before saving.",
+    tDeleted: "Deleted", delTitle: "Dated activities deleted automatically (last 60 days)", delNone: "Nothing has been deleted yet.", delFail: "Could not read. Did you run the Supabase step (auto-delete)?", delWhen: "deleted on",
     tInterest: "Interest", intTitle: "Waitlist and taps (last 30 days)", intWait: "Women on the Essences list", intVotes: "Scent they want first", intTaps: "Promo taps", intNone: "No data yet.", intFail: "Could not read. Did you run the Supabase step (migration_interest)?", intTimes: "taps",
     tCityList: "My cities", cityIntro: "These are the app's cities: they appear at sign-up, in the city button and when tagging content. Add the new city, choose its country and save. Each city's help lines are edited in \"Help lines\".", cityName: "City", cityCountry: "Country", cityCO: "Colombia", cityUS: "United States", cityOther: "Other country", cityES: "Spain", cityAdd: "+ Add city", cityRemove: "Remove", cityNone: "Keep at least one city.", cityDefault: "Back to the original list", cityPh: "E.g.: Cali",
     tFounder: "My welcome", founderIntro: "Every woman sees this message, with your photo, the first time she enters the app. Change it whenever you like.", founderName: "Your name", founderEs: "Message in Spanish", founderEn: "Message in English", founderReset: "Back to the original message", founderPreview: "See how the welcome looks",
@@ -749,6 +751,15 @@ async function importTab() {
 }
 
 // ----- City list (settings.cities = [{name, country}]) -----
+async function deletedTab() {
+  const box = el("div", { class: "admin-form" }, el("h3", { text: tx("delTitle") }));
+  const r = await C.db.from("deleted_plans_log").select("kind,title,event_date,location,deleted_at").gte("deleted_at", new Date(Date.now() - 60 * 864e5).toISOString()).order("deleted_at", { ascending: false }).limit(300);
+  if (r.error) { box.append(el("p", { class: "small-note", text: tx("delFail") })); return box; }
+  if (!(r.data || []).length) { box.append(el("p", { class: "small-note", text: tx("delNone") })); return box; }
+  r.data.forEach(x => box.append(el("p", { text: (x.title || "—") + " · " + (x.event_date || "") + (x.location ? " · " + x.location : "") + " · " + tx("delWhen") + " " + String(x.deleted_at).slice(0, 10) })));
+  return box;
+}
+
 async function interestTab() {
   const box = el("div", { class: "admin-form" }, el("h3", { text: tx("intTitle") }));
   const r = await C.db.from("interest_log").select("kind,ref,created_at").gte("created_at", new Date(Date.now() - 30 * 864e5).toISOString()).limit(5000);
@@ -816,6 +827,7 @@ function init() {
   A.registerTab("founder", { group: "people", label: lab(T.es.tFounder, T.en.tFounder), render: async () => founderTab() });
   A.registerTab("talkLib", { group: "content", label: lab(T.es.tTalkLib, T.en.tTalkLib), render: async () => talkLibTab() });
   A.registerTab("import", { group: "content", label: lab(T.es.tImport, T.en.tImport), render: async () => importTab() });
+  A.registerTab("deleted", { group: "content", label: lab(T.es.tDeleted, T.en.tDeleted), render: async () => deletedTab() });
   A.registerTab("interest", { group: "content", label: lab(T.es.tInterest, T.en.tInterest), render: async () => interestTab() });
   A.registerTab("cityList", { group: "content", label: lab(T.es.tCityList, T.en.tCityList), render: async () => cityListTab() });
   A.registerTab("help", { group: "content", label: lab(T.es.tHelp, T.en.tHelp), render: async () => helpTab() });
