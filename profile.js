@@ -7,7 +7,7 @@ let C = null;
 const BUCKET = "avatars";
 
 const ES = {
-  profCity: "Ciudad", profCityPick: "Elige tu ciudad", profDoes: "¿A qué te dedicas hoy?", profDoesPh: "Soy maestra, tengo un negocio, cuido mi hogar…", profDream: "¿Qué sueño todavía vive en ti?", profDreamPh: "Abrir mi panadería, escribir un libro, volver a estudiar…",
+  profCity: "Ciudad donde vives hoy", profCityPick: "Elige la ciudad donde vives hoy", profDoes: "¿A qué te dedicas hoy?", profDoesPh: "Soy maestra, tengo un negocio, cuido mi hogar…", profDream: "¿Qué sueño todavía vive en ti?", profDreamPh: "Abrir mi panadería, escribir un libro, volver a estudiar…",
   profBtn: "Mi perfil", profTitle: "Mi perfil", profIntro: "Las demás integrantes ven tu nombre, tu foto, tu ciudad, a qué te dedicas, tu sueño y tus intereses, y el día y mes de tu cumpleaños si lo agregas. Nunca tu edad, tu teléfono ni tu correo.",
   profPhoto: "Foto de perfil", profChange: "Cambiar foto", profRemove: "Quitar foto", profPhotoFail: "No se pudo subir la foto.", profPhotoBad: "Elige una imagen (JPG, PNG o WebP).",
   profFirst: "Nombre", profLast: "Apellido", profBirthday: "Cumpleaños (opcional)", profMonth: "Mes", profDay: "Día", profBirthHelp: "Solo mes y día. Nunca guardamos el año.",
@@ -20,7 +20,7 @@ const ES = {
   bdCongrats: "Felicitar", bdDraft: n => "🎂 ¡Feliz cumpleaños, " + n + "! "
 };
 const EN = {
-  profCity: "City", profCityPick: "Choose your city", profDoes: "What do you do today?", profDoesPh: "I'm a teacher, I run a business, I care for my home…", profDream: "What dream still lives in you?", profDreamPh: "Open my bakery, write a book, go back to school…",
+  profCity: "City where you live now", profCityPick: "Choose the city where you live now", profDoes: "What do you do today?", profDoesPh: "I'm a teacher, I run a business, I care for my home…", profDream: "What dream still lives in you?", profDreamPh: "Open my bakery, write a book, go back to school…",
   profBtn: "My profile", profTitle: "My profile", profIntro: "Other members see your first name, photo, city, what you do, your dream and interests, and your birthday's day and month if you add it. Never your age, phone or email.",
   profPhoto: "Profile photo", profChange: "Change photo", profRemove: "Remove photo", profPhotoFail: "The photo could not be uploaded.", profPhotoBad: "Please choose an image (JPG, PNG or WebP).",
   profFirst: "First name", profLast: "Last name", profBirthday: "Birthday (optional)", profMonth: "Month", profDay: "Day", profBirthHelp: "Month and day only. We never store the year.",
