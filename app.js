@@ -617,6 +617,29 @@ function cities() {
     .map(c => ({ name: c.name.trim().slice(0, 40), country: String(c.country || "").toUpperCase().slice(0, 3) }));
   return list.length ? list : DEFAULT_CITIES.map(c => Object.assign({}, c));
 }
+// Full place name shown to members: "Orlando, Florida, USA", "Granada, Andalucía, España"... (the stored city name does not change).
+const CITY_PLACE = {
+  orlando: ["Orlando, Florida", "US"], miami: ["Miami, Florida", "US"], newyork: ["New York", "US"], boston: ["Boston, Massachusetts", "US"],
+  charlotte: ["Charlotte, North Carolina", "US"], raleigh: ["Raleigh, North Carolina", "US"],
+  bogota: ["Bogotá", "CO"], medellin: ["Medellín, Antioquia", "CO"], barranquilla: ["Barranquilla, Atlántico", "CO"], cartagena: ["Cartagena, Bolívar", "CO"],
+  granada: ["Granada, Andalucía", "ES"], granadaycosta: ["Granada y Costa, Andalucía", "ES"], motril: ["Motril, Granada, Andalucía", "ES"], almunecar: ["Almuñécar, Granada, Andalucía", "ES"],
+  malaga: ["Málaga, Andalucía", "ES"], sevilla: ["Sevilla, Andalucía", "ES"], cordoba: ["Córdoba, Andalucía", "ES"], cadiz: ["Cádiz, Andalucía", "ES"]
+};
+const COUNTRY_NAME = { US: ["USA", "USA"], CO: ["Colombia", "Colombia"], ES: ["España", "Spain"] };
+function cityFull(name) {
+  const base = String(name || "").trim(), k = cityKey(base);
+  if (!k) return "";
+  let e = CITY_PLACE[k];
+  if (!e) { const c = cities().find(x => cityKey(x.name) === k); if (c && COUNTRY_NAME[c.country]) e = [base, c.country]; }
+  if (!e) return base;
+  return e[0] + ", " + COUNTRY_NAME[e[1]][currentLanguage === "en" ? 1 : 0];
+}
+window.CMLPlace = { full: cityFull };
+function renderSignupCities() {   // the options keep their value; only the text gets the region and country
+  const sel = byId("suCitySel");
+  if (!sel) return;
+  [...sel.options].forEach(o => { if (o.value && o.value !== "__other") o.textContent = cityFull(o.value); });
+}
 const knownCities = () => cities().map(c => cityKey(c.name));
 const cityName = key => { const c = cities().find(x => cityKey(x.name) === key); return c ? c.name : ""; };
 const cityCountry = key => { const c = cities().find(x => cityKey(x.name) === key); return c ? c.country : ""; };
@@ -643,7 +666,7 @@ function viewBar() {
   const staff = isStaff();
   const cur = viewAs() || (viewCity() === "all" ? "all" : "");
   const list = cities();
-  const sel = el("select", { "aria-label": t(staff ? "viewAsLabel" : "cityBarLabel") }, ...list.map(c => el("option", { value: c.name, text: c.name })), el("option", { value: "all", text: t("viewAsAll") }));
+  const sel = el("select", { "aria-label": t(staff ? "viewAsLabel" : "cityBarLabel") }, ...list.map(c => el("option", { value: c.name, text: cityFull(c.name) })), el("option", { value: "all", text: t("viewAsAll") }));
   sel.value = cur === "all" ? "all" : (cityName(viewCity()) || (cur && list.some(c => c.name === cur) ? cur : "all"));
   sel.addEventListener("change", async () => { try { localStorage.setItem("cml_viewas", sel.value); } catch { /* ignore */ } await loadAll(); });
   const bar = el("div", { id: "viewAsBar", class: "view-as-bar" + (staff ? "" : " city-bar") }, el("span", { text: staff ? t("viewAsLabel") : "📍 " + t("cityBarLabel") }), sel);
@@ -800,6 +823,7 @@ function renderAll() {
   renderWeeklyCode();
   renderInterestChoices();
   renderJobChoice();
+  renderSignupCities();
   renderModalText();
   renderStatus();
   renderStorageNotice();

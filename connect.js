@@ -119,6 +119,7 @@
     return box;
   }
 
+  const placeOf = v => (window.CMLPlace && window.CMLPlace.full(v)) || v;
   function clip(s, n) { s = String(s || "").trim(); return s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s; }
   function avatar(m, cls) {
     return window.CMLProfile ? window.CMLProfile.avatarNode(m.avatar_path || null, m.first_name, cls) : el("span", { class: "avatar " + cls, text: (m.first_name || "?").charAt(0).toUpperCase() });
@@ -137,7 +138,7 @@
       avatar(m, "avatar-card"),
       el("b", { class: "mcard-name", text: m.first_name }),
       C.hostBadge ? C.hostBadge(m.id) : null,
-      m.city ? el("small", { class: "mcard-city", text: m.city }) : null,
+      m.city ? el("small", { class: "mcard-city", text: placeOf(m.city) }) : null,
       window.CMLJobs && window.CMLJobs.label(m.occupation) ? el("small", { class: "mcard-job", text: window.CMLJobs.label(m.occupation) }) : null,
       m.dream ? el("em", { class: "mcard-dream", text: "“" + clip(m.dream, 70) + "”" }) : null,
       badge(m));
@@ -183,7 +184,7 @@
       avatar(m, "avatar-lg"),
       el("h3", { text: m.first_name }),
       C.hostBadge ? C.hostBadge(m.id, "big") : null,
-      m.city ? el("p", { class: "cn-city", text: m.city }) : null,
+      m.city ? el("p", { class: "cn-city", text: placeOf(m.city) }) : null,
       row(t("cnDoesLabel"), window.CMLJobs ? window.CMLJobs.label(m.occupation) : ""),
       m.dream ? el("blockquote", { class: "cn-dream" }, el("small", { text: t("cnDreamLabel") }), el("p", { text: m.dream })) : el("p", { class: "meta", text: t("cnNoInfo") }),
       row(t("cnInterests"), chips.join(" · ")),
@@ -213,7 +214,7 @@
       const ok = el("button", { type: "button", class: "primary", text: t("cnAccept") });
       const no = el("button", { type: "button", class: "secondary", text: t("cnLater") });
       const row = el("div", { class: "cn-in-row" }, avatar(m, "avatar-sm"),
-        el("span", { class: "cn-in-txt" }, el("b", { text: m.first_name }), m.dream ? el("small", { text: clip(m.dream, 60) }) : (m.city ? el("small", { text: m.city }) : null)),
+        el("span", { class: "cn-in-txt" }, el("b", { text: m.first_name }), m.dream ? el("small", { text: clip(m.dream, 60) }) : (m.city ? el("small", { text: placeOf(m.city) }) : null)),
         el("span", { class: "cn-in-btns" }, ok, no));
       ok.addEventListener("click", async () => { ok.disabled = true; try { await answer(m, "accepted"); } catch { ok.disabled = false; } });
       no.addEventListener("click", async () => { no.disabled = true; try { await answer(m, "declined"); } catch { no.disabled = false; } });
