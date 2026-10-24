@@ -110,3 +110,19 @@
 .ali-slide > .ev-card{flex:1 1 auto;width:100%;height:100%}
 .home-upcoming .ali,.home-upcoming .ali-stack{align-self:stretch}
 .ali-stack{flex:1 1 auto}
+
+/* Category label (Bienestar / Social / Tour / Aliada): small line above the title, never on top of the photo */
+.ev-kicker{margin:0;font:600 9.5px/1.2 var(--font-ui,system-ui);letter-spacing:.09em;text-transform:uppercase;color:var(--cml-rose-d,#9A4A54)}
+.ev-card .ev-kicker{grid-column:2;align-self:end;margin:2px 0 0}
+.ev-card:has(.ev-kicker) .ev-media{grid-row:1 / span 5}
+.ev-kicker.ali-k{color:var(--cml-gold-ink,#7a5a1c)}
+.ev-card .ev-kicker + .ev-title{margin-top:2px !important}
+.ev-tour .ev-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* Aliadas dots sit in the card's top-right corner (next to the small label), so the card is exactly as tall as its neighbours */
+.ali-dots{position:absolute !important;top:12px;right:14px;padding:0 !important;margin:0 !important;z-index:4}
+.ali{gap:0}
+.home-upcoming .ev-tour .ev-media{align-self:start;height:118px;min-height:118px;grid-row:1 / span 4}
+.home-upcoming .ev-tour .ev-kicker{align-self:start}
+.home-upcoming .ev-tour{grid-template-rows:repeat(4,auto) 1fr;align-content:start}
+.home-upcoming .ev-tour .place-acts{align-self:end}

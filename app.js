@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  upcomingTitle: "Eventos Especiales", allyTag: "Aliada", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
+  upcomingTitle: "Eventos Especiales", allyTag: "Aliada", tourK: "Tour", tourGo: "Ver tour", tourAsk: "Consultar fechas", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  upcomingTitle: "Special Events", allyTag: "Partner", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
+  upcomingTitle: "Special Events", allyTag: "Partner", tourK: "Tour", tourGo: "See tour", tourAsk: "Ask for dates", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -1116,6 +1116,32 @@ function eventCard(p, mini) {
   const more = el("button", { type: "button", class: "ev-more", text: t("viewDetails") + " →" });
   more.addEventListener("click", () => openDetail(p.id, more));
   body.appendChild(more);
+  if (mini) { const bdg = media.querySelector(".ev-badge"); if (bdg) { bdg.className = "ev-kicker"; body.prepend(bdg); } }   // the label never covers the photo
+  card.appendChild(body);
+  return card;
+}
+// Tours and experiences (a trip with a city): compact card = photo, name, next dates, pick-up point and the operator's link.
+const isTour = p => p.kind === "trip" && sideTrip(p) && !["dining", "party"].includes(planTag(p.id).cat);
+function tourDates(p) { const d = planTag(p.id).dates; return Array.isArray(d) ? d.filter(x => /^\d{4}-\d\d-\d\d$/.test(x) && x >= todayStr()).sort() : []; }
+function tourLive(p) { const today = todayStr(), d = planTag(p.id).dates; if (Array.isArray(d) && d.length && !tourDates(p).length) return false; return !p.event_date || p.event_date >= today; }
+function tourCard(p) {
+  const card = el("article", { class: "ev-card ev-mini ev-place ev-tour" });
+  const media = eventMedia(p, "ev-cover");
+  media.addEventListener("click", () => openDetail(p.id, card.querySelector(".ev-more")));
+  const bdg = media.querySelector(".ev-badge"); if (bdg) bdg.remove();
+  card.appendChild(media);
+  const body = el("div", { class: "ev-body" });
+  body.appendChild(el("span", { class: "ev-kicker", text: t("tourK") }));
+  body.appendChild(el("h2", { class: "ev-title", text: pick(p, "title") || "—" }));
+  const ds = tourDates(p);
+  const when = ds.length ? ds.slice(0, 3).map(fmtDate).join(" · ") + (ds.length > 3 ? " …" : "") : (p.date_text || t("tourAsk"));
+  body.appendChild(el("p", { class: "ev-when", text: "📅 " + when }));
+  if (p.location) body.appendChild(el("p", { class: "ev-where", text: "📍 " + p.location }));
+  const acts = el("div", { class: "resp-row place-acts" });
+  const u = safeUrl(p.url);
+  const go = u ? el("a", { class: "place-btn alt", href: u, target: "_blank", rel: "noopener noreferrer", text: t("tourGo") + " ↗" }) : el("button", { type: "button", class: "place-btn alt", text: t("viewDetails") });
+  if (u) go.addEventListener("click", () => logInterest("promo_tap", p.id)); else go.addEventListener("click", () => openDetail(p.id, go));
+  acts.appendChild(go); body.appendChild(acts);
   card.appendChild(body);
   return card;
 }
@@ -1364,14 +1390,14 @@ window.cmlSecHead = function (icon, tone, title, sub, allBtn) {
   return el("div", { class: "sec-head" }, ic,
     el("div", { class: "sec-tx" }, h, el("small", { class: "sec-sub", text: sub })), allBtn);
 };
-const ALLY_CAP = 5;   // promotions shown at once in the first window (the admin also stops a 6th one)
+const ALLY_CAP = 12;   // promotions shown at once in the first window (the admin also stops a 13th one)
 let allyTimer = 0;
 function alliesCarousel(list, isPromo) {
   clearInterval(allyTimer);
   const slides = list.map(p => {
-    const sp = el("div", { class: "ali-slide" }, eventCard(p, true));
-    if (isPromo(p)) sp.appendChild(el("span", { class: "ali-tag", text: t("allyTag") }));
-    return sp;
+    const card = eventCard(p, true);
+    if (isPromo(p)) { const b = card.querySelector(".ev-body"); if (b) b.prepend(el("span", { class: "ev-kicker ali-k", text: t("allyTag") })); }
+    return el("div", { class: "ali-slide" }, card);
   });
   if (slides.length === 1) { slides[0].classList.add("on"); return el("div", { class: "ali" }, el("div", { class: "ali-stack" }, slides[0])); }
   const dots = list.map((_, i) => { const b = el("button", { type: "button", class: "ali-dot", "aria-label": String(i + 1) }); b.addEventListener("click", () => show(i, true)); return b; });
@@ -1392,27 +1418,31 @@ function renderUpcoming() {
   if (!host) return;
   const today = todayStr();
   if (!session) { host.hidden = true; return host.replaceChildren(); }
-  // Three windows. 1 = the next wellness plan or promotion (same source as Bienestar → "Próximos planes de bienestar").
-  // 2 and 3 = the next two special events with a date (concerts, galas...). Trips stay out for now. Dated items leave by themselves the day after.
-  const dated = p => p.kind === "event" && !sideTrip(p) && p.event_date && p.event_date >= today;
-  // Every day the two special-event windows move on to the next two events (same period number in every city); past events leave by themselves.
-  const n0 = new Date(); const period = Math.floor((new Date(n0.getFullYear(), n0.getMonth(), n0.getDate()) - new Date(2026, 0, 5)) / 86400000);
+  // Three windows. 1 = Bienestar (every wellness plan or promotion of the city, as a gentle carousel).
+  // 2 = programming with a date (concerts, courses, parks, fairs...). 3 = tours and experiences. Dated items leave by themselves the day after.
+  // Windows 2 and 3 move on three times a day (morning, afternoon, night); same block number in every city.
+  const n0 = new Date(); const day = Math.floor((new Date(n0.getFullYear(), n0.getMonth(), n0.getDate()) - new Date(2026, 0, 5)) / 86400000);
+  const period = day * 3 + Math.floor(n0.getHours() / 8);
   const rotate = (list, count) => { const L = list.length; if (L <= count) return list; return Array.from({ length: count }, (_, i) => list[(((period * count) + i) % L + L) % L]); };
-  const promoHome = p => (p.kind === "event" || (p.kind === "wellness" && planTag(p.id).cat === "spa")) && !p.event_date && ["dining", "social", "spa"].includes(planTag(p.id).cat) && planTag(p.id).promoHome && activePromo(p);
+  const dateOk = p => p.event_date && p.event_date >= today;
+  const promoHome = p => (p.kind === "event" || p.kind === "wellness") && !p.event_date && (p.kind === "wellness" || ["dining", "social", "spa"].includes(planTag(p.id).cat)) && planTag(p.id).promoHome && activePromo(p);
   const untilOf = p => planTag(p.id).promoUntil || "9999";
-  const byUntil = (x, y) => untilOf(x).localeCompare(untilOf(y));
-  // Window 1 = "Aliadas": every active wellness promotion / dated wellness plan (at most ALLY_CAP), shown as a gentle carousel.
-  const allies = plans.filter(p => (dated(p) && eventCategory(p) === "wellness") || (promoHome(p) && planTag(p.id).cat === "spa")).sort((x, y) => (x.event_date || untilOf(x)).localeCompare(y.event_date || untilOf(y))).slice(0, ALLY_CAP);
-  const specials = rotate(plans.filter(p => (dated(p) && eventCategory(p) === "events") || (promoHome(p) && planTag(p.id).cat !== "spa")).sort((x, y) => (x.event_date || untilOf(x)).localeCompare(y.event_date || untilOf(y))), 2);
+  const when = p => p.event_date || untilOf(p);
+  const byWhen = (x, y) => when(x).localeCompare(when(y));
+  const wellnessPromo = p => promoHome(p) && (p.kind === "wellness" || planTag(p.id).cat === "spa");
+  const allies = plans.filter(p => ((p.kind === "event" || p.kind === "wellness") && !sideTrip(p) && dateOk(p) && eventCategory(p) === "wellness") || wellnessPromo(p)).sort(byWhen).slice(0, ALLY_CAP);
+  const programming = plans.filter(p => (p.kind === "event" && !sideTrip(p) && dateOk(p) && ["events", "social"].includes(eventCategory(p))) || (promoHome(p) && !wellnessPromo(p))).sort(byWhen);
+  const tours = plans.filter(p => isTour(p) && tourLive(p)).sort((x, y) => (planTag(y.id).featured ? 1 : 0) - (planTag(x.id).featured ? 1 : 0) || byDate(x, y));
+  const prog = rotate(programming, 1)[0], tour = rotate(tours, 1)[0];
   host.hidden = false;
   const all = el("button", { type: "button", class: "see-all", text: t("seeAll") + " →" });
   all.addEventListener("click", () => showPage("agenda"));
   host.replaceChildren(
     window.cmlSecHead("cal", "rose", t("upcomingTitle"), t("upcomingSub"), all),
     el("div", { class: "ev-grid" },
-      allies.length ? alliesCarousel(allies, promoHome) : soonCard(t("soonWellT"), t("soonWellD")),
-      specials[0] ? eventCard(specials[0], true) : soonCard(),
-      specials[1] ? eventCard(specials[1], true) : soonCard()));
+      allies.length ? alliesCarousel(allies, wellnessPromo) : soonCard(t("soonWellT"), t("soonWellD")),
+      prog ? eventCard(prog, true) : soonCard(),
+      tour ? tourCard(tour) : soonCard()));
 }
 // Home always shows three windows: real plans first, then a calm "coming soon" card that invites members to suggest a plan.
 function soonCard(title, text) {

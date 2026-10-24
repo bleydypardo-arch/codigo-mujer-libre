@@ -883,7 +883,7 @@ function formView() {
     event_time: val0("event_time"), date_text: val0("date_text"), location: val0("location"), price: val0("price"),
     url: val0("url"), details: richEditor ? richEditor.value() : val0("details"), image_url: picker ? picker.value : "", published: published.checked
   });
-  const buildTag = () => Object.assign(buildTag0(), { show: showSel.value });
+  const buildTag = () => Object.assign(buildTag0(), { show: showSel.value }, Array.isArray(oldTag.dates) ? { dates: oldTag.dates } : {});
   const buildTag0 = () => kind === "matcha"
     ? Object.assign({ matcha: true, mtype: mtypeSel.value, featured: featuredBox.checked, city: cityIn.value.trim() }, oldTag.full ? { full: true } : {})
     : { cat: typeSel ? (kind === "trip" && typeSel.value === "trip" ? "" : (kind === "wellness" && oldTag.cat === "spa" && !typeSel.value ? "spa" : typeSel.value)) : "", matcha: !!(matchaBox && matchaBox.checked),
@@ -915,7 +915,7 @@ function formView() {
     }
     if (promoHomeBox && promoHomeBox.checked && promoIn.value.trim() && (kind === "wellness" ? oldTag.cat === "spa" : false)) {   // "Aliadas" window: at most 5 active promotions per city
       const ck = C.cityKey(showSel.value), live = x => { const g = C.planTag(x.id); return g.cat === "spa" && g.promoHome && g.promo && (!g.promoUntil || g.promoUntil >= C.todayStr()) && C.cityKey(g.show) === ck; };
-      if ((((C.homeData && C.homeData().plans) || []).filter(x => (!row || x.id !== row.id) && live(x))).length >= 5) return fail("allyFull");
+      if ((((C.homeData && C.homeData().plans) || []).filter(x => (!row || x.id !== row.id) && live(x))).length >= 12) return fail("allyFull");
     }
     const payload = buildPayload();
     saveBtn.disabled = true;
@@ -1445,6 +1445,6 @@ async function citiesTab() {
 }
 registerTab("cities", { group: "content", label: { es: S.es.csTab, en: S.en.csTab }, render: async () => citiesTab() });
 registerTab("homepin", { group: "content", label: { es: S.es.hpTab, en: S.en.hpTab }, render: async () => homePinTab() });
-Object.assign(S.es, { allyFull: "Ya hay 5 promociones activas en la ventana «Aliadas» de esta ciudad. Espera a que venza una, o quita «Mostrar también en Eventos Especiales» a otra.", fPromo: "Promoción especial (opcional)", fPromoHelp: "Úsala para un descuento o evento en este lugar (ej. promo de Navidad). Se ve como una etiqueta dorada en el lugar y desaparece sola después de la fecha. No hace falta crear otra tarjeta.", fPromoText: "Promoción", fPromoUntil: "Válida hasta", fPromoHome: "Mostrar también en “Eventos Especiales” del Home", dupWarn: "Ya existe un plan con este nombre. ¿Quieres crear otro igual? Si es una promoción, mejor edita el lugar y llena “Promoción especial”." });
-Object.assign(S.en, { allyFull: "There are already 5 active promotions in this city's “Partners” window. Wait for one to end, or untick “Also show in Home Special Events” on another.", fPromo: "Special promotion (optional)", fPromoHelp: "Use it for a discount or event at this place (e.g. a Christmas promo). It shows as a gold tag on the place and disappears by itself after the date. No need to create another card.", fPromoText: "Promotion", fPromoUntil: "Valid until", fPromoHome: "Also show in Home “Special Events”", dupWarn: "A plan with this name already exists. Create another one anyway? If it is a promotion, edit the place and fill in “Special promotion” instead." });
+Object.assign(S.es, { allyFull: "Ya hay 12 promociones activas en la ventana «Aliadas» de esta ciudad. Espera a que venza una, o quita «Mostrar también en Eventos Especiales» a otra.", fPromo: "Promoción especial (opcional)", fPromoHelp: "Úsala para un descuento o evento en este lugar (ej. promo de Navidad). Se ve como una etiqueta dorada en el lugar y desaparece sola después de la fecha. No hace falta crear otra tarjeta.", fPromoText: "Promoción", fPromoUntil: "Válida hasta", fPromoHome: "Mostrar también en “Eventos Especiales” del Home", dupWarn: "Ya existe un plan con este nombre. ¿Quieres crear otro igual? Si es una promoción, mejor edita el lugar y llena “Promoción especial”." });
+Object.assign(S.en, { allyFull: "There are already 12 active promotions in this city's “Partners” window. Wait for one to end, or untick “Also show in Home Special Events” on another.", fPromo: "Special promotion (optional)", fPromoHelp: "Use it for a discount or event at this place (e.g. a Christmas promo). It shows as a gold tag on the place and disappears by itself after the date. No need to create another card.", fPromoText: "Promotion", fPromoUntil: "Valid until", fPromoHome: "Also show in Home “Special Events”", dupWarn: "A plan with this name already exists. Create another one anyway? If it is a promotion, edit the place and fill in “Special promotion” instead." });
 })();

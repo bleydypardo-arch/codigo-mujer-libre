@@ -30,6 +30,7 @@ const T = {
     podIntro: "Podcast «Entre Nosotras». Cada episodio vive en YouTube: pega aquí el enlace. Las integrantes lo ven en Inicio (el próximo o el más reciente) y en Bienestar (todos, con filtro por tema).", podNew: "+ Nuevo episodio", podTitle: "Título del episodio", podDesc: "Descripción corta (opcional)", podTopic: "Tema", podDate: "Fecha y día de estreno", podTime: "Hora (opcional)", podUrl: "Enlace de YouTube del episodio", podTeaser: "Enlace del adelanto de 15 segundos (opcional)", podPub: "Publicado (visible para las integrantes)", podRemove: "Quitar episodio", podBadUrl: "El enlace debe ser de YouTube.", podNeed: "Para publicar, completa el título en español e inglés, la fecha y el enlace de YouTube.", podEmpty: "Todavía no hay episodios. Toca «Nuevo episodio».", podEp: n => "Episodio " + n,
     helpIntro: "Los botones grandes de ayuda al final de la página de Apoyo. Cada ciudad tiene los suyos. Escribe el número y el nombre en español e inglés (hasta 4). Si dejas una ciudad vacía, se usan los números oficiales que ya vienen cargados (en gris). Verifica siempre cada número antes de guardarlo.",
     tDeleted: "Borrados", delTitle: "Actividades con fecha borradas automáticamente (últimos 60 días)", delNone: "Todavía no se ha borrado nada.", delFail: "No se pudo leer. ¿Ya corriste el paso de Supabase (borrado automático)?", delWhen: "borrado el",
+    tImportEv: "Importar eventos y tours",
     tInterest: "Interés", intTitle: "Lista de espera y toques (últimos 30 días)", intWait: "Mujeres en la lista de Esencias", intVotes: "Aroma que quieren primero", intTaps: "Toques en promociones", intNone: "Todavía no hay datos.", intFail: "No se pudo leer. ¿Ya corriste el paso de Supabase (migration_interest)?", intTimes: "toques",
     tCityList: "Mis ciudades", cityIntro: "Estas son las ciudades de la app: aparecen en el registro, en el botón de ciudad y al etiquetar contenido. Agrega la ciudad nueva, elige su país y guarda. Las líneas de ayuda de cada ciudad se editan en \"Líneas de ayuda\".", cityName: "Ciudad", cityCountry: "País", cityCO: "Colombia", cityUS: "Estados Unidos", cityOther: "Otro país", cityES: "España", cityAdd: "+ Agregar ciudad", cityRemove: "Quitar", cityNone: "Deja al menos una ciudad.", cityDefault: "Volver a la lista original", cityPh: "Ej.: Cali",
     tFounder: "Mi bienvenida", founderIntro: "Este mensaje lo ve cada mujer, con tu foto, la primera vez que entra a la app. Cámbialo cuando quieras.", founderName: "Tu nombre", founderEs: "Mensaje en español", founderEn: "Mensaje en inglés", founderReset: "Volver al mensaje original", founderPreview: "Ver cómo se ve la bienvenida",
@@ -64,6 +65,7 @@ const T = {
     podIntro: "“Entre Nosotras” podcast. Every episode lives on YouTube: paste its link here. Members see it on Home (the next or latest one) and in Wellness (all of them, filtered by topic).", podNew: "+ New episode", podTitle: "Episode title", podDesc: "Short description (optional)", podTopic: "Topic", podDate: "Release date", podTime: "Time (optional)", podUrl: "YouTube link of the episode", podTeaser: "Link to the 15-second teaser (optional)", podPub: "Published (visible to members)", podRemove: "Remove episode", podBadUrl: "The link must be a YouTube link.", podNeed: "To publish, complete the title in Spanish and English, the date and the YouTube link.", podEmpty: "No episodes yet. Tap “New episode”.", podEp: n => "Episode " + n,
     helpIntro: "The big help buttons at the bottom of the Support page. Each city has its own. Type the number and the name in Spanish and English (up to 4). If a city is left empty, the built-in official numbers are used (shown in grey). Always verify each number before saving.",
     tDeleted: "Deleted", delTitle: "Dated activities deleted automatically (last 60 days)", delNone: "Nothing has been deleted yet.", delFail: "Could not read. Did you run the Supabase step (auto-delete)?", delWhen: "deleted on",
+    tImportEv: "Import events and tours",
     tInterest: "Interest", intTitle: "Waitlist and taps (last 30 days)", intWait: "Women on the Essences list", intVotes: "Scent they want first", intTaps: "Promo taps", intNone: "No data yet.", intFail: "Could not read. Did you run the Supabase step (migration_interest)?", intTimes: "taps",
     tCityList: "My cities", cityIntro: "These are the app's cities: they appear at sign-up, in the city button and when tagging content. Add the new city, choose its country and save. Each city's help lines are edited in \"Help lines\".", cityName: "City", cityCountry: "Country", cityCO: "Colombia", cityUS: "United States", cityOther: "Other country", cityES: "Spain", cityAdd: "+ Add city", cityRemove: "Remove", cityNone: "Keep at least one city.", cityDefault: "Back to the original list", cityPh: "E.g.: Cali",
     tFounder: "My welcome", founderIntro: "Every woman sees this message, with your photo, the first time she enters the app. Change it whenever you like.", founderName: "Your name", founderEs: "Message in Spanish", founderEn: "Message in English", founderReset: "Back to the original message", founderPreview: "See how the welcome looks",
@@ -760,6 +762,92 @@ async function deletedTab() {
   return box;
 }
 
+// ----- Import a list of dated events or tours as drafts -----
+let lastEvImport = null;
+async function evImportTab() {
+  const citySel = el("select", {}, el("option", { value: "", text: "— Elige la ciudad —" }), ...C.cities().map(c => el("option", { value: c.name, text: c.name })));
+  const cv = C.cityName ? C.cityName(C.viewCity()) : ""; if (cv) citySel.value = cv;
+  const typeSel = el("select", {}, el("option", { value: "tour", text: "Tours y experiencias (ventana 3 del Inicio)" }), el("option", { value: "event", text: "Eventos con fecha: conciertos, cursos, parques, ferias (ventana 2 del Inicio)" }));
+  const area = el("textarea", { rows: 10, placeholder: "Título | Fechas 2026-11-08, 2026-11-15 | Hora | Lugar o punto de salida | Precio | https://enlace | Descripción en español | Description in English | https://foto" });
+  const now = el("input", { type: "checkbox" });
+  const out = el("div", {}), fb = feedbackNode();
+  const todayS = C.todayStr();
+  const okDate = d => /^\d{4}-\d\d-\d\d$/.test(d) && !isNaN(new Date(d + "T12:00:00")) && new Date(d + "T12:00:00").toISOString().slice(0, 10) === d;
+  const paintDone = () => {
+    if (!lastEvImport) return;
+    const kids = [el("p", { class: "small-note", text: "Listo: " + lastEvImport.ids.length + " creados." })];
+    if (!lastEvImport.published) kids.push(K.button("Publicar todos los que acabo de crear", "primary", async e2 => {
+      e2.currentTarget.disabled = true;
+      try { const u = await C.db.from("plans").update({ published: true }).in("id", lastEvImport.ids); if (u.error) throw u.error; lastEvImport = null; await C.refreshPublic(); } catch (e) { console.error(e); e2.currentTarget.disabled = false; return say(fb, tx("saveFail")); }
+      K.toast(tx("impPublished")); out.replaceChildren(el("p", { class: "small-note", text: tx("impPublished") }));
+    }));
+    out.replaceChildren(...kids);
+  };
+  const parse = () => {
+    const rows = [], lines = area.value.split("\n"), isTour = typeSel.value === "tour";
+    for (let i = 0; i < lines.length; i++) {
+      const raw = lines[i].trim(); if (!raw) continue;
+      const p = raw.split("|").map(x => x.trim());
+      if (!p[0]) continue;
+      const dates = (p[1] || "").split(/[,;]/).map(x => x.trim()).filter(Boolean);
+      const bad = dates.find(d => !okDate(d));
+      if (bad) { say(fb, "Línea " + (i + 1) + ": la fecha «" + bad + "» no es válida. Usa el formato 2026-11-08."); return null; }
+      const future = dates.filter(d => d >= todayS).sort();
+      if (dates.length && !future.length) continue;   // everything already past: nothing to publish
+      if (!isTour && !future.length) { say(fb, "Línea " + (i + 1) + ": el evento necesita una fecha (2026-11-08)."); return null; }
+      if (p[5] && !C.safeUrl(p[5])) { say(fb, "Línea " + (i + 1) + ": el enlace no es válido (debe empezar con https://)."); return null; }
+      if (p[8] && !C.safeUrl(p[8])) { say(fb, "Línea " + (i + 1) + ": el enlace de la foto no es válido (debe empezar con https://)."); return null; }
+      rows.push({ name: p[0].slice(0, 120), dates: future, time: (p[2] || "").slice(0, 40), place: (p[3] || "").slice(0, 200), price: (p[4] || "").slice(0, 80), url: p[5] ? C.safeUrl(p[5]) : "", des: (p[6] || "").slice(0, 600), den: (p[7] || "").slice(0, 600), img: p[8] ? C.safeUrl(p[8]) : "" });
+    }
+    return rows;
+  };
+  const create = async (rows, city, isTour, publish) => {
+    const items = [];   // an event with several dates becomes one plan per date; a tour is ONE plan that remembers all its dates
+    rows.forEach(r => { if (isTour) items.push(Object.assign({}, r, { date: r.dates.length ? r.dates[r.dates.length - 1] : null })); else r.dates.forEach(d => items.push(Object.assign({}, r, { date: d }))); });
+    const payloads = items.map(r => ({
+      kind: isTour ? "trip" : "event", code: isTour ? "Adventure" : "Social", published: publish,
+      title_es: r.name, title_en: r.name, desc_es: r.des || r.den, desc_en: r.den || r.des,
+      location: r.place, url: r.url, event_date: r.date, event_time: r.time, date_text: "", price: r.price, details: "", image_url: r.img || ""
+    }));
+    const ins = await C.db.from("plans").insert(payloads).select("id");
+    if (ins.error) throw ins.error;
+    const ids = (ins.data || []).map(x => x.id);
+    const cur = await C.db.from("settings").select("key,value").eq("key", "plan_tags").maybeSingle();
+    if (cur.error) throw cur.error;
+    const all = Object.assign({}, (cur.data && cur.data.value) || {});
+    ids.forEach((id, k) => { const tg = {}; if (!isTour) tg.cat = "events"; if (city) tg.show = city; if (isTour && items[k].dates.length) tg.dates = items[k].dates; all[id] = tg; });
+    const w = await C.db.from("settings").upsert({ key: "plan_tags", value: all, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (w.error) throw w.error;
+    const back = await C.db.from("settings").select("value").eq("key", "plan_tags").maybeSingle();
+    const got = (back.data && back.data.value) || {};
+    if (back.error || ids.some(id => !got[id] || (city && got[id].show !== city))) throw new Error("tags not saved");
+    lastEvImport = { ids, published: publish };
+    await C.refreshPublic();
+    return ids;
+  };
+  const showPreview = () => {
+    say(fb, ""); const isTour = typeSel.value === "tour", city = citySel.value;
+    if (isTour && !city) return say(fb, "Elige la ciudad: los tours necesitan ciudad para mostrarse solo a las mujeres de ahí.");
+    const rows = parse(); if (!rows) return;
+    if (!rows.length) { out.replaceChildren(); return say(fb, "No encontré nada para crear (revisa la lista y que las fechas no hayan pasado)."); }
+    if (rows.length > 100) return say(fb, tx("impTooMany"));
+    const list = el("ul", { class: "small-note" }, ...rows.map(r => el("li", { text: r.name + (r.dates.length ? " · 📅 " + r.dates.join(", ") : isTour ? " · (consultar fechas)" : "") + (r.place ? " · 📍 " + r.place : "") + (r.url ? " · 🔗" : " · (sin enlace)") + (r.img ? " · 🖼️" : " · (sin foto)") })));
+    const n = isTour ? rows.length : rows.reduce((a, r) => a + r.dates.length, 0);
+    out.replaceChildren(el("p", { class: "small-note", text: n + " listos" + (isTour ? "" : " (un evento con varias fechas se crea una vez por fecha)") }), list,
+      K.button("Crear " + n, "primary", async ev => {
+        const b = ev.currentTarget; b.disabled = true;
+        try { await create(rows, city, isTour, now.checked); } catch (e) { console.error(e); b.disabled = false; return say(fb, tx("saveFail")); }
+        area.value = ""; K.toast("Listo"); paintDone();
+      }));
+  };
+  paintDone();
+  return el("div", { class: "admin-form" },
+    el("p", { class: "small-note", text: "Pega una línea por tour o evento, con estos datos separados por barras |: Título | Fechas (2026-11-08, 2026-11-15; en un tour pueden faltar) | Hora | Lugar o punto de salida | Precio | Enlace directo | Descripción en español | Description in English | Foto. Solo el título es obligatorio (y la fecha en eventos). Se crean como borradores y los publicas con un botón. En los tours, la app muestra solo las fechas que faltan y el tour se borra solo 5 días después de su última fecha." }),
+    field("Tipo", typeSel), field(tx("impCity"), citySel), field("Pega aquí la lista", area),
+    el("label", { class: "check-row" }, now, el("span", { text: tx("impPublishNow") })),
+    el("div", { class: "admin-bar" }, K.button(tx("impPreview"), "secondary", showPreview)), fb, out);
+}
+
 async function interestTab() {
   const box = el("div", { class: "admin-form" }, el("h3", { text: tx("intTitle") }));
   const r = await C.db.from("interest_log").select("kind,ref,created_at").gte("created_at", new Date(Date.now() - 30 * 864e5).toISOString()).limit(5000);
@@ -828,6 +916,7 @@ function init() {
   A.registerTab("talkLib", { group: "content", label: lab(T.es.tTalkLib, T.en.tTalkLib), render: async () => talkLibTab() });
   A.registerTab("import", { group: "content", label: lab(T.es.tImport, T.en.tImport), render: async () => importTab() });
   A.registerTab("deleted", { group: "content", label: lab(T.es.tDeleted, T.en.tDeleted), render: async () => deletedTab() });
+  A.registerTab("evimport", { group: "content", label: lab(T.es.tImportEv, T.en.tImportEv), render: async () => evImportTab() });
   A.registerTab("interest", { group: "content", label: lab(T.es.tInterest, T.en.tInterest), render: async () => interestTab() });
   A.registerTab("cityList", { group: "content", label: lab(T.es.tCityList, T.en.tCityList), render: async () => cityListTab() });
   A.registerTab("help", { group: "content", label: lab(T.es.tHelp, T.en.tHelp), render: async () => helpTab() });
