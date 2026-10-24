@@ -2290,7 +2290,7 @@ function fillSignupCities() {
   const sel = byId("suCitySel"); if (!sel) return;
   const keep = sel.value;
   const first = sel.options[0], last = [...sel.options].find(o => o.value === "__other");
-  sel.replaceChildren(first, ...cities().map(c => el("option", { value: c.name, text: c.name })), ...(last ? [last] : []));
+  sel.replaceChildren(first, ...cities().map(c => el("option", { value: c.name, text: cityFull(c.name) })), ...(last ? [last] : []));
   if (keep && [...sel.options].some(o => o.value === keep)) sel.value = keep;
 }
 async function loadPublicCities() {
