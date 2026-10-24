@@ -1,6 +1,6 @@
 -- Código Mujer Libre — borrado automático de actividades CON FECHA ya pasadas
 -- QUÉ HACE: cada noche borra definitivamente los planes que tienen fecha (conciertos, congresos, tours, clases, eventos)
---   cuando pasaron más de 7 días de su fecha. Se ocultan solos al día siguiente; a los 7 días se borran.
+--   cuando pasaron más de 5 días de su fecha. Se ocultan solos al día siguiente; a los 5 días se borran.
 -- QUÉ NO TOCA NUNCA: todo lo que NO tiene fecha (restaurantes, spas, happy hours, cafés, lecturas, recetas).
 --   La condición es event_date IS NOT NULL. Sin fecha = nunca se borra.
 -- OJO: al borrar un plan también se borran sus respuestas («voy / no voy»), votaciones y datos asociados. No se recupera.
@@ -19,7 +19,7 @@ begin
   delete from public.plans
    where event_date is not null
      and kind in ('event', 'trip', 'wellness')
-     and event_date < (current_date - 7);
+     and event_date < (current_date - 5);
   get diagnostics n = row_count;
   return n;
 end;
