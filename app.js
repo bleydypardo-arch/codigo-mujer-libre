@@ -482,7 +482,7 @@ Object.assign(translations.es, {
   viewAsLabel: "Viendo la app como", viewAsAll: "Todas las ciudades", cityBarLabel: "Estás viendo",
   tier_owner: "Anfitriona Líder", tier_founder: "Anfitriona Líder", tier_host: "Anfitriona", hostsTitle: "Tus anfitrionas", hostsSub: "Mujeres que te reciben y cuidan el Club en tu ciudad.",
   cityPick: "Elige tu ciudad", cityOther: "Otra ciudad", cityOtherLbl: "¿Cuál es tu ciudad?", cityHint: "Solo la ciudad. Nunca pedimos tu dirección.",
-  joinQDoes: "2 · ¿A qué te dedicas hoy?", joinQDoesPh: "Soy maestra, cuido mi hogar, tengo un negocio, busco empleo…",
+  joinQDoes: "2 · ¿A qué te dedicas hoy?", jobPick: "Elige una opción", joinQDoesPh: "Soy maestra, cuido mi hogar, tengo un negocio, busco empleo…",
   joinQDream: "3 · ¿Qué sueño todavía vive en ti?", joinQDreamPh: "Abrir mi panadería, escribir un libro, volver a estudiar, viajar…", joinQDreamHint: "Nunca es tarde para empezar. Lo verán las demás integrantes cuando te conozcan.",
   joinQ1: "1 · ¿Qué te gustaría encontrar aquí?", joinQ1s: "Elige las que quieras.",
   joinQ2: "4 · ¿Cómo llegaste a Código Mujer Libre?", heard_friend: "Una amiga me invitó", heard_event: "Un evento", heard_social: "Redes sociales", heard_other: "Otro",
@@ -515,7 +515,7 @@ Object.assign(translations.en, {
   viewAsLabel: "Viewing the app as", viewAsAll: "All cities", cityBarLabel: "You\u2019re viewing",
   tier_owner: "Lead Host", tier_founder: "Lead Host", tier_host: "Host", hostsTitle: "Your hosts", hostsSub: "Women who welcome you and look after the Club in your city.",
   cityPick: "Choose your city", cityOther: "Another city", cityOtherLbl: "What is your city?", cityHint: "Just the city. We never ask for your address.",
-  joinQDoes: "2 · What do you do today?", joinQDoesPh: "I'm a teacher, I care for my home, I run a business, I'm looking for work…",
+  joinQDoes: "2 · What do you do today?", jobPick: "Choose an option", joinQDoesPh: "I'm a teacher, I care for my home, I run a business, I'm looking for work…",
   joinQDream: "3 · What dream still lives in you?", joinQDreamPh: "Open my bakery, write a book, go back to school, travel…", joinQDreamHint: "It is never too late to begin. Other members will see it when they get to know you.",
   joinQ1: "1 · What would you like to find here?", joinQ1s: "Choose as many as you like.",
   joinQ2: "4 · How did you find Código Mujer Libre?", heard_friend: "A friend invited me", heard_event: "An event", heard_social: "Social media", heard_other: "Other",
@@ -799,6 +799,7 @@ function renderAll() {
   renderMessages();
   renderWeeklyCode();
   renderInterestChoices();
+  renderJobChoice();
   renderModalText();
   renderStatus();
   renderStorageNotice();
@@ -2023,6 +2024,21 @@ function joinNext() {
   joinStep(2);
   requestAnimationFrame(() => { byId("joinTitle").focus({ preventScroll: true }); byId("authGate").scrollTo ? byId("authGate").scrollTo({ top: 0 }) : null; window.scrollTo({ top: 0 }); });
 }
+// "What do you do today?" is a fixed list (no free text). We store the key; old free-text answers simply stop showing.
+const JOBS = [["professional", "Profesional", "Professional"], ["entrepreneur", "Emprendedora y dueña de negocio", "Entrepreneur and business owner"], ["independent", "Independiente", "Independent"], ["homemaker", "Ama de casa", "Homemaker"], ["student", "Estudiante", "Student"], ["retired", "Jubilada o pensionada", "Retired"]];
+const jobLabel = v => { const j = JOBS.find(x => x[0] === v); return j ? j[currentLanguage === "en" ? 2 : 1] : ""; };
+function jobSelect(id, value) {
+  const s = el("select", { id }, el("option", { value: "", text: t("jobPick") }), ...JOBS.map(j => el("option", { value: j[0], text: jobLabel(j[0]) })));
+  s.value = JOBS.some(j => j[0] === value) ? value : "";
+  return s;
+}
+window.CMLJobs = { label: jobLabel, select: jobSelect };
+function renderJobChoice() {
+  const old = byId("suDoes");
+  if (!old) return;
+  const neu = jobSelect("suDoes", old.value);
+  old.replaceWith(neu);
+}
 function renderInterestChoices() {
   const box = byId("suInterests");
   if (!box) return;
@@ -2213,7 +2229,7 @@ async function handleSignup(event) {
           first_name: first, last_name: last, city: cityVal(), interests,
           phone: joinVal("suPhone").slice(0, 30), whatsapp: radioVal("suWa") === "true",
           birth_month: joinVal("suBMonth") || null, birth_day: joinVal("suBDay") || null,
-          application: { heard: radioVal("suHeard"), invited_by: joinVal("suInvited").slice(0, 80), smile: joinVal("suSmile").slice(0, 300), occupation: joinVal("suDoes").slice(0, 120), dream: joinVal("suDream").slice(0, 300), guidelines: true, lang: currentLanguage }
+          application: { heard: radioVal("suHeard"), invited_by: joinVal("suInvited").slice(0, 80), smile: joinVal("suSmile").slice(0, 300), occupation: (JOBS.some(j => j[0] === joinVal("suDoes")) ? joinVal("suDoes") : ""), dream: joinVal("suDream").slice(0, 300), guidelines: true, lang: currentLanguage }
         },
         emailRedirectTo: window.location.origin + window.location.pathname
       }

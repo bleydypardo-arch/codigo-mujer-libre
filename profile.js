@@ -100,7 +100,7 @@ function renderProfile() {
   const citySel = el("select", { id: "profCity" }, el("option", { value: "", text: t("profCityPick") }), ...cityList.map(c => el("option", { value: c, text: c })));
   citySel.value = me.city || "";
   const app0 = me.application && typeof me.application === "object" ? me.application : {};
-  const does = el("input", { type: "text", id: "profDoes", maxlength: 120, autocomplete: "off", placeholder: t("profDoesPh"), value: app0.occupation || "" });
+  const does = window.CMLJobs.select("profDoes", app0.occupation);
   const dream = el("textarea", { id: "profDream", rows: 3, maxlength: 300, placeholder: t("profDreamPh") }); dream.value = app0.dream || "";
   const boxes = Object.keys(C.codeLabels).map(code => {
     const input = el("input", { type: "checkbox", value: code }); input.checked = (me.interests || []).includes(code);

@@ -138,7 +138,7 @@
       el("b", { class: "mcard-name", text: m.first_name }),
       C.hostBadge ? C.hostBadge(m.id) : null,
       m.city ? el("small", { class: "mcard-city", text: m.city }) : null,
-      m.occupation ? el("small", { class: "mcard-job", text: clip(m.occupation, 40) }) : null,
+      window.CMLJobs && window.CMLJobs.label(m.occupation) ? el("small", { class: "mcard-job", text: window.CMLJobs.label(m.occupation) }) : null,
       m.dream ? el("em", { class: "mcard-dream", text: "“" + clip(m.dream, 70) + "”" }) : null,
       badge(m));
     b.addEventListener("click", () => openSheet(m));
@@ -184,7 +184,7 @@
       el("h3", { text: m.first_name }),
       C.hostBadge ? C.hostBadge(m.id, "big") : null,
       m.city ? el("p", { class: "cn-city", text: m.city }) : null,
-      row(t("cnDoesLabel"), m.occupation),
+      row(t("cnDoesLabel"), window.CMLJobs ? window.CMLJobs.label(m.occupation) : ""),
       m.dream ? el("blockquote", { class: "cn-dream" }, el("small", { text: t("cnDreamLabel") }), el("p", { text: m.dream })) : el("p", { class: "meta", text: t("cnNoInfo") }),
       row(t("cnInterests"), chips.join(" · ")),
       act, note, window.CMLCommunity ? window.CMLCommunity.memberLinks(m) : null);
