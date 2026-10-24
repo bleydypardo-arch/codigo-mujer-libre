@@ -159,7 +159,6 @@
       <!-- SOLICITUD DE MEMBRESÍA (2 pasos) -->
       <form id="signupForm" class="join-form" hidden novalidate>
         <div class="join-head">
-          <p class="join-progress"><span id="joinStepLabel">Paso 1 de 2</span><span class="join-bar" aria-hidden="true"><span id="joinBarFill"></span></span></p>
           <h2 id="joinTitle" tabindex="-1" data-i18n="join1Title">Cuéntanos sobre ti</h2>
           <p id="joinSub" class="join-sub" data-i18n="join1Sub">Solo lo necesario para conocerte y darte la bienvenida.</p>
         </div>
@@ -189,14 +188,6 @@
               <label class="seg-opt"><input type="radio" name="suWa" value="true"><span data-i18n="yes">Sí</span></label>
               <label class="seg-opt"><input type="radio" name="suWa" value="false"><span data-i18n="no">No</span></label>
             </fieldset>
-            <fieldset class="join-bday">
-              <legend><span data-i18n="joinBday">Tu cumpleaños</span> <small data-i18n="optional">(opcional)</small></legend>
-              <div class="two-col">
-                <label><span class="sr-only" data-i18n="month">Mes</span><select id="suBMonth"></select></label>
-                <label><span class="sr-only" data-i18n="day">Día</span><select id="suBDay"></select></label>
-              </div>
-              <p class="join-hint" data-i18n="joinBdayHint">🎂 Solo el día y el mes, para celebrarte. Nunca pedimos el año.</p>
-            </fieldset>
           </div>
           <div class="join-card">
             <label><span data-i18n="email">Correo electrónico</span>
@@ -205,35 +196,7 @@
               <input id="suPassword" type="password" autocomplete="new-password" minlength="8" required>
               <small class="meta" data-i18n="passwordHint">Mínimo 8 caracteres.</small></label>
           </div>
-        </div>
-
-        <div id="joinStep2" class="join-step" hidden>
-          <fieldset class="join-card">
-            <legend class="join-q" data-i18n="joinQ1">1 · ¿Qué te gustaría encontrar aquí?</legend>
-            <p class="join-qs" data-i18n="joinQ1s">Elige las que quieras.</p>
-            <div class="choice-grid join-chips" id="suInterests"></div>
-          </fieldset>
-          <fieldset class="join-card">
-            <legend class="join-q" data-i18n="joinQDoes">2 · ¿A qué te dedicas hoy?</legend>
-            <label><span class="sr-only" data-i18n="joinQDoes">2 · ¿A qué te dedicas hoy?</span>
-              <select id="suDoes"></select></label>
-          </fieldset>
-          <fieldset class="join-card">
-            <legend class="join-q" data-i18n="joinQDream">3 · ¿Qué sueño todavía vive en ti?</legend>
-            <label><span class="sr-only" data-i18n="joinQDream">3 · ¿Qué sueño todavía vive en ti?</span>
-              <textarea id="suDream" rows="3" maxlength="300" data-i18n-placeholder="joinQDreamPh" placeholder="Abrir mi panadería, escribir un libro, volver a estudiar, viajar…"></textarea></label>
-            <p class="join-hint" data-i18n="joinQDreamHint">Nunca es tarde para empezar. Lo verán las demás integrantes cuando te conozcan.</p>
-          </fieldset>
-          <fieldset class="join-card">
-            <legend class="join-q" data-i18n="joinQ2">4 · ¿Cómo llegaste a Código Mujer Libre?</legend>
-            <div class="join-chips join-heard">
-              <label class="choice"><input type="radio" name="suHeard" value="friend"> <span data-i18n="heard_friend">Una amiga me invitó</span></label>
-              <label class="choice"><input type="radio" name="suHeard" value="event"> <span data-i18n="heard_event">Un evento</span></label>
-              <label class="choice"><input type="radio" name="suHeard" value="social"> <span data-i18n="heard_social">Redes sociales</span></label>
-              <label class="choice"><input type="radio" name="suHeard" value="other"> <span data-i18n="heard_other">Otro</span></label>
-            </div>
-            <input id="suInvited" type="hidden">
-          </fieldset>
+          <input id="suInvited" type="hidden">
           <div class="join-card join-guide">
             <p class="jg-h"><span aria-hidden="true">◆</span> <span data-i18n="guideTitle">Nuestro código</span></p>
             <ul>
@@ -247,14 +210,13 @@
           </div>
         </div>
 
+        <div id="joinStep2" class="join-step" hidden></div>
+
         <p class="form-feedback" id="signupFeedback" role="alert" hidden></p>
-        <div class="join-actions" id="joinActions1">
-          <button type="button" class="primary wide" id="joinNext" data-i18n="joinNext">Continuar →</button>
-          <button type="button" class="link-btn join-switch" id="joinToLogin" data-i18n="joinToLogin">Ya tengo cuenta · Entrar</button>
-        </div>
-        <div class="join-actions" id="joinActions2" hidden>
+        <div class="join-actions" id="joinActions1" hidden></div>
+        <div class="join-actions" id="joinActions2">
           <button type="submit" class="primary wide join-submit" id="signupBtn" data-i18n="signupBtn">Enviar mi solicitud</button>
-          <button type="button" class="link-btn join-switch" id="joinBack" data-i18n="joinBack">← Volver</button>
+          <button type="button" class="link-btn join-switch" id="joinToLogin" data-i18n="joinToLogin">Ya tengo cuenta · Entrar</button>
         </div>
       </form>
 

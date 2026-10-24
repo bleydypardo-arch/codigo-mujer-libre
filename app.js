@@ -1978,15 +1978,13 @@ function setAuthTab(which) {
   if (view === "welcome") paintOrchid("welOrchid");
 }
 let joinAt = 1;
-function joinStep(n) {
-  joinAt = n === 2 ? 2 : 1;
-  byId("joinStep1").hidden = joinAt !== 1; byId("joinStep2").hidden = joinAt !== 2;
-  byId("joinActions1").hidden = joinAt !== 1; byId("joinActions2").hidden = joinAt !== 2;
-  byId("joinStepLabel").textContent = tf("joinStepOf", joinAt);
-  byId("joinBarFill").style.width = (joinAt * 50) + "%";
+function joinStep() {   // one single page now (name, city, phone, email, password and the community rules)
+  joinAt = 2;
+  byId("joinStep1").hidden = false; byId("joinStep2").hidden = true;
+  byId("joinActions1").hidden = true; byId("joinActions2").hidden = false;
   const title = byId("joinTitle"), sub = byId("joinSub");
-  title.dataset.i18n = "join" + joinAt + "Title"; title.textContent = t(title.dataset.i18n);
-  sub.dataset.i18n = "join" + joinAt + "Sub"; sub.textContent = t(sub.dataset.i18n);
+  title.dataset.i18n = "join1Title"; title.textContent = t("join1Title");
+  sub.dataset.i18n = "join1Sub"; sub.textContent = t("join1Sub");
   showFeedback("signupFeedback", "");
 }
 function paintOrchid(id) {
@@ -2209,14 +2207,12 @@ async function handleLogin(event) {
 async function handleSignup(event) {
   event.preventDefault();
   showFeedback("signupFeedback", "");
-  if (joinAt === 1) return joinNext();          // Enter on step 1 = Continue
   const step1 = joinCheck1();
   if (step1) { joinStep(1); return showFeedback("signupFeedback", step1); }
-  if (!radioVal("suHeard")) return showFeedback("signupFeedback", "joinHeardNeed");
   if (!byId("suGuide").checked) return showFeedback("signupFeedback", "joinGuideNeed");
   const first = joinVal("suFirst"), last = joinVal("suLast"), email = joinVal("suEmail");
   const password = byId("suPassword").value;
-  const interests = [...byId("suInterests").querySelectorAll("input:checked")].map(i => i.value);
+  const interests = [];   // chosen later in "Mi perfil"
   const button = byId("signupBtn");
   button.disabled = true;
   try {
