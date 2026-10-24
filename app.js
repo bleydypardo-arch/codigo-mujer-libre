@@ -621,6 +621,7 @@ function cities() {
 const CITY_PLACE = {
   orlando: ["Orlando, Florida", "US"], miami: ["Miami, Florida", "US"], newyork: ["New York", "US"], boston: ["Boston, Massachusetts", "US"],
   charlotte: ["Charlotte, North Carolina", "US"], raleigh: ["Raleigh, North Carolina", "US"],
+  northcarolina: ["North Carolina", "US"],
   bogota: ["Bogotá", "CO"], medellin: ["Medellín, Antioquia", "CO"], barranquilla: ["Barranquilla, Atlántico", "CO"], cartagena: ["Cartagena, Bolívar", "CO"],
   granada: ["Granada, Andalucía", "ES"], granadaycosta: ["Granada y Costa, Andalucía", "ES"], motril: ["Motril, Granada, Andalucía", "ES"], almunecar: ["Almuñécar, Granada, Andalucía", "ES"],
   malaga: ["Málaga, Andalucía", "ES"], sevilla: ["Sevilla, Andalucía", "ES"], cordoba: ["Córdoba, Andalucía", "ES"], cadiz: ["Cádiz, Andalucía", "ES"]
@@ -635,11 +636,7 @@ function cityFull(name) {
   return e[0] + ", " + COUNTRY_NAME[e[1]][currentLanguage === "en" ? 1 : 0];
 }
 window.CMLPlace = { full: cityFull };
-function renderSignupCities() {   // the options keep their value; only the text gets the region and country
-  const sel = byId("suCitySel");
-  if (!sel) return;
-  [...sel.options].forEach(o => { if (o.value && o.value !== "__other") o.textContent = cityFull(o.value); });
-}
+function renderSignupCities() { fillSignupCities(); }
 const knownCities = () => cities().map(c => cityKey(c.name));
 const cityName = key => { const c = cities().find(x => cityKey(x.name) === key); return c ? c.name : ""; };
 const cityCountry = key => { const c = cities().find(x => cityKey(x.name) === key); return c ? c.country : ""; };
@@ -649,7 +646,7 @@ function viewCity() {
   const v = viewAs();
   if (v === "all") return "all";
   if (v && knownCities().includes(cityKey(v))) return cityKey(v);
-  const mine = cityKey(profile && profile.city);
+  const mine0 = cityKey(profile && profile.city), mine = CITY_ZONE[mine0] && knownCities().includes(CITY_ZONE[mine0]) ? CITY_ZONE[mine0] : mine0;
   if (knownCities().includes(mine)) return mine;
   return isStaff() ? "orlando" : "all";   // unknown / "other" city: sees everything
 }
@@ -2286,12 +2283,24 @@ async function handleSignup(event) {
 // Start-up
 // ==============================
 // Sign-up city list: the built-in cities, or the Admin-edited list (settings are readable before logging in).
+const SIGNUP_CITIES = [   // fixed list for the sign-up and the profile: only where we are open today
+  ["USA", ["Orlando", "Miami", "New York", "Boston", "North Carolina"]],
+  ["Colombia", ["Bogotá", "Barranquilla", "Medellín", "Cartagena"]],
+  ["España", ["Granada", "Motril", "Almuñécar", "Málaga", "Sevilla"]]
+];
+// Towns of Andalucía belong to the zone "Granada y Costa" for city content (events, restaurants, tours...).
+const CITY_ZONE = { granada: "granadaycosta", motril: "granadaycosta", almunecar: "granadaycosta", malaga: "granadaycosta", sevilla: "granadaycosta" };
+function signupCityGroups() {
+  const groupLabel = g => (g === "España" && currentLanguage === "en" ? "Spain" : g);
+  return SIGNUP_CITIES.map(([g, list]) => el("optgroup", { label: groupLabel(g) }, ...list.map(c => el("option", { value: c, text: cityFull(c) }))));
+}
+window.CMLPlace.groups = signupCityGroups;
 function fillSignupCities() {
   const sel = byId("suCitySel"); if (!sel) return;
   const keep = sel.value;
-  const first = sel.options[0], last = [...sel.options].find(o => o.value === "__other");
-  sel.replaceChildren(first, ...cities().map(c => el("option", { value: c.name, text: cityFull(c.name) })), ...(last ? [last] : []));
+  sel.replaceChildren(sel.options[0], ...signupCityGroups());
   if (keep && [...sel.options].some(o => o.value === keep)) sel.value = keep;
+  const w = byId("suCityOtherWrap"); if (w) w.hidden = true;
 }
 async function loadPublicCities() {
   try {

@@ -95,9 +95,10 @@ function renderProfile() {
   month.value = me.birth_month ? String(me.birth_month) : ""; day.value = me.birth_day ? String(me.birth_day) : "";
   const lang = el("select", { id: "profLang" }, el("option", { value: "es", text: "Español" }), el("option", { value: "en", text: "English" }));
   lang.value = me.pref_lang || C.lang();
-  const CITIES = C.cities ? C.cities().map(c => c.name) : ["Orlando", "Miami", "New York", "Boston", "Bogotá", "Medellín"];
-  const cityList = me.city && !CITIES.includes(me.city) ? [...CITIES, me.city] : CITIES;
-  const citySel = el("select", { id: "profCity" }, el("option", { value: "", text: t("profCityPick") }), ...cityList.map(c => el("option", { value: c, text: (window.CMLPlace && window.CMLPlace.full(c)) || c })));
+  const groups = window.CMLPlace && window.CMLPlace.groups ? window.CMLPlace.groups() : [];
+  const inList = c => groups.some(g => [...g.querySelectorAll("option")].some(o => o.value === c));
+  const citySel = el("select", { id: "profCity" }, el("option", { value: "", text: t("profCityPick") }), ...groups,
+    ...(me.city && !inList(me.city) ? [el("option", { value: me.city, text: (window.CMLPlace && window.CMLPlace.full(me.city)) || me.city })] : []));
   citySel.value = me.city || "";
   const app0 = me.application && typeof me.application === "object" ? me.application : {};
   const does = window.CMLJobs.select("profDoes", app0.occupation);
