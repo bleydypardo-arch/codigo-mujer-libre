@@ -1431,6 +1431,10 @@ function renderUpcoming() {
   const byWhen = (x, y) => when(x).localeCompare(when(y));
   const wellnessPromo = p => promoHome(p) && (p.kind === "wellness" || planTag(p.id).cat === "spa");
   const allies = plans.filter(p => ((p.kind === "event" || p.kind === "wellness") && !sideTrip(p) && dateOk(p) && eventCategory(p) === "wellness") || wellnessPromo(p)).sort(byWhen).slice(0, ALLY_CAP);
+  // Window 1 is the whole wellness window: dated events and promotions first, then the city's spas and wellness places (no date) fill the rest, rotating, up to ALLY_CAP.
+  const spaFill = plans.filter(p => !p.event_date && !sideTrip(p) && (p.kind === "wellness" || (p.kind === "event" && planTag(p.id).cat === "spa")) && !allies.includes(p));
+  const room = ALLY_CAP - allies.length;
+  if (room > 0 && spaFill.length) allies.push(...rotate(spaFill, Math.min(room, spaFill.length)));
   const programming = plans.filter(p => (p.kind === "event" && !sideTrip(p) && dateOk(p) && ["events", "social"].includes(eventCategory(p))) || (promoHome(p) && !wellnessPromo(p))).sort(byWhen);
   const tours = plans.filter(p => isTour(p) && tourLive(p)).sort((x, y) => (planTag(y.id).featured ? 1 : 0) - (planTag(x.id).featured ? 1 : 0) || byDate(x, y));
   const prog = rotate(programming, 1)[0], tour = rotate(tours, 1)[0];
