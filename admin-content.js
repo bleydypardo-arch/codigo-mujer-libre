@@ -767,7 +767,7 @@ let lastEvImport = null;
 async function evImportTab() {
   const citySel = el("select", {}, el("option", { value: "", text: "— Elige la ciudad —" }), ...C.cities().map(c => el("option", { value: c.name, text: c.name })));
   const cv = C.cityName ? C.cityName(C.viewCity()) : ""; if (cv) citySel.value = cv;
-  const typeSel = el("select", {}, el("option", { value: "tour", text: "Tours y experiencias (ventana 3 del Inicio)" }), el("option", { value: "event", text: "Eventos con fecha: conciertos, cursos, parques, ferias (ventana 2 del Inicio)" }));
+  const typeSel = el("select", {}, el("option", { value: "tour", text: "Tours y experiencias (ventana 3 del Inicio)" }), el("option", { value: "event", text: "Eventos con fecha, de cualquier tipo (ventana 2 del Inicio)" }), el("option", { value: "wellness", text: "Eventos y promociones de bienestar con fecha (ventana 1 del Inicio)" }));
   const area = el("textarea", { rows: 10, placeholder: "Título | Fechas 2026-11-08, 2026-11-15 | Hora | Lugar o punto de salida | Precio | https://enlace | Descripción en español | Description in English | https://foto" });
   const now = el("input", { type: "checkbox" });
   const out = el("div", {}), fb = feedbackNode();
@@ -784,7 +784,7 @@ async function evImportTab() {
     out.replaceChildren(...kids);
   };
   const parse = () => {
-    const rows = [], lines = area.value.split("\n"), isTour = typeSel.value === "tour";
+    const rows = [], lines = area.value.split("\n"), isTour = typeSel.value === "tour";   // events and wellness events both need a date
     for (let i = 0; i < lines.length; i++) {
       const raw = lines[i].trim(); if (!raw) continue;
       const p = raw.split("|").map(x => x.trim());
@@ -805,7 +805,7 @@ async function evImportTab() {
     const items = [];   // an event with several dates becomes one plan per date; a tour is ONE plan that remembers all its dates
     rows.forEach(r => { if (isTour) items.push(Object.assign({}, r, { date: r.dates.length ? r.dates[r.dates.length - 1] : null })); else r.dates.forEach(d => items.push(Object.assign({}, r, { date: d }))); });
     const payloads = items.map(r => ({
-      kind: isTour ? "trip" : "event", code: isTour ? "Adventure" : "Social", published: publish,
+      kind: isTour ? "trip" : "event", code: isTour ? "Adventure" : (typeSel.value === "wellness" ? "Wellness" : "Social"), published: publish,
       title_es: r.name, title_en: r.name, desc_es: r.des || r.den, desc_en: r.den || r.des,
       location: r.place, url: r.url, event_date: r.date, event_time: r.time, date_text: "", price: r.price, details: "", image_url: r.img || ""
     }));
@@ -815,7 +815,7 @@ async function evImportTab() {
     const cur = await C.db.from("settings").select("key,value").eq("key", "plan_tags").maybeSingle();
     if (cur.error) throw cur.error;
     const all = Object.assign({}, (cur.data && cur.data.value) || {});
-    ids.forEach((id, k) => { const tg = {}; if (!isTour) tg.cat = "events"; if (city) tg.show = city; if (isTour && items[k].dates.length) tg.dates = items[k].dates; all[id] = tg; });
+    ids.forEach((id, k) => { const tg = {}; if (!isTour) tg.cat = typeSel.value === "wellness" ? "wellness" : "events"; if (city) tg.show = city; if (isTour && items[k].dates.length) tg.dates = items[k].dates; all[id] = tg; });
     const w = await C.db.from("settings").upsert({ key: "plan_tags", value: all, updated_at: new Date().toISOString() }, { onConflict: "key" });
     if (w.error) throw w.error;
     const back = await C.db.from("settings").select("value").eq("key", "plan_tags").maybeSingle();
