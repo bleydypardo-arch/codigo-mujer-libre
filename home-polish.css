@@ -126,3 +126,15 @@
 .home-upcoming .ev-tour .ev-kicker{align-self:start}
 .home-upcoming .ev-tour{grid-template-rows:repeat(4,auto) 1fr;align-content:start}
 .home-upcoming .ev-tour .place-acts{align-self:end}
+
+/* Eventos Especiales + Nuestra Recomendación: bloques enmarcados y títulos en mayúsculas (solo marco y títulos; lo de adentro no cambia) */
+#homeUpcoming,#homeDiscover{position:relative;margin:22px 0 4px;padding:6px 14px 16px;border:1.5px solid var(--cml-gold);border-radius:24px;background:linear-gradient(180deg,#fffaf7,#fbeee9);box-shadow:0 10px 26px -14px rgba(122,46,60,.35)}
+#homeDiscover.discover-card{padding:6px 14px 16px;border:1.5px solid var(--cml-gold);background:linear-gradient(180deg,#fffaf7,#f8f0e4);box-shadow:0 10px 26px -14px rgba(122,46,60,.35)}
+#homeUpcoming .sec-head,#homeDiscover .sec-head{margin:14px 0 14px}
+#homeUpcoming .sec-title,#homeDiscover .sec-title{text-transform:uppercase;letter-spacing:.05em;font-size:clamp(17px,5vw,21px);line-height:1.15;font-weight:600;color:var(--cml-rose-d)}
+#homeUpcoming .sec-title em,#homeDiscover .sec-title em{font-style:normal;color:var(--cml-rose-d);font-weight:600}
+#homeUpcoming .sec-sub,#homeDiscover .sec-sub{color:#6f5a5e}
+#homeUpcoming .sec-head .see-all,#homeDiscover .sec-head .see-all{text-transform:uppercase;letter-spacing:.1em;font-size:11.5px}
+#homeUpcoming .sec-head,#homeDiscover .sec-head{gap:10px}
+#homeUpcoming .sec-ic,#homeDiscover .sec-ic{flex-basis:46px;height:46px}
+#homeUpcoming .sec-head .see-all,#homeDiscover .sec-head .see-all{white-space:nowrap}
