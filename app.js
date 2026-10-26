@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  upcomingTitle: "Eventos Especiales", allyTag: "Aliada", tourK: "Tour", tourGo: "Ver tour", tourAsk: "Consultar fechas", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", wellLess: "Ver menos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
+  swipeHint: "Desliza para ver más", upcomingTitle: "Eventos Especiales", allyTag: "Aliada", tourK: "Tour", tourGo: "Ver tour", tourAsk: "Consultar fechas", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", wellLess: "Ver menos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  upcomingTitle: "Special Events", allyTag: "Partner", tourK: "Tour", tourGo: "See tour", tourAsk: "Ask for dates", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", wellLess: "Show less", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
+  swipeHint: "Swipe to see more", upcomingTitle: "Special Events", allyTag: "Partner", tourK: "Tour", tourGo: "See tour", tourAsk: "Ask for dates", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", wellLess: "Show less", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -1469,8 +1469,19 @@ function renderUpcoming() {
     el("div", { class: "ev-grid" },
       allies.length ? alliesCarousel(allies, wellnessPromo) : soonCard(t("soonWellT"), t("soonWellD")),
       prog ? eventCard(prog, true) : soonCard(),
-      tour ? tourCard(tour) : soonCard()));
+      tour ? tourCard(tour) : soonCard()),
+    swipeHint(".ev-grid"));
 }
+// "Desliza para ver más": a small animated invitation under a sideways carousel; it fades away once the person swipes.
+function swipeHint(sel) {
+  const h = el("p", { class: "swipe-hint", "aria-hidden": "true" }, el("span", { class: "sh-a sh-l", text: "‹" }), el("span", { class: "sh-t", text: t("swipeHint") }), el("span", { class: "sh-a sh-r", text: "›" }));
+  setTimeout(() => {
+    const row = h.parentElement && h.parentElement.querySelector(sel);
+    if (row) row.addEventListener("scroll", () => { if (row.scrollLeft > 24) h.classList.add("gone"); }, { passive: true });
+  }, 0);
+  return h;
+}
+window.cmlSwipeHint = swipeHint;
 // Home always shows three windows: real plans first, then a calm "coming soon" card that invites members to suggest a plan.
 function soonCard(title, text) {
   const go = el("button", { type: "button", class: "place-btn alt", text: t("soonCta") });
@@ -2382,7 +2393,7 @@ function initialize() {
     isAdmin, isSuper, isContentAdmin, isStaff, announce, viewCity, cities, cityKey, cityName, cityCountry, hostTier, hostBadge, TIERS,
     refreshPublic: async () => { if (session) await loadAll(); }, discoverPick, todayStr, eventCategory, sideTrip,
     showPage, signOut: () => db.auth.signOut(), setLanguage,
-    homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail,
+    homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail, respondButton,
     setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, activePromo, soonCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);

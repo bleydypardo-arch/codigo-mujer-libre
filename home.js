@@ -21,7 +21,7 @@ const ES = {
   weekLabel: "Tu semana", weekGoing: "Vas", weekInterested: "Te interesa", weekNoPlans: "Aún no tienes planes confirmados",
   weekNoPlansSub: "Mira lo que viene y elige algo para ti", weekVote: "Tu voto cuenta", weekVoteCloses: d => "Tu voto cuenta · cierra " + d,
   weekBirthdays: "CUMPLEAÑOS",
-  discAll: "Ver todo", discLabel: "Nuestra Recomendación", discTitle: "Un lugar especial cada semana para disfrutar", discNewCode: "PRUEBA ALGO DISTINTO", discForYou: "PARA TI",
+  swipeHint: "Desliza para ver más", discAll: "Ver todo", discLabel: "Nuestra Recomendación", discTitle: "Un lugar especial cada semana para disfrutar", discNewCode: "PRUEBA ALGO DISTINTO", discForYou: "PARA TI",
   discEvents: "Planes y eventos", discEventsSub: "Mira todo lo que viene", discTravelK: "VIAJES Y EXPERIENCIAS",
   discWellK: "BIENESTAR", discHappyK: "HAPPY HOUR DE LA SEMANA", discHappyT: "Happy hours", discHappySub: "Pronto: uno distinto cada semana", discDineK: "RESTAURANTE DE LA SEMANA", discDineT: "Restaurantes", discDineSub: "Pronto: uno distinto cada semana", discWellTitle: "¿Cómo te sientes hoy?", discWellSub: "Una idea sencilla para cuidarte",
   talkLabel: "HABLEMOS", talkCta: "Compartir mi respuesta",
@@ -40,7 +40,7 @@ const EN = {
   weekLabel: "Your week", weekGoing: "Going", weekInterested: "Interested", weekNoPlans: "No plans confirmed yet",
   weekNoPlansSub: "See what's coming up and pick something for you", weekVote: "Your vote counts", weekVoteCloses: d => "Your vote counts · closes " + d,
   weekBirthdays: "BIRTHDAYS",
-  discAll: "View all", discLabel: "Our Recommendation", discTitle: "A special place every week to enjoy", discNewCode: "TRY SOMETHING DIFFERENT", discForYou: "FOR YOU",
+  swipeHint: "Swipe to see more", discAll: "View all", discLabel: "Our Recommendation", discTitle: "A special place every week to enjoy", discNewCode: "TRY SOMETHING DIFFERENT", discForYou: "FOR YOU",
   discEvents: "Plans & events", discEventsSub: "See everything coming up", discTravelK: "TRAVEL & EXPERIENCES",
   discWellK: "WELLNESS", discHappyK: "HAPPY HOUR OF THE WEEK", discHappyT: "Happy hours", discHappySub: "Soon: a different one every week", discDineK: "RESTAURANT OF THE WEEK", discDineT: "Restaurants", discDineSub: "Soon: a different one every week", discWellTitle: "How are you feeling today?", discWellSub: "A simple idea to take care of yourself",
   talkLabel: "LET'S TALK", talkCta: "Share my answer",
@@ -270,12 +270,14 @@ function thumb(src, code, whole, fb) {
   } else box.textContent = emojiOf(code);
   return box;
 }
-function disc(th, kicker, title, sub, onClick) {
+function disc(th, kicker, title, sub, onClick, plan) {
   const b = el("button", { type: "button", class: "disc-row" }, th,
     el("span", { class: "disc-txt" }, el("small", { text: kicker }), el("b", { text: title }), sub ? el("span", { text: sub }) : null),
     el("span", { class: "wrow-go", "aria-hidden": "true", text: "›" }));
   b.addEventListener("click", onClick);
-  return b;
+  if (!plan || !C.respondButton) return b;
+  // same "Me interesa / Voy" buttons as Eventos Especiales
+  return el("div", { class: "disc-card" }, b, el("div", { class: "resp-row" }, C.respondButton(plan, "interested", "data-resp-home"), C.respondButton(plan, "going", "data-resp-home")));
 }
 function renderDiscover() {
   const host = document.getElementById("homeDiscover");
@@ -298,13 +300,13 @@ function renderDiscover() {
     if (s.p) {
       const tag = C.planTag(s.p.id), hi = C.safeUrl(tag.homeImg || "");
       rows.push(disc(thumb(hi || C.safeUrl(s.p.image_url), s.code, !!hi || !!tag.full), s.k, C.pick(s.p, "title") || "—",
-        [s.p.event_date ? shortDate(s.p.event_date) : "", s.p.location].filter(Boolean).join(" · ") || C.pick(s.p, "desc") || "", () => C.openDetail(s.p.id)));
+        [s.p.event_date ? shortDate(s.p.event_date) : "", s.p.location].filter(Boolean).join(" · ") || C.pick(s.p, "desc") || "", () => C.openDetail(s.p.id), s.p));
     } else rows.push(disc(thumb("", s.code), s.k, s.fb[0], s.fb[1], go2(s.fb[2])));
   });
   host.hidden = false;
   const all = el("button", { type: "button", class: "see-all", text: t("discAll") + " →" });
   all.addEventListener("click", () => { if (C.showEventsCode) C.showEventsCode(""); else C.showPage("events"); });   // Descubre: the complete list of happy hours, restaurants and wellness
-  host.replaceChildren(window.cmlSecHead("star", "gold", t("discLabel"), t("discTitle"), all), el("div", { class: "disc-list" }, ...rows));
+  host.replaceChildren(window.cmlSecHead("star", "gold", t("discLabel"), t("discTitle"), all), el("div", { class: "disc-list" }, ...rows), window.cmlSwipeHint ? window.cmlSwipeHint(".disc-list") : null);
 }
 
 // Soft rain of hearts only inside the Let's Talk card when the envelope opens (decorative, skipped for reduced motion)
