@@ -177,3 +177,11 @@
 #homeUpcoming .sec-sub,#homeDiscover .sec-sub{margin-top:4px}
 .swipe-hint{gap:10px;margin:8px 0 0;font-size:10.5px;letter-spacing:.12em}
 .sh-btn{width:32px;height:32px;min-width:32px;font-size:21px;border-width:1.5px;box-shadow:0 5px 10px -6px rgba(150,100,30,.7)}
+
+/* Título centrado a la altura del icono que se mueve; subtítulo y botón centrados debajo; todo un poco más arriba */
+#homeUpcoming .sec-head .sec-tx,#homeDiscover .sec-head .sec-tx{display:contents}
+#homeUpcoming .sec-head .sec-title,#homeDiscover .sec-head .sec-title{grid-column:2;grid-row:1;align-self:center;text-align:center;margin:0}
+#homeUpcoming .sec-head .sec-sub,#homeDiscover .sec-head .sec-sub{grid-column:1/-1;grid-row:2;text-align:center;margin:0}
+#homeUpcoming .sec-head .see-all,#homeDiscover .sec-head .see-all{grid-row:3}
+#homeUpcoming .sec-head,#homeDiscover .sec-head{margin:14px 0 12px;row-gap:6px}
+#homeUpcoming,#homeDiscover,#homeDiscover.discover-card{padding-top:4px}
