@@ -149,5 +149,23 @@
 .ic-star .ic-sp2{animation-delay:-1.2s}
 @keyframes starTw{0%,100%{opacity:.15;transform:scale(.4)}50%{opacity:1;transform:scale(1.15) rotate(20deg)}}
 /* Bienestar y Promociones (ventana 1): ocupa todo el ancho */
-#homeUpcoming .ali{flex:0 0 100%}
 @media (prefers-reduced-motion:reduce){.ic-star-main,.ic-star .ic-sp,#homeUpcoming .sec-ic::after,#homeDiscover .sec-ic::after{animation:none!important}}
+
+/* Las dos secciones, mismo tamaño de tarjeta; la siguiente siempre se asoma para invitar a deslizar */
+#homeUpcoming .ev-grid>.ali,#homeUpcoming .ev-grid>.ev-card{flex:0 0 min(300px,82%)!important}
+#homeDiscover .disc-list>.disc-card,#homeDiscover .disc-list>.disc-row{flex:0 0 min(300px,82%)!important}
+#homeDiscover .disc-th{height:170px}
+#homeDiscover .disc-card{scroll-snap-align:start;display:flex;flex-direction:column;border:1px solid var(--cml-line);border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 12px 26px -20px rgba(90,59,66,.4)}
+#homeDiscover .disc-card .disc-row{flex:1 1 auto!important;width:100%;border:0;border-radius:0;box-shadow:none;background:none}
+#homeDiscover .disc-card .resp-row{display:flex;gap:8px;padding:0 12px 14px}
+#homeDiscover .disc-card .resp-row .resp{flex:1}
+.swipe-hint{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 0;font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cml-rose-d);transition:opacity .4s}
+.swipe-hint.gone{opacity:0;pointer-events:none;height:0;margin:0;overflow:hidden}
+.swipe-hint .sh-a{font-size:26px;line-height:1;color:var(--cml-gold)}
+.swipe-hint .sh-l{animation:shL 1.4s ease-in-out infinite}
+.swipe-hint .sh-r{animation:shR 1.4s ease-in-out infinite}
+@keyframes shR{0%,100%{transform:translateX(0);opacity:.5}50%{transform:translateX(7px);opacity:1}}
+@keyframes shL{0%,100%{transform:translateX(0);opacity:.5}50%{transform:translateX(-7px);opacity:1}}
+@media (prefers-reduced-motion:reduce){.swipe-hint .sh-a{animation:none}}
+@media (min-width:900px){.swipe-hint{display:none}}
+#homeDiscover .disc-card .resp-row .resp{white-space:nowrap;font-size:13px;padding-inline:8px}
