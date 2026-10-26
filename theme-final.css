@@ -1555,6 +1555,12 @@ fieldset.join-card { border: 1px solid #F0E3DF; }
 .join-chips .choice:has(input:focus-visible) { outline: 2px solid var(--cml-rose); outline-offset: 2px; }
 .join-heard { margin: 6px 0 12px; }
 .join-card textarea { width: 100%; min-height: 70px; font: italic 15px/1.45 var(--font-display); }
+.join-founders { background: linear-gradient(160deg, #FFF8F2, #FBEFE6); border-color: #EBDDC6; }
+.jf-h { margin: 0 0 8px; font: 500 20px/1.25 var(--font-display); color: #7A2E3C; text-wrap: balance; }
+.jf-p { margin: 0 0 10px; font-size: 14px; line-height: 1.5; color: #5A464C; }
+.join-founders ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.join-founders li { position: relative; padding-left: 18px; font-size: 13.5px; line-height: 1.45; }
+.join-founders li::before { content: "◆"; position: absolute; left: 0; top: 4px; font-size: 9px; color: var(--cml-gold); }
 .join-guide { background: linear-gradient(160deg, #FFF8F2, #FBEFE6); border-color: #EBDDC6; }
 .jg-h { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font: 700 11px var(--font-ui); letter-spacing: .2em; text-transform: uppercase; color: var(--cml-gold-ink); }
 .join-guide ul { margin: 0 0 14px; padding: 0; list-style: none; display: grid; gap: 8px; }

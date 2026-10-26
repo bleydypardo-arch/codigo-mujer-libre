@@ -8,6 +8,7 @@
 .wl-card { background: #fff; border: 1px solid #F0DFDA; border-radius: 20px; padding: 16px 16px 14px; margin: 0 0 14px; }
 .wl-card h3 { font-family: "Playfair Display", serif; font-weight: 500; font-size: 19px; margin: 0 0 8px; color: #4A2F36; }
 .wl-card p { margin: 0 0 12px; font-size: 14.5px; line-height: 1.5; color: #5A464C; }
+.wl-ben ul { margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; line-height: 1.45; color: #5A464C; }
 .wl-safe { background: #FBEFEF; border-color: #E9CFD3; }
 .wl-safe ul { margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 8px; font-size: 14.5px; line-height: 1.45; color: #5A464C; }
 .wl-photo { display: flex; align-items: center; gap: 14px; }
