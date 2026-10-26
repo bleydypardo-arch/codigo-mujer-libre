@@ -185,3 +185,31 @@
 #homeUpcoming .sec-head .see-all,#homeDiscover .sec-head .see-all{grid-row:3}
 #homeUpcoming .sec-head,#homeDiscover .sec-head{margin:14px 0 12px;row-gap:6px}
 #homeUpcoming,#homeDiscover,#homeDiscover.discover-card{padding-top:4px}
+
+/* ===== Botones premium (al final para ganar a estilos anteriores): cápsulas redondas con medallón de luz (Crece & Florece, Spa Virtual) ===== */
+.px-pill{aspect-ratio:auto;height:86px;display:flex;align-items:center;gap:14px;padding:0 16px 0 12px;border-radius:999px;border:1.5px solid #D8B26A;filter:none;
+  background:linear-gradient(135deg,#FFF8F1 0%,#F8E3DC 55%,#F1D3CC 100%);
+  box-shadow:0 12px 24px -12px rgba(150,80,95,.55),0 2px 0 rgba(255,255,255,.9) inset,0 0 0 4px rgba(255,255,255,.55)}
+.px-spa{background:linear-gradient(135deg,#FFFBF2 0%,#F7ECD6 55%,#EFDDB8 100%);box-shadow:0 12px 24px -12px rgba(150,115,50,.55),0 2px 0 rgba(255,255,255,.9) inset,0 0 0 4px rgba(255,255,255,.55)}
+.px-pill::before{display:none!important}
+.px-pill .px-tx{position:static;transform:none;width:auto!important;flex:1 1 auto;min-width:0;gap:4px}
+.px-pill .px-tx b{font-family:var(--font-display,"Playfair Display",Georgia,serif)!important;font-weight:600!important;font-size:clamp(19px,5.6vw,23px)!important;line-height:1.05;color:#7A2E3C!important;text-shadow:none!important;white-space:nowrap}
+.px-spa .px-tx b{color:#6E4E1E!important}
+.px-pill .px-tx small{font-size:clamp(9px,2.5vw,10.5px)!important;letter-spacing:.16em!important;font-weight:600!important;color:#9A6B32!important;white-space:nowrap}
+.px-med{position:relative;flex:0 0 62px;width:62px;height:62px;border-radius:50%;display:grid;place-items:center;color:#B05068;animation:pxFloat 4.2s ease-in-out infinite}
+.px-spa .px-med{color:#A07830}
+.px-med::before{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,#F7E3B0,#C99A45,#FFF4D2,#B8863A,#F7E3B0);animation:pxSpin 5s linear infinite}
+.px-med::after{content:"";position:absolute;inset:3px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff 0,#FFF6EE 60%,#F6DDD4 100%);box-shadow:inset 0 -3px 6px rgba(190,120,120,.18)}
+.px-spa .px-med::after{background:radial-gradient(circle at 35% 28%,#fff 0,#FFFAEC 60%,#F3E4BF 100%)}
+.px-ic{position:relative;z-index:1;width:42px;height:42px}
+.px-pet{transform-box:fill-box;transform-origin:50% 100%;animation:pxBloom 3.6s ease-in-out infinite}
+.px-drop{transform-box:fill-box;transform-origin:50% 100%;animation:pxDrop 3.2s ease-in-out infinite}
+.px-sp{transform-box:fill-box;transform-origin:50% 50%;animation:pxTw 2.4s ease-in-out infinite}
+@keyframes pxSpin{to{transform:rotate(360deg)}}
+@keyframes pxFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes pxBloom{0%,100%{transform:scale(.94) rotate(-3deg)}50%{transform:scale(1.07) rotate(3deg)}}
+@keyframes pxDrop{0%,100%{transform:scale(1)}50%{transform:scale(1.08,.94)}}
+@keyframes pxTw{0%,100%{opacity:.2;transform:scale(.4)}50%{opacity:1;transform:scale(1.15) rotate(20deg)}}
+.px-pill .px-p{position:static;transform:none;flex:0 0 auto;width:28px;height:28px;background:linear-gradient(180deg,#E3BC6E,#B8863A);color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.7);font-size:13px}
+.px-pill::after{border-radius:999px}
+@media (prefers-reduced-motion:reduce){.px-med,.px-med::before,.px-pet,.px-drop,.px-sp{animation:none!important}}

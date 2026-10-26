@@ -39,9 +39,18 @@ const DEFS = {
   florece: { cls: "px-florece", title: "pxFlorece", sub: "pxFloreceSub", host: "floreceEntry", go: () => { if (window.CMLFlorece) window.CMLFlorece.open("cover"); } },
   spa: { cls: "px-spa", title: "pxSpa", sub: "pxSpaSub", host: "spaEntry", go: () => { try { const p = C.profile && C.profile(); const n = p && (p.first_name || "").trim(); if (n) localStorage.setItem("cml_spa_name", n); } catch {} try { const sc = C.setting("spa_content"); if (sc && typeof sc === "object") localStorage.setItem("cml_spa_content", JSON.stringify(sc)); else localStorage.removeItem("cml_spa_content"); } catch {} window.open("spa-virtual.html", "_blank", "noopener"); } }
 };
+
+// Round medallion icons for the two premium buttons (flower of growth, drop of calm).
+const SVGNS = "http://www.w3.org/2000/svg";
+function svgIcon(inner, cls) { const s = document.createElementNS(SVGNS, "svg"); s.setAttribute("viewBox", "0 0 32 32"); s.setAttribute("class", "px-ic " + cls); s.setAttribute("fill", "none"); s.setAttribute("stroke", "currentColor"); s.setAttribute("stroke-width", "1.6"); s.setAttribute("stroke-linecap", "round"); s.setAttribute("stroke-linejoin", "round"); s.innerHTML = inner; return s; }
+const ICONS = {
+  florece: () => svgIcon('<g class="px-pet"><path d="M16 6c2.6 3 4 5.600 4 8.200 0 2.600-1.800 4.300-4 4.300s-4-1.700-4-4.300C12 11.600 13.400 9 16 6z"/><path d="M16 18.500c-3.800.2-7-1.800-8.500-5 3.400-.6 6.200.6 8.500 3.100M16 18.500c3.800.2 7-1.800 8.500-5-3.400-.6-6.200.6-8.500 3.100"/></g><path d="M16 18.500V26M11.500 26h9" /><path class="px-sp" d="M25.500 5l.6 1.600 1.600.6-1.600.6-.6 1.600-.6-1.600-1.600-.6 1.600-.6z" fill="currentColor" stroke="none"/>', "px-ic-f"),
+  spa: () => svgIcon('<g class="px-drop"><path d="M16 5c4.600 5.200 7 8.800 7 12a7 7 0 0 1-14 0c0-3.200 2.400-6.800 7-12z"/><path d="M12.500 18a3.600 3.600 0 0 0 3.300 3.500"/></g><path class="px-sp" d="M25.500 5l.6 1.600 1.600.6-1.600.6-.6 1.600-.6-1.600-1.600-.6 1.600-.6z" fill="currentColor" stroke="none"/>', "px-ic-s")
+};
 function pill(mod) {
   const d = DEFS[mod];
   const b = C.el("button", { type: "button", class: "px-pill " + d.cls, "aria-label": t(d.title) + " · " + t("pxPremium") },
+    C.el("span", { class: "px-med", "aria-hidden": "true" }, ICONS[mod]()),
     C.el("span", { class: "px-tx" }, C.el("b", { text: t(d.title) }), C.el("small", { text: t(d.sub) })),
     C.el("span", { class: "px-p", "aria-hidden": "true", text: "P" }));
   b.addEventListener("click", d.go);
