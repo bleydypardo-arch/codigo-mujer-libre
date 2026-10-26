@@ -1722,3 +1722,10 @@ fieldset.join-card { padding: 16px !important; margin: 14px 0 0 !important; }
 .jh-tri { display: flex; justify-content: center; margin: 18px 0 0; font-size: 12.5px; letter-spacing: .26em; color: #5A464C; }
 .jh-tri span { padding: 2px 12px; }
 .jh-tri span + span { border-left: 1px solid #DCB98A; }
+.jh-t { margin-bottom: 0; }
+.jh-tri { margin: 20px 0 0; }
+.jh-rule { height: 1px; background: #DCB98A; margin: 26px 12% 18px; }
+.jh-club { margin: 0 0 10px; font: 600 26px/1.15 "Cormorant Garamond", Georgia, serif; color: #A8505F; }
+.join-hero::before, .join-hero::after { width: 150px; height: 150px; }
+.join-hero::before { top: -75px; left: -70px; }
+.join-hero::after { bottom: -75px; right: -70px; }
