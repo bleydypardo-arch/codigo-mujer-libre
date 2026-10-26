@@ -304,7 +304,7 @@ function renderDiscover() {
   host.hidden = false;
   const all = el("button", { type: "button", class: "see-all", text: t("discAll") + " →" });
   all.addEventListener("click", () => { if (C.showEventsCode) C.showEventsCode(""); else C.showPage("events"); });   // Descubre: the complete list of happy hours, restaurants and wellness
-  host.replaceChildren(window.cmlSecHead("leaf", "gold", t("discLabel"), t("discTitle"), all), el("div", { class: "disc-list" }, ...rows));
+  host.replaceChildren(window.cmlSecHead("star", "gold", t("discLabel"), t("discTitle"), all), el("div", { class: "disc-list" }, ...rows));
 }
 
 // Soft rain of hearts only inside the Let's Talk card when the envelope opens (decorative, skipped for reduced motion)
