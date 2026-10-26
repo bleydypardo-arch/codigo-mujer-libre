@@ -8,7 +8,7 @@
 const VERSION = 1;
 const ES = {
   wlTitle: n => "Bienvenida, " + n + " 🌸", wlSub: "Ya eres parte de Código Mujer Libre. Antes de entrar, tres cosas rápidas.",
-  wlBenH: "Tu club", wlBenP: "Las primeras 50 mujeres de cada ciudad son fundadoras: gratis y con todo activo, para siempre.", wlBen1: "Planes y experiencias con mujeres reales de tu ciudad.", wlBen2: "Lugares para comer, bienestar y viajes, elegidos para ti.", wlBen3: "Al crecer el club, descuentos en salones de belleza, restaurantes, spas, viajes, retiros y conferencias.",
+  wlBenH: "Club de Fundadoras", wlBenP: "Las primeras 50 mujeres de cada ciudad son Fundadoras. Para siempre tienes acceso a todo el app, incluidos el Spa, el Rincón Matcha y Crece & Florece.", wlBen1: "Recibirás una tarjeta de Fundadora cuando completemos las 50 de tu ciudad.", wlBen2: "Con ella, descuentos en salones de belleza, cafés y restaurantes aliados, happy hours y encuentros con mujeres, y en nuestros primeros encuentros y conferencias.", wlBen3: "Entra a diario: cada día tienes un espacio para ti, para conectar con la mujer que eres.",
   wlSafeH: "Aquí estás segura", wl1: "Solo entran mujeres, aprobadas una por una.", wl2: "Tu teléfono y tu correo no los ve nadie de la comunidad. Tu WhatsApp solo se comparte si tú decides.",
   wl3: "Tu foto y tu perfil solo los ven integrantes aprobadas.", wl4: "Puedes reportar o bloquear a quien te incomode. Lo tratamos con discreción.", wl5: "Para un primer encuentro, elige un lugar público y avisa a alguien de confianza.",
   wlPhotoH: "Pon tu foto", wlPhotoP: "Con tu foto, las demás mujeres pueden reconocerte y conectar contigo. Para saludar o escribir a otras, la necesitas.",
@@ -24,7 +24,7 @@ const ES = {
 };
 const EN = {
   wlTitle: n => "Welcome, " + n + " 🌸", wlSub: "You are now part of Código Mujer Libre. Before you come in, three quick things.",
-  wlBenH: "Your club", wlBenP: "The first 50 women in each city are founders: free, with everything unlocked, forever.", wlBen1: "Plans and experiences with real women in your city.", wlBen2: "Places to eat, wellness and trips, chosen for you.", wlBen3: "As the club grows, discounts at beauty salons, restaurants, spas, trips, retreats and conferences.",
+  wlBenH: "Founders Club", wlBenP: "The first 50 women in each city are Founders. For life you have access to the whole app, including the Spa, the Matcha Corner and Grow & Bloom.", wlBen1: "You will receive a Founder card once we complete the 50 in your city.", wlBen2: "With it, discounts at beauty salons, partner cafés and restaurants, happy hours and meetups with women, and at our first gatherings and conferences.", wlBen3: "Come in every day: each day there is a space for you, to connect with the woman you are.",
   wlSafeH: "You are safe here", wl1: "Only women come in, approved one by one.", wl2: "Nobody in the community sees your phone or email. Your WhatsApp is only shared if you decide.",
   wl3: "Only approved members see your photo and profile.", wl4: "You can report or block anyone who makes you uncomfortable. We handle it discreetly.", wl5: "For a first meeting, choose a public place and tell someone you trust.",
   wlPhotoH: "Add your photo", wlPhotoP: "With your photo, other women can recognize you and connect with you. To say hello or write to others, you need it.",
