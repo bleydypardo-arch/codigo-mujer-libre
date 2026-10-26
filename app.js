@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  swipeHint: "Desliza para ver más", upcomingTitle: "Eventos Especiales", allyTag: "Aliada", tourK: "Tour", tourGo: "Ver tour", tourAsk: "Consultar fechas", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", wellLess: "Ver menos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
+  swipeHint: "Desliza para ver más", swipeNext: "Siguiente", swipePrev: "Anterior", upcomingTitle: "Eventos Especiales", allyTag: "Aliada", tourK: "Tour", tourGo: "Ver tour", tourAsk: "Consultar fechas", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", wellLess: "Ver menos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  swipeHint: "Swipe to see more", upcomingTitle: "Special Events", allyTag: "Partner", tourK: "Tour", tourGo: "See tour", tourAsk: "Ask for dates", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", wellLess: "Show less", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
+  swipeHint: "Swipe to see more", swipeNext: "Next", swipePrev: "Previous", upcomingTitle: "Special Events", allyTag: "Partner", tourK: "Tour", tourGo: "See tour", tourAsk: "Ask for dates", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", wellLess: "Show less", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -1474,10 +1474,16 @@ function renderUpcoming() {
 }
 // "Desliza para ver más": a small animated invitation under a sideways carousel; it fades away once the person swipes.
 function swipeHint(sel) {
-  const h = el("p", { class: "swipe-hint", "aria-hidden": "true" }, el("span", { class: "sh-a sh-l", text: "‹" }), el("span", { class: "sh-t", text: t("swipeHint") }), el("span", { class: "sh-a sh-r", text: "›" }));
+  const mkArrow = (dir) => el("button", { type: "button", class: "sh-btn sh-" + dir, "aria-label": dir === "r" ? t("swipeNext") : t("swipePrev"), text: dir === "r" ? "›" : "‹" });
+  const l = mkArrow("l"), r = mkArrow("r");
+  const h = el("p", { class: "swipe-hint" }, l, el("span", { class: "sh-t", text: t("swipeHint") }), r);
+  const row = () => h.parentElement && h.parentElement.querySelector(sel);
+  const go = d => { const x = row(); if (!x) return; x.scrollBy({ left: d * Math.max(240, x.clientWidth * 0.8), behavior: "smooth" }); };
+  l.addEventListener("click", () => go(-1)); r.addEventListener("click", () => go(1));
   setTimeout(() => {
-    const row = h.parentElement && h.parentElement.querySelector(sel);
-    if (row) row.addEventListener("scroll", () => { if (row.scrollLeft > 24) h.classList.add("gone"); }, { passive: true });
+    const x = row(); if (!x) return;
+    const upd = () => { l.classList.toggle("off", x.scrollLeft < 24); r.classList.toggle("off", x.scrollLeft + x.clientWidth >= x.scrollWidth - 24); };
+    x.addEventListener("scroll", upd, { passive: true }); upd();
   }, 0);
   return h;
 }

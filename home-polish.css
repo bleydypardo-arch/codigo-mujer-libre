@@ -159,13 +159,15 @@
 #homeDiscover .disc-card .disc-row{flex:1 1 auto!important;width:100%;border:0;border-radius:0;box-shadow:none;background:none}
 #homeDiscover .disc-card .resp-row{display:flex;gap:8px;padding:0 12px 14px}
 #homeDiscover .disc-card .resp-row .resp{flex:1}
-.swipe-hint{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 0;font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cml-rose-d);transition:opacity .4s}
-.swipe-hint.gone{opacity:0;pointer-events:none;height:0;margin:0;overflow:hidden}
-.swipe-hint .sh-a{font-size:26px;line-height:1;color:var(--cml-gold)}
-.swipe-hint .sh-l{animation:shL 1.4s ease-in-out infinite}
-.swipe-hint .sh-r{animation:shR 1.4s ease-in-out infinite}
-@keyframes shR{0%,100%{transform:translateX(0);opacity:.5}50%{transform:translateX(7px);opacity:1}}
-@keyframes shL{0%,100%{transform:translateX(0);opacity:.5}50%{transform:translateX(-7px);opacity:1}}
-@media (prefers-reduced-motion:reduce){.swipe-hint .sh-a{animation:none}}
+.swipe-hint{display:flex;align-items:center;justify-content:center;gap:14px;margin:10px 0 0;font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--cml-rose-d)}
+.swipe-hint .sh-t{text-align:center;line-height:1.2}
+.sh-btn{width:46px;height:46px;min-width:46px;padding:0;border-radius:50%;border:2px solid var(--cml-gold);background:linear-gradient(180deg,#d9a85a,#b7822f);color:#fff;font-size:30px;line-height:1;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 16px -8px rgba(150,100,30,.7);transition:opacity .3s,transform .2s;-webkit-tap-highlight-color:transparent}
+.sh-btn:active{transform:scale(.92)}
+.sh-btn.off{opacity:.25;pointer-events:none;animation:none}
+.sh-r:not(.off){animation:shR 1.3s ease-in-out infinite}
+.sh-l:not(.off){animation:shL 1.3s ease-in-out infinite}
+@keyframes shR{0%,100%{transform:translateX(0);box-shadow:0 8px 16px -8px rgba(150,100,30,.7),0 0 0 0 rgba(217,168,90,.55)}50%{transform:translateX(6px);box-shadow:0 8px 16px -8px rgba(150,100,30,.7),0 0 0 9px rgba(217,168,90,0)}}
+@keyframes shL{0%,100%{transform:translateX(0)}50%{transform:translateX(-6px)}}
+@media (prefers-reduced-motion:reduce){.sh-btn{animation:none!important}}
 @media (min-width:900px){.swipe-hint{display:none}}
 #homeDiscover .disc-card .resp-row .resp{white-space:nowrap;font-size:13px;padding-inline:8px}
