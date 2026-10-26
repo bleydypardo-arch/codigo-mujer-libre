@@ -1729,3 +1729,6 @@ fieldset.join-card { padding: 16px !important; margin: 14px 0 0 !important; }
 .join-hero::before, .join-hero::after { width: 150px; height: 150px; }
 .join-hero::before { top: -75px; left: -70px; }
 .join-hero::after { bottom: -75px; right: -70px; }
+
+.join-poster { margin: 0 0 14px; }
+.join-poster img { display: block; width: 100%; height: auto; border-radius: 22px; box-shadow: 0 6px 22px rgba(122,46,60,.12); }
