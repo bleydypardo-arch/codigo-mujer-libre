@@ -259,3 +259,27 @@
 /* TÍTULOS de todas las tarjetas en MAYÚSCULA */
 .ev-card .ev-title,.ev-card h2.ev-title,.ev-card b.ev-title,#homeDiscover .disc-txt b,.ali .ev-title{text-transform:uppercase;letter-spacing:.03em;font-size:15.5px;line-height:1.2}
 .ev-card .ev-kicker{text-transform:uppercase}
+/* Franja de categoría en cada tarjeta: SOCIAL / BIENESTAR / TOURS Y EXPERIENCIAS con logo animado */
+.ev-card .cat-ban{grid-column:1/-1;grid-row:1;display:flex;align-items:center;justify-content:center;gap:9px;margin:0 0 8px;padding:7px 12px;border-radius:12px;color:#fff;text-transform:uppercase;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 4px 10px -6px rgba(90,40,50,.5)}
+.cat-ban b{font:700 13.5px/1.1 var(--font-body,inherit);letter-spacing:.14em;text-align:center}
+.cat-social{background:linear-gradient(135deg,#c75a78,#9e3a58)}
+.cat-well{background:linear-gradient(135deg,#d9a85a,#b2812f)}
+.cat-tour{background:linear-gradient(135deg,#8f3a52,#5d2234)}
+.cat-star{background:linear-gradient(135deg,#d6a0a6,#b9737d)}
+.cat-ic{display:grid;place-items:center;width:28px;height:28px}
+.ev-card.has-cat .ev-media{grid-row:2 / span 4}
+.ev-card.has-cat{align-content:start}
+.cg-l{transform-box:fill-box;transform-origin:50% 100%;animation:cgL 2.4s ease-in-out infinite}
+.cg-r{transform-box:fill-box;transform-origin:50% 100%;animation:cgR 2.4s ease-in-out infinite}
+@keyframes cgL{0%,55%,100%{transform:rotate(-10deg)}70%{transform:rotate(8deg)}}
+@keyframes cgR{0%,55%,100%{transform:rotate(10deg)}70%{transform:rotate(-8deg)}}
+.cg-sp{transform-box:fill-box;transform-origin:center;animation:cgS 2.4s ease-in-out infinite}
+@keyframes cgS{0%,60%{transform:scale(0);opacity:0}72%{transform:scale(1.4);opacity:1}100%{transform:scale(0);opacity:0}}
+.cw-lf{transform-box:fill-box;transform-origin:20% 90%;animation:cwL 3s ease-in-out infinite}
+@keyframes cwL{0%,100%{transform:rotate(-7deg) scale(1)}50%{transform:rotate(7deg) scale(1.08)}}
+.cw-d{animation:cwD 3s ease-in infinite}
+@keyframes cwD{0%{transform:translateY(-8px);opacity:0}40%{opacity:1}100%{transform:translateY(4px);opacity:0}}
+.ct-n{transform-box:view-box;transform-origin:16px 16px;animation:ctN 4s ease-in-out infinite}
+@keyframes ctN{0%{transform:rotate(-35deg)}30%{transform:rotate(30deg)}55%{transform:rotate(-15deg)}80%,100%{transform:rotate(0)}}
+@media (prefers-reduced-motion:reduce){.cg-l,.cg-r,.cg-sp,.cw-lf,.cw-d,.ct-n{animation:none!important}}
+.ali-dots{top:auto!important;bottom:18px;right:16px}

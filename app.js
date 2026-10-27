@@ -1106,6 +1106,25 @@ function eventMedia(p, cls) {
 // A promotion lives inside the place itself (tag fields promo / promoUntil / promoHome) and leaves by itself after its date.
 function activePromo(p) { const tg = planTag(p.id); return tg.promo && (!tg.promoUntil || tg.promoUntil >= todayStr()) ? tg : null; }
 function promoLine(tg) { return "✦ " + tg.promo + (tg.promoUntil ? " · " + t("promoUntil") + " " + fmtDate(tg.promoUntil) : ""); }
+// Category banner: each card says what it is (SOCIAL / BIENESTAR / TOURS Y EXPERIENCIAS) with a small animated logo.
+const CAT_IC = {
+  social: '<svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><g class="cg-l"><path d="M7 5h9l-1 8a3.6 3.6 0 0 1-7 0z" fill="#fff" fill-opacity=".9"/><path d="M11.5 16.6V25M8 25h7" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/></g><g class="cg-r"><path d="M16 5h9l-1 8a3.6 3.6 0 0 1-7 0z" fill="#fff" fill-opacity=".9"/><path d="M20.5 16.6V25M17 25h7" stroke="#fff" stroke-width="1.6" stroke-linecap="round" fill="none"/></g><path class="cg-sp" d="M16 1.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" fill="#fff"/></svg>',
+  well: '<svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><g class="cw-lf"><path d="M25 6C13 6.6 6.5 12 6 19c-.2 2.4.8 4.2 2.6 5C18 24 24.4 18 25 6z" fill="#fff" fill-opacity=".92"/><path d="M8.5 24C12 18 16 14.5 21 11.5" stroke="#b8863a" stroke-width="1.5" stroke-linecap="round" fill="none"/></g><circle class="cw-d" cx="26" cy="24" r="2" fill="#fff"/></svg>',
+  tour: '<svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="16" cy="16" r="12" fill="none" stroke="#fff" stroke-width="1.8"/><g class="ct-n"><path d="M16 6l3.4 10H12.6z" fill="#fff"/><path d="M16 26l-3.4-10h6.8z" fill="#fff" fill-opacity=".5"/></g><circle cx="16" cy="16" r="1.6" fill="#b8863a"/></svg>',
+  star: '<svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path class="cw-lf" d="M16 4l3.4 7.2 7.8 1-5.7 5.5 1.5 7.8L16 21.6 9 25.5l1.5-7.8-5.7-5.5 7.8-1z" fill="#fff"/></svg>'
+};
+function catBanner(p, isTourCard) {
+  const code = p && p.code;
+  let kind = "star", label = code && codeLabels[code] ? t(codeLabels[code]).replace(/^\S+\s+/, "") : "";
+  if (isTourCard) { kind = "tour"; label = t("tourK"); }
+  else if (code === "Social") { kind = "social"; label = label || "Social"; }
+  else if (code === "Bienestar" || (p && p.kind === "wellness")) { kind = "well"; label = "Bienestar"; }
+  if (!label) return null;
+  const b = el("div", { class: "cat-ban cat-" + kind });
+  const ic = el("i", { class: "cat-ic", "aria-hidden": "true" }); ic.innerHTML = CAT_IC[kind];
+  b.appendChild(ic); b.appendChild(el("b", { text: label }));
+  return b;
+}
 function eventCard(p, mini) {
   const card = el("article", { class: "ev-card" + (mini ? " ev-mini" : " card plan") });
   const media = eventMedia(p, "ev-cover");
@@ -1138,7 +1157,7 @@ function eventCard(p, mini) {
   const more = el("button", { type: "button", class: "ev-more", text: t("viewDetails") + " →" });
   more.addEventListener("click", () => openDetail(p.id, more));
   body.appendChild(more);
-  if (mini) { const bdg = media.querySelector(".ev-badge"); if (bdg) { bdg.className = "ev-kicker"; body.prepend(bdg); } }   // the label never covers the photo
+  if (mini) { const bdg = media.querySelector(".ev-badge"); if (bdg) bdg.remove(); const cb = catBanner(p, false); if (cb) { card.classList.add("has-cat"); card.prepend(cb); } }   // the label never covers the photo
   card.appendChild(body);
   return card;
 }
@@ -1153,7 +1172,7 @@ function tourCard(p) {
   const bdg = media.querySelector(".ev-badge"); if (bdg) bdg.remove();
   card.appendChild(media);
   const body = el("div", { class: "ev-body" });
-  body.appendChild(el("span", { class: "ev-kicker", text: t("tourK") }));
+  { const cb = catBanner(p, true); card.classList.add("has-cat"); card.prepend(cb); }
   body.appendChild(el("h2", { class: "ev-title", text: pick(p, "title") || "—" }));
   const ds = tourDates(p);
   const when = ds.length ? ds.slice(0, 3).map(fmtDate).join(" · ") + (ds.length > 3 ? " …" : "") : (p.date_text || t("tourAsk"));
