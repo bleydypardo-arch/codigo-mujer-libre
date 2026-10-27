@@ -283,3 +283,4 @@
 @keyframes ctN{0%{transform:rotate(-35deg)}30%{transform:rotate(30deg)}55%{transform:rotate(-15deg)}80%,100%{transform:rotate(0)}}
 @media (prefers-reduced-motion:reduce){.cg-l,.cg-r,.cg-sp,.cw-lf,.cw-d,.ct-n{animation:none!important}}
 .ali-dots{top:auto!important;bottom:18px;right:16px}
+.px-pill .px-med{left:3.7%!important;width:12.6%!important}
