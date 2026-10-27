@@ -284,3 +284,21 @@
 @media (prefers-reduced-motion:reduce){.cg-l,.cg-r,.cg-sp,.cw-lf,.cw-d,.ct-n{animation:none!important}}
 .ali-dots{top:auto!important;bottom:18px;right:16px}
 .px-pill .px-med{left:3.7%!important;width:12.6%!important}
+
+/* ===== Franjas de categoría: UN SOLO COLOR (crema → rosado), letra en negrita ===== */
+.cat-social,.cat-well,.cat-tour,.cat-star{background:linear-gradient(135deg,#fbefe2 0%,#f6d9cf 55%,#efc3c6 100%)!important;border:1px solid rgba(184,141,58,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 4px 10px -8px rgba(120,60,60,.45)!important}
+.ev-card .cat-ban b{color:#7a2438;font-weight:800;letter-spacing:.14em}
+.cat-ban{color:#7a2438!important}
+.cat-ic svg [fill="#fff"]{fill:#9c2f4c}
+.cat-ic svg [stroke="#fff"]{stroke:#9c2f4c}
+.cat-ic svg circle[fill="#b8863a"]{fill:#b8863a}
+.cat-well .cat-ic svg path[stroke="#b8863a"]{stroke:#fff}
+/* ===== Nuestra Recomendación: nombre primero, dirección, y la etiqueta "DE LA SEMANA" resaltada abajo ===== */
+#homeDiscover .disc-txt{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+#homeDiscover .disc-txt b{order:1;font-size:17px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6d2234}
+#homeDiscover .disc-txt>span{order:2}
+#homeDiscover .disc-txt small{order:3;margin-top:6px;padding:4px 11px;border-radius:999px;background:linear-gradient(135deg,#fbefe2,#f1c9cb);border:1px solid rgba(184,141,58,.55);color:#7a2438;font-size:10.5px;font-weight:800;letter-spacing:.1em}
+/* ===== VER TODOS / VER TODO: más discreto ===== */
+#homeUpcoming .sec-head .see-all,#homeDiscover .sec-head .see-all{background:transparent!important;color:#8f3f4f!important;border:1px solid rgba(184,141,58,.7)!important;box-shadow:none!important;padding:4px 12px!important;font-size:10.5px!important;letter-spacing:.1em}
+/* ===== Botones premium: siempre al final de la Home ===== */
+#floreceEntry{order:98!important}#spaEntry{order:99!important}

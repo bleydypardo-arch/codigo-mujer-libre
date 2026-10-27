@@ -23,7 +23,7 @@ const ES = {
   weekBirthdays: "CUMPLEAÑOS",
   swipeHint: "Desliza para ver más", swipeNext: "Siguiente", swipePrev: "Anterior", discAll: "Ver todo", discLabel: "Nuestra Recomendación", discTitle: "Un lugar especial cada semana para disfrutar", discNewCode: "PRUEBA ALGO DISTINTO", discForYou: "PARA TI",
   discEvents: "Planes y eventos", discEventsSub: "Mira todo lo que viene", discTravelK: "VIAJES Y EXPERIENCIAS",
-  discWellK: "BIENESTAR", discHappyK: "HAPPY HOUR DE LA SEMANA", discHappyT: "Happy hours", discHappySub: "Pronto: uno distinto cada semana", discDineK: "RESTAURANTE DE LA SEMANA", discDineT: "Restaurantes", discDineSub: "Pronto: uno distinto cada semana", discWellTitle: "¿Cómo te sientes hoy?", discWellSub: "Una idea sencilla para cuidarte",
+  discWellK: "BIENESTAR DE LA SEMANA", discHappyK: "HAPPY HOUR DE LA SEMANA", discHappyT: "Happy hours", discHappySub: "Pronto: uno distinto cada semana", discDineK: "RESTAURANTE DE LA SEMANA", discDineT: "Restaurantes", discDineSub: "Pronto: uno distinto cada semana", discWellTitle: "¿Cómo te sientes hoy?", discWellSub: "Una idea sencilla para cuidarte",
   talkLabel: "HABLEMOS", talkCta: "Compartir mi respuesta",
   ckTitle: "Completa tu perfil", ckSub: "Así las demás te reconocen en eventos y en la comunidad.", ckOf: (a, b) => a + " de " + b,
   ckPhoto: "Foto", ckBirthday: "Cumpleaños", ckInterests: "Intereses", ckHide: "Ocultar"
@@ -42,7 +42,7 @@ const EN = {
   weekBirthdays: "BIRTHDAYS",
   swipeHint: "Swipe to see more", swipeNext: "Next", swipePrev: "Previous", discAll: "View all", discLabel: "Our Recommendation", discTitle: "A special place every week to enjoy", discNewCode: "TRY SOMETHING DIFFERENT", discForYou: "FOR YOU",
   discEvents: "Plans & events", discEventsSub: "See everything coming up", discTravelK: "TRAVEL & EXPERIENCES",
-  discWellK: "WELLNESS", discHappyK: "HAPPY HOUR OF THE WEEK", discHappyT: "Happy hours", discHappySub: "Soon: a different one every week", discDineK: "RESTAURANT OF THE WEEK", discDineT: "Restaurants", discDineSub: "Soon: a different one every week", discWellTitle: "How are you feeling today?", discWellSub: "A simple idea to take care of yourself",
+  discWellK: "WELLNESS OF THE WEEK", discHappyK: "HAPPY HOUR OF THE WEEK", discHappyT: "Happy hours", discHappySub: "Soon: a different one every week", discDineK: "RESTAURANT OF THE WEEK", discDineT: "Restaurants", discDineSub: "Soon: a different one every week", discWellTitle: "How are you feeling today?", discWellSub: "A simple idea to take care of yourself",
   talkLabel: "LET'S TALK", talkCta: "Share my answer",
   ckTitle: "Complete your profile", ckSub: "So others recognize you at events and in the community.", ckOf: (a, b) => a + " of " + b,
   ckPhoto: "Photo", ckBirthday: "Birthday", ckInterests: "Interests", ckHide: "Hide"
