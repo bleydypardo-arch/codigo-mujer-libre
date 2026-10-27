@@ -214,31 +214,29 @@
 .mff.h4{animation:mfH4 9s ease-in-out infinite}@keyframes mfH4{0%,56%{transform:scale(0) rotate(-40deg)}66%{transform:scale(1.2) rotate(8deg)}70%,100%{transform:scale(1) rotate(0)}}
 .mff.h5{animation:mfH5 9s ease-in-out infinite}@keyframes mfH5{0%,60%{transform:scale(0) rotate(-40deg)}70%{transform:scale(1.2) rotate(8deg)}74%,100%{transform:scale(1) rotate(0)}}
 .mff{transform-box:fill-box;transform-origin:center;transform:scale(0);fill:#f08fb0;stroke:#d4608a;stroke-width:.25}.mff.alt{fill:#f7b4cb}.mff .ct{fill:#f2c14e;stroke:none}
-/* piedras reales que cambian de color + agua en movimiento */
-.mst{animation:mstBob 5s ease-in-out infinite;transform-box:view-box;transform-origin:50% 90%}
-@keyframes mstBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2px)}}
-.pa1,.pa2,.pa3{animation:pcA 9s ease-in-out infinite}.pb1,.pb2,.pb3{animation:pcB 9s ease-in-out infinite}.pc1,.pc2,.pc3{animation:pcC 9s ease-in-out infinite}
-.pa2,.pb2,.pc2{animation-delay:-3s}.pa3,.pb3,.pc3{animation-delay:-6s}
-@keyframes pcA{0%,100%{stop-color:#f4ece0}33%{stop-color:#f6dcd6}66%{stop-color:#f3e3c0}}
-@keyframes pcB{0%,100%{stop-color:#b9a78f}33%{stop-color:#d09a96}66%{stop-color:#cdb078}}
-@keyframes pcC{0%,100%{stop-color:#7a6a58}33%{stop-color:#94625f}66%{stop-color:#8d7440}}
-.mw ellipse{transform-box:fill-box;transform-origin:center;opacity:0;animation:mRip 4s ease-out infinite}
-.mw .r2{animation-delay:1s}.mw .r3{animation-delay:2s}.mw .r4{animation-delay:3s}
-@keyframes mRip{0%{transform:scale(.5);opacity:.9}100%{transform:scale(3);opacity:0}}
-.mws{animation:mWave 2.6s linear infinite}
-@keyframes mWave{0%{transform:translateX(-8px);opacity:.3}50%{opacity:.9}100%{transform:translateX(8px);opacity:.3}}
-.mlf{transform-box:fill-box;transform-origin:0 100%;animation:lfSway 4s ease-in-out infinite}
-@keyframes lfSway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(7deg)}}
-.msp{transform-box:fill-box;transform-origin:center;animation:spTw 2.6s ease-in-out infinite}
-@keyframes spTw{0%,100%{transform:scale(.4) rotate(0);opacity:.4}50%{transform:scale(1) rotate(45deg);opacity:1}}
-@media (prefers-reduced-motion:reduce){.mf-tree,.mfb,.mff,.mst,.mw ellipse,.mws,.mlf,.msp,.pa1,.pa2,.pa3,.pb1,.pb2,.pb3,.pc1,.pc2,.pc3{animation:none!important}.mfb{stroke-dashoffset:0}.mff{transform:scale(1)}.mw ellipse{opacity:.5}}
 
-/* Crece & Florece: medallón con las 3 etapas del árbol (brote → árbol → floración) */
-.px-florece .px-med{left:3.3%;width:13.2%;box-shadow:0 2px 8px rgba(120,80,40,.25);background:#f7e6d6}
-.px-florece .px-med img{position:absolute;inset:0;width:100%;height:100%;display:block;animation:arZoom 9s ease-in-out infinite}
-.px-florece .px-med .a2{opacity:0;animation:arZoom 9s ease-in-out infinite,arF2 9s ease-in-out infinite}
-.px-florece .px-med .a3{opacity:0;animation:arZoom 9s ease-in-out infinite,arF3 9s ease-in-out infinite}
-@keyframes arZoom{0%{transform:scale(1.03)}50%{transform:scale(1.1)}100%{transform:scale(1.03)}}
-@keyframes arF2{0%,22%{opacity:0}40%,92%{opacity:1}100%{opacity:0}}
-@keyframes arF3{0%,52%{opacity:0}70%,88%{opacity:1}98%,100%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.px-florece .px-med img{animation:none!important}.px-florece .px-med .a3{opacity:1}}
+/* sin destello cruzando los botones */
+.px-pill::after{display:none!important}
+/* medallones con fotos: ring dorado CSS, imágenes recortadas dentro */
+.px-med img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.px-florece .px-med img{transform-origin:50% 80%;animation:arZoom 9s ease-in-out infinite}
+@keyframes arZoom{0%{transform:scale(1.05)}55%{transform:scale(1.15)}88%{transform:scale(1.17)}100%{transform:scale(1.05)}}
+.px-florece .px-med img.a2{animation:arZoom 9s ease-in-out infinite,arF2 9s ease-in-out infinite}
+.px-florece .px-med img.a3{animation:arZoom 9s ease-in-out infinite,arF3 9s ease-in-out infinite}
+/* spa: una piedra, otra encima, otra encima; el agua se mueve */
+.px-spa .px-med img{animation:spDrift 6s ease-in-out infinite}
+@keyframes spDrift{0%,100%{transform:scale(1.06) translateX(-1.5%)}50%{transform:scale(1.06) translateX(1.5%)}}
+.px-spa .px-med img.a2{opacity:0;animation:spDrift 6s ease-in-out infinite,spF2 10s ease-in-out infinite}
+.px-spa .px-med img.a3{opacity:0;animation:spDrift 6s ease-in-out infinite,spF3 10s ease-in-out infinite}
+@keyframes spF2{0%,12%{opacity:0}28%,50%{opacity:1}100%{opacity:1}}
+@keyframes spF3{0%,48%{opacity:0}64%,90%{opacity:1}100%{opacity:0}}
+.px-spa .px-med .a2{animation-name:spDrift,spF2b}
+@keyframes spF2b{0%,12%{opacity:0}28%,90%{opacity:1}100%{opacity:0}}
+.wat{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.wat ellipse{transform-box:fill-box;transform-origin:center;opacity:0;animation:mRip 3.2s ease-out infinite}
+.wat .r2{animation-delay:.8s}.wat .r3{animation-delay:1.6s}.wat .r4{animation-delay:2.4s}
+@keyframes mRip{0%{transform:scale(.4);opacity:.85}100%{transform:scale(3.2);opacity:0}}
+.wat .w1{animation:mWave 2.4s linear infinite}.wat .w2{animation:mWave 3.4s linear infinite reverse}
+@keyframes mWave{0%{transform:translateX(-12px);opacity:.15}50%{opacity:.8}100%{transform:translateX(12px);opacity:.15}}
+@media (prefers-reduced-motion:reduce){.px-med img,.wat *{animation:none!important}.px-med .a3{opacity:1}.wat{display:none}}
+@keyframes arF2{0%,22%{opacity:0}40%,92%{opacity:1}100%{opacity:0}}@keyframes arF3{0%,52%{opacity:0}70%,88%{opacity:1}98%,100%{opacity:0}}
