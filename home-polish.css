@@ -256,3 +256,6 @@
 #homeDiscover .disc-card .disc-txt{flex:0 0 auto}
 #homeUpcoming .ev-card{align-content:space-between}
 #homeUpcoming .ev-card .place-btn{height:auto!important;align-self:start}
+/* TÍTULOS de todas las tarjetas en MAYÚSCULA */
+.ev-card .ev-title,.ev-card h2.ev-title,.ev-card b.ev-title,#homeDiscover .disc-txt b,.ali .ev-title{text-transform:uppercase;letter-spacing:.03em;font-size:15.5px;line-height:1.2}
+.ev-card .ev-kicker{text-transform:uppercase}
