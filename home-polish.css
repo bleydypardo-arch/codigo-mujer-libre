@@ -232,3 +232,13 @@
 .msp{transform-box:fill-box;transform-origin:center;animation:spTw 2.6s ease-in-out infinite}
 @keyframes spTw{0%,100%{transform:scale(.4) rotate(0);opacity:.4}50%{transform:scale(1) rotate(45deg);opacity:1}}
 @media (prefers-reduced-motion:reduce){.mf-tree,.mfb,.mff,.mst,.mw ellipse,.mws,.mlf,.msp,.pa1,.pa2,.pa3,.pb1,.pb2,.pb3,.pc1,.pc2,.pc3{animation:none!important}.mfb{stroke-dashoffset:0}.mff{transform:scale(1)}.mw ellipse{opacity:.5}}
+
+/* Crece & Florece: medallón con las 3 etapas del árbol (brote → árbol → floración) */
+.px-florece .px-med{left:3.3%;width:13.2%;box-shadow:0 2px 8px rgba(120,80,40,.25);background:#f7e6d6}
+.px-florece .px-med img{position:absolute;inset:0;width:100%;height:100%;display:block;animation:arZoom 9s ease-in-out infinite}
+.px-florece .px-med .a2{opacity:0;animation:arZoom 9s ease-in-out infinite,arF2 9s ease-in-out infinite}
+.px-florece .px-med .a3{opacity:0;animation:arZoom 9s ease-in-out infinite,arF3 9s ease-in-out infinite}
+@keyframes arZoom{0%{transform:scale(1.03)}50%{transform:scale(1.1)}100%{transform:scale(1.03)}}
+@keyframes arF2{0%,22%{opacity:0}40%,92%{opacity:1}100%{opacity:0}}
+@keyframes arF3{0%,52%{opacity:0}70%,88%{opacity:1}98%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.px-florece .px-med img{animation:none!important}.px-florece .px-med .a3{opacity:1}}
