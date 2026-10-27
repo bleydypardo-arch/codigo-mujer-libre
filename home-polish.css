@@ -240,3 +240,5 @@
 @keyframes mWave{0%{transform:translateX(-12px);opacity:.15}50%{opacity:.8}100%{transform:translateX(12px);opacity:.15}}
 @media (prefers-reduced-motion:reduce){.px-med img,.wat *{animation:none!important}.px-med .a3{opacity:1}.wat{display:none}}
 @keyframes arF2{0%,22%{opacity:0}40%,92%{opacity:1}100%{opacity:0}}@keyframes arF3{0%,52%{opacity:0}70%,88%{opacity:1}98%,100%{opacity:0}}
+/* botones premium al final de la Home */
+#floreceEntry,#spaEntry{margin-top:12px}
