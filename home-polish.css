@@ -188,7 +188,7 @@
 
 /* ===== Botones aprobados (Crece & Florece / Spa Virtual): arte de Jazz + medallón animado ===== */
 .px-pill{aspect-ratio:2079/294!important;border-radius:2.6% / 18%!important;box-shadow:0 6px 16px rgba(120,80,50,.18)!important;animation:pxFloat 6s ease-in-out infinite}
-.px-pill::before{inset:0!important;filter:none!important;background-size:100% 100%!important}
+.px-pill.px-florece::before,.px-pill.px-spa::before{inset:0!important;filter:none!important;background-size:100% 100%!important}
 .px-florece::before{background-image:url(btn-florece.webp)!important}
 .px-spa::before{background-image:url(btn-spa.webp)!important}
 .px-pill .px-tx,.px-pill .px-p{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden;clip:rect(0 0 0 0);opacity:0;left:0!important}
@@ -196,25 +196,39 @@
 .px-med svg{display:block;width:100%;height:100%}
 .px-pill::after{z-index:2}
 @keyframes pxFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
-/* árbol que crece y florece */
-.mf-t,.mf-b{stroke-dasharray:1;stroke-dashoffset:1;animation:mfGrow 8s ease-in-out infinite}
-.mf-b.b1{animation-delay:.5s}.mf-b.b2{animation-delay:.8s}.mf-b.b3{animation-delay:1.1s}.mf-b.b4{animation-delay:1.4s}.mf-b.b5{animation-delay:1.7s}.mf-b.b6{animation-delay:2s}
-.mf-g{opacity:.9}
-@keyframes mfGrow{0%{stroke-dashoffset:1}28%,86%{stroke-dashoffset:0}100%{stroke-dashoffset:1}}
-.mf-fl .f{fill:#e8789a;transform-box:fill-box;transform-origin:center;transform:scale(0);animation:mfBloom 8s ease-in-out infinite}
-.mf-fl .f:nth-child(even){fill:#f4a9bf}
-.mf-fl .f1{animation-delay:2.3s}.mf-fl .f2{animation-delay:2.5s}.mf-fl .f3{animation-delay:2.7s}.mf-fl .f4{animation-delay:2.9s}.mf-fl .f5{animation-delay:3.1s}.mf-fl .f6{animation-delay:3.3s}.mf-fl .f7{animation-delay:3.5s}.mf-fl .f8{animation-delay:3.7s}.mf-fl .f9{animation-delay:3.9s}
-@keyframes mfBloom{0%,28%{transform:scale(0)}42%{transform:scale(1.25)}50%,84%{transform:scale(1)}96%,100%{transform:scale(0)}}
-/* piedras que cambian de color */
-.st{stroke:#fff8;stroke-width:.8}
-.st1{animation:stA 7s ease-in-out infinite}.st2{animation:stB 7s ease-in-out infinite}.st3{animation:stC 7s ease-in-out infinite}
-@keyframes stA{0%,100%{fill:#d9c3a5}33%{fill:#e9b9b0}66%{fill:#e6cf9b}}
-@keyframes stB{0%,100%{fill:#e9b9b0}33%{fill:#e6cf9b}66%{fill:#d9c3a5}}
-@keyframes stC{0%,100%{fill:#e6cf9b}33%{fill:#d9c3a5}66%{fill:#e9b9b0}}
-.ms-lf{fill:#c9a15b;animation:lfSway 4s ease-in-out infinite;transform-box:fill-box;transform-origin:0 100%}
-@keyframes lfSway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(6deg)}}
-.ms-sp{fill:#d6b46e;transform-box:fill-box;transform-origin:center;animation:spTw 2.6s ease-in-out infinite}
+/* árbol de la vida: crece pequeño y florece */
+.mf-tree{transform-box:view-box;transform-origin:50% 90%;animation:mfTree 9s ease-in-out infinite}
+@keyframes mfTree{0%{transform:scale(.38);opacity:0}6%{opacity:1}50%{transform:scale(1)}88%{transform:scale(1.04);opacity:1}100%{transform:scale(1.06);opacity:0}}
+.mfsh{fill:#8a6a3a;opacity:.18}
+.mfb{stroke-dasharray:1;stroke-dashoffset:1}
+.mfb.g0{animation:mfG0 9s ease-in-out infinite}@keyframes mfG0{0%,2%{stroke-dashoffset:1}14%,100%{stroke-dashoffset:0}}
+.mfb.g1{animation:mfG1 9s ease-in-out infinite}@keyframes mfG1{0%,11%{stroke-dashoffset:1}23%,100%{stroke-dashoffset:0}}
+.mfb.g2{animation:mfG2 9s ease-in-out infinite}@keyframes mfG2{0%,20%{stroke-dashoffset:1}32%,100%{stroke-dashoffset:0}}
+.mfb.g3{animation:mfG3 9s ease-in-out infinite}@keyframes mfG3{0%,29%{stroke-dashoffset:1}41%,100%{stroke-dashoffset:0}}
+.mfb.g4{animation:mfG4 9s ease-in-out infinite}@keyframes mfG4{0%,38%{stroke-dashoffset:1}50%,100%{stroke-dashoffset:0}}
+{}
+.mff.h0{animation:mfH0 9s ease-in-out infinite}@keyframes mfH0{0%,40%{transform:scale(0) rotate(-40deg)}50%{transform:scale(1.2) rotate(8deg)}54%,100%{transform:scale(1) rotate(0)}}
+.mff.h1{animation:mfH1 9s ease-in-out infinite}@keyframes mfH1{0%,44%{transform:scale(0) rotate(-40deg)}54%{transform:scale(1.2) rotate(8deg)}58%,100%{transform:scale(1) rotate(0)}}
+.mff.h2{animation:mfH2 9s ease-in-out infinite}@keyframes mfH2{0%,48%{transform:scale(0) rotate(-40deg)}58%{transform:scale(1.2) rotate(8deg)}62%,100%{transform:scale(1) rotate(0)}}
+.mff.h3{animation:mfH3 9s ease-in-out infinite}@keyframes mfH3{0%,52%{transform:scale(0) rotate(-40deg)}62%{transform:scale(1.2) rotate(8deg)}66%,100%{transform:scale(1) rotate(0)}}
+.mff.h4{animation:mfH4 9s ease-in-out infinite}@keyframes mfH4{0%,56%{transform:scale(0) rotate(-40deg)}66%{transform:scale(1.2) rotate(8deg)}70%,100%{transform:scale(1) rotate(0)}}
+.mff.h5{animation:mfH5 9s ease-in-out infinite}@keyframes mfH5{0%,60%{transform:scale(0) rotate(-40deg)}70%{transform:scale(1.2) rotate(8deg)}74%,100%{transform:scale(1) rotate(0)}}
+.mff{transform-box:fill-box;transform-origin:center;transform:scale(0);fill:#f08fb0;stroke:#d4608a;stroke-width:.25}.mff.alt{fill:#f7b4cb}.mff .ct{fill:#f2c14e;stroke:none}
+/* piedras reales que cambian de color + agua en movimiento */
+.mst{animation:mstBob 5s ease-in-out infinite;transform-box:view-box;transform-origin:50% 90%}
+@keyframes mstBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2px)}}
+.pa1,.pa2,.pa3{animation:pcA 9s ease-in-out infinite}.pb1,.pb2,.pb3{animation:pcB 9s ease-in-out infinite}.pc1,.pc2,.pc3{animation:pcC 9s ease-in-out infinite}
+.pa2,.pb2,.pc2{animation-delay:-3s}.pa3,.pb3,.pc3{animation-delay:-6s}
+@keyframes pcA{0%,100%{stop-color:#f4ece0}33%{stop-color:#f6dcd6}66%{stop-color:#f3e3c0}}
+@keyframes pcB{0%,100%{stop-color:#b9a78f}33%{stop-color:#d09a96}66%{stop-color:#cdb078}}
+@keyframes pcC{0%,100%{stop-color:#7a6a58}33%{stop-color:#94625f}66%{stop-color:#8d7440}}
+.mw ellipse{transform-box:fill-box;transform-origin:center;opacity:0;animation:mRip 4s ease-out infinite}
+.mw .r2{animation-delay:1s}.mw .r3{animation-delay:2s}.mw .r4{animation-delay:3s}
+@keyframes mRip{0%{transform:scale(.5);opacity:.9}100%{transform:scale(3);opacity:0}}
+.mws{animation:mWave 2.6s linear infinite}
+@keyframes mWave{0%{transform:translateX(-8px);opacity:.3}50%{opacity:.9}100%{transform:translateX(8px);opacity:.3}}
+.mlf{transform-box:fill-box;transform-origin:0 100%;animation:lfSway 4s ease-in-out infinite}
+@keyframes lfSway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(7deg)}}
+.msp{transform-box:fill-box;transform-origin:center;animation:spTw 2.6s ease-in-out infinite}
 @keyframes spTw{0%,100%{transform:scale(.4) rotate(0);opacity:.4}50%{transform:scale(1) rotate(45deg);opacity:1}}
-.ms-w ellipse{transform-box:fill-box;transform-origin:center;animation:wRip 4s ease-in-out infinite}.ms-w .w2{animation-delay:.8s}
-@keyframes wRip{0%,100%{transform:scale(.92);opacity:.5}50%{transform:scale(1.06);opacity:1}}
-@media (prefers-reduced-motion:reduce){.px-pill,.mf-t,.mf-b,.mf-fl .f,.st,.ms-lf,.ms-sp,.ms-w ellipse{animation:none!important}.mf-t,.mf-b{stroke-dashoffset:0}.mf-fl .f{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.mf-tree,.mfb,.mff,.mst,.mw ellipse,.mws,.mlf,.msp,.pa1,.pa2,.pa3,.pb1,.pb2,.pb3,.pc1,.pc2,.pc3{animation:none!important}.mfb{stroke-dashoffset:0}.mff{transform:scale(1)}.mw ellipse{opacity:.5}}
