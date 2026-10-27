@@ -39,11 +39,21 @@ const DEFS = {
   florece: { cls: "px-florece", title: "pxFlorece", sub: "pxFloreceSub", host: "floreceEntry", go: () => { if (window.CMLFlorece) window.CMLFlorece.open("cover"); } },
   spa: { cls: "px-spa", title: "pxSpa", sub: "pxSpaSub", host: "spaEntry", go: () => { try { const p = C.profile && C.profile(); const n = p && (p.first_name || "").trim(); if (n) localStorage.setItem("cml_spa_name", n); } catch {} try { const sc = C.setting("spa_content"); if (sc && typeof sc === "object") localStorage.setItem("cml_spa_content", JSON.stringify(sc)); else localStorage.removeItem("cml_spa_content"); } catch {} window.open("spa-virtual.html", "_blank", "noopener"); } }
 };
+const MED = {
+  florece: '<svg viewBox="0 0 100 100" aria-hidden="true"><defs><radialGradient id="mfg" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#fffaf3"/><stop offset="1" stop-color="#f6e4d6"/></radialGradient><linearGradient id="mfk" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b98a3e"/><stop offset=".5" stop-color="#e6c682"/><stop offset="1" stop-color="#a97a30"/></linearGradient></defs><circle cx="50" cy="50" r="48" fill="url(#mfg)"/>' +
+    '<g class="mf-tree" fill="none" stroke="url(#mfk)" stroke-linecap="round"><path class="mf-t" pathLength="1" stroke-width="4" d="M50 84 C50 70 49 62 50 50"/><path class="mf-b b1" pathLength="1" stroke-width="2.2" d="M50 62 C42 58 36 52 32 44"/><path class="mf-b b2" pathLength="1" stroke-width="2.2" d="M50 56 C58 52 64 46 69 38"/><path class="mf-b b3" pathLength="1" stroke-width="2" d="M50 50 C47 40 46 32 46 24"/><path class="mf-b b4" pathLength="1" stroke-width="1.8" d="M50 50 C56 42 58 34 58 27"/><path class="mf-b b5" pathLength="1" stroke-width="1.8" d="M40 52 C34 50 28 50 24 54"/><path class="mf-b b6" pathLength="1" stroke-width="1.8" d="M60 52 C66 52 72 52 76 48"/><path class="mf-g" stroke-width="3" d="M38 86 C46 83 54 83 62 86"/></g>' +
+    '<g class="mf-fl"><circle class="f f1" cx="32" cy="43" r="5.2"/><circle class="f f2" cx="69" cy="37" r="5.6"/><circle class="f f3" cx="46" cy="23" r="5.4"/><circle class="f f4" cx="58" cy="26" r="4.6"/><circle class="f f5" cx="24" cy="53" r="4.4"/><circle class="f f6" cx="76" cy="47" r="4.4"/><circle class="f f7" cx="50" cy="35" r="4"/><circle class="f f8" cx="40" cy="36" r="3.6"/><circle class="f f9" cx="62" cy="40" r="3.6"/></g></svg>',
+  spa: '<svg viewBox="0 0 100 100" aria-hidden="true"><defs><radialGradient id="msg" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#fffbf1"/><stop offset="1" stop-color="#f7e8cf"/></radialGradient></defs><circle cx="50" cy="50" r="48" fill="url(#msg)"/>' +
+    '<g class="ms-w" fill="none" stroke="#c9a15b" stroke-width="1.4" stroke-linecap="round"><ellipse class="w1" cx="50" cy="78" rx="30" ry="7"/><ellipse class="w2" cx="50" cy="78" rx="22" ry="4.6"/></g>' +
+    '<ellipse class="st st1" cx="50" cy="68" rx="25" ry="9"/><ellipse class="st st2" cx="50" cy="53" rx="18" ry="7.5"/><ellipse class="st st3" cx="50" cy="40" rx="11.5" ry="6"/>' +
+    '<path class="ms-lf" d="M74 52 C82 48 86 54 84 62 C78 64 72 60 74 52Z"/><path class="ms-sp" d="M70 24 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z"/></svg>'
+};
 function pill(mod) {
   const d = DEFS[mod];
   const b = C.el("button", { type: "button", class: "px-pill " + d.cls, "aria-label": t(d.title) + " · " + t("pxPremium") },
     C.el("span", { class: "px-tx" }, C.el("b", { text: t(d.title) }), C.el("small", { text: t(d.sub) })),
     C.el("span", { class: "px-p", "aria-hidden": "true", text: "P" }));
+  const med = C.el("span", { class: "px-med", "aria-hidden": "true" }); med.innerHTML = MED[mod]; b.appendChild(med);
   b.addEventListener("click", d.go);
   return b;
 }
