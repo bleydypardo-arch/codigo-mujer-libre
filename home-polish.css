@@ -246,3 +246,13 @@
 .px-pill{aspect-ratio:2079/330!important}
 .px-pill .px-med{width:10.9%!important}
 #floreceEntry,#spaEntry{margin-top:16px}
+/* SIMETRÍA: tarjetas de Eventos Especiales y Nuestra Recomendación, mismo ancho y mismo alto; la foto se ve completa */
+#homeUpcoming .ev-grid>.ali,#homeUpcoming .ev-grid>.ev-card,#homeDiscover .disc-list>.disc-card,#homeDiscover .disc-list>.disc-row{flex:0 0 min(300px,82%)!important;min-height:350px}
+#homeUpcoming .ali{display:flex;flex-direction:column}
+#homeUpcoming .ali>.ali-stack{flex:1 1 auto;display:grid}
+#homeUpcoming .ali-slide>.ev-card,#homeUpcoming .ev-grid>.ev-card{height:100%}
+#homeDiscover .disc-card .disc-row{display:flex;flex-direction:column}
+#homeDiscover .disc-card .disc-th{flex:1 1 auto;min-height:200px;height:auto}
+#homeDiscover .disc-card .disc-txt{flex:0 0 auto}
+#homeUpcoming .ev-card{align-content:space-between}
+#homeUpcoming .ev-card .place-btn{height:auto!important;align-self:start}

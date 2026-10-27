@@ -299,7 +299,7 @@ function renderDiscover() {
   slots.forEach(s => {
     if (s.p) {
       const tag = C.planTag(s.p.id), hi = C.safeUrl(tag.homeImg || "");
-      rows.push(disc(thumb(hi || C.safeUrl(s.p.image_url), s.code, !!hi || !!tag.full), s.k, C.pick(s.p, "title") || "—",
+      rows.push(disc(thumb(hi || C.safeUrl(s.p.image_url), s.code, true), s.k, C.pick(s.p, "title") || "—",
         [s.p.event_date ? shortDate(s.p.event_date) : "", s.p.location].filter(Boolean).join(" · ") || C.pick(s.p, "desc") || "", () => C.openDetail(s.p.id), s.p));
     } else rows.push(disc(thumb("", s.code), s.k, s.fb[0], s.fb[1], go2(s.fb[2])));
   });
