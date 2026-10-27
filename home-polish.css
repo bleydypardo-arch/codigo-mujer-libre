@@ -242,3 +242,7 @@
 @keyframes arF2{0%,22%{opacity:0}40%,92%{opacity:1}100%{opacity:0}}@keyframes arF3{0%,52%{opacity:0}70%,88%{opacity:1}98%,100%{opacity:0}}
 /* botones premium al final de la Home */
 #floreceEntry,#spaEntry{margin-top:12px}
+/* botones de cierre un poco más grandes (más altos) */
+.px-pill{aspect-ratio:2079/330!important}
+.px-pill .px-med{width:10.9%!important}
+#floreceEntry,#spaEntry{margin-top:16px}
