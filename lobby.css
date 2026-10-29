@@ -115,3 +115,14 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 
 
 .lb-pc:has(.lb-env) span { margin-top: -6px; }
+
+/* botón Explora el Hall: como la referencia aprobada */
+#lobby .lb-ex { background: linear-gradient(180deg,#1F3D2D 0%,#16301F 100%); border: calc(var(--inv) * 1.4px) solid #D9B872; box-shadow: 0 0 0 calc(var(--inv) * 2.4px) #16301F, 0 0 0 calc(var(--inv) * 3.6px) #D9B872, 0 5px 14px rgba(0,0,0,.4); }
+#lobby .lb-ex small, #lobby .lb-ex b { background: none; -webkit-background-clip: border-box; background-clip: border-box; -webkit-text-fill-color: #E2C27E; color: #E2C27E; filter: none; text-shadow: 0 1px 2px rgba(0,0,0,.4); }
+#lobby .lb-ex small { font: 400 calc(var(--inv) * 7.5px)/1 var(--font-ui); letter-spacing: .24em; }
+#lobby .lb-ex b { font: 600 calc(var(--inv) * var(--fs-hall, 13.5) * 1px)/1.05 var(--font-editorial); }
+#lobby .lb-ex .lb-go { width: calc(var(--inv) * 30px); height: calc(var(--inv) * 30px); border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #F3DCA4, #C9A15C 70%, #A98340); color: #fff8e6; border: calc(var(--inv) * 1px) solid rgba(255,240,200,.7); box-shadow: 0 2px 6px rgba(0,0,0,.4); line-height: 1; }
+#lobby .lb-ex .lb-go svg { width: 62%; height: auto; }
+#lobby .lb-ex { padding: 0 34px 0 14px; gap: 14px; }
+#lobby .lb-ex .tx { min-width: 0; }
+#lobby .lb-ex .lb-go { width: calc(var(--inv) * 26px); height: calc(var(--inv) * 26px); flex: none; }

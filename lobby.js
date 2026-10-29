@@ -138,7 +138,7 @@ function build() {
   const img = new Image(); img.src = "lobby/home.webp?v=20261028b"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
 
   // saludo y marca
-  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club.webp?v=20261028j" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
+  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club.webp?v=20261028l" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
   stage.appendChild(hello);
 
   // pantallas (tocar = se abre ampliada con las tres categorías)
@@ -165,7 +165,7 @@ function build() {
   fly.addEventListener("click", () => { if (!openSheet("homeDyk")) C.showPage("home"); }); stage.appendChild(fly);
 
   // Explora el Hall
-  const ex = place(mk("lb-abs lb-ex", MEDAL.replace(/lb(Gold|Rose|Wine|Amber|Shine|Clip)/g, "lbx$1") + '<span class="tx"><small></small><b></b></span><span class="lb-go">›</span>', "button"), 245, 1290, 610, 116); ex.type = "button";
+  const ex = place(mk("lb-abs lb-ex", MEDAL.replace(/lb(Gold|Rose|Wine|Amber|Shine|Clip)/g, "lbx$1") + '<span class="tx"><small></small><b></b></span><span class="lb-go"><svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 8h34M29 2l7 6-7 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>', "button"), 245, 1290, 610, 116); ex.type = "button";
   ex.addEventListener("click", () => { document.dispatchEvent(new CustomEvent("cml:hall")); if (window.CMLHall && window.CMLHall.open) window.CMLHall.open(); else seeAll("events"); }); stage.appendChild(ex);
 
   root.appendChild(stage); host.insertBefore(root, host.firstChild); built = true;
@@ -180,7 +180,7 @@ function fitGroup(sel, v, base, min) {
 }
 function fitAll() {
   if (!built) return;
-  fitGroup(".lb-pt", "--fs-pt", 11, 6); fitGroup(".lb-cat", "--fs-cat", 7.5, 4.5); fitGroup(".lb-plq b", "--fs-code", 11, 6); fitGroup(".lb-ex b", "--fs-hall", 14, 7); fitGroup(".lb-sub", "--fs-sub", 4.8, 3.6); fitGroup(".lb-plq small", "--fs-csub", 4.8, 3.6); fitGroup(".lb-pc span", "--fs-pc", 8.5, 4.5);
+  fitGroup(".lb-pt", "--fs-pt", 11, 6); fitGroup(".lb-cat", "--fs-cat", 7.5, 4.5); fitGroup(".lb-plq b", "--fs-code", 11, 6); fitGroup(".lb-ex b", "--fs-hall", 12.5, 7); fitGroup(".lb-sub", "--fs-sub", 4.8, 3.6); fitGroup(".lb-plq small", "--fs-csub", 4.8, 3.6); fitGroup(".lb-pc span", "--fs-pc", 8.5, 4.5);
 }
 function labels() {
   if (!built) return;
