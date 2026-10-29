@@ -54,17 +54,47 @@ function paint() {
   page.querySelector(".back-btn").setAttribute("aria-label", t("hlBack") || "Volver"); if (spDock && spDock.__paint) spDock.__paint();
 }
 
-/* ---- música suave de spa (generada, sin archivos): acordes lentos + brillo de campanas. Se oye al entrar a Wellness. ---- */
-const MUS = { ac: null, g: null, on: false, timers: [], user: null };
-function musCtx() { if (!MUS.ac) { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; MUS.ac = new A(); MUS.g = MUS.ac.createGain(); MUS.g.gain.value = 0; const lp = MUS.ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1400; const dl = MUS.ac.createDelay(1.5); dl.delayTime.value = .55; const fb = MUS.ac.createGain(); fb.gain.value = .38; dl.connect(fb); fb.connect(dl); MUS.g.connect(lp); lp.connect(MUS.ac.destination); lp.connect(dl); dl.connect(MUS.ac.destination); } if (MUS.ac.state === "suspended") MUS.ac.resume(); return MUS.ac; }
-const CH = [[196, 246.94, 293.66, 392], [174.61, 220, 261.63, 349.23], [164.81, 207.65, 246.94, 329.63], [196, 261.63, 293.66, 392]];
-function pad(f, t0, dur) { const ac = MUS.ac; [-4, 4].forEach(d => { const o = ac.createOscillator(), g = ac.createGain(); o.type = "sine"; o.frequency.value = f; o.detune.value = d; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.05, t0 + dur * .4); g.gain.linearRampToValueAtTime(0, t0 + dur); o.connect(g); g.connect(MUS.g); o.start(t0); o.stop(t0 + dur + .1); }); }
-function bell(f, t0) { const ac = MUS.ac, o = ac.createOscillator(), g = ac.createGain(); o.type = "triangle"; o.frequency.value = f; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.05, t0 + .02); g.gain.exponentialRampToValueAtTime(.0008, t0 + 3.2); o.connect(g); g.connect(MUS.g); o.start(t0); o.stop(t0 + 3.4); }
-let chIdx = 0;
-function bar() { if (!MUS.on || !MUS.ac) return; const t0 = MUS.ac.currentTime + .05, c = CH[chIdx++ % CH.length]; c.forEach((f, i) => pad(f, t0 + i * .25, 9)); [0, 2.6, 4.4, 6.5].forEach((d, i) => bell(c[(i * 2 + 1) % 4] * 2, t0 + d + Math.random() * .3)); MUS.timers.push(setTimeout(bar, 7600)); }
+/* ---- música de spa: piano muy suave + cuenco + agua (generada, sin archivos) ---- */
+const MUS = { ac: null, g: null, rv: null, on: false, timers: [], water: null, idx: 0 };
+function impulse(ac, sec) { const n = Math.floor(ac.sampleRate * sec), b = ac.createBuffer(2, n, ac.sampleRate); for (let c = 0; c < 2; c++) { const d = b.getChannelData(c); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 2.6); } return b; }
+function musCtx() {
+  if (!MUS.ac) {
+    const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; const ac = MUS.ac = new A();
+    MUS.g = ac.createGain(); MUS.g.gain.value = 0; MUS.g.connect(ac.destination);
+    MUS.rv = ac.createConvolver(); MUS.rv.buffer = impulse(ac, 3.2); const wet = ac.createGain(); wet.gain.value = .5; MUS.rv.connect(wet); wet.connect(MUS.g);
+    MUS.bus = ac.createGain(); MUS.bus.gain.value = 1; const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 2400; MUS.bus.connect(lp); lp.connect(MUS.g); lp.connect(MUS.rv);
+    // agua: ruido suave filtrado que sube y baja despacio
+    const n = ac.sampleRate * 4, nb = ac.createBuffer(1, n, ac.sampleRate), d = nb.getChannelData(0); let l = 0; for (let i = 0; i < n; i++) { const w = Math.random() * 2 - 1; l = (l + .04 * w) / 1.04; d[i] = l * 9; }
+    const src = ac.createBufferSource(); src.buffer = nb; src.loop = true; const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 700; bp.Q.value = .6;
+    const wg = ac.createGain(); wg.gain.value = .10; const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = .13; lg.gain.value = .04; lfo.connect(lg); lg.connect(wg.gain); lfo.start();
+    src.connect(bp); bp.connect(wg); wg.connect(MUS.g); src.start(); MUS.water = wg;
+  }
+  if (MUS.ac.state === "suspended") MUS.ac.resume(); return MUS.ac;
+}
+const N = { C3: 130.81, G3: 196, C4: 261.63, D4: 293.66, E4: 329.63, G4: 392, A4: 440, B4: 493.88, C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99 };
+function piano(f, t0, v) {
+  const ac = MUS.ac, g = ac.createGain();
+  g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(v, t0 + .012); g.gain.exponentialRampToValueAtTime(.0008, t0 + 4.2);
+  [[1, 1], [2, .28], [3, .08], [4.01, .03]].forEach(([m, a]) => { const o = ac.createOscillator(), og = ac.createGain(); o.type = "sine"; o.frequency.value = f * m; og.gain.value = a; o.connect(og); og.connect(g); o.start(t0); o.stop(t0 + 4.3); });
+  g.connect(MUS.bus);
+}
+function bowl(t0) {
+  const ac = MUS.ac, g = ac.createGain(); g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(.05, t0 + .08); g.gain.exponentialRampToValueAtTime(.0006, t0 + 9);
+  [[1, 1], [2.76, .35], [5.4, .12]].forEach(([m, a]) => { const o = ac.createOscillator(), og = ac.createGain(); o.type = "sine"; o.frequency.value = 196 * m; og.gain.value = a; o.connect(og); og.connect(g); o.start(t0); o.stop(t0 + 9.2); });
+  g.connect(MUS.bus);
+}
+const MEL = ["E4", "G4", "A4", "D5", "C5", "G4", "E4", "D4", "G4", "A4", "E5", "D5", "C5", "A4", "G4", "E4"];
+function step() {
+  if (!MUS.on || !MUS.ac) return; const t0 = MUS.ac.currentTime + .05, i = MUS.idx++;
+  piano(N[MEL[i % MEL.length]], t0, .05 + Math.random() * .025);
+  if (i % 4 === 0) piano(i % 8 === 0 ? N.C3 : N.G3, t0, .06);            // nota grave, lenta
+  if (i % 6 === 3) piano(N[MEL[(i + 3) % MEL.length]] * 1, t0 + .35, .035);
+  if (i % 14 === 6) bowl(t0 + .2);
+  MUS.timers.push(setTimeout(step, 1900 + Math.random() * 1500));
+}
 function musicSet(on) {
-  if (on) { if (!window.CMLSpaMute && musCtx()) { MUS.on = true; MUS.g.gain.cancelScheduledValues(MUS.ac.currentTime); MUS.g.gain.linearRampToValueAtTime(.9, MUS.ac.currentTime + 3); if (!MUS.timers.length) bar(); } }
-  else if (MUS.ac) { MUS.on = false; MUS.timers.forEach(clearTimeout); MUS.timers = []; MUS.g.gain.cancelScheduledValues(MUS.ac.currentTime); MUS.g.gain.linearRampToValueAtTime(0, MUS.ac.currentTime + 1.2); }
+  if (on) { if (!window.CMLSpaMute && musCtx()) { MUS.on = true; MUS.g.gain.cancelScheduledValues(MUS.ac.currentTime); MUS.g.gain.linearRampToValueAtTime(.8, MUS.ac.currentTime + 4); if (!MUS.timers.length) step(); } }
+  else if (MUS.ac) { MUS.on = false; MUS.timers.forEach(clearTimeout); MUS.timers = []; MUS.g.gain.cancelScheduledValues(MUS.ac.currentTime); MUS.g.gain.linearRampToValueAtTime(0, MUS.ac.currentTime + 1.5); }
   const b = stage && stage.querySelector(".sp-snd"); if (b) { b.classList.toggle("off", !MUS.on); b.setAttribute("aria-pressed", String(MUS.on)); }
 }
 function open() { build(); C.showPage("spaglobal", false); fit(); paint(); setTimeout(() => { fit(); paint(); }, 150); window.scrollTo({ top: 0 }); window.CMLSpaMute = false; musicSet(true); }
