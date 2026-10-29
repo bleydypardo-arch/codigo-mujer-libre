@@ -120,7 +120,7 @@ function build() {
   const host = document.getElementById("home"); if (!host || built) return;
   root = mk(""); root.id = "lobby"; root.setAttribute("role", "region"); root.setAttribute("aria-label", "Lobby");
   stage = mk("lb-stage");
-  const img = new Image(); img.src = "lobby/home.webp?v=20261028a"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
+  const img = new Image(); img.src = "lobby/home.webp?v=20261028b"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
 
   // saludo y marca
   const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><div class="k">Club</div><div class="n">Código Mujer Libre</div><div class="t">CONECTA · VIVE · CRECE</div></div>'), 250, 40);
