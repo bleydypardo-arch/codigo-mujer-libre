@@ -234,7 +234,7 @@ function build() {
   root.appendChild(stage); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) {
     root.__minFoot = 60; window.CMLScene.fill(root, "home");
     const SPA_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg>';
-    const dock = mk("lb-dock", '<div class="lb-drow"><button type="button" class="lb-dh"><span class="lb-dht"><small></small><b></b></span><span class="lb-dha">›</span></button><button type="button" class="lb-ds">' + SPA_SVG + '<b></b></button></div>' +
+    const dock = mk("lb-dock lb-home", '<div class="lb-drow"><button type="button" class="lb-dh"><span class="lb-dht"><small></small><b></b></span><span class="lb-dha">›</span></button><button type="button" class="lb-ds">' + SPA_SVG + '<b></b></button></div>' +
       '<div class="lb-qa"><div class="lb-qah"><span class="lb-qat"></span></div><div class="lb-qag">' +
       [["matcha", "matcha-cup.jpg"], ["rest", "lobby/hall.webp"], ["well", "lobby/spa.webp"], ["trip", "travel-experiences.jpg"]].map(x => '<button type="button" class="lb-qi" data-q="' + x[0] + '"><i style="background-image:url(' + x[1] + ')"></i><span></span></button>').join("") + '</div></div>' +
       '<button type="button" class="lb-gx"><i style="background-image:url(travel-experiences.jpg)"></i><span class="lb-gxt"><small></small><b></b><em></em></span><span class="lb-gxb"></span></button>' +

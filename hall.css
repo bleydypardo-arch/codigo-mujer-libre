@@ -348,7 +348,7 @@ html.lobby-on .lb-greet { font-size: calc(var(--inv) * 32px); }
 .lb-tvp { min-height: calc(var(--inv) * 60px); }
 
 /* dock del lobby v2: Hall a todo el ancho + fila Spa / Tienda / Viajes */
-.lb-dock { flex-direction: column; gap: 10px; padding: 14px 16px 6px; }
+.lb-dock.lb-home { flex-direction: column; }
 .lb-dock .lb-dh { flex: none; width: 100%; min-height: 64px; padding: 0 14px 0 22px; justify-content: space-between; }
 .lb-dock .lb-dht { align-items: flex-start; gap: 4px; }
 .lb-dock .lb-dht small { font-size: 9px; }
@@ -416,3 +416,20 @@ html.lobby-on .lb-greet { font-size: calc(var(--inv) * 32px); }
 .lb-gx { height: 128px; }
 .lb-gxt em { display: none; }
 .lb-gxt b { font-size: 22px; }
+/* VIAJES: atardecer vivo — el sol baja, el mar se mueve, las mujeres respiran y se mecen mirando el mar */
+.ph-travel .tv-waves { z-index: 3; }
+.ph-travel .tv-waves .sun { left: 16%; top: 14%; width: 36%; height: 30%; background: radial-gradient(closest-side, rgba(255,214,130,.85), rgba(255,170,90,.35) 55%, rgba(255,214,130,0)); animation: trSun 14s ease-in-out infinite alternate; }
+.ph-travel .tv-waves .sea { top: 29%; height: 20%; left: -20px; right: -20px; opacity: .5; }
+.ph-travel .tv-waves .glint { left: 26%; top: 34%; width: 16%; height: 14%; }
+.ph-travel .tv-waves .foam { top: 50%; bottom: auto; height: 10%; left: 0; right: 0; opacity: .5; animation: tvFoam 5s ease-in-out infinite; }
+.ph-travel .tv-waves::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,120,70,.0), rgba(255,110,80,.34) 45%, rgba(120,50,90,.22)); mix-blend-mode: soft-light; opacity: 0; animation: trDusk 16s ease-in-out infinite alternate; }
+@keyframes trSun { from { transform: translateY(-10px) scale(1.05); opacity: .95; } to { transform: translateY(22px) scale(.92); opacity: .65; } }
+@keyframes trDusk { from { opacity: 0; } to { opacity: 1; } }
+.ph-travel.is-photo .tv-slide::after { content: ""; position: absolute; inset: 0; background: inherit; -webkit-mask-image: radial-gradient(ellipse 50% 46% at 58% 78%, #000 52%, transparent 100%); mask-image: radial-gradient(ellipse 50% 46% at 58% 78%, #000 52%, transparent 100%); transform-origin: 56% 100%; animation: trSway 7s ease-in-out infinite alternate; }
+@keyframes trSway { 0% { transform: rotate(-.45deg) scale(1.004, 1); } 100% { transform: rotate(.5deg) scale(1.002, 1.012); } }
+@media (prefers-reduced-motion: reduce) { .ph-travel .tv-waves::after, .ph-travel.is-photo .tv-slide::after { animation: none; } }
+/* podcast: hojas más grandes y visibles cayendo por la ventana */
+.lf { width: calc(var(--s) * 2.1%); opacity: 1; }
+.ph-stage::after { content: ""; position: absolute; left: 0; top: 0; width: 55%; height: 45%; pointer-events: none; background: radial-gradient(ellipse at 30% 20%, rgba(255,244,210,.5), rgba(255,244,210,0) 70%); mix-blend-mode: screen; animation: fxGlow 5s ease-in-out infinite alternate; }
+.ph-travel .tv-waves .sea { top: 32%; height: 8%; opacity: .4; }
+.ph-travel .tv-waves .glint { top: 32%; height: 7%; }

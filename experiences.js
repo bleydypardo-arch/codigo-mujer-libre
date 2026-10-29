@@ -160,7 +160,7 @@ function paintStage() {
   head.classList.toggle("is-photo", imgs[0] === HERO_PHOTO);
   const old = head.querySelector(".sea-btn"); if (old) old.remove();
   const oldW = head.querySelector(".tv-waves"); if (oldW) oldW.remove();
-  if (imgs[0] === HERO_PHOTO) { head.appendChild(seaBtn()); if (!reduced()) { const w = el("div", { class: "tv-waves", "aria-hidden": "true" }); w.innerHTML = '<i class="sun"></i><i class="sea"></i><i class="glint"></i><i class="foam"></i>'; head.appendChild(w); } }
+  if (imgs[0] === HERO_PHOTO) { head.appendChild(seaBtn()); if (!reduced()) { const w = el("div", { class: "tv-waves", "aria-hidden": "true" }); w.innerHTML = '<i class="sun"></i><i class="sea"></i><i class="glint"></i><i class="foam"></i>'; (box || head).appendChild(w); } }
   if (imgs.length > 1 && !reduced()) {
     let i = 0;
     slideTimer = setInterval(() => {

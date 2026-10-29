@@ -7,12 +7,12 @@
 let C = null, facts = [], factOffset = 0, flipped = false, dykFlipped = false;
 const ES = { rcK: "RECETA DEL MES", rcTap: "Toca para descubrir la receta", rcBack: "Toca para volver", rcOpen: "Ver receta completa", rcShow: "Ver la receta", rcHide: "Volver",
   dykK: "¿SABÍAS QUE?", dykNext: "Otro dato", dykAria: "Dato curioso",
-  rcSoonT: "Muy pronto: nuestra primera receta", rcSoonP: "Cada mes compartiremos aquí una receta de matcha para disfrutar con calma.", rcSoonTag: "Muy pronto",
+  rcSoonT: "Muy pronto: nuestra primera receta", rcSoonP: "Cada mes compartiremos aquí una receta de matcha para disfrutar con calma.", rcSoonTag: "Muy pronto", rcSoonOpen: "Ver sorpresa", rcSoonBackT: "Tu primera receta viene en camino", rcSoonBackP: "Estamos preparando un matcha especial para ti. Apenas esté lista, la verás aquí, y cada mes habrá una nueva. ☕", rcSoonOpen: "Ver sorpresa", rcSoonBackT: "Tu primera receta viene en camino", rcSoonBackP: "Estamos preparando un matcha especial para ti. Apenas esté lista, la verás aquí, y cada mes habrá una nueva. ☕",
   dykSoon: "Muy pronto compartiremos aquí un dato curioso para ti.",
   wellReadsK: "PARA LEER", wellReadsT: "Lecturas de Bienestar", wellReadsP: "Ideas cortas sobre longevidad, alimentación, salud de la mujer y hábitos." };
 const EN = { rcK: "RECIPE OF THE MONTH", rcTap: "Tap to reveal the recipe", rcBack: "Tap to go back", rcOpen: "View the full recipe", rcShow: "See the recipe", rcHide: "Back",
   dykK: "DID YOU KNOW?", dykNext: "Another one", dykAria: "Did you know",
-  rcSoonT: "Coming soon: our first recipe", rcSoonP: "Every month we'll share a matcha recipe here to enjoy slowly.", rcSoonTag: "Coming soon",
+  rcSoonT: "Coming soon: our first recipe", rcSoonP: "Every month we'll share a matcha recipe here to enjoy slowly.", rcSoonTag: "Coming soon", rcSoonOpen: "See surprise", rcSoonBackT: "Your first recipe is on its way", rcSoonBackP: "We are preparing a special matcha for you. As soon as it is ready you will see it here, with a new one every month. ☕", rcSoonOpen: "See surprise", rcSoonBackT: "Your first recipe is on its way", rcSoonBackP: "We are preparing a special matcha for you. As soon as it is ready you will see it here, with a new one every month. ☕",
   dykSoon: "Soon we'll share a fun fact here for you.",
   wellReadsK: "TO READ", wellReadsT: "Wellness Reads", wellReadsP: "Short ideas on longevity, healthy eating, women's health and habits." };
 const el = (...a) => C.el(...a);
@@ -34,11 +34,22 @@ function medalNode() {
 }
 function recipeSoonNode() {
   const card = el("section", { class: "rc-card is-soon", "aria-label": C.t("rcK") });
-  card.appendChild(el("div", { class: "rc-face rc-front" }, medalNode(),
+  const flip = el("div", { class: "rc-flip" });
+  const openBtn = el("button", { type: "button", class: "rc-btn rc-open-btn", text: C.t("rcSoonOpen") });
+  const closeBtn = el("button", { type: "button", class: "rc-btn rc-close-btn", text: "← " + C.t("rcHide") });
+  const front = el("div", { class: "rc-face rc-front" }, medalNode(),
     el("small", { class: "rc-k", text: C.t("rcK") }),
     el("b", { class: "rc-title", text: C.t("rcSoonT") }),
     el("span", { class: "rc-teaser", text: C.t("rcSoonP") }),
-    el("span", { class: "rc-cta", text: C.t("rcSoonTag") })));
+    openBtn);
+  const back = el("div", { class: "rc-face rc-back" }, closeBtn,
+    el("b", { class: "rc-title", text: C.t("rcSoonBackT") }),
+    el("span", { class: "rc-teaser", text: C.t("rcSoonBackP") }));
+  flip.append(el("div", { class: "rc-inner" }, front, back));
+  const sync = on => { card.classList.toggle("is-flipped", on); front.setAttribute("aria-hidden", String(on)); back.setAttribute("aria-hidden", String(!on)); if ("inert" in front) { front.inert = on; back.inert = !on; } };
+  openBtn.addEventListener("click", () => sync(true)); closeBtn.addEventListener("click", () => sync(false));
+  front.addEventListener("click", e => { if (!e.target.closest("button")) sync(true); });
+  sync(false); card.appendChild(flip);
   return card;
 }
 function posterNode(src, spare, alt) {
