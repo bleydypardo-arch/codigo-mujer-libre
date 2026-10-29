@@ -17,11 +17,11 @@ const S = {
   es: { title: "Atelier de Esencias", sub: "Un espacio solo tuyo para crear una esencia única, con flores, hierbas y maderas.", start: "Crear mi esencia", hint: "Desliza la escena y toca Perfumería, Aromaterapia o la Mesa de mezcla", close: "Cerrar", z1: "Perfumería", z2: "Aromaterapia", z3: "Frascos", z4: "Mesa de mezcla", z5: "Utensilios",
     d1: "Crea tu propio perfume: florales, maderas y resinas.", d2: "Crea tus esencias con flores, hierbas y frutas.", d3: "Clásicos, modernos, vintage y exclusivos. Elegirás el tuyo.", d5: "Morteros, cucharas y goteros de oro para tu mezcla.",
     pick: "Elige hasta 4 notas", pickP: "Compón tu perfume · hasta 4 notas", readyP: "Tu perfume está listo", defP: "Mi perfume", g: ["Flores", "Hierbas y frutas", "Maderas y resinas"], mix: "Mezclar mis notas", mixing: "Mezclando tus notas…", mix2: "Cada flor, una nota de ti",
-    bt: "Elige tu frasco", nm: "Ponle nombre a tu creación", int: "Tu intención", cap: "Tapa", next: "Revelar mi esencia", ready: "Tu esencia está lista", save: "Guardar mi esencia", saved: "Guardada en tu colección. Pronto podrás pedirla hecha para ti.", again: "Crear otra", def: "Mi esencia", notes: "Notas", back: "Atrás" },
+    bt: "Elige tu frasco", nm: "Ponle nombre a tu creación", int: "Tu intención", cap: "Tapa", next: "Revelar mi esencia", ready: "Tu esencia está lista", save: "Guardar mi esencia", saved: "Guardada en tu colección. Pronto podrás pedirla hecha para ti.", again: "Crear otra", lab: "Etiqueta", pk: "Empácala", pk1: "Caja", pk2: "Lazo", dedic: "Mensaje en la tarjeta (opcional)", dedicDef: "Para ti, con amor", packNext: "Empacar mi esencia", packing: "Empacando con cariño…", packing2: "Tu creación, lista para llevar", order: "Llévatela · Pedir mi esencia", ordered: "¡Listo! Recibimos tu pedido. Te contactaremos para entregártela.", box: ["Marfil", "Rosa", "Esmeralda", "Noche"], rib: ["Oro", "Rosa", "Champán"], labs: ["Clásica", "Rosa", "Noche"], brand: "CÓDIGO MUJER LIBRE", def: "Mi esencia", notes: "Notas", back: "Atrás" },
   en: { title: "Essence Atelier", sub: "A space just for you to create a one-of-a-kind essence from flowers, herbs and woods.", start: "Create my essence", hint: "Swipe the scene and tap Perfumery, Aromatherapy or the Blending table", close: "Close", z1: "Perfumery", z2: "Aromatherapy", z3: "Bottles", z4: "Blending table", z5: "Tools",
     d1: "Create your own perfume: florals, woods and resins.", d2: "Create your essences with flowers, herbs and fruits.", d3: "Classic, modern, vintage and exclusive. You will pick yours.", d5: "Golden mortars, spoons and droppers for your blend.",
     pick: "Choose up to 4 notes", pickP: "Compose your perfume · up to 4 notes", readyP: "Your perfume is ready", defP: "My perfume", g: ["Flowers", "Herbs & fruits", "Woods & resins"], mix: "Blend my notes", mixing: "Blending your notes…", mix2: "Every flower, a note of you",
-    bt: "Choose your bottle", nm: "Name your creation", int: "Your intention", cap: "Cap", next: "Reveal my essence", ready: "Your essence is ready", save: "Save my essence", saved: "Saved to your collection. Soon you will be able to order it made for you.", again: "Create another", def: "My essence", notes: "Notes", back: "Back" } };
+    bt: "Choose your bottle", nm: "Name your creation", int: "Your intention", cap: "Cap", next: "Reveal my essence", ready: "Your essence is ready", save: "Save my essence", saved: "Saved to your collection. Soon you will be able to order it made for you.", again: "Create another", lab: "Label", pk: "Pack it", pk1: "Box", pk2: "Ribbon", dedic: "Card message (optional)", dedicDef: "For you, with love", packNext: "Pack my essence", packing: "Packing with love…", packing2: "Your creation, ready to take home", order: "Take it home · Order my essence", ordered: "Done! We received your order. We will contact you to deliver it.", box: ["Ivory", "Rose", "Emerald", "Midnight"], rib: ["Gold", "Rose", "Champagne"], labs: ["Classic", "Rose", "Night"], brand: "CÓDIGO MUJER LIBRE", def: "My essence", notes: "Notes", back: "Back" } };
 const s = k => S[L() ? "en" : "es"][k];
 const mk = (cls, html, tag) => { const n = document.createElement(tag || "div"); n.className = cls; if (html != null) n.innerHTML = html; return n; };
 const ing = k => ING.find(i => i.k === k);
@@ -34,16 +34,21 @@ const tink = () => { const f = [880, 988, 1175, 1319][Math.floor(Math.random() *
 function splash(n) { const x = ax(); if (!x || MUTE) return; for (let i = 0; i < n; i++) tone(300 + Math.random() * 500, .25, .01, "sine", i * (4.4 / n)); }
 function padOn() { const x = ax(); if (!x || PAD) return; try { const g = x.createGain(); g.gain.value = 0; g.gain.linearRampToValueAtTime(.022, x.currentTime + 4); g.connect(x.__m); const os = [174.6, 261.6, 329.6, 392].map((f, i) => { const o = x.createOscillator(); o.type = "sine"; o.frequency.value = f; const l = x.createOscillator(), lg = x.createGain(); l.frequency.value = .07 + i * .03; lg.gain.value = 1.2; l.connect(lg).connect(o.frequency); const og = x.createGain(); og.gain.value = i === 0 ? 1 : .55; o.connect(og).connect(g); o.start(); l.start(); return [o, l]; }); PAD = { g, os }; } catch (e) {} }
 function padOff() { if (!PAD) return; try { const x = AX; PAD.g.gain.cancelScheduledValues(x.currentTime); PAD.g.gain.setValueAtTime(PAD.g.gain.value, x.currentTime); PAD.g.gain.linearRampToValueAtTime(0, x.currentTime + .6); const p = PAD; setTimeout(() => { p.os.forEach(a => { try { a[0].stop(); a[1].stop(); } catch (e) {} }); }, 700); } catch (e) {} PAD = null; }
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function labelSvg(lab) { if (!lab) return ""; const c = LABS[lab.st] || LABS[0], n = String(lab.name || ""), fs = n.length > 16 ? 6.2 : n.length > 11 ? 7.4 : 9; return '<g><rect x="34" y="100" width="52" height="38" rx="2.5" fill="' + c[0] + '" stroke="' + c[1] + '" stroke-width=".9"/><rect x="36.5" y="102.5" width="47" height="33" rx="1.5" fill="none" stroke="' + c[1] + '" stroke-width=".4"/><text x="60" y="113" text-anchor="middle" font-family="Cormorant Garamond,Georgia,serif" font-size="3.4" letter-spacing=".5" fill="' + c[1] + '">' + esc(lab.brand || "") + '</text><text x="60" y="124.5" text-anchor="middle" font-family="Cormorant Garamond,Georgia,serif" font-style="italic" font-weight="700" font-size="' + fs + '" fill="' + c[2] + '">' + esc(n) + '</text><path d="M48 130h24" stroke="' + c[1] + '" stroke-width=".5"/></g>'; }
+const BOX = ["#F4EBDD", "#F2B8C6", "#2F6B52", "#1E1620"], RIB = ["#D9B872", "#E8789A", "#EBDDC4"];
+function boxSvg(b, r, name, msg) { const c = BOX[b], d = RIB[r]; return '<svg viewBox="0 0 200 200" class="bx"><ellipse cx="100" cy="184" rx="78" ry="8" fill="rgba(0,0,0,.28)"/><rect class="bx-body" x="30" y="96" width="140" height="82" rx="7" fill="' + c + '" stroke="rgba(0,0,0,.18)"/><rect x="30" y="96" width="140" height="10" fill="rgba(0,0,0,.08)"/><rect class="bx-rib" x="92" y="96" width="16" height="82" fill="' + d + '"/><g class="bx-lidg"><rect x="24" y="70" width="152" height="32" rx="7" fill="' + c + '" stroke="rgba(0,0,0,.2)"/><rect x="24" y="70" width="152" height="8" rx="4" fill="rgba(255,255,255,.35)"/><rect x="92" y="70" width="16" height="32" fill="' + d + '"/></g><g class="bx-bow"><path d="M100 68C78 38 52 50 72 66c10 8 22 4 28 2z" fill="' + d + '" stroke="rgba(0,0,0,.2)"/><path d="M100 68C122 38 148 50 128 66c-10 8-22 4-28 2z" fill="' + d + '" stroke="rgba(0,0,0,.2)"/><circle cx="100" cy="68" r="7" fill="' + d + '" stroke="rgba(0,0,0,.25)"/></g><g class="bx-tag"><path d="M104 74q22 14 30 30" stroke="' + d + '" fill="none" stroke-width="1.6"/><g transform="rotate(-10 140 118)"><rect x="118" y="104" width="46" height="30" rx="3" fill="#FFF8EF" stroke="' + d + '"/><circle cx="123" cy="109" r="1.8" fill="' + d + '"/><text x="141" y="118" text-anchor="middle" font-family="Cormorant Garamond,Georgia,serif" font-style="italic" font-weight="700" font-size="6.4" fill="#6E0C2B">' + esc(String(name).slice(0, 16)) + '</text><text x="141" y="127" text-anchor="middle" font-family="Cormorant Garamond,Georgia,serif" font-size="4.6" fill="#8a6a34">' + esc(String(msg || "").slice(0, 26)) + '</text></g></g></svg>'; }
 let uid = 0;
-function bottle(style, cap, cols, level) {
+const LABS = [["#FBF4E6", "#C9A169", "#5a2a1a"], ["#F8D9E1", "#B7456B", "#6E0C2B"], ["#2a1a22", "#D9B872", "#F6E7C6"]];
+function bottle(style, cap, cols, level, lab) {
   const id = "b" + (++uid), c1 = cols[0] || "#F3DFC8", c2 = cols[1] || c1, c3 = cols[2] || c2;
   const path = style === 1 ? "M40 56h40v14c6 4 8 10 8 20v62c0 6-6 10-14 10H46c-8 0-14-4-14-10V90c0-10 2-16 8-20z" : style === 2 ? "M44 58h32l16 22-6 70c-1 8-8 12-26 12S35 158 34 150l-6-70z" : "M42 58h36v10c18 8 28 24 28 50 0 26-12 40-46 40S14 144 14 118c0-26 10-42 28-50z";
   let pet = ""; cols.forEach((c, ci) => { for (let n = 0; n < 6; n++) pet += '<ellipse class="p" cx="' + (30 + ((n * 23 + ci * 13) % 60)) + '" cy="' + (96 + ((n * 17 + ci * 7) % 50)) + '" rx="4.5" ry="7.5" fill="' + c + '" style="animation-delay:' + (-(n * .7 + ci * .5)) + 's"/>'; });
-  return '<svg viewBox="0 0 120 176" class="es-bt"><defs><linearGradient id="g' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + c1 + '"/><stop offset=".55" stop-color="' + c2 + '"/><stop offset="1" stop-color="' + c3 + '"/></linearGradient><clipPath id="c' + id + '"><path d="' + path + '"/></clipPath></defs><rect x="46" y="12" width="28" height="24" rx="6" fill="' + cap + '" stroke="rgba(0,0,0,.12)"/><rect x="51" y="34" width="18" height="26" fill="#f7f0e7" stroke="#C9A169"/><g clip-path="url(#c' + id + ')"><rect x="0" y="0" width="120" height="176" fill="#fff" fill-opacity=".55"/><g class="es-liq" style="transform:translateY(' + (level == null ? 0 : level) + 'px)"><path class="es-wave" d="M-60 78q15-8 30 0t30 0 30 0 30 0 30 0 30 0v120h-180z" fill="url(#g' + id + ')"/><g>' + pet + '</g></g><path d="' + path + '" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="5" transform="translate(-3 0)"/></g><path d="' + path + '" fill="none" stroke="#C9A169" stroke-width="2.4"/><path d="M30 100v40" stroke="#fff" stroke-opacity=".7" stroke-width="3" stroke-linecap="round"/></svg>';
+  return '<svg viewBox="0 0 120 176" class="es-bt"><defs><linearGradient id="g' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + c1 + '"/><stop offset=".55" stop-color="' + c2 + '"/><stop offset="1" stop-color="' + c3 + '"/></linearGradient><clipPath id="c' + id + '"><path d="' + path + '"/></clipPath></defs><rect x="46" y="12" width="28" height="24" rx="6" fill="' + cap + '" stroke="rgba(0,0,0,.12)"/><rect x="51" y="34" width="18" height="26" fill="#f7f0e7" stroke="#C9A169"/><g clip-path="url(#c' + id + ')"><rect x="0" y="0" width="120" height="176" fill="#fff" fill-opacity=".55"/><g class="es-liq" style="transform:translateY(' + (level == null ? 0 : level) + 'px)"><path class="es-wave" d="M-60 78q15-8 30 0t30 0 30 0 30 0 30 0 30 0v120h-180z" fill="url(#g' + id + ')"/><g>' + pet + '</g></g><path d="' + path + '" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="5" transform="translate(-3 0)"/></g><path d="' + path + '" fill="none" stroke="#C9A169" stroke-width="2.4"/>'+ labelSvg(lab) +'<path d="M30 100v40" stroke="#fff" stroke-opacity=".7" stroke-width="3" stroke-linecap="round"/></svg>';
 }
 function open() {
   if (document.querySelector(".es-ov")) return;
-  const st = { sel: [], bs: 0, cap: 0, intent: "calma", g: 0, mode: "aroma" }, G = GEO[L()], IMG = G.img;
+  const st = { sel: [], bs: 0, cap: 0, intent: "calma", g: 0, mode: "aroma", lab: 0, box: 0, rib: 0, msg: "" }, G = GEO[L()], IMG = G.img;
   const ov = mk("es-ov"); ov.setAttribute("role", "dialog");
   const top = mk("es-top", '<b>' + s("title") + '</b><span class="es-tr"><button type="button" class="es-snd" aria-label="Sonido">♪</button><button type="button" class="es-x" aria-label="' + s("close") + '">×</button></span>');
   const view = mk("es-view"), pan = mk("es-pan"), stg = mk("es-st"); stg.style.backgroundImage = "url(" + IMG + ")";
@@ -78,23 +83,54 @@ function open() {
     ov.appendChild(m); splash(14); const liq = m.querySelector(".es-liq"); requestAnimationFrame(() => { liq.style.transition = "transform 4.6s ease-in-out"; liq.style.transform = "translateY(-34px)"; });
     setTimeout(() => { m.classList.add("out"); setTimeout(() => m.remove(), 700); step3(); }, 4900);
   }
+  const nameOf = () => (st.name || "").trim() || s(st.mode === "perfume" ? "defP" : "def");
+  const cols = () => st.sel.map(k => ing(k).c);
+  const labOf = () => ({ st: st.lab, name: nameOf(), brand: s("brand") });
   function step3() {
-    st.step = 3; const cols = st.sel.map(k => ing(k).c);
-    const prev = mk("es-prev"); const paintPrev = () => { prev.innerHTML = bottle(st.bs, CAPS[st.cap], cols, -34); };
-    const bs = mk("es-row"); [0, 1, 2].forEach(i => { const b = mk("es-bs" + (i === st.bs ? " on" : ""), bottle(i, CAPS[0], cols, -34), "button"); b.type = "button"; b.addEventListener("click", () => { st.bs = i; step3(); }); bs.appendChild(b); });
-    const cp = mk("es-row"); CAPS.forEach((c, i) => { const b = mk("es-cp" + (i === st.cap ? " on" : ""), "", "button"); b.type = "button"; b.style.background = c; b.addEventListener("click", () => { st.cap = i; step3(); }); cp.appendChild(b); });
-    const it = mk("es-row"); INT.forEach(i => { const b = mk("es-tab" + (i.k === st.intent ? " on" : ""), i.t[L()], "button"); b.type = "button"; b.addEventListener("click", () => { st.intent = i.k; step3(); }); it.appendChild(b); });
-    const inp = mk("es-in", "", "input"); inp.maxLength = 28; inp.placeholder = s("nm"); inp.value = st.name || ""; inp.addEventListener("input", () => { st.name = inp.value; });
-    const go = mk("es-cta", s("next"), "button"); go.type = "button"; go.addEventListener("click", reveal);
-    paintPrev(); panel.replaceChildren(mk("es-h", s("bt")), prev, bs, mk("es-lb", s("cap")), cp, mk("es-lb", s("int")), it, inp, go); panel.scrollTop = 0;
+    st.step = 3; const cs = cols();
+    const prev = mk("es-prev"); const paintPrev = () => { prev.innerHTML = bottle(st.bs, CAPS[st.cap], cs, -34, labOf()); };
+    const row = (items, cur, mkb, on) => { const r = mk("es-row"); items.forEach((it, i) => { const b = mkb(it, i); b.type = "button"; if (i === cur) b.classList.add("on"); b.addEventListener("click", () => { on(i); step3(); }); r.appendChild(b); }); return r; };
+    const bs = row([0, 1, 2], st.bs, (_, i) => mk("es-bs", bottle(i, CAPS[0], cs, -34), "button"), i => { st.bs = i; });
+    const cp = row(CAPS, st.cap, c => { const b = mk("es-cp", "", "button"); b.style.background = c; return b; }, i => { st.cap = i; });
+    const lb = row(s("labs"), st.lab, t => { const b = mk("es-tab", t, "button"); return b; }, i => { st.lab = i; });
+    const it = row(INT, INT.findIndex(i => i.k === st.intent), i => mk("es-tab", i.t[L()], "button"), i => { st.intent = INT[i].k; });
+    const inp = mk("es-in", "", "input"); inp.maxLength = 24; inp.placeholder = s("nm"); inp.value = st.name || ""; inp.addEventListener("input", () => { st.name = inp.value; paintPrev(); });
+    const go = mk("es-cta", s("pk"), "button"); go.type = "button"; go.addEventListener("click", stepPack);
+    paintPrev(); panel.replaceChildren(mk("es-h", s("nm")), inp, prev, mk("es-lb", s("bt")), bs, mk("es-lb", s("cap")), cp, mk("es-lb", s("lab")), lb, mk("es-lb", s("int")), it, go); panel.scrollTop = 0;
+  }
+  function stepPack() {
+    st.step = 5; const name = nameOf();
+    const prev = mk("es-prev es-boxprev"); const paint = () => { prev.innerHTML = boxSvg(st.box, st.rib, name, st.msg || s("dedicDef")); prev.querySelector(".bx").classList.add("done"); };
+    const row = (items, cur, mkb, on) => { const r = mk("es-row"); items.forEach((it, i) => { const b = mkb(it, i); b.type = "button"; if (i === cur) b.classList.add("on"); b.addEventListener("click", () => { on(i); stepPack(); }); r.appendChild(b); }); return r; };
+    const bx = row(s("box"), st.box, (t, i) => { const b = mk("es-tab", '<i class="es-sw" style="background:' + BOX[i] + '"></i>' + t, "button"); return b; }, i => { st.box = i; });
+    const rb = row(s("rib"), st.rib, (t, i) => { const b = mk("es-tab", '<i class="es-sw" style="background:' + RIB[i] + '"></i>' + t, "button"); return b; }, i => { st.rib = i; });
+    const inp = mk("es-in", "", "input"); inp.maxLength = 26; inp.placeholder = s("dedic"); inp.value = st.msg || ""; inp.addEventListener("input", () => { st.msg = inp.value; paint(); });
+    const go = mk("es-cta", s("packNext"), "button"); go.type = "button"; go.addEventListener("click", packing);
+    const back = mk("es-ghost", "← " + s("back"), "button"); back.type = "button"; back.addEventListener("click", step3);
+    paint(); panel.replaceChildren(mk("es-h", s("pk")), prev, mk("es-lb", s("pk1")), bx, mk("es-lb", s("pk2")), rb, inp, go, back); panel.scrollTop = 0;
+  }
+  function packing() {
+    const name = nameOf(), msg = st.msg || s("dedicDef");
+    const m = mk("es-mixv es-packv", '<div class="es-mt">' + s("packing") + '</div><div class="pk-stage"><div class="pk-bottle">' + bottle(st.bs, CAPS[st.cap], cols(), -34, labOf()) + '</div>' + boxSvg(st.box, st.rib, name, msg) + '</div><div class="es-ms">' + s("packing2") + '</div>');
+    ov.appendChild(m); const bx = m.querySelector(".bx"); tone(392, 1.2, .015);
+    setTimeout(() => bx.classList.add("s2"), 1500); setTimeout(() => { tone(329.6, .8, .02); bx.classList.add("s3"); }, 2900); setTimeout(() => { tone(523.25, 1, .02); bx.classList.add("s4"); }, 4100);
+    setTimeout(() => { tone(659.25, 1.2, .02); bx.classList.add("s5"); spark(); }, 5100);
+    setTimeout(() => { m.classList.add("out"); setTimeout(() => m.remove(), 700); reveal(); }, 6900);
   }
   function reveal() {
-    st.step = 4; const cols = st.sel.map(k => ing(k).c), name = (st.name || "").trim() || s(st.mode === "perfume" ? "defP" : "def");
-    const r = mk("es-rev", '<div class="es-rays"></div><div class="es-rt">' + s(st.mode === "perfume" ? "readyP" : "ready") + '</div><div class="es-rb">' + bottle(st.bs, CAPS[st.cap], cols, -34) + '</div><div class="es-rn"></div><div class="es-rs"></div>');
-    r.querySelector(".es-rn").textContent = name; r.querySelector(".es-rs").textContent = s("notes") + ": " + st.sel.map(k => ing(k).t[L()]).join(" · ") + " — " + INT.find(i => i.k === st.intent).t[L()];
-    const sv = mk("es-cta", s("save"), "button"), ok = mk("es-ok"), ag = mk("es-ghost", s("again"), "button"); sv.type = ag.type = "button";
-    sv.addEventListener("click", () => { tone(1046.5, 1.4, .02); try { const a = JSON.parse(localStorage.getItem("cml_essences") || "[]"); a.push({ n: name, ing: st.sel, intent: st.intent, bs: st.bs, cap: st.cap, at: Date.now() }); localStorage.setItem("cml_essences", JSON.stringify(a.slice(-20))); } catch (e) {} ok.textContent = s("saved"); sv.disabled = true; spark(); });
-    ag.addEventListener("click", () => { r.remove(); st.sel = []; st.name = ""; step0(); });
+    st.step = 4; const name = nameOf(), msg = st.msg || s("dedicDef");
+    const r = mk("es-rev", '<div class="es-rays"></div><div class="es-rt">' + s(st.mode === "perfume" ? "readyP" : "ready") + '</div><div class="es-rb">' + boxSvg(st.box, st.rib, name, msg) + '</div><div class="es-rn"></div><div class="es-rs"></div>');
+    r.querySelector(".bx").classList.add("done"); r.querySelector(".es-rn").textContent = name;
+    r.querySelector(".es-rs").textContent = s("notes") + ": " + st.sel.map(k => ing(k).t[L()]).join(" · ") + " — " + INT.find(i => i.k === st.intent).t[L()];
+    const sv = mk("es-cta", s("order"), "button"), ok = mk("es-ok"), ag = mk("es-ghost", s("again"), "button"); sv.type = ag.type = "button";
+    sv.addEventListener("click", () => {
+      tone(1046.5, 1.4, .02);
+      const rec = { n: name, ing: st.sel, intent: st.intent, bs: st.bs, cap: st.cap, lab: st.lab, box: st.box, rib: st.rib, msg, mode: st.mode, at: Date.now() };
+      try { const a = JSON.parse(localStorage.getItem("cml_essences") || "[]"); a.push(rec); localStorage.setItem("cml_essences", JSON.stringify(a.slice(-20))); } catch (e) {}
+      try { const ref = (st.mode + ":" + st.sel.join("+") + ":" + st.intent).slice(0, 80), q = JSON.parse(localStorage.getItem("cml_pending_interest") || "[]"); q.push({ k: "essences_waitlist", r: ref }); localStorage.setItem("cml_pending_interest", JSON.stringify(q.slice(-20))); const c = C(); if (c && c.db) c.db.from("interest_log").insert({ kind: "essences_waitlist", ref }).then(() => {}, () => {}); } catch (e) {}
+      ok.textContent = s("ordered"); sv.disabled = true; spark();
+    });
+    ag.addEventListener("click", () => { r.remove(); st.sel = []; st.name = ""; st.msg = ""; step0(); });
     r.append(sv, ok, ag); ov.appendChild(r); spark(); chime();
   }
   const sb = top.querySelector(".es-snd"); sb.addEventListener("click", () => { MUTE = !MUTE; sb.classList.toggle("off", MUTE); if (AX && AX.__m) AX.__m.gain.value = MUTE ? 0 : 1; });
