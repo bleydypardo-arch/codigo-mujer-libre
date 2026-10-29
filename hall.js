@@ -56,7 +56,7 @@ const SIGNS = [
 const ZONES = [
   { k: "travel", r: [38,108,284,412], go: () => { if (window.CMLRedesign && window.CMLRedesign.paintTravel) window.CMLRedesign.paintTravel(); C.showPage("travel"); } },
   { k: "exp",    r: [38,538,284,330], go: () => C.showEventsCat("all") },
-  { k: "matcha", r: [30,890,292,300], go: () => C.showPage("matcha") },
+  { k: "matcha", r: [30,890,292,300], go: () => enterBar() },
   { k: "bout",   r: [776,112,276,408], go: () => soon("hlBout", "hlBoutSoon") },
   { k: "grow",   r: [776,538,276,330], go: () => { if (window.CMLFlorece && window.CMLFlorece.open) window.CMLFlorece.open(); else C.showPage("wellness"); } },
   { k: "pod",    r: [776,886,276,304], go: () => { C.showPage("wellness"); setTimeout(() => { const n = document.getElementById("wellPodcast"); if (n && !n.hidden) n.scrollIntoView({ behavior: "smooth", block: "start" }); }, 200); } },
@@ -112,6 +112,23 @@ function paint() {
 }
 const NAMES = { travel: "Travel", bout: "Bout", exp: "Exp", grow: "Grow", matcha: "Matcha", pod: "Pod", amilu: "Amilu" };
 function cap(k) { return NAMES[k]; }
+/* Matcha Café: se abren las puertas y entran directo al bar; al salir llegan a la página de Matcha con todo el contenido */
+let barBox = null;
+function enterBar() {
+  if (barBox) return;
+  const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  barBox = mk("hl-bar", '<iframe src="bar/index.html" title="Matcha" allow="autoplay"></iframe><div class="hl-dl"></div><div class="hl-dr"></div>');
+  document.body.appendChild(barBox); document.documentElement.classList.add("hl-bar-open");
+  requestAnimationFrame(() => requestAnimationFrame(() => barBox && barBox.classList.add("open")));
+  if (still) barBox.classList.add("still");
+  setTimeout(() => { if (barBox) barBox.classList.add("go"); }, still ? 0 : 1500);
+}
+function leaveBar() {
+  if (!barBox) return; barBox.remove(); barBox = null; document.documentElement.classList.remove("hl-bar-open");
+  if (window.CMLDiscover && window.CMLDiscover.renderMatchaPage) window.CMLDiscover.renderMatchaPage();
+  C.showPage("matcha"); window.scrollTo({ top: 0 });
+}
+window.addEventListener("message", e => { if (e.origin === location.origin && e.data && e.data.cmlBarExit) leaveBar(); });
 function soon(titleKey, bodyKey) {
   const L = window.CMLLobby; if (!L || !L.openSheet) return;
   const n = mk("hl-soon", '<h2></h2><p></p>'); n.querySelector("h2").textContent = t("hlSoonT") + " · " + t(titleKey); n.querySelector("p").textContent = t(bodyKey);
@@ -122,10 +139,10 @@ function build() {
   page = document.getElementById("hall"); if (!page) return;
   page.innerHTML = '<div class="page-back"><button type="button" class="back-btn" data-go="home"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>';
   root = mk("hl-root"); stage = mk("hl-stage");
-  const img = new Image(); img.src = "lobby/hall.webp?v=20261028u"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
+  const img = new Image(); img.src = "lobby/hall.webp?v=20261028w"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
   SIGNS.forEach(sg => {
     const w = 540, h = 170;
-    const n = mk("hl-sign" + (sg.badge ? " has-badge" : sg.img ? " has-ico" : ""), (sg.badge ? BADGE[sg.badge] : sg.img ? '<img class="hl-ico ' + sg.img + '" src="lobby/ic-' + sg.img + '.webp?v=20261028u" alt="">' : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');
+    const n = mk("hl-sign" + (sg.badge ? " has-badge" : sg.img ? " has-ico" : ""), (sg.badge ? BADGE[sg.badge] : sg.img ? '<img class="hl-ico ' + sg.img + '" src="lobby/ic-' + sg.img + '.webp?v=20261028w" alt="">' : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');
     n.dataset.k = sg.k; n.style.width = w + "px"; n.style.height = h + "px"; n.style.transform = homography(w, h, sg.q); stage.appendChild(n);
   });
   // cartel grande vino
@@ -139,6 +156,7 @@ function build() {
     const b = mk("hl-zone", "", "button"); b.type = "button"; b.dataset.k = z.k;
     b.style.left = z.r[0] + "px"; b.style.top = z.r[1] + "px"; b.style.width = z.r[2] + "px"; b.style.height = z.r[3] + "px";
     if (z.k === "amilu") b.classList.add("round");
+    b.appendChild(mk("hl-tap", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10l5.2 1.3A2.5 2.5 0 0 1 19 13.7V16c0 3-2 5-5 5h-2.2c-1.6 0-2.7-.7-3.6-2L4.6 14.8a1.4 1.4 0 0 1 2-2L9 14.6z"/></svg>'));
     b.addEventListener("click", z.go); stage.appendChild(b);
   });
   root.appendChild(stage); page.appendChild(root); built = true;

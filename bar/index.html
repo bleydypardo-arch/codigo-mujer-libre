@@ -539,7 +539,7 @@ $('fsave').onclick=async()=>{if(!cardCv)return;cardCv.toBlob(async blob=>{const 
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);toast('Foto guardada')},'image/png')};
 $('frecipe').onclick=()=>{if(!cardCv)return;const a=loadRec();if(a.length>=MAXR){$('fnote').textContent=T('Ya tienes 5 recetas guardadas. Borra una en "Mis recetas" para guardar otra.');return}
  a.push({name:$('nm').value.trim()||T('Mi creación'),cup:S.cup,layers:S.layers,tops2:S.tops2,date:Date.now(),last:Date.now(),thumb:thumbOf(cardCv)});saveRec(a);$('fnote').textContent=T('Receta guardada ♡ ')+'('+a.length+'/'+MAXR+')'+T('. Se borra sola si no la abres en 90 días.');renderRecipes()};
-$('wrap').appendChild($('final'));$('exitbar').onclick=()=>{if(window.opener){window.close();setTimeout(()=>{location.href='../index.html'},250)}else location.href='../index.html'};
+$('wrap').appendChild($('final'));$('exitbar').onclick=()=>{if(window.parent&&window.parent!==window){window.parent.postMessage({cmlBarExit:1},location.origin);return}if(window.opener){window.close();setTimeout(()=>{location.href='../index.html'},250)}else location.href='../index.html'};
 trDom(document.body);
 window.__t={spr:sprinkle,sAdd:scoopAdd,bAdd:blendAdd,bServe:blendServe,mach:machinePour,bowl:bowlPour,setZone:k=>{Z=k;buildZone();renderTabs()},pour,S:()=>S,pick:k=>document.querySelector('.vcard[data-k='+k+']').click()};
 </script></body></html>
