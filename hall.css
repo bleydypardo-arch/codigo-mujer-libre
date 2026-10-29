@@ -99,3 +99,20 @@ html.hl-bar-open { overflow: hidden; }
 .pw-vid-soon img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .42; }
 .pw-vid-soon .pw-vid-play { position: relative; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 35% 30%, #EBD6A4, #C5A46A 75%); color: #650D29; font-size: 20px; padding-left: 4px; box-shadow: 0 6px 16px rgba(0,0,0,.3); }
 .pw-vid-soon small { position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; color: #FFF8EF; font: 500 12px/1.2 Inter, Arial, sans-serif; letter-spacing: .04em; text-shadow: 0 1px 6px rgba(0,0,0,.6); }
+
+/* ===== Tipografía oficial (Jazz/ChatGPT) también en Podcast y Hall: Cormorant Garamond 600 + Inter, rótulos en MAYÚSCULA ===== */
+html.lobby-on #podhallCard .ph-k, html.lobby-on .pw-sheet .pod-k,
+html.lobby-on #podhallCard .ph-btn-txt, html.lobby-on .pw-sheet .pod-chip,
+html.lobby-on .pw-sheet .pw-vid-soon small, html.lobby-on .pw-sheet .pw-note-k,
+html.lobby-on .pw-sheet .pw-all, html.lobby-on .pw-sheet .pw-more-h, html.lobby-on .pw-sheet .pw-play,
+html.lobby-on #florece[data-soon]::before {
+  font-family: Inter, Arial, sans-serif; font-weight: 500; text-transform: uppercase; letter-spacing: .14em; }
+html.lobby-on #podhallCard .ph-btn-txt { font-size: 14px; letter-spacing: .16em; }
+html.lobby-on #podhallCard .ph-k, html.lobby-on .pw-sheet .pod-k { font-size: 11px; letter-spacing: .2em; color: #650D29; }
+html.lobby-on .pw-sheet .pod-chip { font-size: 10.5px; letter-spacing: .1em; }
+html.lobby-on #podhallCard .ph-t, html.lobby-on .pw-sheet .pw-ep-t, html.lobby-on .pw-sheet .pw-name {
+  font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-style: normal; color: #800F32; letter-spacing: -.005em; }
+html.lobby-on .pw-sheet .pw-name { text-transform: uppercase; letter-spacing: .06em; font-size: 26px; }
+html.lobby-on .pw-sheet .pod-tag, html.lobby-on .pw-sheet .pw-weekly { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-style: italic; color: #650D29; }
+html.lobby-on .pw-sheet .pw-desc, html.lobby-on .pw-sheet .pw-note, html.lobby-on #podhallCard .ph-sub { font-family: Inter, Arial, sans-serif; font-weight: 400; color: #302B2A; }
+html.lobby-on .hl-soon h2 { font: 600 24px/1.1 "Cormorant Garamond", Georgia, serif; text-transform: uppercase; letter-spacing: .06em; color: #800F32; }
