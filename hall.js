@@ -90,6 +90,7 @@ function homography(w, h, q) {
 
 function fit() {
   if (!root || !stage) return;
+  if (window.CMLScene) { window.CMLScene.fit(root, stage, W, H); if (root.__upd) root.__upd(); return; }
   const w = root.clientWidth || 390, s = w / W;
   stage.style.transform = "scale(" + s + ")"; root.style.height = Math.round(H * s) + "px";
 }

@@ -32,10 +32,10 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&am
 /* ---------- escala ---------- */
 function fit() {
   if (!root || !stage) return;
-  const w = root.clientWidth || 390, s = w / W;
-  stage.style.transform = "scale(" + s + ")";
+  const s = window.CMLScene ? window.CMLScene.fit(root, stage, W, H) : (root.clientWidth || 390) / W;
+  if (!window.CMLScene) { stage.style.transform = "scale(" + s + ")"; root.style.height = Math.round(H * s) + "px"; }
   root.style.setProperty("--s", s); stage.style.setProperty("--inv", (1 / s).toFixed(4));
-  root.style.height = Math.round(H * s) + "px";
+  if (root.__upd) root.__upd();
 }
 
 /* ---------- hoja para componentes existentes ---------- */
@@ -72,7 +72,7 @@ function helloText() {
 }
 function paintHello() {
   const g = stage.querySelector(".lb-greet"); if (!g) return;
-  g.replaceChildren(); [...helloText()].forEach((ch, i) => { const s = document.createElement("i"); s.textContent = ch; s.style.animationDelay = (0.25 + i * 0.055).toFixed(2) + "s"; g.appendChild(s); });
+  g.setAttribute("data-k", t("lbWelcomeK")); g.replaceChildren(); [...helloText()].forEach((ch, i) => { const s = document.createElement("i"); s.textContent = ch; s.style.animationDelay = (0.25 + i * 0.055).toFixed(2) + "s"; g.appendChild(s); });
   const clone = g.cloneNode(true); g.parentNode.replaceChild(clone, g);   // reinicia la animación
 }
 
@@ -175,9 +175,12 @@ function build() {
   fly.addEventListener("click", () => { if (!openSheet("homeDyk")) C.showPage("home"); }); stage.appendChild(fly);
 
   // Explora el Hall
-  const ex = place(mk("lb-abs lb-ex", MEDAL.replace(/lb(Gold|Rose|Wine|Amber|Shine|Clip)/g, "lbx$1") + '<span class="tx"><small></small><b></b></span><span class="lb-go"><svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 8h34M29 2l7 6-7 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>', "button"), 245, 1290, 610, 116); ex.type = "button";
+  const ex = place(mk("lb-abs lb-ex", MEDAL.replace(/lb(Gold|Rose|Wine|Amber|Shine|Clip)/g, "lbx$1") + '<span class="tx"><small></small><b></b></span><span class="lb-go"><svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 8h34M29 2l7 6-7 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>', "button"), 245, 1248, 610, 112); ex.type = "button";
   ex.addEventListener("click", () => { document.dispatchEvent(new CustomEvent("cml:hall")); if (window.CMLHall && window.CMLHall.open) window.CMLHall.open(); else seeAll("events"); }); stage.appendChild(ex);
 
+  // Spa & Wellness
+  const sp = place(mk("lb-abs lb-sp", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg><b></b>', "button"), 290, 1368, 520, 54); sp.type = "button";
+  sp.querySelector("b").textContent = t("lbSpaBtn"); sp.addEventListener("click", () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); }); stage.appendChild(sp);
   root.appendChild(stage); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) window.CMLScene.fill(root, "home");
   fit(); fitAll(); if (window.ResizeObserver) new ResizeObserver(fit).observe(root); else addEventListener("resize", fit);
 }
@@ -212,7 +215,7 @@ function start() {
 }
 function init() {
   C = window.CML; if (!C) return;
-  C.addStrings(ES, EN);
+  C.addStrings(ES, EN); C.addStrings({ lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Bienvenida" }, { lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Welcome" });
   if (!document.documentElement.classList.contains("lobby-on")) return;
   build(); paint(); start();
   document.addEventListener("cml:session", () => setTimeout(paint, 60));

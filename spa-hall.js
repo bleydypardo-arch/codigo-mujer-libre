@@ -40,7 +40,7 @@ function build() {
   fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(root); else addEventListener("resize", fit);
   paint();
 }
-function fit() { if (!root || !stage) return; const w = root.clientWidth || 390, s = w / W; stage.style.transform = "scale(" + s + ")"; root.style.height = Math.round(H * s) + "px"; }
+function fit() { if (!root || !stage) return; if (window.CMLScene) { window.CMLScene.fit(root, stage, W, H); if (root.__upd) root.__upd(); return; } const w = root.clientWidth || 390, s = w / W; stage.style.transform = "scale(" + s + ")"; root.style.height = Math.round(H * s) + "px"; }
 function shrink(el, max, min) { el.style.fontSize = max + "px"; let s = max; while (s > min && el.scrollWidth > el.clientWidth + 1) { s -= 1; el.style.fontSize = s + "px"; } }
 function paint() {
   if (!built) return;

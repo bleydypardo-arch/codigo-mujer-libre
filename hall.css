@@ -252,7 +252,41 @@ html.sp-open { overflow: hidden; }
 /* ===== App completa = el lobby: se oculta el contenido anterior del Home, saludo más grande, barra de ciudad a juego ===== */
 html.lobby-on #home > :not(#lobby):not(.fx-foot) { display: none !important; }
 .fx-foot { margin: 0; -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.9) 35%, transparent 100%); mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.9) 35%, transparent 100%); pointer-events: none; }
-html.lobby-on .lb-greet { font-size: calc(var(--inv) * 25px); white-space: nowrap; font-weight: 600; text-shadow: 0 0 calc(var(--inv) * 10px) rgba(255,255,255,.95), 0 0 calc(var(--inv) * 4px) rgba(255,255,255,.95); }
+html.lobby-on .lb-greet { position: relative; font-size: calc(var(--inv) * 29px); white-space: nowrap; font-weight: 600; color: #6E0C2B; text-shadow: 0 0 calc(var(--inv) * 10px) rgba(255,255,255,.95), 0 0 calc(var(--inv) * 4px) rgba(255,255,255,.95); }
 html.lobby-on #viewAsBar { background: transparent !important; border: 0 !important; padding: 6px 16px 4px !important; gap: 10px !important; justify-content: center !important; align-items: center !important; flex-wrap: nowrap !important; }
 html.lobby-on #viewAsBar > span { font: 600 10px/1 Inter, Arial, sans-serif !important; letter-spacing: .18em; text-transform: uppercase; color: #650D29 !important; white-space: nowrap; }
 html.lobby-on #viewAsBar select { flex: 0 1 auto !important; width: auto !important; max-width: 230px; min-height: 36px !important; padding: 0 34px 0 18px; border: 1px solid #C5A46A !important; border-radius: 999px !important; background-color: #FFF8EF !important; color: #800F32 !important; font: 600 16px/1 "Cormorant Garamond", Georgia, serif !important; letter-spacing: .04em; box-shadow: 0 2px 8px rgba(120,80,30,.12); }
+
+/* ===== Escena que llena la pantalla y se desliza de lado ===== */
+#lobby, .hl-root, .sp-root { overflow-x: auto !important; overflow-y: hidden !important; scrollbar-width: none; -ms-overflow-style: none; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+#lobby::-webkit-scrollbar, .hl-root::-webkit-scrollbar, .sp-root::-webkit-scrollbar { display: none; }
+.fx-pan { position: relative; }
+#hall, #spaglobal { position: relative; }
+#hall .page-back, #spaglobal .page-back { position: absolute; left: 10px; top: 10px; z-index: 8; padding: 0; }
+#hall .back-btn, #spaglobal .back-btn { width: 42px; height: 42px; border-radius: 50%; background: rgba(255,248,239,.9); border: 1.5px solid #C5A46A; box-shadow: 0 3px 10px rgba(80,40,20,.25); display: grid; place-items: center; padding: 0; }
+#hall .back-btn svg, #spaglobal .back-btn svg { width: 22px; height: 22px; stroke: #800F32; fill: none; stroke-width: 2.2; }
+/* botón Spa & Wellness del Home */
+.lb-sp { display: flex; align-items: center; justify-content: center; gap: 14px; background: linear-gradient(180deg, #9a1c44, #800F32); border: calc(var(--inv) * 1.6px) solid #E8CD92 !important; border-radius: 999px; color: #FFF8EF; box-shadow: 0 calc(var(--inv) * 3px) calc(var(--inv) * 9px) rgba(60,10,25,.4); animation: lbSpPulse 2.2s ease-in-out infinite; }
+.lb-sp svg { width: 34px; height: 34px; fill: none; stroke: #F2DDB0; stroke-width: 1.6; stroke-linejoin: round; }
+.lb-sp b { font: 700 calc(var(--inv) * 11px)/1 Inter, Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; }
+@keyframes lbSpPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,226,160,.8), 0 5px 14px rgba(60,10,25,.4); } 50% { box-shadow: 0 0 0 calc(var(--inv) * 7px) rgba(255,226,160,0), 0 5px 14px rgba(60,10,25,.4); } }
+/* menú de abajo: círculos de color, alineado al centro */
+html.lobby-on nav { background: linear-gradient(180deg, #FFFDF9, #FBF1EA); border-top: 1.5px solid #E3C99A; box-shadow: 0 -6px 20px rgba(120,60,40,.1); display: flex; justify-content: space-evenly; align-items: stretch; gap: 0; padding: 7px 2px calc(8px + env(safe-area-inset-bottom)); }
+html.lobby-on nav button { flex: 1 1 0; min-width: 0; min-height: 0; padding: 0 1px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; background: none !important; border-radius: 12px; }
+html.lobby-on nav button .ni { box-sizing: content-box; width: 20px; height: 20px; padding: 8px; border-radius: 50%; background: linear-gradient(180deg, #FFF8EF, #F6E7D2); border: 1.5px solid #D9B872; color: #800F32; stroke-width: 1.7; box-shadow: 0 2px 6px rgba(120,80,30,.15); transition: transform .2s; }
+html.lobby-on nav button small { font: 600 8.5px/1.1 Inter, Arial, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #650D29; text-align: center; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+html.lobby-on nav button.active .ni { background: linear-gradient(180deg, #A52250, #800F32); border-color: #E8CD92; color: #FFF8EF; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(128,15,50,.4); }
+html.lobby-on nav button.active small { color: #800F32; font-weight: 800; }
+html.lobby-on nav button[data-page="admin"] .ni { background: linear-gradient(180deg, #1F3D2D, #16301F); color: #F2DDB0; border-color: #D9B872; }
+
+html.lobby-on .lb-greet::before { content: attr(data-k); display: block; margin-bottom: calc(var(--inv) * 4px); font: 700 calc(var(--inv) * 10.5px)/1 Inter, Arial, sans-serif; letter-spacing: .36em; text-transform: uppercase; color: #8A6A2E; text-align: center; padding-left: .36em; text-shadow: 0 0 calc(var(--inv) * 8px) rgba(255,255,255,.95); }
+html.lobby-on .lb-greet::after { content: ""; position: absolute; left: -22%; right: -22%; top: -70%; bottom: -60%; z-index: -1; background: radial-gradient(ellipse at 50% 50%, rgba(255,250,244,.92) 0%, rgba(255,246,236,.7) 45%, rgba(255,246,236,0) 72%); pointer-events: none; }
+html.lobby-on #viewAsBar > span { flex: none; font-size: 8.5px !important; letter-spacing: .12em !important; }
+html.lobby-on #viewAsBar select { width: 190px !important; max-width: 190px !important; min-width: 0 !important; }
+html.lobby-on nav:has(button:nth-child(7)) small { font-size: 7.5px; letter-spacing: .02em; }
+html.lobby-on #viewAsBar > span { font-size: 8px !important; }
+html.lobby-on #viewAsBar { gap: 8px !important; }
+html.lobby-on #viewAsBar select { width: 206px !important; max-width: 206px !important; font-size: 14.5px !important; padding: 0 26px 0 14px !important; }
+.sp-spa .sp-pill { left: calc(50% + 60px); }
+.sp-well .sp-pill { left: calc(50% - 56px); }
+.sp-snd { right: 80px; }
