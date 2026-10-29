@@ -83,9 +83,18 @@ function bowl(t0) {
   [[1, 1], [2.76, .35], [5.4, .12]].forEach(([m, a]) => { const o = ac.createOscillator(), og = ac.createGain(); o.type = "sine"; o.frequency.value = 196 * m; og.gain.value = a; o.connect(og); og.connect(g); o.start(t0); o.stop(t0 + 9.2); });
   g.connect(MUS.bus);
 }
+const NX = { D3: 146.83, A3: 220, B3: 246.94, "F#3": 185, D4: 293.66, "F#4": 369.99, A4: 440, B4: 493.88, "C#5": 554.37, D5: 587.33, E5: 659.25, "F#5": 739.99 };
+const MEL2 = ["F#4", "A4", "B4", "A4", "F#4", "E5", "D5", "C#5", "A4", "B4", "F#4", "D4", "A4", "D5", "C#5", "B4"];
 const MEL = ["E4", "G4", "A4", "D5", "C5", "G4", "E4", "D4", "G4", "A4", "E5", "D5", "C5", "A4", "G4", "E4"];
+function step2() {
+  if (!MUS.on || !MUS.ac || MUS.mode !== 2) return; const t0 = MUS.ac.currentTime + .05, i = MUS.idx++;
+  if (i % 3 === 0) piano(i % 6 === 0 ? NX.D3 : NX["F#3"], t0, .085);
+  if (i % 3 === 1) { piano(NX.A3, t0, .05); piano(NX["F#4"], t0 + .04, .04); }
+  piano(NX[MEL2[i % MEL2.length]], t0 + .1, .06 + Math.random() * .02);
+  MUS.timers.push(setTimeout(step2, 2300 + Math.random() * 900));
+}
 function step() {
-  if (!MUS.on || !MUS.ac) return; const t0 = MUS.ac.currentTime + .05, i = MUS.idx++;
+  if (!MUS.on || !MUS.ac || MUS.mode === 2) return; const t0 = MUS.ac.currentTime + .05, i = MUS.idx++;
   piano(N[MEL[i % MEL.length]], t0, .05 + Math.random() * .025);
   if (i % 4 === 0) piano(i % 8 === 0 ? N.C3 : N.G3, t0, .06);            // nota grave, lenta
   if (i % 6 === 3) piano(N[MEL[(i + 3) % MEL.length]] * 1, t0 + .35, .035);
@@ -97,6 +106,12 @@ function musicSet(on) {
   else if (MUS.ac) { MUS.on = false; MUS.timers.forEach(clearTimeout); MUS.timers = []; MUS.g.gain.cancelScheduledValues(MUS.ac.currentTime); MUS.g.gain.linearRampToValueAtTime(0, MUS.ac.currentTime + 1.5); }
   const b = stage && stage.querySelector(".sp-snd"); if (b) { b.classList.toggle("off", !MUS.on); b.setAttribute("aria-pressed", String(MUS.on)); }
 }
+/* música clásica suave para otras experiencias (Atelier): piano lento, sin agua */
+window.CMLSoftMusic = {
+  start() { if (!musCtx()) return; MUS.mode = 2; MUS.on = true; MUS.water.gain.value = 0; MUS.g.gain.cancelScheduledValues(MUS.ac.currentTime); MUS.g.gain.linearRampToValueAtTime(.8, MUS.ac.currentTime + 3); MUS.timers.forEach(clearTimeout); MUS.timers = []; step2(); },
+  stop() { if (!MUS.ac) return; MUS.on = false; MUS.mode = 0; MUS.timers.forEach(clearTimeout); MUS.timers = []; MUS.g.gain.cancelScheduledValues(MUS.ac.currentTime); MUS.g.gain.linearRampToValueAtTime(0, MUS.ac.currentTime + 1.2); setTimeout(() => { if (MUS.water) MUS.water.gain.value = .10; }, 1400); },
+  ctx() { return MUS.ac; }, bus() { return MUS.bus; }
+};
 function open() { build(); C.showPage("spaglobal", false); fit(); paint(); setTimeout(() => { fit(); paint(); }, 150); window.scrollTo({ top: 0 }); window.CMLSpaMute = false; musicSet(true); }
 function wellSoon() {
   const L = window.CMLLobby; if (!L || !L.openSheet) return;
