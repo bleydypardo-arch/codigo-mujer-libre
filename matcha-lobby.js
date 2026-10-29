@@ -32,7 +32,7 @@ function paint(x) {
   const txt = mk("mx-hero-txt"); 
   txt.append(mk("mx-k", ""), mk("mx-h1", ""), mk("mx-tag", ""), mk("mx-rule", ""));
   txt.children[0].textContent = t("mxKicker"); txt.children[1].textContent = t("mxTitle"); txt.children[2].textContent = t("mxTag");
-  const orq = new Image(); orq.src = "lobby/mx-hero.webp?v=2"; orq.alt = ""; orq.className = "mx-orq";
+  const orq = new Image(); orq.src = "lobby/mx-hero.webp?v=6"; orq.alt = ""; orq.className = "mx-orq";
   hero.append(txt, orq);
   x.hero.replaceChildren(hero);
   if (x.barBtn) x.barBtn.classList.add("mx-bar");
@@ -52,7 +52,7 @@ function paint(x) {
   };
   const h = (cls, text) => { const n = mk(cls); n.textContent = text; return n; };
   const ico = svg => mk("mx-ico", svg);
-  const img = (src, cls) => { const i = new Image(); i.src = "lobby/" + src + "?v=2"; i.alt = ""; i.className = cls; i.loading = "lazy"; return i; };
+  const img = (src, cls) => { const i = new Image(); i.src = "lobby/" + src + "?v=3"; i.alt = ""; i.className = cls; i.loading = "lazy"; return i; };
   // ¿Dónde nos vemos?
   const meetHead = mk("mx-row"); meetHead.append(ico(PIN), h("mx-h2", t("mxMeetT")));
   list.push(card("meet", [meetHead, img("mx-cafe.webp", "mx-photo")], x.meetBox));
