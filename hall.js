@@ -45,9 +45,9 @@ const BADGE = {
 };
 // cuatro esquinas de cada letrero sobre la foto (px de la imagen 1086×1448): arriba-izq, arriba-der, abajo-der, abajo-izq
 const SIGNS = [
-  { k: "travel", icon: "globe", q: [[42,113],[303,233],[303,308],[42,207]] },
-  { k: "bout",   icon: "bag",   q: [[782,241],[1042,118],[1042,212],[782,312]] },
-  { k: "exp",    icon: "lotus", q: [[40,541],[298,556],[298,619],[40,598]] },
+  { k: "travel", icon: "globe", img: "viajemos", q: [[42,113],[303,233],[303,308],[42,207]] },
+  { k: "bout",   icon: "bag", img: "boutique",   q: [[782,241],[1042,118],[1042,212],[782,312]] },
+  { k: "exp",    icon: "lotus", img: "experiencias", q: [[40,541],[298,556],[298,619],[40,598]] },
   { k: "grow",   icon: "book", badge: "tree",  q: [[782,554],[1042,544],[1042,599],[782,623]] },
   { k: "matcha", icon: "cup", badge: "matcha",   q: [[38,924],[300,898],[300,962],[38,1003]] },
   { k: "pod",    icon: "mic", badge: "mic",   q: [[782,893],[1042,933],[1042,1003],[782,960]] }
@@ -122,10 +122,10 @@ function build() {
   page = document.getElementById("hall"); if (!page) return;
   page.innerHTML = '<div class="page-back"><button type="button" class="back-btn" data-go="home"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>';
   root = mk("hl-root"); stage = mk("hl-stage");
-  const img = new Image(); img.src = "lobby/hall.webp?v=20261028r"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
+  const img = new Image(); img.src = "lobby/hall.webp?v=20261028t"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
   SIGNS.forEach(sg => {
     const w = 540, h = 170;
-    const n = mk("hl-sign" + (sg.badge ? " has-badge" : ""), (sg.badge ? BADGE[sg.badge] : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');
+    const n = mk("hl-sign" + (sg.badge ? " has-badge" : sg.img ? " has-ico" : ""), (sg.badge ? BADGE[sg.badge] : sg.img ? '<img class="hl-ico ' + sg.img + '" src="lobby/ic-' + sg.img + '.webp?v=20261028t" alt="">' : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');
     n.dataset.k = sg.k; n.style.width = w + "px"; n.style.height = h + "px"; n.style.transform = homography(w, h, sg.q); stage.appendChild(n);
   });
   // cartel grande vino

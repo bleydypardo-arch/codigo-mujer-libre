@@ -61,3 +61,13 @@
 @keyframes hlSheen { 0%, 55% { left: -80px; } 85%, 100% { left: 460px; } }
 .hl-big .ss { color: #F8EBC8; font-weight: 600; text-shadow: 0 0 6px rgba(255,236,180,.9), 0 1px 2px rgba(0,0,0,.5); }
 @media (prefers-reduced-motion: reduce) { .hl-badge *, .hl-sign .ic, .hl-wall .bars rect, .hl-big::after { animation: none !important; } }
+
+.hl-sign.has-ico { gap: 16px; padding-left: 14px; }
+.hl-ico { flex: none; height: 164px; width: auto; max-width: 180px; margin: -6px 0; object-fit: contain; filter: drop-shadow(0 3px 4px rgba(90,40,20,.28)); transform-origin: 50% 60%; }
+.hl-ico.viajemos { animation: hlFloat 4.2s ease-in-out infinite; }
+.hl-ico.experiencias { animation: hlCompass 5s ease-in-out infinite; }
+.hl-ico.boutique { animation: hlSway 4.6s ease-in-out infinite; }
+@keyframes hlFloat { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-7px) rotate(3deg); } }
+@keyframes hlCompass { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+@keyframes hlSway { 0%, 100% { transform: rotate(-3deg) translateY(0); } 50% { transform: rotate(3deg) translateY(-5px); } }
+@media (prefers-reduced-motion: reduce) { .hl-ico { animation: none !important; } }
