@@ -50,3 +50,7 @@ html.lobby-on #matchaBody .rc-card .rc-teaser, html.lobby-on #matchaBody .rc-car
 .mx-cups { display: block; width: calc(100% + 36px); max-width: none; margin: 14px -18px 0; height: auto; }
 
 html.lobby-on #matcha .mx-hero-full { display: block; width: 100%; height: auto; border-radius: 0 0 22px 22px; }
+html.lobby-on #matcha .mx-hero-full { margin: 0; width: 100%; border-radius: 22px; box-shadow: 0 4px 14px rgba(101,13,41,.07); }
+html.lobby-on #matcha .mx-photo, html.lobby-on #matcha .mx-photo.art { aspect-ratio: 3 / 2; object-fit: cover; }
+html.lobby-on #matcha .mx-photo.art { aspect-ratio: 3 / 1.15; }
+html.lobby-on #matcha .mx-hero-full { width: calc(100% - 32px); margin: 0 16px 14px; }

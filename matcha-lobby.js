@@ -45,11 +45,11 @@ function paint(x) {
 
   const card = (key, head, node, imgSrc) => {
     const wrap = mk("mx-wrap");
-    const c = mk("mx-card " + key); c.append(...head);
+    const c = mk("mx-card mxc-" + key); c.append(...head);
     const isOpen = open === key;
-    const b = btn(t(key === "meet" ? "mxMeetB" : key === "plan" ? "mxPlanB" : "mxCreB"), () => { open = open === key ? "" : key; repaint(); setTimeout(() => { const n = document.querySelector(".mx-wrap." + key); if (n && open === key) n.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60); });
+    const b = btn(t(key === "meet" ? "mxMeetB" : key === "plan" ? "mxPlanB" : "mxCreB"), () => { open = open === key ? "" : key; repaint(); setTimeout(() => { const n = document.querySelector(".mx-wrap.mxw-" + key); if (n && open === key) n.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60); });
     b.setAttribute("aria-expanded", String(isOpen)); c.appendChild(b);
-    wrap.classList.add(key); wrap.appendChild(c);
+    wrap.classList.add("mxw-" + key); wrap.appendChild(c);
     if (isOpen) { const d = mk("mx-detail"); if (key === "meet" && x.cityRow) d.appendChild(x.cityRow); d.appendChild(node); wrap.appendChild(d); }
     return wrap;
   };
@@ -57,7 +57,7 @@ function paint(x) {
   const ico = svg => mk("mx-ico", svg);
   const img = (src, cls) => { const i = new Image(); i.src = "lobby/" + src + "?v=4"; i.alt = ""; i.className = cls; i.loading = "lazy"; return i; };
   // ¿Dónde nos vemos?
-  const meetHead = mk("mx-row"); meetHead.append(ico(PIN), h("mx-h2", t("mxMeetT")));
+  const meetHead = mk("mx-row"); meetHead.append(ico(PIN), h("mx-h2 big", t("mxMeetT")));
   list.push(card("meet", [meetHead, img("mx-cafe.webp", "mx-photo")], x.meetBox));
   // Próximos encuentros
   const planHead = mk("mx-headrow"); const pt = mk("mx-ptxt"); pt.append(h("mx-k", t("mxPlanK")), h("mx-h2 big", t("mxPlanT")), h("mx-d", t("mxPlanD"))); planHead.append(pt, ico(CAL));
