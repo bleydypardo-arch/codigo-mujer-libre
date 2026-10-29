@@ -15,7 +15,7 @@ C.addStrings({
   hlMatcha: "Matcha Café", hlMatchaS: "Sabores que conectan",
   hlPod: "Entre Nosotras", hlPodS: "Podcast · Historias que inspiran",
   hlAmilu: "Mundo Amilú", hlAmiluS: "Juego virtual",
-  hlSoonT: "Muy pronto", hlBoutSoon: "La Boutique abre pronto: piezas con propósito, esencias y cuidado de la piel, elegidas para ti.", hlAmiluSoon: "Mundo Amilú, nuestro juego virtual, abre pronto. Te avisamos.",
+  hlSoonT: "Muy pronto", hlGrowBanner: "🚧 En construcción · Muy pronto", hlGrowSoon: "Crece y Florece está en construcción: lo estamos reconstruyendo para ti. Muy pronto.", hlBoutSoon: "La Boutique abre pronto: piezas con propósito, esencias y cuidado de la piel, elegidas para ti.", hlAmiluSoon: "Mundo Amilú, nuestro juego virtual, abre pronto. Te avisamos.",
   hlBack: "Volver al lobby"
 }, {
   hlTitle: "Hall of Experiences", hlT1: "Hall of", hlT2: "Experiences", hlTag: "Discover · Connect · Enjoy",
@@ -26,7 +26,7 @@ C.addStrings({
   hlMatcha: "Matcha Café", hlMatchaS: "Flavors that connect",
   hlPod: "Between Us", hlPodS: "Podcast · Stories that inspire",
   hlAmilu: "Amilú's World", hlAmiluS: "Virtual game",
-  hlSoonT: "Coming soon", hlBoutSoon: "The Boutique opens soon: pieces with purpose, essences and skincare, chosen for you.", hlAmiluSoon: "Amilú's World, our virtual game, opens soon. We'll let you know.",
+  hlSoonT: "Coming soon", hlGrowBanner: "🚧 Under construction · Coming soon", hlGrowSoon: "Grow & Bloom is under construction: we are rebuilding it for you. Coming soon.", hlBoutSoon: "The Boutique opens soon: pieces with purpose, essences and skincare, chosen for you.", hlAmiluSoon: "Amilú's World, our virtual game, opens soon. We'll let you know.",
   hlBack: "Back to the lobby"
 });
 
@@ -58,7 +58,11 @@ const ZONES = [
   { k: "exp",    r: [38,538,284,330], go: () => C.showEventsCat("all") },
   { k: "matcha", r: [30,890,292,300], go: () => enterBar() },
   { k: "bout",   r: [776,112,276,408], go: () => soon("hlBout", "hlBoutSoon") },
-  { k: "grow",   r: [776,538,276,330], go: () => { if (window.CMLFlorece && window.CMLFlorece.open) window.CMLFlorece.open(); else C.showPage("wellness"); } },
+  { k: "grow",   r: [776,538,276,330], go: () => {
+    let ok = false; try { ok = !!(window.CMLPremium && window.CMLPremium.can("florece")); } catch (e) {}
+    if (ok && window.CMLFlorece && window.CMLFlorece.open) { const f = document.getElementById("florece"); if (f) f.dataset.soon = t("hlGrowBanner"); window.CMLFlorece.open(); }
+    else soon("hlGrow", "hlGrowSoon");
+  } },
   { k: "pod",    r: [776,886,276,304], go: () => { C.showPage("wellness"); setTimeout(() => { const n = document.getElementById("wellPodcast"); if (n && !n.hidden) n.scrollIntoView({ behavior: "smooth", block: "start" }); }, 200); } },
   { k: "amilu",  r: [640,634,108,246], go: () => soon("hlAmilu", "hlAmiluSoon") }
 ];
