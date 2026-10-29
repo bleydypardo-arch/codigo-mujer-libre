@@ -51,7 +51,7 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 
 /* burbuja de la anfitriona */
 .lb-bub { height: auto !important; background: #fffaf4; color: #6e1c39; border: calc(var(--inv) * 1px) solid #d9b97a; border-radius: calc(var(--inv) * 9px); padding: calc(var(--inv) * 4px) calc(var(--inv) * 6px); font: 500 calc(var(--inv) * 8px)/1.25 var(--ui); text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,.22); opacity: 0; animation: lbBub 12s ease-in-out infinite 6s; pointer-events: none; }
-.lb-bub::after { content: ""; position: absolute; left: 46%; bottom: calc(var(--inv) * -5px); width: calc(var(--inv) * 8px); height: calc(var(--inv) * 8px); background: #fffaf4; border-right: calc(var(--inv) * 1px) solid #d9b97a; border-bottom: calc(var(--inv) * 1px) solid #d9b97a; transform: rotate(45deg); }
+.lb-bub::after { content: ""; position: absolute; left: calc(var(--inv) * 14px); bottom: calc(var(--inv) * -5px); width: calc(var(--inv) * 8px); height: calc(var(--inv) * 8px); background: #fffaf4; border-right: calc(var(--inv) * 1px) solid #d9b97a; border-bottom: calc(var(--inv) * 1px) solid #d9b97a; transform: rotate(45deg); }
 @keyframes lbBub { 0%, 6% { opacity: 0; transform: translateY(4px); } 12%, 40% { opacity: 1; transform: none; } 48%, 100% { opacity: 0; } }
 
 /* caja de cristal con la orquídea (Tu código esta semana) */

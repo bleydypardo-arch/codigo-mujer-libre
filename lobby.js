@@ -140,7 +140,7 @@ function build() {
   plq.addEventListener("click", () => openSheet("codeCard")); stage.appendChild(plq);
 
   // burbuja
-  const bub = place(mk("lb-abs lb-bub", ""), 380, 420, 320); stage.appendChild(bub);
+  const bub = place(mk("lb-abs lb-bub", ""), 600, 0, 200); bub.style.top = "auto"; bub.style.bottom = (H - 506) + "px"; stage.appendChild(bub);
 
   // caja de cristal: Tu código esta semana
   const box = place(mk("lb-abs lb-box", "", "button"), 372, 566, 90, 90); box.type = "button";
