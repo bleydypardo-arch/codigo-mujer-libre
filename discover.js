@@ -44,7 +44,7 @@ const ES = {
   maMeetSend: "Publicar encuentro", maMeetNeed: "Escribe el lugar y el día.", maMeetFail: "No se pudo publicar. Inténtalo de nuevo.", maMeetDone: "¡Listo! Tu encuentro ya aparece en el rincón y en Comunidad.",
   maPollK: "DECIDAMOS JUNTAS", maPollTitle: "¿Dónde nos vemos?", maAllCities: "Todas las ciudades", maSearchPh: "Buscar un café, lugar o ciudad…", maPickK: "Cafés y lugares favoritos", maPickCount: "lugares", maPickHint: "Escribe el nombre de un café, lugar o ciudad para encontrarlo. Toca uno para ver más.", maSeePlaces: "Ver los lugares", maNoMatch: "No encontramos lugares con esa búsqueda.",
   maSpotsK: "LUGARES FAVORITOS", maSpotsTitle: "Cafés y rincones creativos", maRecipesK: "RECETAS E IDEAS", maRecipesTitle: "Para preparar en casa",
-  maCreateTitle: "Crea algo"
+  maCreateTitle: "Crea algo", maNavK: "Sigue tu recorrido", maNavR: "Receta del mes", maNavM: "¿Dónde nos vemos?", maNavP: "Próximos encuentros", maNavC: "Comunidad"
 };
 const EN = {
   wdLabel: "DISCOVER WELLNESS", wdTitle: "Experiences to take care of yourself", wdAll: "All",
@@ -83,7 +83,7 @@ const EN = {
   maMeetSend: "Post meetup", maMeetNeed: "Write the place and the day.", maMeetFail: "Could not post. Please try again.", maMeetDone: "Done! Your meetup now shows in the corner and in Community.",
   maPollK: "LET'S DECIDE TOGETHER", maPollTitle: "Where should we meet?", maAllCities: "All cities", maSearchPh: "Search a café, place or city…", maPickK: "Favorite cafés & places", maPickCount: "places", maPickHint: "Type the name of a café, place or city to find it. Tap one for details.", maSeePlaces: "See the places", maNoMatch: "No places match that search.",
   maSpotsK: "FAVORITE PLACES", maSpotsTitle: "Cafés and creative corners", maRecipesK: "RECIPES & IDEAS", maRecipesTitle: "To make at home",
-  maCreateTitle: "Create something"
+  maCreateTitle: "Create something", maNavK: "Keep exploring", maNavR: "Recipe of the month", maNavM: "Where we meet", maNavP: "Upcoming meetups", maNavC: "Community"
 };
 const t = (key, ...args) => { const v = C ? C.t(key) : ""; return typeof v === "function" ? v(...args) : (v || key); };
 const el = (...a) => C.el(...a);
@@ -485,7 +485,15 @@ function renderMatchaPage() {
   if (rc) colA.unshift(rc);
   meetBox.classList.add("ma-meetbox"); sharesBox.classList.add("ma-sharesbox");
   const left = el("div", { class: "ma-col ma-left" }, ...colA), right = el("div", { class: "ma-col ma-right" }, ...colB);
-  body.replaceChildren(left, right, meetBox, sharesBox);
+  meetBox.id = "maMeet"; plansBox.id = "maPlansBox"; sharesBox.id = "maShares"; if (rc) left.id = "maRecipe";
+  const nav = el("div", { class: "ma-nav", role: "navigation", "aria-label": t("maNavK") });
+  [["maMeet", "maNavM", "📍"], ["maRecipe", "maNavR", "🍵"], ["maPlansBox", "maNavP", "📅"], ["maShares", "maNavC", "✨"]].forEach(([id, k, ic]) => {
+    if (id === "maRecipe" && !rc) return;
+    const b = el("button", { type: "button", class: "ma-nav-b" + (id === "maMeet" ? " main" : "") }, el("span", { class: "ic", text: ic, "aria-hidden": "true" }), el("span", { text: t(k) }));
+    b.addEventListener("click", () => { const n = document.getElementById(id); if (n) n.scrollIntoView({ behavior: "smooth", block: "start" }); });
+    nav.appendChild(b);
+  });
+  body.replaceChildren(nav, left, right, meetBox, sharesBox);
   applySearch();
 }
 

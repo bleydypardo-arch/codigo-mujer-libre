@@ -139,10 +139,10 @@ function build() {
   page = document.getElementById("hall"); if (!page) return;
   page.innerHTML = '<div class="page-back"><button type="button" class="back-btn" data-go="home"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>';
   root = mk("hl-root"); stage = mk("hl-stage");
-  const img = new Image(); img.src = "lobby/hall.webp?v=20261028w"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
+  const img = new Image(); img.src = "lobby/hall.webp?v=20261028x"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
   SIGNS.forEach(sg => {
     const w = 540, h = 170;
-    const n = mk("hl-sign" + (sg.badge ? " has-badge" : sg.img ? " has-ico" : ""), (sg.badge ? BADGE[sg.badge] : sg.img ? '<img class="hl-ico ' + sg.img + '" src="lobby/ic-' + sg.img + '.webp?v=20261028w" alt="">' : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');
+    const n = mk("hl-sign" + (sg.badge ? " has-badge" : sg.img ? " has-ico" : ""), (sg.badge ? BADGE[sg.badge] : sg.img ? '<img class="hl-ico ' + sg.img + '" src="lobby/ic-' + sg.img + '.webp?v=20261028x" alt="">' : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');
     n.dataset.k = sg.k; n.style.width = w + "px"; n.style.height = h + "px"; n.style.transform = homography(w, h, sg.q); stage.appendChild(n);
   });
   // cartel grande vino
