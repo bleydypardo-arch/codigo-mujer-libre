@@ -1,0 +1,147 @@
+// Código Mujer Libre — HALL DE EXPERIENCIAS (imagen 2). Letreros = texto real HTML pegado en perspectiva sobre la foto aprobada.
+// Solo se alcanza desde el botón "Explora el Hall" del lobby (prototipo ?lobby=1).
+(function () {
+"use strict";
+let C, t;
+const W = 1086, H = 1448;
+function init() {
+C = window.CML; if (!C) return; t = k => C.t(k);
+C.addStrings({
+  hlTitle: "Hall de Experiencias", hlT1: "Hall de", hlT2: "Experiencias", hlTag: "Descubre · Conecta · Disfruta",
+  hlTravel: "Viajemos Juntas", hlTravelS: "Destinos que inspiran",
+  hlBout: "Boutique", hlBoutS: "Piezas con propósito",
+  hlExp: "Experiencias", hlExpS: "Planes que te conectan",
+  hlGrow: "Crece y Florece", hlGrowS: "Lectura · Cursos · Charlas",
+  hlMatcha: "Matcha Café", hlMatchaS: "Sabores que nutren",
+  hlPod: "Podcast · Entre Nosotras", hlPodS: "Historias que inspiran",
+  hlAmilu: "Mundo Amilú", hlAmiluS: "Juego virtual",
+  hlSoonT: "Muy pronto", hlBoutSoon: "La Boutique abre pronto: piezas con propósito, esencias y cuidado de la piel, elegidas para ti.", hlAmiluSoon: "Mundo Amilú, nuestro juego virtual, abre pronto. Te avisamos.",
+  hlBack: "Volver al lobby"
+}, {
+  hlTitle: "Hall of Experiences", hlT1: "Hall of", hlT2: "Experiences", hlTag: "Discover · Connect · Enjoy",
+  hlTravel: "Let's Travel Together", hlTravelS: "Destinations that inspire",
+  hlBout: "Boutique", hlBoutS: "Pieces with purpose",
+  hlExp: "Experiences", hlExpS: "Plans that connect you",
+  hlGrow: "Grow & Bloom", hlGrowS: "Reading · Courses · Talks",
+  hlMatcha: "Matcha Café", hlMatchaS: "Flavors that nourish",
+  hlPod: "Podcast · Between Us", hlPodS: "Stories that inspire",
+  hlAmilu: "Amilú's World", hlAmiluS: "Virtual game",
+  hlSoonT: "Coming soon", hlBoutSoon: "The Boutique opens soon: pieces with purpose, essences and skincare, chosen for you.", hlAmiluSoon: "Amilú's World, our virtual game, opens soon. We'll let you know.",
+  hlBack: "Back to the lobby"
+});
+
+const ICON = {
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+  bag: '<path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2"/>',
+  lotus: '<path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.500 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5zM8 18c2 1.500 6 1.500 8 0"/>',
+  book: '<path d="M3 5c3-1 6-1 9 1v14c-3-2-6-2-9-1zM21 5c-3-1-6-1-9 1v14c3-2 6-2 9-1z"/>',
+  cup: '<path d="M5 9h12v4a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5zM17 10h2a2 2 0 0 1 0 4h-2M8 5c0 1 1 1 1 2M12 5c0 1 1 1 1 2"/>',
+  mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/>'
+};
+// cuatro esquinas de cada letrero sobre la foto (px de la imagen 1086×1448): arriba-izq, arriba-der, abajo-der, abajo-izq
+const SIGNS = [
+  { k: "travel", icon: "globe", q: [[42,113],[303,233],[303,308],[42,207]] },
+  { k: "bout",   icon: "bag",   q: [[782,241],[1042,118],[1042,212],[782,312]] },
+  { k: "exp",    icon: "lotus", q: [[40,541],[298,556],[298,619],[40,598]] },
+  { k: "grow",   icon: "book",  q: [[782,554],[1042,544],[1042,599],[782,623]] },
+  { k: "matcha", icon: "cup",   q: [[38,924],[300,898],[300,962],[38,1003]] },
+  { k: "pod",    icon: "mic",   q: [[782,893],[1042,933],[1042,1003],[782,960]] }
+];
+// zonas tocables (rectángulos sobre la foto)
+const ZONES = [
+  { k: "travel", r: [38,108,284,412], go: () => { if (window.CMLRedesign && window.CMLRedesign.paintTravel) window.CMLRedesign.paintTravel(); C.showPage("travel"); } },
+  { k: "exp",    r: [38,538,284,330], go: () => C.showEventsCat("all") },
+  { k: "matcha", r: [30,890,292,300], go: () => C.showPage("matcha") },
+  { k: "bout",   r: [776,112,276,408], go: () => soon("hlBout", "hlBoutSoon") },
+  { k: "grow",   r: [776,538,276,330], go: () => { if (window.CMLFlorece && window.CMLFlorece.open) window.CMLFlorece.open(); else C.showPage("wellness"); } },
+  { k: "pod",    r: [776,886,276,304], go: () => { C.showPage("wellness"); setTimeout(() => { const n = document.getElementById("wellPodcast"); if (n && !n.hidden) n.scrollIntoView({ behavior: "smooth", block: "start" }); }, 200); } },
+  { k: "amilu",  r: [640,634,108,246], go: () => soon("hlAmilu", "hlAmiluSoon") }
+];
+
+let page, root, stage, built = false;
+function mk(cls, html, tag) { const n = document.createElement(tag || "div"); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; }
+
+/* homografía: rectángulo (0,0,w,h) → cuadrilátero q  →  matrix3d */
+function homography(w, h, q) {
+  const src = [[0,0],[w,0],[w,h],[0,h]], A = [], b = [];
+  for (let i = 0; i < 4; i++) {
+    const [x, y] = src[i], [u, v] = q[i];
+    A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); b.push(u);
+    A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); b.push(v);
+  }
+  const n = 8; for (let i = 0; i < n; i++) A[i].push(b[i]);
+  for (let c = 0; c < n; c++) {
+    let p = c; for (let r = c + 1; r < n; r++) if (Math.abs(A[r][c]) > Math.abs(A[p][c])) p = r;
+    [A[c], A[p]] = [A[p], A[c]];
+    for (let r = 0; r < n; r++) if (r !== c) { const f = A[r][c] / A[c][c]; for (let k = c; k <= n; k++) A[r][k] -= f * A[c][k]; }
+  }
+  const s = A.map((r, i) => r[n] / r[i]), [a, bb, c, d, e, f, g, hh] = s;
+  return "matrix3d(" + [a, d, 0, g, bb, e, 0, hh, 0, 0, 1, 0, c, f, 0, 1].join(",") + ")";
+}
+
+function fit() {
+  if (!root || !stage) return;
+  const w = root.clientWidth || 390, s = w / W;
+  stage.style.transform = "scale(" + s + ")"; root.style.height = Math.round(H * s) + "px";
+}
+function shrink(el, max, min, step) {
+  el.style.fontSize = max + "px"; let size = max;
+  while (size > min && el.scrollWidth > el.clientWidth + 1) { size -= step; el.style.fontSize = size + "px"; }
+}
+function fitText() {
+  if (!stage) return;
+  stage.querySelectorAll(".hl-sign .tt").forEach(el => shrink(el, 46, 24, 1));
+  stage.querySelectorAll(".hl-sign .ss").forEach(el => shrink(el, 21, 12, .5));
+  stage.querySelectorAll(".hl-big .t2").forEach(el => shrink(el, 58, 30, 1));
+  stage.querySelectorAll(".hl-door .tt").forEach(el => shrink(el, 12, 6, .25));
+  stage.querySelectorAll(".hl-door .ss").forEach(el => shrink(el, 5.5, 3.5, .25));
+}
+function paint() {
+  if (!built) return;
+  SIGNS.forEach(sg => { const n = stage.querySelector('.hl-sign[data-k="' + sg.k + '"]'); n.querySelector(".tt").textContent = t("hl" + cap(sg.k)); n.querySelector(".ss").textContent = t("hl" + cap(sg.k) + "S"); });
+  stage.querySelector(".hl-big .t1").textContent = t("hlT1"); stage.querySelector(".hl-big .t2").textContent = t("hlT2"); stage.querySelector(".hl-big .ss").textContent = t("hlTag");
+  stage.querySelector(".hl-door .tt").textContent = t("hlAmilu"); stage.querySelector(".hl-door .ss").textContent = t("hlAmiluS");
+  ZONES.forEach(z => { const b = stage.querySelector('.hl-zone[data-k="' + z.k + '"]'); b.setAttribute("aria-label", t("hl" + cap(z.k))); });
+  page.querySelector(".back-btn").setAttribute("aria-label", t("hlBack"));
+  fitText();
+}
+const NAMES = { travel: "Travel", bout: "Bout", exp: "Exp", grow: "Grow", matcha: "Matcha", pod: "Pod", amilu: "Amilu" };
+function cap(k) { return NAMES[k]; }
+function soon(titleKey, bodyKey) {
+  const L = window.CMLLobby; if (!L || !L.openSheet) return;
+  const n = mk("hl-soon", '<h2></h2><p></p>'); n.querySelector("h2").textContent = t("hlSoonT") + " · " + t(titleKey); n.querySelector("p").textContent = t(bodyKey);
+  L.openSheet(n);
+}
+function build() {
+  if (built) return;
+  page = document.getElementById("hall"); if (!page) return;
+  page.innerHTML = '<div class="page-back"><button type="button" class="back-btn" data-go="home"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>';
+  root = mk("hl-root"); stage = mk("hl-stage");
+  const img = new Image(); img.src = "lobby/hall.webp?v=20261028p"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
+  SIGNS.forEach(sg => {
+    const w = 540, h = 170;
+    const n = mk("hl-sign", '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg><div class="tx"><div class="tt"></div><div class="ss"></div></div>');
+    n.dataset.k = sg.k; n.style.width = w + "px"; n.style.height = h + "px"; n.style.transform = homography(w, h, sg.q); stage.appendChild(n);
+  });
+  // cartel grande vino
+  const big = mk("hl-big", '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON.lotus + '</svg><div class="t1"></div><div class="t2"></div><div class="ss"></div>'); stage.appendChild(big);
+  // puerta de Mundo Amilú
+  const door = mk("hl-door", '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12C9 6 3 6 4 11c1 3 5 3 8 1zM12 12c3-6 9-6 8-1-1 3-5 3-8 1zM12 13c-3 2-5 5-3 7 1 1 3 0 3-3 0 3 2 4 3 3 2-2 0-5-3-7z"/></svg><div class="tt"></div><div class="ss"></div>'); stage.appendChild(door);
+  ZONES.forEach(z => {
+    const b = mk("hl-zone", "", "button"); b.type = "button"; b.dataset.k = z.k;
+    b.style.left = z.r[0] + "px"; b.style.top = z.r[1] + "px"; b.style.width = z.r[2] + "px"; b.style.height = z.r[3] + "px";
+    if (z.k === "amilu") b.classList.add("round");
+    b.addEventListener("click", z.go); stage.appendChild(b);
+  });
+  root.appendChild(stage); page.appendChild(root); built = true;
+  fit(); if (window.ResizeObserver) new ResizeObserver(() => { fit(); }).observe(root); else addEventListener("resize", fit);
+  paint();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitText);
+}
+function open() { build(); C.showPage("hall", false); fit(); paint(); setTimeout(() => { fit(); fitText(); }, 120); window.scrollTo({ top: 0 }); }
+window.CMLHall = { open, paint };
+document.addEventListener("cml:lang", paint);
+document.addEventListener("cml:page", e => { if (built && page && page.classList.contains("active")) { fit(); paint(); } });
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
+})();

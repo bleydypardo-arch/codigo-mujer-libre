@@ -208,7 +208,7 @@ function init() {
   document.addEventListener("cml:session", () => setTimeout(paint, 60));
   document.addEventListener("cml:lang", () => setTimeout(paint, 60));
   document.addEventListener("cml:page", e => { if (built) syncArt(); if (e.detail && e.detail.page === "home") { fit(); paintHello(); } else closeSheet(); });
-  window.CMLLobby = { paint };
+  window.CMLLobby = { paint, openSheet };
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
 })();
