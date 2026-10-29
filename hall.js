@@ -13,7 +13,7 @@ C.addStrings({
   hlExp: "Experiencias", hlExpS: "Planes que te conectan",
   hlGrow: "Crece y Florece", hlGrowS: "Lectura · Cursos · Charlas",
   hlMatcha: "Matcha Café", hlMatchaS: "Sabores que nutren",
-  hlPod: "Podcast · Entre Nosotras", hlPodS: "Historias que inspiran",
+  hlPod: "Entre Nosotras", hlPodS: "Podcast · Historias que inspiran",
   hlAmilu: "Mundo Amilú", hlAmiluS: "Juego virtual",
   hlSoonT: "Muy pronto", hlBoutSoon: "La Boutique abre pronto: piezas con propósito, esencias y cuidado de la piel, elegidas para ti.", hlAmiluSoon: "Mundo Amilú, nuestro juego virtual, abre pronto. Te avisamos.",
   hlBack: "Volver al lobby"
@@ -24,7 +24,7 @@ C.addStrings({
   hlExp: "Experiences", hlExpS: "Plans that connect you",
   hlGrow: "Grow & Bloom", hlGrowS: "Reading · Courses · Talks",
   hlMatcha: "Matcha Café", hlMatchaS: "Flavors that nourish",
-  hlPod: "Podcast · Between Us", hlPodS: "Stories that inspire",
+  hlPod: "Between Us", hlPodS: "Podcast · Stories that inspire",
   hlAmilu: "Amilú's World", hlAmiluS: "Virtual game",
   hlSoonT: "Coming soon", hlBoutSoon: "The Boutique opens soon: pieces with purpose, essences and skincare, chosen for you.", hlAmiluSoon: "Amilú's World, our virtual game, opens soon. We'll let you know.",
   hlBack: "Back to the lobby"
@@ -38,14 +38,19 @@ const ICON = {
   cup: '<path d="M5 9h12v4a5 5 0 0 1-5 5h-2a5 5 0 0 1-5-5zM17 10h2a2 2 0 0 1 0 4h-2M8 5c0 1 1 1 1 2M12 5c0 1 1 1 1 2"/>',
   mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/>'
 };
+const BADGE = {
+  tree: '<span class="hl-badge tree"><img src="btn-arbol1.webp" alt=""><img class="a2" src="btn-arbol2.webp" alt=""><img class="a3" src="btn-arbol3.webp" alt=""></span>',
+  matcha: '<span class="hl-badge matcha"><img src="matcha-cup.jpg" alt=""><i></i><i></i><i></i></span>',
+  mic: '<span class="hl-badge mic"><svg viewBox="0 0 48 48" aria-hidden="true"><g class="w1"><path d="M8 18c-3 4-3 8 0 12M40 18c3 4 3 8 0 12"/></g><g class="w2"><path d="M3 14c-5 6-5 14 0 20M45 14c5 6 5 14 0 20"/></g><rect x="18" y="6" width="12" height="22" rx="6" class="m"/><path d="M12 24a12 12 0 0 0 24 0M24 36v7M17 43h14"/></svg></span>'
+};
 // cuatro esquinas de cada letrero sobre la foto (px de la imagen 1086×1448): arriba-izq, arriba-der, abajo-der, abajo-izq
 const SIGNS = [
   { k: "travel", icon: "globe", q: [[42,113],[303,233],[303,308],[42,207]] },
   { k: "bout",   icon: "bag",   q: [[782,241],[1042,118],[1042,212],[782,312]] },
   { k: "exp",    icon: "lotus", q: [[40,541],[298,556],[298,619],[40,598]] },
-  { k: "grow",   icon: "book",  q: [[782,554],[1042,544],[1042,599],[782,623]] },
-  { k: "matcha", icon: "cup",   q: [[38,924],[300,898],[300,962],[38,1003]] },
-  { k: "pod",    icon: "mic",   q: [[782,893],[1042,933],[1042,1003],[782,960]] }
+  { k: "grow",   icon: "book", badge: "tree",  q: [[782,554],[1042,544],[1042,599],[782,623]] },
+  { k: "matcha", icon: "cup", badge: "matcha",   q: [[38,924],[300,898],[300,962],[38,1003]] },
+  { k: "pod",    icon: "mic", badge: "mic",   q: [[782,893],[1042,933],[1042,1003],[782,960]] }
 ];
 // zonas tocables (rectángulos sobre la foto)
 const ZONES = [
@@ -90,8 +95,8 @@ function shrink(el, max, min, step) {
 }
 function fitText() {
   if (!stage) return;
-  stage.querySelectorAll(".hl-sign .tt").forEach(el => shrink(el, 46, 24, 1));
-  stage.querySelectorAll(".hl-sign .ss").forEach(el => shrink(el, 21, 12, .5));
+  stage.querySelectorAll(".hl-sign .tt").forEach(el => shrink(el, 52, 24, 1));
+  stage.querySelectorAll(".hl-sign .ss").forEach(el => shrink(el, 27, 14, .5));
   stage.querySelectorAll(".hl-big .t2").forEach(el => shrink(el, 58, 30, 1));
   stage.querySelectorAll(".hl-door .tt").forEach(el => shrink(el, 12, 6, .25));
   stage.querySelectorAll(".hl-door .ss").forEach(el => shrink(el, 5.5, 3.5, .25));
@@ -117,16 +122,19 @@ function build() {
   page = document.getElementById("hall"); if (!page) return;
   page.innerHTML = '<div class="page-back"><button type="button" class="back-btn" data-go="home"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>';
   root = mk("hl-root"); stage = mk("hl-stage");
-  const img = new Image(); img.src = "lobby/hall.webp?v=20261028p"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
+  const img = new Image(); img.src = "lobby/hall.webp?v=20261028r"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
   SIGNS.forEach(sg => {
     const w = 540, h = 170;
-    const n = mk("hl-sign", '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg><div class="tx"><div class="tt"></div><div class="ss"></div></div>');
+    const n = mk("hl-sign" + (sg.badge ? " has-badge" : ""), (sg.badge ? BADGE[sg.badge] : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');
     n.dataset.k = sg.k; n.style.width = w + "px"; n.style.height = h + "px"; n.style.transform = homography(w, h, sg.q); stage.appendChild(n);
   });
   // cartel grande vino
   const big = mk("hl-big", '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON.lotus + '</svg><div class="t1"></div><div class="t2"></div><div class="ss"></div>'); stage.appendChild(big);
   // puerta de Mundo Amilú
   const door = mk("hl-door", '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12C9 6 3 6 4 11c1 3 5 3 8 1zM12 12c3-6 9-6 8-1-1 3-5 3-8 1zM12 13c-3 2-5 5-3 7 1 1 3 0 3-3 0 3 2 4 3 3 2-2 0-5-3-7z"/></svg><div class="tt"></div><div class="ss"></div>'); stage.appendChild(door);
+  // pantalla vino del podcast: micrófono + ondas (como en la imagen de ChatGPT)
+  { const w = 370, h = 200, n = mk("hl-wall", '<svg viewBox="0 0 120 64" aria-hidden="true"><g class="bars">' + [14,22,32,22,38,26,16,30,20,12].map((v, i) => '<rect x="' + (6 + i * 4) + '" y="' + (32 - v / 2) + '" width="2.2" height="' + v + '" rx="1.1" style="animation-delay:' + (i * .12) + 's"/>').join("") + '</g><g class="micw"><rect x="55" y="12" width="10" height="22" rx="5"/><path d="M49 28a11 11 0 0 0 22 0M60 39v10M53 49h14" fill="none"/></g><g class="bars r">' + [12,20,30,22,36,24,14,28,18,10].map((v, i) => '<rect x="' + (74 + i * 4) + '" y="' + (32 - v / 2) + '" width="2.2" height="' + v + '" rx="1.1" style="animation-delay:' + (i * .12 + .3) + 's"/>').join("") + '</g></svg>');
+    n.style.width = w + "px"; n.style.height = h + "px"; n.style.transform = homography(w, h, [[923,990],[1047,1012],[1047,1080],[923,1060]]); stage.appendChild(n); }
   ZONES.forEach(z => {
     const b = mk("hl-zone", "", "button"); b.type = "button"; b.dataset.k = z.k;
     b.style.left = z.r[0] + "px"; b.style.top = z.r[1] + "px"; b.style.width = z.r[2] + "px"; b.style.height = z.r[3] + "px";
