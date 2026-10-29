@@ -116,10 +116,61 @@ function rowEl(row, big) {
   if (big) b.addEventListener("click", () => { closeSheet(); row.go(); });
   return b;
 }
+
+/* ---------- televisores del lobby: rotan TODO (spa, experiencias, promociones | happy hour, restaurantes) ---------- */
+const TV_MS = 9000;
+const TV_CATS = { events: ["wellness", "events"], recs: ["social", "dining"] };
+function tvPool(kind) {
+  if (!C.session()) return [];
+  const hd = C.homeData(), plans = (hd && hd.plans) || [], today = C.todayStr(), cats = TV_CATS[kind];
+  const ok = p => (p.kind === "event" || p.kind === "wellness" || (C.sideTrip && C.sideTrip(p))) && (!p.event_date || p.event_date >= today);
+  const by = {}; cats.forEach(c => by[c] = []);
+  plans.filter(ok).forEach(p => { const c = C.eventCategory(p); if (by[c]) by[c].push(p); });
+  cats.forEach(c => by[c].sort((a, b) => (C.activePromo && C.activePromo(a) ? 0 : 1) - (C.activePromo && C.activePromo(b) ? 0 : 1)));
+  const out = []; for (let i = 0, more = true; more; i++) { more = false; cats.forEach(c => { if (by[c][i]) { out.push(by[c][i]); more = true; } }); }
+  return out;
+}
+function tvKicker(p) {
+  const c = C.eventCategory(p);
+  if (c === "wellness") return t("lbTvSpa"); if (c === "social") return t("lbTvHappy"); if (c === "dining") return t("lbTvRest");
+  return C.activePromo && C.activePromo(p) ? t("lbTvPromo") : t("lbTvExp");
+}
+function tvImg(p) {
+  let u = ""; try { const tag = C.planTag ? C.planTag(p.id) : {}; u = C.safeUrl((tag && tag.homeImg) || p.image_url || ""); if (!u) { const r = C.richOf && C.richOf(p); const g = r && r.gallery; u = Array.isArray(g) ? (g.map(C.safeUrl).find(Boolean) || "") : ""; } } catch (e) {}
+  return u;
+}
+function tvSlide(p, i) {
+  const sl = mk("lb-tvs" + (i ? "" : " on")), u = tvImg(p), c = C.eventCategory(p);
+  const ph = mk("lb-tvp"); sl.appendChild(ph);
+  const emoji = c === "dining" ? "🍽️" : c === "social" ? "🍹" : c === "wellness" ? "🌿" : "✨";
+  if (u) { const im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.decoding = "async";
+    im.addEventListener("error", () => { if (!im.dataset.r && /^https?:/i.test(u)) { im.dataset.r = "1"; im.src = "https://wsrv.nl/?url=" + encodeURIComponent(u.replace(/^https?:\/\//i, "")) + "&w=600&output=jpg"; } else { im.remove(); ph.textContent = emoji; } });
+    im.src = u; ph.appendChild(im); } else ph.textContent = emoji;
+  const pr = C.activePromo ? C.activePromo(p) : null;
+  const tx = mk("lb-tvt"); tx.append(mk("lb-tvk", esc(tvKicker(p))), mk("lb-tvn", esc(C.pick(p, "title") || "")));
+  const line = pr ? "✦ " + pr.promo : (p.location ? "📍 " + p.location : ""); if (line) tx.appendChild(mk("lb-tvl", esc(line)));
+  sl.appendChild(tx); sl.dataset.cat = c; return sl;
+}
+function tvBuild(kind, pool) {
+  const tv = mk("lb-tv"); tv.dataset.kind = kind;
+  pool.forEach((p, i) => tv.appendChild(tvSlide(p, i)));
+  tv.appendChild(mk("lb-tvb", "<i></i>")); tv.appendChild(mk("lb-tva", esc(t("lbTvAll")) + " ›"));
+  tv.__n = pool.length; tv.__i = 0;
+  tv.addEventListener("click", e => { e.stopPropagation(); const sl = tv.querySelectorAll(".lb-tvs")[tv.__i]; const c = sl && sl.dataset.cat; C.showEventsCat(c === "events" ? "events" : c || "all"); });
+  return tv;
+}
+function tvStep() {
+  stage.querySelectorAll(".lb-tv").forEach(tv => {
+    if (tv.__n < 2) return; const l = tv.querySelectorAll(".lb-tvs"); l[tv.__i].classList.remove("on"); tv.__i = (tv.__i + 1) % tv.__n; l[tv.__i].classList.add("on");
+    const b = tv.querySelector(".lb-tvb i"); if (b) { b.style.animation = "none"; void b.offsetWidth; b.style.animation = ""; }
+  });
+}
 function paintPanel(pn) {
   const def = ROWS[pn.dataset.kind];
   pn.querySelector(".lb-pt").textContent = t(def.title);
   const rows = pn.querySelector(".lb-rows"); rows.replaceChildren(...def.rows.map(r => rowEl(r, false)));
+  const pool = tvPool(pn.dataset.kind);
+  if (pool.length) { rows.replaceChildren(tvBuild(pn.dataset.kind, pool)); pn.classList.add("has-tv"); } else pn.classList.remove("has-tv");
   pn.setAttribute("aria-label", t(def.title));
 }
 function openBig(kind) {
@@ -212,10 +263,11 @@ function syncArt() { const src = document.getElementById("codeArt"), d = src && 
 function start() {
   timers.forEach(clearInterval); timers = [];
   timers.push(setInterval(() => { if (!document.hidden) { rotateThumbs(stage); if (sheetNode) rotateThumbs(sheetNode); }; }, 5500));
+  timers.push(setInterval(() => { if (!document.hidden) tvStep(); }, TV_MS));
 }
 function init() {
   C = window.CML; if (!C) return;
-  C.addStrings(ES, EN); C.addStrings({ lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Bienvenida" }, { lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Welcome" });
+  C.addStrings(ES, EN); C.addStrings({ lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Bienvenida", lbTvSpa: "Spa y bienestar", lbTvExp: "Experiencia", lbTvPromo: "Promoción", lbTvHappy: "Happy hour", lbTvRest: "Restaurante", lbTvAll: "Ver todos" }, { lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Welcome", lbTvSpa: "Spa & wellness", lbTvExp: "Experience", lbTvPromo: "Promotion", lbTvHappy: "Happy hour", lbTvRest: "Restaurant", lbTvAll: "See all" });
   if (!document.documentElement.classList.contains("lobby-on")) return;
   build(); paint(); start();
   document.addEventListener("cml:session", () => setTimeout(paint, 60));
