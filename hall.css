@@ -248,3 +248,11 @@ html.sp-open { overflow: hidden; }
 .sp-snd svg { width: 50px; height: 50px; fill: #F6E7C6; stroke: #F6E7C6; stroke-width: 1.6; stroke-linecap: round; }
 .sp-snd svg path:first-child { stroke: none; } .sp-snd svg .w { fill: none; }
 .sp-snd.off .w { display: none; }
+
+/* ===== App completa = el lobby: se oculta el contenido anterior del Home, saludo más grande, barra de ciudad a juego ===== */
+html.lobby-on #home > :not(#lobby):not(.fx-foot) { display: none !important; }
+.fx-foot { margin: 0; -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.9) 35%, transparent 100%); mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.9) 35%, transparent 100%); pointer-events: none; }
+html.lobby-on .lb-greet { font-size: calc(var(--inv) * 25px); white-space: nowrap; font-weight: 600; text-shadow: 0 0 calc(var(--inv) * 10px) rgba(255,255,255,.95), 0 0 calc(var(--inv) * 4px) rgba(255,255,255,.95); }
+html.lobby-on #viewAsBar { background: transparent !important; border: 0 !important; padding: 6px 16px 4px !important; gap: 10px !important; justify-content: center !important; align-items: center !important; flex-wrap: nowrap !important; }
+html.lobby-on #viewAsBar > span { font: 600 10px/1 Inter, Arial, sans-serif !important; letter-spacing: .18em; text-transform: uppercase; color: #650D29 !important; white-space: nowrap; }
+html.lobby-on #viewAsBar select { flex: 0 1 auto !important; width: auto !important; max-width: 230px; min-height: 36px !important; padding: 0 34px 0 18px; border: 1px solid #C5A46A !important; border-radius: 999px !important; background-color: #FFF8EF !important; color: #800F32 !important; font: 600 16px/1 "Cormorant Garamond", Georgia, serif !important; letter-spacing: .04em; box-shadow: 0 2px 8px rgba(120,80,30,.12); }

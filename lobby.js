@@ -178,7 +178,7 @@ function build() {
   const ex = place(mk("lb-abs lb-ex", MEDAL.replace(/lb(Gold|Rose|Wine|Amber|Shine|Clip)/g, "lbx$1") + '<span class="tx"><small></small><b></b></span><span class="lb-go"><svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 8h34M29 2l7 6-7 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>', "button"), 245, 1290, 610, 116); ex.type = "button";
   ex.addEventListener("click", () => { document.dispatchEvent(new CustomEvent("cml:hall")); if (window.CMLHall && window.CMLHall.open) window.CMLHall.open(); else seeAll("events"); }); stage.appendChild(ex);
 
-  root.appendChild(stage); host.insertBefore(root, host.firstChild); built = true;
+  root.appendChild(stage); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) window.CMLScene.fill(root, "home");
   fit(); fitAll(); if (window.ResizeObserver) new ResizeObserver(fit).observe(root); else addEventListener("resize", fit);
 }
 /* mismo tamaño en cada grupo (títulos, categorías...): se reduce de a poco hasta que nada se salga de su caja */

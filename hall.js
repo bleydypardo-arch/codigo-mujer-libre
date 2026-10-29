@@ -165,7 +165,7 @@ function build() {
     b.appendChild(mk("hl-tap", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10l5.2 1.3A2.5 2.5 0 0 1 19 13.7V16c0 3-2 5-5 5h-2.2c-1.6 0-2.7-.7-3.6-2L4.6 14.8a1.4 1.4 0 0 1 2-2L9 14.6z"/></svg>'));
     b.addEventListener("click", z.go); stage.appendChild(b);
   });
-  root.appendChild(stage); page.appendChild(root); built = true;
+  root.appendChild(stage); page.appendChild(root); built = true; if (window.CMLScene) window.CMLScene.fill(root, "hall");
   fit(); if (window.ResizeObserver) new ResizeObserver(() => { fit(); }).observe(root); else addEventListener("resize", fit);
   paint();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitText);

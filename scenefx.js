@@ -26,5 +26,15 @@ function apply(stage, o) {
   (o.sway || []).forEach((r, i) => g.appendChild(copy("fx-sway", o.src, o.W, o.H, r, -i * 1.3)));
   const first = stage.querySelector("img"); if (first && first.nextSibling) stage.insertBefore(g, first.nextSibling); else stage.appendChild(g);
 }
-window.CMLScene = { apply };
+/* relleno bajo la escena: la misma foto en espejo que se difumina hacia el fondo, para que ninguna pantalla muestre una franja vacía */
+const FOOT = {"home": ["#d4a47d", "#cda07e", "#ddb290", "#dab08f", "#e0b695", "#c2997c", "#c69b7c"], "hall": ["#4b3918", "#d0966a", "#e3b99f", "#c0a6a9", "#d8a78a", "#b37d5f", "#453416"], "spa": ["#3f3011", "#745138", "#ad7d5f", "#9a6138", "#9b653f", "#c88f69", "#e0a16e"]};
+function fill(rootEl, name) {
+  if (!rootEl || rootEl.__foot) return; const foot = mk("fx-foot"); foot.setAttribute("aria-hidden", "true"); foot.style.backgroundImage = "linear-gradient(90deg," + FOOT[name].join(",") + ")";
+  rootEl.after(foot); rootEl.__foot = foot;
+  const nav = () => { let top = innerHeight; document.querySelectorAll(".quick-btn").forEach(b => { const r = b.getBoundingClientRect(); if (r.height && r.top > innerHeight / 2) top = Math.min(top, r.top); }); return top; };
+  const upd = () => { if (!document.body.contains(rootEl) || !rootEl.offsetParent) return; const r = rootEl.getBoundingClientRect(), bottom = r.bottom + scrollY; foot.style.height = Math.max(0, Math.round(innerHeight - (innerHeight - nav()) - bottom + 6)) + "px"; foot.style.width = r.width + "px"; foot.style.marginLeft = "0px"; foot.style.marginLeft = Math.round(r.left - foot.getBoundingClientRect().left) + "px"; };
+  upd(); setTimeout(upd, 300); setTimeout(upd, 1200); addEventListener("resize", upd); if (window.ResizeObserver) new ResizeObserver(upd).observe(rootEl);
+  document.addEventListener("cml:page", () => setTimeout(upd, 60)); rootEl.__upd = upd;
+}
+window.CMLScene = { apply, fill };
 })();

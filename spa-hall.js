@@ -36,7 +36,7 @@ function build() {
   stage.appendChild(spa); stage.appendChild(well);
   const snd = mk("sp-snd", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path class="w" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.500 8.500 0 0 1 0 12"/></svg>', "button"); snd.type = "button"; snd.setAttribute("aria-pressed", "true");
   snd.addEventListener("click", () => { window.CMLSpaMute = MUS.on; musicSet(!MUS.on); }); stage.appendChild(snd);
-  root.appendChild(stage); page.appendChild(root); built = true;
+  root.appendChild(stage); page.appendChild(root); built = true; if (window.CMLScene) window.CMLScene.fill(root, "spa");
   fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(root); else addEventListener("resize", fit);
   paint();
 }
