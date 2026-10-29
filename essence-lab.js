@@ -26,6 +26,14 @@ const s = k => S[L() ? "en" : "es"][k];
 const mk = (cls, html, tag) => { const n = document.createElement(tag || "div"); n.className = cls; if (html != null) n.innerHTML = html; return n; };
 const ing = k => ING.find(i => i.k === k);
 const mix = a => { if (!a.length) return "#F3DFC8"; let r = 0, g = 0, b = 0; a.forEach(c => { const n = parseInt(c.slice(1), 16); r += n >> 16; g += (n >> 8) & 255; b += n & 255; }); const m = a.length; return "rgb(" + Math.round(r / m) + "," + Math.round(g / m) + "," + Math.round(b / m) + ")"; };
+
+let AX = null, MUTE = false, PAD = null;
+function ax() { if (AX) return AX; try { const A = window.AudioContext || window.webkitAudioContext; if (!A) return null; AX = new A(); const m = AX.createGain(); m.gain.value = MUTE ? 0 : 1; m.connect(AX.destination); AX.__m = m; } catch (e) { AX = null; } return AX; }
+function tone(f, d, v, type, when) { const x = ax(); if (!x || MUTE) return; try { const t0 = x.currentTime + (when || 0), o = x.createOscillator(), g = x.createGain(); o.type = type || "sine"; o.frequency.value = f; g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(v, t0 + .02); g.gain.exponentialRampToValueAtTime(.0001, t0 + d); o.connect(g).connect(x.__m); o.start(t0); o.stop(t0 + d + .05); } catch (e) {} }
+const tink = () => { const f = [880, 988, 1175, 1319][Math.floor(Math.random() * 4)]; tone(f, 1.1, .018); tone(f * 2, .6, .006); };
+function splash(n) { const x = ax(); if (!x || MUTE) return; for (let i = 0; i < n; i++) tone(300 + Math.random() * 500, .25, .01, "sine", i * (4.4 / n)); }
+function padOn() { const x = ax(); if (!x || PAD) return; try { const g = x.createGain(); g.gain.value = 0; g.gain.linearRampToValueAtTime(.022, x.currentTime + 4); g.connect(x.__m); const os = [174.6, 261.6, 329.6, 392].map((f, i) => { const o = x.createOscillator(); o.type = "sine"; o.frequency.value = f; const l = x.createOscillator(), lg = x.createGain(); l.frequency.value = .07 + i * .03; lg.gain.value = 1.2; l.connect(lg).connect(o.frequency); const og = x.createGain(); og.gain.value = i === 0 ? 1 : .55; o.connect(og).connect(g); o.start(); l.start(); return [o, l]; }); PAD = { g, os }; } catch (e) {} }
+function padOff() { if (!PAD) return; try { const x = AX; PAD.g.gain.cancelScheduledValues(x.currentTime); PAD.g.gain.setValueAtTime(PAD.g.gain.value, x.currentTime); PAD.g.gain.linearRampToValueAtTime(0, x.currentTime + .6); const p = PAD; setTimeout(() => { p.os.forEach(a => { try { a[0].stop(); a[1].stop(); } catch (e) {} }); }, 700); } catch (e) {} PAD = null; }
 let uid = 0;
 function bottle(style, cap, cols, level) {
   const id = "b" + (++uid), c1 = cols[0] || "#F3DFC8", c2 = cols[1] || c1, c3 = cols[2] || c2;
@@ -37,7 +45,7 @@ function open() {
   if (document.querySelector(".es-ov")) return;
   const st = { sel: [], bs: 0, cap: 0, intent: "calma", g: 0, mode: "aroma" }, G = GEO[L()], IMG = G.img;
   const ov = mk("es-ov"); ov.setAttribute("role", "dialog");
-  const top = mk("es-top", '<b>' + s("title") + '</b><button type="button" class="es-x" aria-label="' + s("close") + '">×</button>');
+  const top = mk("es-top", '<b>' + s("title") + '</b><span class="es-tr"><button type="button" class="es-snd" aria-label="Sonido">♪</button><button type="button" class="es-x" aria-label="' + s("close") + '">×</button></span>');
   const view = mk("es-view"), pan = mk("es-pan"), stg = mk("es-st"); stg.style.backgroundImage = "url(" + IMG + ")";
   stg.appendChild(mk("es-sheen"));
   const orc = mk("es-orc"); orc.style.cssText = "background-image:url(" + IMG + ");left:" + G.orc[0] + "%;top:" + G.orc[1] + "%;width:" + G.orc[2] + "%;height:" + G.orc[3] + "%;background-size:" + (10000 / G.orc[2]) + "% " + (10000 / G.orc[3]) + "%;background-position:" + G.orc[4] + "% " + G.orc[5] + "%"; stg.appendChild(orc);
@@ -53,13 +61,13 @@ function open() {
   const center = () => { pan.scrollLeft = (stg.scrollWidth - pan.clientWidth) / 2; };
   const zoneTap = z => { if (z[6] === "perfume" || z[6] === "aroma") { st.mode = z[6]; st.g = z[6] === "perfume" ? 0 : 1; st.sel = []; } if (z[5]) { note.textContent = s(z[5]); note.classList.remove("on"); void note.offsetWidth; note.classList.add("on"); } if (z[6]) stepSel(); };
   const spark = () => { const n = 14; for (let i = 0; i < n; i++) { const b = mk("es-burst"); const a = (i / n) * Math.PI * 2, d = 80 + (i % 3) * 40; b.style.cssText = "--dx:" + Math.cos(a) * d + "px;--dy:" + Math.sin(a) * d + "px;background:" + (i % 2 ? "#F6E7C6" : "#E58FA6"); ov.appendChild(b); setTimeout(() => b.remove(), 1600); } };
-  const chime = () => { try { const A = window.AudioContext || window.webkitAudioContext; if (!A) return; const x = new A(); [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => { const o = x.createOscillator(), g = x.createGain(); o.type = "sine"; o.frequency.value = f; g.gain.setValueAtTime(0, x.currentTime + i * .18); g.gain.linearRampToValueAtTime(.07, x.currentTime + i * .18 + .05); g.gain.exponentialRampToValueAtTime(.0001, x.currentTime + i * .18 + 1.6); o.connect(g).connect(x.destination); o.start(x.currentTime + i * .18); o.stop(x.currentTime + i * .18 + 1.7); }); setTimeout(() => x.close(), 3000); } catch (e) {} };
+  const chime = () => { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, 2.2, .025, "sine", i * .22)); };
   function step0() { st.step = 0; panel.replaceChildren(mk("es-h", s("title")), mk("es-p", s("sub")), note, (() => { const b = mk("es-cta", s("start"), "button"); b.type = "button"; b.addEventListener("click", step1); return b; })(), mk("es-hint", s("hint"))); }
   function step1() { st.g = st.mode === "perfume" ? 0 : st.g; stepSel(); }
   function stepSel() {
     st.step = 1;
     const tabs = mk("es-tabs"); s("g").forEach((g, i) => { const b = mk("es-tab" + (i === st.g ? " on" : ""), g, "button"); b.type = "button"; b.addEventListener("click", () => { st.g = i; stepSel(); }); tabs.appendChild(b); });
-    const grid = mk("es-grid"); ING.filter(i => i.g === st.g).forEach(i => { const b = mk("es-ing" + (st.sel.includes(i.k) ? " on" : ""), '<i style="background:radial-gradient(circle at 35% 30%,#fff,' + i.c + ' 55%,' + i.c + ')"></i><span>' + i.t[L()] + '</span>', "button"); b.type = "button"; b.addEventListener("click", () => { const x = st.sel.indexOf(i.k); if (x >= 0) st.sel.splice(x, 1); else { if (st.sel.length >= 4) st.sel.shift(); st.sel.push(i.k); } stepSel(); }); grid.appendChild(b); });
+    const grid = mk("es-grid"); ING.filter(i => i.g === st.g).forEach(i => { const b = mk("es-ing" + (st.sel.includes(i.k) ? " on" : ""), '<i style="background:radial-gradient(circle at 35% 30%,#fff,' + i.c + ' 55%,' + i.c + ')"></i><span>' + i.t[L()] + '</span>', "button"); b.type = "button"; b.addEventListener("click", () => { tink(); const x = st.sel.indexOf(i.k); if (x >= 0) st.sel.splice(x, 1); else { if (st.sel.length >= 4) st.sel.shift(); st.sel.push(i.k); } stepSel(); }); grid.appendChild(b); });
     const row = mk("es-sel"); st.sel.forEach(k => row.appendChild(mk("es-dot", "", "i"))); row.querySelectorAll("i").forEach((d, n) => { d.style.background = ing(st.sel[n]).c; });
     const go = mk("es-cta", s("mix"), "button"); go.type = "button"; go.disabled = st.sel.length < 2; go.addEventListener("click", mixing);
     panel.replaceChildren(mk("es-h", s(st.mode === "perfume" ? "pickP" : "pick") + " · " + st.sel.length + "/4"), tabs, grid, row, go); panel.scrollTop = 0;
@@ -67,7 +75,7 @@ function open() {
   function mixing() {
     const cols = st.sel.map(k => ing(k).c), m = mk("es-mixv", '<div class="es-mt">' + s("mixing") + '</div><div class="es-mf">' + bottle(0, CAPS[0], cols, 78) + '</div><div class="es-ms">' + s("mix2") + '</div>');
     const f = m.querySelector(".es-mf"); cols.forEach((c, ci) => { for (let n = 0; n < 9; n++) { const p = mk("es-fall"); p.style.cssText = "left:" + (38 + ((n * 11 + ci * 7) % 26)) + "%;background:" + c + ";animation-delay:" + (ci * .9 + n * .22).toFixed(2) + "s"; f.appendChild(p); } });
-    ov.appendChild(m); const liq = m.querySelector(".es-liq"); requestAnimationFrame(() => { liq.style.transition = "transform 4.6s ease-in-out"; liq.style.transform = "translateY(-34px)"; });
+    ov.appendChild(m); splash(14); const liq = m.querySelector(".es-liq"); requestAnimationFrame(() => { liq.style.transition = "transform 4.6s ease-in-out"; liq.style.transform = "translateY(-34px)"; });
     setTimeout(() => { m.classList.add("out"); setTimeout(() => m.remove(), 700); step3(); }, 4900);
   }
   function step3() {
@@ -85,13 +93,14 @@ function open() {
     const r = mk("es-rev", '<div class="es-rays"></div><div class="es-rt">' + s(st.mode === "perfume" ? "readyP" : "ready") + '</div><div class="es-rb">' + bottle(st.bs, CAPS[st.cap], cols, -34) + '</div><div class="es-rn"></div><div class="es-rs"></div>');
     r.querySelector(".es-rn").textContent = name; r.querySelector(".es-rs").textContent = s("notes") + ": " + st.sel.map(k => ing(k).t[L()]).join(" · ") + " — " + INT.find(i => i.k === st.intent).t[L()];
     const sv = mk("es-cta", s("save"), "button"), ok = mk("es-ok"), ag = mk("es-ghost", s("again"), "button"); sv.type = ag.type = "button";
-    sv.addEventListener("click", () => { try { const a = JSON.parse(localStorage.getItem("cml_essences") || "[]"); a.push({ n: name, ing: st.sel, intent: st.intent, bs: st.bs, cap: st.cap, at: Date.now() }); localStorage.setItem("cml_essences", JSON.stringify(a.slice(-20))); } catch (e) {} ok.textContent = s("saved"); sv.disabled = true; spark(); });
+    sv.addEventListener("click", () => { tone(1046.5, 1.4, .02); try { const a = JSON.parse(localStorage.getItem("cml_essences") || "[]"); a.push({ n: name, ing: st.sel, intent: st.intent, bs: st.bs, cap: st.cap, at: Date.now() }); localStorage.setItem("cml_essences", JSON.stringify(a.slice(-20))); } catch (e) {} ok.textContent = s("saved"); sv.disabled = true; spark(); });
     ag.addEventListener("click", () => { r.remove(); st.sel = []; st.name = ""; step0(); });
     r.append(sv, ok, ag); ov.appendChild(r); spark(); chime();
   }
-  const close = () => ov.remove(); top.querySelector(".es-x").addEventListener("click", close);
-  document.body.appendChild(ov); fit(); center(); step0(); setTimeout(() => { fit(); center(); }, 120); addEventListener("resize", () => { fit(); center(); });
+  const sb = top.querySelector(".es-snd"); sb.addEventListener("click", () => { MUTE = !MUTE; sb.classList.toggle("off", MUTE); if (AX && AX.__m) AX.__m.gain.value = MUTE ? 0 : 1; });
+  const close = () => { padOff(); ov.remove(); }; top.querySelector(".es-x").addEventListener("click", close);
+  document.body.appendChild(ov); ax(); if (AX && AX.state === "suspended") AX.resume(); padOn(); fit(); center(); step0(); setTimeout(() => { fit(); center(); }, 120); addEventListener("resize", () => { fit(); center(); });
 }
 function button() { const b = mk("el-open", '<span class="el-oi">✿</span><span><b>' + s("title") + '</b><small>' + s("sub") + '</small></span>', "button"); b.type = "button"; b.addEventListener("click", open); return b; }
-window.CMLEssenceLab = { open, button, close: () => { const o = document.querySelector(".es-ov"); if (o) o.remove(); } };
+window.CMLEssenceLab = { open, button, close: () => { padOff(); const o = document.querySelector(".es-ov"); if (o) o.remove(); } };
 })();
