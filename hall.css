@@ -140,3 +140,67 @@ html.lobby-on .pw-sheet .pw-head { padding-bottom: 6px; }
 .tn-scroll::-webkit-scrollbar { display: none; }
 .tn-img { display: block; height: 100%; width: auto; max-width: none; }
 .tn-hint { margin: 10px 16px 0; text-align: center; font: 500 11px/1.3 Inter, Arial, sans-serif; letter-spacing: .16em; text-transform: uppercase; color: #650D29; }
+
+/* ===== SPA & WELLNESS (imagen 3) ===== */
+#spaglobal { padding: 0; }
+#spaglobal .page-back { padding: 8px 12px; }
+.sp-root { position: relative; width: 100vw; margin-inline: calc(50% - 50vw); overflow: hidden; background: #1c1510; }
+@media (min-width: 700px) { .sp-root { width: 100%; max-width: 620px; margin-inline: auto; border-radius: 18px; } }
+.sp-stage { position: absolute; left: 0; top: 0; width: 1086px; height: 1448px; transform-origin: 0 0; }
+.sp-stage > img { position: absolute; inset: 0; width: 1086px; height: 1448px; display: block; }
+.sp-fx { position: absolute; inset: 0; pointer-events: none; }
+.sp-fx > * { position: absolute; overflow: hidden; }
+/* mar */
+.sp-sea { left: 412px; top: 566px; width: 322px; height: 46px; mix-blend-mode: screen; -webkit-mask-image: linear-gradient(180deg, transparent, #000 25%, #000 80%, transparent); mask-image: linear-gradient(180deg, transparent, #000 25%, #000 80%, transparent); }
+.sp-sea i { position: absolute; left: -140px; top: 0; width: 600px; height: 100%; opacity: .5; background: repeating-linear-gradient(180deg, transparent 0 7px, rgba(255,255,255,.55) 7px 9px, transparent 9px 17px); -webkit-mask-image: repeating-linear-gradient(90deg, transparent 0 14px, #000 14px 60px, transparent 60px 90px); mask-image: repeating-linear-gradient(90deg, transparent 0 14px, #000 14px 60px, transparent 60px 90px); animation: spSeaA 9s linear infinite; }
+.sp-sea i.b { opacity: .35; background-size: auto; animation-duration: 14s; animation-direction: reverse; top: 5px; -webkit-mask-image: repeating-linear-gradient(90deg, transparent 0 30px, #000 30px 70px, transparent 70px 120px); mask-image: repeating-linear-gradient(90deg, transparent 0 30px, #000 30px 70px, transparent 70px 120px); }
+.sp-sea b { position: absolute; left: 250px; top: 6px; width: 60px; height: 34px; background: radial-gradient(closest-side, rgba(255,214,150,.55), rgba(255,214,150,0)); animation: spGlint 3.4s ease-in-out infinite alternate; }
+@keyframes spSeaA { to { transform: translate(90px, 8px); } }
+@keyframes spGlint { from { opacity: .25; transform: scaleX(.7); } to { opacity: .9; transform: scaleX(1.1); } }
+/* piscina */
+.sp-pool { left: 0; top: 0; width: 1086px; height: 1448px; clip-path: polygon(404px 750px, 688px 750px, 1030px 992px, 106px 976px); mix-blend-mode: screen; }
+.sp-pool i { position: absolute; left: -200px; top: 740px; width: 1500px; height: 270px; opacity: .8; background: repeating-linear-gradient(180deg, transparent 0 14px, rgba(220,255,255,.6) 14px 17px, transparent 17px 36px); -webkit-mask-image: repeating-linear-gradient(90deg, transparent 0 22px, #000 22px 110px, transparent 110px 190px); mask-image: repeating-linear-gradient(90deg, transparent 0 22px, #000 22px 110px, transparent 110px 190px); animation: spPoolA 7s linear infinite; }
+.sp-pool i.b { opacity: .6; top: 756px; background: repeating-linear-gradient(180deg, transparent 0 22px, rgba(160,240,255,.7) 22px 24px, transparent 24px 52px); -webkit-mask-image: repeating-linear-gradient(90deg, transparent 0 50px, #000 50px 160px, transparent 160px 260px); mask-image: repeating-linear-gradient(90deg, transparent 0 50px, #000 50px 160px, transparent 160px 260px); animation: spPoolB 11s linear infinite; }
+.sp-pool s { position: absolute; left: 0; top: 740px; width: 100%; height: 270px; background: radial-gradient(ellipse 120px 26px at 30% 40%, rgba(255,255,255,.35), transparent 70%), radial-gradient(ellipse 150px 30px at 68% 62%, rgba(200,255,255,.35), transparent 70%), radial-gradient(ellipse 90px 20px at 50% 85%, rgba(255,255,255,.3), transparent 70%); animation: spShim 4.2s ease-in-out infinite alternate; }
+.sp-pool s.b { animation-duration: 5.6s; animation-direction: alternate-reverse; transform: translateX(80px); }
+@keyframes spPoolA { to { transform: translate(190px, 36px); } }
+@keyframes spPoolB { to { transform: translate(-260px, 52px); } }
+@keyframes spShim { from { opacity: .25; } to { opacity: 1; } }
+/* cascadas */
+.sp-f1 { left: 463px; top: 686px; width: 154px; height: 64px; }
+.sp-f2 { left: 118px; top: 428px; width: 94px; height: 176px; }
+.sp-fall i { position: absolute; inset: 0; mix-blend-mode: screen; background: repeating-linear-gradient(90deg, rgba(255,255,255,.0) 0 5px, rgba(255,255,255,.85) 5px 8px, rgba(255,255,255,0) 8px 15px); -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 16px, rgba(0,0,0,.15) 16px 34px); mask-image: repeating-linear-gradient(180deg, #000 0 16px, rgba(0,0,0,.15) 16px 34px); -webkit-mask-size: 100% 34px; mask-size: 100% 34px; animation: spFall .7s linear infinite; }
+.sp-f2 i { background: repeating-linear-gradient(90deg, rgba(255,255,255,0) 0 6px, rgba(255,244,214,.9) 6px 8px, rgba(255,255,255,0) 8px 13px); animation-duration: 1.4s; -webkit-mask-size: 100% 60px; mask-size: 100% 60px; -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 24px, rgba(0,0,0,.1) 24px 60px); mask-image: repeating-linear-gradient(180deg, #000 0 24px, rgba(0,0,0,.1) 24px 60px); }
+.sp-fall b { position: absolute; left: 0; right: 0; bottom: 0; height: 16px; background: radial-gradient(ellipse at 50% 100%, rgba(255,255,255,.8), rgba(255,255,255,0) 70%); animation: spFoam 1.6s ease-in-out infinite alternate; }
+@keyframes spFall { from { -webkit-mask-position: 0 0; mask-position: 0 0; } to { -webkit-mask-position: 0 34px; mask-position: 0 34px; } }
+.sp-f2 i { animation-name: spFall2; }
+@keyframes spFall2 { from { -webkit-mask-position: 0 0; mask-position: 0 0; } to { -webkit-mask-position: 0 60px; mask-position: 0 60px; } }
+@keyframes spFoam { from { opacity: .35; } to { opacity: .95; } }
+.sp-mist { left: 440px; top: 735px; width: 200px; height: 40px; background: radial-gradient(ellipse at 50% 50%, rgba(255,255,255,.55), rgba(255,255,255,0) 70%); animation: spFoam 2.4s ease-in-out infinite alternate; }
+/* botones */
+.sp-zone { position: absolute; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.sp-spa { left: 14px; top: 14px; width: 262px; height: 640px; }
+.sp-well { left: 810px; top: 10px; width: 270px; height: 640px; }
+.sp-ring { position: absolute; left: 6px; top: 6px; width: 250px; height: 372px; border-radius: 14px; border: 6px solid rgba(255,232,170,1); box-shadow: 0 0 40px 14px rgba(255,214,140,.8), inset 0 0 36px 10px rgba(255,214,140,.55); animation: spRing 1.9s ease-in-out infinite; pointer-events: none; }
+@keyframes spRing { 0%,100% { opacity: .35; transform: scale(1); } 50% { opacity: 1; transform: scale(1.025); } }
+.sp-pill { position: absolute; left: 50%; width: 262px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 10px 8px; border-radius: 22px; background: linear-gradient(180deg, #9a1c44, #800F32); border: 3px solid #E8CD92; box-shadow: 0 8px 22px rgba(60,10,25,.45); color: #FFF8EF; text-align: center; pointer-events: none; }
+.sp-spa .sp-pill { top: 384px; animation: spPill 1.9s ease-in-out infinite; box-shadow: 0 0 0 0 rgba(255,226,160,.8), 0 8px 22px rgba(60,10,25,.45); }
+.sp-well .sp-pill { top: 392px; background: linear-gradient(180deg, rgba(120,16,50,.92), rgba(90,10,36,.92)); }
+@keyframes spPill { 0%,100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 0 0 rgba(255,226,160,.85), 0 8px 22px rgba(60,10,25,.45); } 50% { transform: translateX(-50%) scale(1.06); box-shadow: 0 0 0 16px rgba(255,226,160,0), 0 8px 22px rgba(60,10,25,.45); } }
+.sp-pill b { font: 700 56px/1.02 Inter, Arial, sans-serif; letter-spacing: .14em; padding-left: .14em; text-transform: uppercase; white-space: nowrap; max-width: 100%; }
+.sp-pill small { font: 600 24px/1.1 Inter, Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #F2DDB0; white-space: nowrap; max-width: 100%; }
+.sp-zone:focus-visible { outline: 4px solid #E8CD92; outline-offset: -4px; }
+@media (prefers-reduced-motion: reduce) { .sp-sea i, .sp-pool i, .sp-pool s, .sp-fall i, .sp-fall b, .sp-mist, .sp-sea b, .sp-ring, .sp-pill { animation: none !important; } }
+/* entrada al spa virtual */
+.sp-enter { position: fixed; inset: 0; z-index: 9999; background: #120c07 url(lobby/spa.webp) center/cover no-repeat; opacity: 0; transition: opacity .35s ease; }
+.sp-enter.on { opacity: 1; }
+.sp-enter iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; opacity: 0; transition: opacity .7s ease; }
+.sp-enter.ready iframe { opacity: 1; }
+.sp-ld { position: absolute; left: 0; right: 0; bottom: 18%; display: flex; flex-direction: column; align-items: center; gap: 10px; color: #FFF8EF; font: 600 11px Inter, Arial, sans-serif; letter-spacing: .16em; text-transform: uppercase; text-shadow: 0 1px 10px rgba(0,0,0,.6); transition: opacity .4s; }
+.sp-enter.ready .sp-ld { opacity: 0; }
+.sp-ld i { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,226,160,.35); border-top-color: #F2DDB0; animation: spSpin 1s linear infinite; }
+@keyframes spSpin { to { transform: rotate(360deg); } }
+.sp-x { position: absolute; left: max(10px, env(safe-area-inset-left, 0px)); bottom: max(14px, env(safe-area-inset-bottom, 0px)); z-index: 3; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(241,220,174,.5); background: rgba(28,21,16,.55); display: grid; place-items: center; backdrop-filter: blur(6px); }
+.sp-x svg { width: 22px; height: 22px; fill: none; stroke: #F6E7C6; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+html.sp-open { overflow: hidden; }
+.sp-old { margin-top: 12px; font: 600 12px Inter, Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: #650D29; background: none; border: 1px solid #C5A46A; border-radius: 999px; padding: 10px 16px; }

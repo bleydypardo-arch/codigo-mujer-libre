@@ -1020,6 +1020,15 @@ function sizePetals(){var r=cv.getBoundingClientRect();cv.width=r.width*devicePi
 var last=0;(function loop(t){var dt=Math.min(60,t-last);last=t;cx.clearRect(0,0,cv.width,cv.height);P.forEach(function(p){p.y+=p.v*dt;p.x+=p.d*dt+Math.sin(t/1700+p.r)*.00004*dt;p.r+=.0009*dt;if(p.y>1.05){p.y=-.05;p.x=Math.random()}var X=p.x*cv.width,Y=p.y*cv.height,s=p.s*devicePixelRatio;cx.save();cx.translate(X,Y);cx.rotate(p.r);cx.fillStyle=p.pk?"rgba(246,184,206,.85)":"rgba(255,250,240,.88)";cx.beginPath();cx.ellipse(0,0,s,s*.55,0,0,6.283);cx.fill();cx.restore()});drawExtras(t);requestAnimationFrame(loop)})(0);
 
 fill();layout();window.addEventListener("resize",layout);initGL();
+/* ---- entrada rápida desde la app (?auto=1): sin puerta, directo a "Bienvenida + nombre" ---- */
+if(/[?&]auto=1/.test(location.search)){
+ var lm=location.search.match(/[?&]lang=(en|es)/);if(lm&&lm[1]!==lang){lang=lm[1];fill()}
+ var ast=document.createElement("style");ast.textContent=".wl em{display:none}.gate{display:none!important}";document.head.appendChild(ast);
+ gate.classList.add("open","gone");hub.classList.add("in");
+ try{ctx();startAmb()}catch(e){}
+ welcome();setTimeout(function(){var d=document.getElementById("wl");if(d)d.remove()},2800);
+ document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#cmlBack")){e.preventDefault();e.stopPropagation();parent.postMessage({cmlSpaExit:1},location.origin)}},true);
+}
 })();
 </script>
 
