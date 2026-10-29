@@ -40,7 +40,7 @@ function paint(x) {
   } else x.hero.replaceChildren(hero);
   if (x.barBtn) x.barBtn.classList.add("mx-bar");
   const list = [];
-  if (x.barBtn) list.push(x.barBtn);
+  
   if (x.rc) { x.rc.classList.add("mx-keep"); list.push(x.rc); }
 
   const card = (key, head, node, imgSrc) => {

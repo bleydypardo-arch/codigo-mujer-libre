@@ -88,3 +88,9 @@ html.lobby-on #matcha .mx-photo { aspect-ratio: 16 / 4; }
 html.lobby-on #matcha .mx-photo.art { aspect-ratio: 16 / 2.6; }
 html.lobby-on #matcha .mx-cups { aspect-ratio: 16 / 4.2; }
 html.lobby-on #matcha .mx-card { gap: 8px; }
+/* fotos completas, sin recortes de tira */
+html.lobby-on #matcha .mx-photo { aspect-ratio: 16 / 8.5; }
+html.lobby-on #matcha .mx-photo.art { aspect-ratio: 16 / 7; }
+html.lobby-on #matcha .mx-cups { aspect-ratio: auto; height: auto; object-fit: initial; }
+html.lobby-on #matcha .mxc-plan .mx-d, html.lobby-on #matcha .mxc-cre .mx-d { display: block; }
+html.lobby-on #matcha .mx-hero-full { margin-bottom: 12px; }
