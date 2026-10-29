@@ -138,7 +138,7 @@ function build() {
   const img = new Image(); img.src = "lobby/home.webp?v=20261028b"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
 
   // saludo y marca
-  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club.webp?v=20261028l" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
+  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club.webp?v=20261028m" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
   stage.appendChild(hello);
 
   // pantallas (tocar = se abre ampliada con las tres categorías)
@@ -180,7 +180,7 @@ function fitGroup(sel, v, base, min) {
 }
 function fitAll() {
   if (!built) return;
-  fitGroup(".lb-pt", "--fs-pt", 11, 6); fitGroup(".lb-cat", "--fs-cat", 7.5, 4.5); fitGroup(".lb-plq b", "--fs-code", 11, 6); fitGroup(".lb-ex b", "--fs-hall", 12.5, 7); fitGroup(".lb-sub", "--fs-sub", 4.8, 3.6); fitGroup(".lb-plq small", "--fs-csub", 4.8, 3.6); fitGroup(".lb-pc span", "--fs-pc", 8.5, 4.5);
+  fitGroup(".lb-pt", "--fs-pt", 11, 6); fitGroup(".lb-cat", "--fs-cat", 7.5, 4.5); fitGroup(".lb-plq b", "--fs-code", 11, 6); fitGroup(".lb-ex b", "--fs-hall", 12.5, 7); fitGroup(".lb-sub", "--fs-sub", 4.8, 3.6); fitGroup(".lb-plq small", "--fs-csub", 4.8, 3.6); fitGroup(".lb-pc span", "--fs-pc", 10.5, 4.5);
 }
 function labels() {
   if (!built) return;

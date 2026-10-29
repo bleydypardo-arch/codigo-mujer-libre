@@ -126,3 +126,9 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 #lobby .lb-ex { padding: 0 34px 0 14px; gap: 14px; }
 #lobby .lb-ex .tx { min-width: 0; }
 #lobby .lb-ex .lb-go { width: calc(var(--inv) * 26px); height: calc(var(--inv) * 26px); flex: none; }
+
+/* letra más negrita y más pegada, con velo crema debajo (como la referencia) */
+#lobby .lb-pt, #lobby .lb-cat { letter-spacing: -.01em; -webkit-text-stroke: .45px var(--color-wine); text-shadow: 0 0 3px rgba(255,248,239,.95), 0 0 6px rgba(255,248,239,.8); }
+#lobby .lb-sub { font-weight: 700; letter-spacing: .03em; color: #6b5a52; }
+#lobby .lb-pc span { letter-spacing: -.005em; -webkit-text-stroke: .6px var(--color-wine); text-shadow: 0 0 4px rgba(255,248,239,1), 0 0 9px rgba(255,248,239,.95), 0 0 14px rgba(255,248,239,.8); }
+.lb-brow .lb-cat, .lb-big h2 { letter-spacing: -.01em; -webkit-text-stroke: .4px var(--color-wine); }
