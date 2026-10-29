@@ -1,13 +1,13 @@
-// Código Mujer Libre — LOBBY (nuevo Home). Prototipo detrás de un interruptor: ?lobby=1 lo enciende, ?lobby=0 lo apaga.
+// Código Mujer Libre — LOBBY (nuevo Home). Ahora es el Home oficial (encendido por defecto). ?lobby=0 lo apaga en ese dispositivo, ?lobby=1 lo vuelve a encender.
 // No cambia ningún dato ni componente existente: reutiliza la tarjeta Tu Código Hoy, Hablemos, ¿Sabías que? y Tu código esta semana.
 (function () {
 "use strict";
 const FLAG = "cmlLobby";
 try {
   const q = new URLSearchParams(location.search).get("lobby");
-  if (q === "1") localStorage.setItem(FLAG, "1"); else if (q === "0") localStorage.removeItem(FLAG);
-  if (localStorage.getItem(FLAG) === "1") document.documentElement.classList.add("lobby-on");
-} catch (e) { if (/[?&]lobby=1/.test(location.search)) document.documentElement.classList.add("lobby-on"); }
+  if (q === "1") localStorage.removeItem(FLAG); else if (q === "0") localStorage.setItem(FLAG, "0");
+  if (localStorage.getItem(FLAG) !== "0") document.documentElement.classList.add("lobby-on");   // ENCENDIDO por defecto; ?lobby=0 lo apaga
+} catch (e) { if (!/[?&]lobby=0/.test(location.search)) document.documentElement.classList.add("lobby-on"); }
 
 const ES = {
   lbExploreK: "Explora el", lbExploreT: "Hall de Experiencias", lbCode: "Tu Código Hoy", lbCodeWeek: "Escoge tu código de la semana", lbCodeWeekAria: "Tu código esta semana",
