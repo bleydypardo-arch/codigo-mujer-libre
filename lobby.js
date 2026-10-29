@@ -12,13 +12,13 @@ try {
 const ES = {
   lbExploreK: "Explora el", lbExploreT: "Hall de Experiencias", lbCode: "Tu Código Hoy", lbCodeWeek: "Escoge tu código de la semana", lbCodeWeekAria: "Tu código esta semana",
   lbEvents: "Eventos Especiales", lbRecs: "Nuestra Recomendación", lbTalk: "Hablemos", lbDyk: "¿Sabías que?", lbSeeAll: "Ver todo", lbClose: "Cerrar",
-  lbBub1: "Toca la placa y descubre tu mensaje de hoy", lbBub2: "Aquí tienes un lugar para ti", lbSoonT: "Pronto, un nuevo plan", lbSoonD: "Estamos preparando algo especial para ti.",
+  lbBub1: "Toca la placa y ve tu mensaje de hoy", lbBub2: "Aquí tienes un lugar para ti", lbSoonT: "Pronto, un nuevo plan", lbSoonD: "Estamos preparando algo especial para ti.",
   lbHappy: "Happy Hour", lbDine: "Restaurante", lbWell: "Bienestar", lbEvent: "Evento", lbSocialK: "Social", lbWellPromo: "Bienestar", lbWellPromoS: "y promociones", lbSocial: "Social", lbSocialS: "planes con amigas", lbTours: "Tours y experiencias", lbToursS: "tu ciudad", lbRest: "Restaurante", lbHappyH: "Happy Hour", lbWeekS: "de la semana", lbCodeSub: "Mensaje para hoy"
 };
 const EN = {
   lbExploreK: "Explore the", lbExploreT: "Experiences Hall", lbCode: "Your Code Today", lbCodeWeek: "Choose your code of the week", lbCodeWeekAria: "Your code this week",
   lbEvents: "Special Events", lbRecs: "Our Recommendation", lbTalk: "Let's talk", lbDyk: "Did you know?", lbSeeAll: "See all", lbClose: "Close",
-  lbBub1: "Tap the plaque to discover today's message", lbBub2: "A place picked just for you", lbSoonT: "Soon, a new plan", lbSoonD: "We're preparing something special for you.",
+  lbBub1: "Tap the plaque for today's message", lbBub2: "A place picked just for you", lbSoonT: "Soon, a new plan", lbSoonD: "We're preparing something special for you.",
   lbHappy: "Happy Hour", lbDine: "Restaurant", lbWell: "Wellness", lbEvent: "Event", lbSocialK: "Social", lbWellPromo: "Wellness", lbWellPromoS: "& promotions", lbSocial: "Social", lbSocialS: "plans with friends", lbTours: "Tours & experiences", lbToursS: "your city", lbRest: "Restaurant", lbHappyH: "Happy Hour", lbWeekS: "of the week", lbCodeSub: "Message for today"
 };
 
@@ -138,7 +138,7 @@ function build() {
   const img = new Image(); img.src = "lobby/home.webp?v=20261028b"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
 
   // saludo y marca
-  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club.webp?v=20261028c" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
+  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club.webp?v=20261028g" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
   stage.appendChild(hello);
 
   // pantallas (tocar = se abre ampliada con las tres categorías)
@@ -152,13 +152,13 @@ function build() {
   plq.addEventListener("click", () => openSheet("codeCard")); stage.appendChild(plq);
 
   // burbuja
-  const bub = place(mk("lb-abs lb-bub", ""), 600, 0, 200); bub.style.top = "auto"; bub.style.bottom = (H - 506) + "px"; stage.appendChild(bub);
+  const bub = place(mk("lb-abs lb-bub", ""), 604, 0, 158); bub.style.top = "auto"; bub.style.bottom = (H - 536) + "px"; stage.appendChild(bub);
 
   // caja de cristal: Tu código esta semana
   const box = place(mk("lb-abs lb-box", "", "button"), 372, 566, 90, 90); box.type = "button";
   for (let i = 0; i < 5; i++) { const s = mk("", null, "i"); s.style.left = (14 + i * 15) + "px"; s.style.top = (46 + (i % 2) * 14) + "px"; s.style.animationDelay = (i * 0.9) + "s"; box.appendChild(s); }
   box.addEventListener("click", () => { if (!openSheet("homeCodeWeek")) openSheet("codeCard"); }); stage.appendChild(box);
-  const boxl = place(mk("lb-abs lb-boxl pop", "<span></span>", "button"), 332, 0, 170); boxl.style.top = "auto"; boxl.style.bottom = (H - 562) + "px"; boxl.type = "button";
+  const boxl = place(mk("lb-abs lb-boxl pop", "<span></span>", "button"), 338, 0, 158); boxl.style.top = "auto"; boxl.style.bottom = (H - 536) + "px"; boxl.type = "button";
   boxl.addEventListener("click", () => box.click()); stage.appendChild(boxl);
 
   // sobre (Hablemos)
@@ -184,7 +184,7 @@ function fitGroup(sel, v, base, min) {
 }
 function fitAll() {
   if (!built) return;
-  fitGroup(".lb-pt", "--fs-pt", 11, 6); fitGroup(".lb-cat", "--fs-cat", 7.5, 4.5); fitGroup(".lb-plq b", "--fs-code", 11, 6); fitGroup(".lb-ex b", "--fs-hall", 14, 7); fitGroup(".lb-sub", "--fs-sub", 4.8, 3.6); fitGroup(".lb-plq small", "--fs-csub", 4.8, 3.6);
+  fitGroup(".lb-pt", "--fs-pt", 11, 6); fitGroup(".lb-cat", "--fs-cat", 7.5, 4.5); fitGroup(".lb-plq b", "--fs-code", 11, 6); fitGroup(".lb-ex b", "--fs-hall", 14, 7); fitGroup(".lb-sub", "--fs-sub", 4.8, 3.6); fitGroup(".lb-plq small", "--fs-csub", 4.8, 3.6); fitGroup(".lb-pc span", "--fs-pc", 8.5, 4.5);
 }
 function labels() {
   if (!built) return;
