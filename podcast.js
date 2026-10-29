@@ -86,6 +86,7 @@ function playerNode(id, label, cls, onPlay) {
   return wrap;
 }
 // Vintage broadcast microphone (gold grille, chrome yoke, stand) with sound waves that radiate outward
+let micSeq = 0;
 function micNode(cls) {
   const NS = "http://www.w3.org/2000/svg", w = document.createElementNS(NS, "svg");
   w.setAttribute("viewBox", "-16 0 112 100"); w.setAttribute("class", "pod-mic-svg " + (cls || "")); w.setAttribute("aria-hidden", "true"); w.setAttribute("focusable", "false");
@@ -97,6 +98,9 @@ function micNode(cls) {
     + '<path d="M17 42C17 70 63 70 63 42" fill="none" stroke="url(#pmC)" stroke-width="4.4" stroke-linecap="round"/><circle cx="17" cy="42" r="3.4" fill="url(#pmG)" stroke="#6B4217" stroke-width=".8"/><circle cx="63" cy="42" r="3.4" fill="url(#pmG)" stroke="#6B4217" stroke-width=".8"/>'
     + '<rect x="20" y="8" width="40" height="52" rx="20" fill="url(#pmG)" stroke="#6B4217" stroke-width="1.4"/><g clip-path="url(#pmK)"><g stroke="#4B2A0E" stroke-opacity=".62" stroke-width="1.7">' + ribs + '</g><path d="M40 8V60" stroke="#4B2A0E" stroke-opacity=".55" stroke-width="2"/><rect x="20" y="31" width="40" height="5" fill="#F7E3AC" fill-opacity=".9"/><path d="M26 12C22 24 22 40 26 54" stroke="#fff" stroke-opacity=".6" stroke-width="3" fill="none" stroke-linecap="round"/></g>'
     + '<rect x="35" y="58" width="10" height="16" rx="3" fill="url(#pmC)" stroke="#5E5E68" stroke-width=".8"/></g>';
+  // unique gradient ids per microphone, so one hidden copy (e.g. the Home card) can never break the others
+  const uid = "m" + (++micSeq);
+  w.innerHTML = w.innerHTML.replace(/id="(pm[A-Z])"/g, 'id="$1' + uid + '"').replace(/url\(#(pm[A-Z])\)/g, 'url(#$1' + uid + ')');
   return w;
 }
 function embedNode(id, label) {
@@ -175,7 +179,7 @@ function renderHome(hostArg) {
   const kick = !f ? t("podSoonK") : f.upcoming ? t("podNext") + " · " + new Date(f.ep.date + "T12:00").toLocaleDateString(C.loc(), { day: "numeric", month: "short" }).replace(".", "") : (recent(f.ep) ? t("podNew") : t("podLatest"));
   const head = !f ? t("podSoonT") : titleOf(f.ep);
   const btn = el("button", { type: "button", class: "ph-btn" },
-    el("span", { class: "ph-btn-ico", "aria-hidden": "true" }, f ? "▶" : "✦"),
+    el("span", { class: "ph-btn-ico", "aria-hidden": "true" }, document.documentElement.classList.contains("lobby-on") ? micNode("small") : (f ? "▶" : "✦")),
     el("span", { class: "ph-btn-txt", text: f ? t("podListen") : t("podMeet") }));
   const foot = el("div", { class: "ph-foot" },
     el("div", { class: "ph-kline" }, f ? chip(f.ep.topic) : null, el("small", { class: "ph-k", text: kick })),
@@ -233,9 +237,7 @@ function winEpisodeView(sel, all, f) {
 }
 function winSoonView() {
   const chips = el("div", { class: "pw-topics" }, ...["love", "health", "money", "wellness", "beauty", "spirituality", "entrepreneurship", "emotional", "purpose", "life"].map(k => chip(k)));
-  const vid = el("div", { class: "pw-vid-soon", role: "img", "aria-label": t("podVidSoon") },
-    el("img", { src: COVER[C.lang() === "en" ? "en" : "es"].img, alt: "", loading: "lazy" }),
-    el("span", { class: "pw-vid-play", "aria-hidden": "true", text: "▶" }), el("small", { text: t("podVidSoon") }));
+  const vid = el("div", { class: "pw-vid-soon", role: "img", "aria-label": t("podVidSoon") }, el("span", { class: "pw-vid-play", "aria-hidden": "true", text: "▶" }));
   return [vid, el("div", { class: "pw-soon" }, el("span", { class: "pod-mic big" }, micNode()),
     el("h3", { class: "pw-ep-t", id: "pwEpT", text: t("podSoonT") }),
     el("p", { class: "pw-desc", text: t("podSoonP2") }), chips, el("p", { class: "pw-desc pw-weekly", text: t("podWeekly") }))];

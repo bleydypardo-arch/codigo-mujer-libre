@@ -116,3 +116,19 @@ html.lobby-on .pw-sheet .pw-name { text-transform: uppercase; letter-spacing: .0
 html.lobby-on .pw-sheet .pod-tag, html.lobby-on .pw-sheet .pw-weekly { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-style: italic; color: #650D29; }
 html.lobby-on .pw-sheet .pw-desc, html.lobby-on .pw-sheet .pw-note, html.lobby-on #podhallCard .ph-sub { font-family: Inter, Arial, sans-serif; font-weight: 400; color: #302B2A; }
 html.lobby-on .hl-soon h2 { font: 600 24px/1.1 "Cormorant Garamond", Georgia, serif; text-transform: uppercase; letter-spacing: .06em; color: #800F32; }
+
+/* botón ESCÚCHALO AQUÍ: micrófono antiguo en movimiento (sin círculo dorado) */
+html.lobby-on #podhallCard .ph-btn-ico { background: none; box-shadow: none; width: 44px; height: 44px; padding: 0; }
+html.lobby-on #podhallCard .ph-btn-ico .pod-mic-svg, html.lobby-on #podhallCard .ph-btn-ico .pod-mic-svg.small { width: 44px; height: 44px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
+/* video: marco limpio, sin texto encima */
+.pw-vid-soon { background: linear-gradient(135deg, #5A1F3A, #2A1A22) !important; border: 1px solid rgba(197,164,106,.6); margin-bottom: 8px !important; }
+.pw-vid-soon img, .pw-vid-soon small { display: none !important; }
+/* "Muy pronto" más junto */
+html.lobby-on .pw-sheet .pw-soon { gap: 6px; padding-top: 0; }
+html.lobby-on .pw-sheet .pw-soon .pod-mic.big { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+html.lobby-on .pw-sheet .pw-ep-t { font-size: 24px; line-height: 1.05; margin: 2px 0 0; }
+html.lobby-on .pw-sheet .pw-desc { font-size: 13.5px; line-height: 1.4; margin: 0 0 6px; }
+html.lobby-on .pw-sheet .pw-topics { gap: 5px; margin: 2px 0 6px; }
+html.lobby-on .pw-sheet .pod-chip { padding: 4px 9px; font-size: 10px; }
+html.lobby-on .pw-sheet .pw-weekly { margin: 0; font-size: 17px; line-height: 1.2; }
+html.lobby-on .pw-sheet .pw-head { padding-bottom: 6px; }
