@@ -144,6 +144,8 @@ function build() {
   page.innerHTML = '<div class="page-back"><button type="button" class="back-btn" data-go="home"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>';
   root = mk("hl-root"); stage = mk("hl-stage");
   const img = new Image(); img.src = "lobby/hall.webp?v=20261029t"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
+  if (window.CMLScene) window.CMLScene.apply(stage, { src: "lobby/hall.webp?v=20261029t", W, H, sea: [440, 622, 180, 76],
+    boats: [[466, 644, 30, 34], [518, 662, 38, 46]], fire: [474, 792, 82, 52], sail: [[455, 690, 9, 150, 80], [585, 665, 8, -120, 100]] });
   SIGNS.forEach(sg => {
     const w = 540, h = 170;
     const n = mk("hl-sign" + (sg.badge ? " has-badge" : sg.img ? " has-ico" : ""), (sg.badge ? BADGE[sg.badge] : sg.img ? '<img class="hl-ico ' + sg.img + '" src="lobby/ic-' + sg.img + '.webp?v=20261029t" alt="">' : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');

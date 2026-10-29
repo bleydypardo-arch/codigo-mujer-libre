@@ -136,6 +136,11 @@ function build() {
   root = mk(""); root.id = "lobby"; root.setAttribute("role", "region"); root.setAttribute("aria-label", "Lobby");
   stage = mk("lb-stage");
   const img = new Image(); img.src = "lobby/home.webp?v=20261028b"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
+  if (window.CMLScene) window.CMLScene.apply(stage, { src: "lobby/home.webp?v=20261028b", W, H,
+    sea: [322, 384, 368, 86], boats: [[418, 408, 34, 36], [508, 414, 40, 46], [572, 412, 30, 32]], fire: [508, 458, 80, 56],
+    sail: [[340, 428, 11, 300, 70], [650, 440, 9, -280, 90]],
+    glows: [[270, 857, 22], [418, 1030, 24], [660, 1030, 24], [825, 855, 22], [10, 805, 18], [1085, 805, 18]],
+    sway: [[392, 846, 290, 206]] });
 
   // saludo y marca
   const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club.webp?v=20261028m" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
@@ -156,6 +161,11 @@ function build() {
   for (let i = 0; i < 5; i++) { const s = mk("", null, "i"); s.style.left = (14 + i * 15) + "px"; s.style.top = (46 + (i % 2) * 14) + "px"; s.style.animationDelay = (i * 0.9) + "s"; box.appendChild(s); }
   box.addEventListener("click", () => { if (!openSheet("homeCodeWeek")) openSheet("codeCard"); }); stage.appendChild(box);
   box.appendChild(mk("lb-tap", '<svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10l5.2 1.3A2.5 2.5 0 0 1 19 13.7V16c0 3-2 5-5 5h-2.2c-1.6 0-2.7-.7-3.6-2L4.6 14.8a1.4 1.4 0 0 1 2-2L9 14.6z"/></svg>'));
+
+  // orquídea de la mesa: se toca y entrega el mensaje del día
+  const orq = place(mk("lb-abs lb-orq", "<i></i><i></i><i></i>", "button"), 392, 846, 290, 206); orq.type = "button";
+  orq.setAttribute("aria-label", "Tu Código Hoy"); orq.addEventListener("click", () => { orq.classList.remove("pop"); void orq.offsetWidth; orq.classList.add("pop"); openSheet("codeCard"); });
+  orq.appendChild(mk("lb-tap", '<svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10l5.2 1.3A2.5 2.5 0 0 1 19 13.7V16c0 3-2 5-5 5h-2.2c-1.6 0-2.7-.7-3.6-2L4.6 14.8a1.4 1.4 0 0 1 2-2L9 14.6z"/></svg>')); stage.appendChild(orq);
 
   // sobre (Hablemos)
   const env = place(mk("lb-abs lb-pc", '<div class="lb-env"><svg viewBox="0 0 100 70"><rect x="6" y="14" width="88" height="52" rx="5" fill="#fbe3e8" stroke="#e8a9ba" stroke-width="2"/><path d="M6 18l44 30 44-30" fill="#f7cdd7" stroke="#e8a9ba" stroke-width="2"/><g class="lb-heart"><path d="M50 52c-9-6-12-10-12-14a6 6 0 0 1 12-1 6 6 0 0 1 12 1c0 4-3 8-12 14z" fill="#d6455f" transform="translate(0 -6)"/></g></svg></div><span></span>', "button"), 262, 1028, 126); env.type = "button";
