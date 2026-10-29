@@ -54,3 +54,37 @@ html.lobby-on #matcha .mx-hero-full { margin: 0; width: 100%; border-radius: 22p
 html.lobby-on #matcha .mx-photo, html.lobby-on #matcha .mx-photo.art { aspect-ratio: 3 / 2; object-fit: cover; }
 html.lobby-on #matcha .mx-photo.art { aspect-ratio: 3 / 1.15; }
 html.lobby-on #matcha .mx-hero-full { width: calc(100% - 32px); margin: 0 16px 14px; }
+/* compacto: toda la página en ~2 pantallas */
+html.lobby-on #matcha .mx-hero-full { margin-bottom: 10px; }
+html.lobby-on #matcha .ma-bar-btn.mx-bar { margin: 0 0 10px; padding: 11px 14px 11px 16px; }
+html.lobby-on #matcha .mx-bar .mb-go { width: 36px; height: 36px; font-size: 18px; }
+html.lobby-on #matchaBody .mx-keep { margin-bottom: 10px; }
+html.lobby-on #matcha .mx-wrap { margin: 0 0 10px; }
+html.lobby-on #matcha .mx-card { padding: 14px; gap: 9px; }
+html.lobby-on #matcha .mx-h2, html.lobby-on #matcha .mx-h2.big { font-size: 23px; line-height: 1.04; }
+html.lobby-on #matcha .mx-ptxt { gap: 4px; }
+html.lobby-on #matcha .mx-k { font-size: 10px; }
+html.lobby-on #matcha .mx-d { font-size: 13px; line-height: 1.35; }
+html.lobby-on #matcha .mx-ico { width: 38px; height: 38px; }
+html.lobby-on #matcha .mx-ico svg { width: 20px; height: 20px; }
+html.lobby-on #matcha .mx-photo { aspect-ratio: 16 / 6; border-radius: 14px; }
+html.lobby-on #matcha .mx-photo.art { aspect-ratio: 16 / 4.2; }
+html.lobby-on #matcha .mx-btn { min-height: 42px; font-size: 12px; }
+html.lobby-on #matcha .mx-btn i { width: 30px; height: 30px; }
+html.lobby-on #matcha .mx-close { margin: 0; padding: 14px 14px 0; }
+html.lobby-on #matcha .mx-quote { font-size: 19px; line-height: 1.15; max-width: none; }
+html.lobby-on #matcha .mx-cups { width: calc(100% + 28px); margin: 10px -14px 0; aspect-ratio: 16 / 6.2; object-fit: cover; object-position: center 62%; }
+html.lobby-on #matcha .mx-photo { aspect-ratio: 16 / 4.6; }
+html.lobby-on #matcha .mx-photo.art { aspect-ratio: 16 / 3; }
+html.lobby-on #matcha .mxc-cre .mx-d { display: none; }
+html.lobby-on #matcha .mx-cups { aspect-ratio: 16 / 5; }
+html.lobby-on #matcha .mx-quote { font-size: 17px; }
+html.lobby-on #matchaBody .rc-card .rc-title { font-size: 22px !important; line-height: 1.05 !important; }
+html.lobby-on #matchaBody .rc-card .rc-teaser, html.lobby-on #matchaBody .rc-card .rc-text { font-size: 13px !important; line-height: 1.35 !important; }
+html.lobby-on #matchaBody .rc-card { padding-top: 14px !important; padding-bottom: 12px !important; }
+html.lobby-on #matcha .mx-hero-full { margin-bottom: 8px; }
+html.lobby-on #matcha .mxc-plan .mx-d { display: none; }
+html.lobby-on #matcha .mx-photo { aspect-ratio: 16 / 4; }
+html.lobby-on #matcha .mx-photo.art { aspect-ratio: 16 / 2.6; }
+html.lobby-on #matcha .mx-cups { aspect-ratio: 16 / 4.2; }
+html.lobby-on #matcha .mx-card { gap: 8px; }
