@@ -232,8 +232,18 @@ function build() {
   const sp = place(mk("lb-abs lb-sp", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg><b></b>', "button"), 290, 1368, 520, 54); sp.type = "button";
   sp.querySelector("b").textContent = t("lbSpaBtn"); sp.addEventListener("click", () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); });
   root.appendChild(stage); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) {
-    root.__minFoot = 76; window.CMLScene.fill(root, "home");
-    const dock = mk("lb-dock", '<button type="button" class="lb-dh"><span class="lb-dhm"></span><span class="lb-dht"><small></small><b></b></span><span class="lb-dha">›</span></button><button type="button" class="lb-ds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg><b></b></button>');
+    root.__minFoot = 60; window.CMLScene.fill(root, "home");
+    const SPA_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg>';
+    const dock = mk("lb-dock", '<div class="lb-drow"><button type="button" class="lb-dh"><span class="lb-dht"><small></small><b></b></span><span class="lb-dha">›</span></button><button type="button" class="lb-ds">' + SPA_SVG + '<b></b></button></div>' +
+      '<div class="lb-qa"><div class="lb-qah"><span class="lb-qat"></span></div><div class="lb-qag">' +
+      [["matcha", "matcha-cup.jpg"], ["rest", "lobby/hall.webp"], ["well", "lobby/spa.webp"], ["trip", "travel-experiences.jpg"]].map(x => '<button type="button" class="lb-qi" data-q="' + x[0] + '"><i style="background-image:url(' + x[1] + ')"></i><span></span></button>').join("") + '</div></div>' +
+      '<button type="button" class="lb-gx"><i style="background-image:url(travel-experiences.jpg)"></i><span class="lb-gxt"><small></small><b></b><em></em></span><span class="lb-gxb"></span></button>' +
+      '<button type="button" class="lb-adb"><span class="lb-ad1"></span><span class="lb-ad2"></span></button>');
+    const goTrip = () => { if (window.CMLRedesign && window.CMLRedesign.paintTravel) window.CMLRedesign.paintTravel(); C.showPage("travel"); if (window.CMLExp && window.CMLExp.seaPlay) window.CMLExp.seaPlay(); };
+    const QGO = { matcha: () => { if (window.CMLHall && window.CMLHall.enterBar) window.CMLHall.enterBar(); }, rest: () => C.showEventsCat("dining"), well: () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); }, trip: goTrip };
+    dock.querySelectorAll(".lb-qi").forEach(b => b.addEventListener("click", () => QGO[b.dataset.q]()));
+    dock.querySelector(".lb-gx").addEventListener("click", goTrip);
+    dock.querySelector(".lb-adb").addEventListener("click", () => C.showEventsCat("events"));
     dock.querySelector(".lb-dh").addEventListener("click", () => { document.dispatchEvent(new CustomEvent("cml:hall")); if (window.CMLHall && window.CMLHall.open) window.CMLHall.open(); else seeAll("events"); });
     dock.querySelector(".lb-ds").addEventListener("click", () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); });
     root.__foot.appendChild(dock); setTimeout(labels, 0);
@@ -259,7 +269,10 @@ function labels() {
   stage.querySelector(".lb-plq").setAttribute("aria-label", t("lbCode"));
   const pcs = stage.querySelectorAll(".lb-pc"); pcs[0].querySelector("span").textContent = t("lbTalk"); pcs[0].setAttribute("aria-label", t("lbTalk")); pcs[1].querySelector("span").textContent = t("lbDyk"); pcs[1].setAttribute("aria-label", t("lbDyk"));
   const dk = document.querySelector(".lb-dock");
-  if (dk) { dk.querySelector(".lb-dh small").textContent = t("lbExploreK"); dk.querySelector(".lb-dh b").textContent = t("lbExploreT"); dk.querySelector(".lb-dh").setAttribute("aria-label", t("lbExploreK") + " " + t("lbExploreT")); dk.querySelector(".lb-ds b").textContent = t("lbSpaBtn"); }
+  if (dk) { dk.querySelector(".lb-dh small").textContent = t("lbExploreK"); dk.querySelector(".lb-dh b").textContent = t("lbExploreT"); dk.querySelector(".lb-dh").setAttribute("aria-label", t("lbExploreK") + " " + t("lbExploreT")); dk.querySelector(".lb-ds b").textContent = t("lbSpaBtn");
+    dk.querySelector(".lb-qat").textContent = t("lbQa"); const qn = { matcha: "lbQMatcha", rest: "lbQRest", well: "lbQWell", trip: "lbQTrip" }; dk.querySelectorAll(".lb-qi").forEach(b => { b.querySelector("span").textContent = t(qn[b.dataset.q]); });
+    dk.querySelector(".lb-gx small").textContent = t("lbGxK"); dk.querySelector(".lb-gx b").textContent = t("lbGxT"); dk.querySelector(".lb-gx em").textContent = t("lbGxS"); dk.querySelector(".lb-gxb").textContent = t("lbGxB");
+    dk.querySelector(".lb-ad1").textContent = t("lbAd1"); dk.querySelector(".lb-ad2").textContent = t("lbAd2"); }
 }
 function paint() {
   if (!built) return; labels(); paintHello();
@@ -273,7 +286,7 @@ function start() {
 }
 function init() {
   C = window.CML; if (!C) return;
-  C.addStrings(ES, EN); C.addStrings({ lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Bienvenida", lbTvSpa: "Spa y bienestar", lbTvExp: "Experiencia", lbTvPromo: "Promoción", lbTvHappy: "Happy hour", lbTvRest: "Restaurante", lbTvAll: "Ver todos" }, { lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Welcome", lbTvSpa: "Spa & wellness", lbTvExp: "Experience", lbTvPromo: "Promotion", lbTvHappy: "Happy hour", lbTvRest: "Restaurant", lbTvAll: "See all" });
+  C.addStrings(ES, EN); C.addStrings({ lbQa: "Accesos rápidos", lbQMatcha: "Matcha & Café", lbQRest: "Restaurantes", lbQWell: "Bienestar", lbQTrip: "Viajes & Retiros", lbGxK: "Nuestra próxima", lbGxT: "Gran experiencia", lbGxS: "Dos veces al año nos reunimos para vivir algo inolvidable.", lbGxB: "Ver próximos viajes", lbAdH: "Aliadas y promociones", lbAd1: "Tu negocio aquí", lbAd2: "Pauta con nosotras y llega a todas las mujeres del Club", lbTag: "Tu vida cambia cuando descubres tu propósito.", lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Bienvenida", lbTvSpa: "Spa y bienestar", lbTvExp: "Experiencia", lbTvPromo: "Promoción", lbTvHappy: "Happy hour", lbTvRest: "Restaurante", lbTvAll: "Ver todos" }, { lbQa: "Quick access", lbQMatcha: "Matcha & Café", lbQRest: "Restaurants", lbQWell: "Wellness", lbQTrip: "Trips & Retreats", lbGxK: "Our next", lbGxT: "Great experience", lbGxS: "Twice a year we gather to live something unforgettable.", lbGxB: "See upcoming trips", lbAdH: "Partners & promotions", lbAd1: "Your business here", lbAd2: "Advertise with us and reach every woman in the Club", lbTag: "Your life changes when you discover your purpose.", lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Welcome", lbTvSpa: "Spa & wellness", lbTvExp: "Experience", lbTvPromo: "Promotion", lbTvHappy: "Happy hour", lbTvRest: "Restaurant", lbTvAll: "See all" });
   if (!document.documentElement.classList.contains("lobby-on")) return;
   build(); paint(); start();
   document.addEventListener("cml:session", () => setTimeout(paint, 60));

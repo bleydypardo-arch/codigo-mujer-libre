@@ -281,7 +281,7 @@ html.lobby-on nav button.active small { color: #800F32; font-weight: 800; }
 html.lobby-on nav button[data-page="admin"] .ni { background: linear-gradient(180deg, #1F3D2D, #16301F); color: #F2DDB0; border-color: #D9B872; }
 
 html.lobby-on .lb-greet::before { content: attr(data-k); display: block; margin-bottom: calc(var(--inv) * 4px); font: 700 calc(var(--inv) * 10.5px)/1 Inter, Arial, sans-serif; letter-spacing: .36em; text-transform: uppercase; color: #8A6A2E; text-align: center; padding-left: .36em; text-shadow: 0 0 calc(var(--inv) * 8px) rgba(255,255,255,.95); }
-html.lobby-on .lb-greet::after { content: ""; position: absolute; left: -22%; right: -22%; top: -70%; bottom: -60%; z-index: -1; background: radial-gradient(ellipse at 50% 50%, rgba(255,250,244,.92) 0%, rgba(255,246,236,.7) 45%, rgba(255,246,236,0) 72%); pointer-events: none; }
+html.lobby-on .lb-greet::after { content: ""; position: absolute; left: -22%; right: -22%; top: -45%; bottom: -60%; z-index: -1; background: radial-gradient(ellipse at 50% 50%, rgba(255,250,244,.92) 0%, rgba(255,246,236,.7) 45%, rgba(255,246,236,0) 72%); pointer-events: none; }
 html.lobby-on #viewAsBar > span { flex: none; font-size: 8.5px !important; letter-spacing: .12em !important; }
 html.lobby-on #viewAsBar select { width: 190px !important; max-width: 190px !important; min-width: 0 !important; }
 html.lobby-on nav:has(button:nth-child(7)) small { font-size: 7.5px; letter-spacing: .02em; }
@@ -346,3 +346,73 @@ html.lobby-on .lb-greet { font-size: calc(var(--inv) * 32px); }
 .lb-tvn { font-size: calc(var(--inv) * 10px); white-space: nowrap; display: block; overflow: hidden; text-overflow: ellipsis; }
 .lb-tva { padding: calc(var(--inv) * 3.5px) 0; font-size: calc(var(--inv) * 6.5px); }
 .lb-tvp { min-height: calc(var(--inv) * 60px); }
+
+/* dock del lobby v2: Hall a todo el ancho + fila Spa / Tienda / Viajes */
+.lb-dock { flex-direction: column; gap: 10px; padding: 14px 16px 6px; }
+.lb-dock .lb-dh { flex: none; width: 100%; min-height: 64px; padding: 0 14px 0 22px; justify-content: space-between; }
+.lb-dock .lb-dht { align-items: flex-start; gap: 4px; }
+.lb-dock .lb-dht small { font-size: 9px; }
+.lb-dock .lb-dht b { font-size: 21px; letter-spacing: .04em; }
+.lb-dock .lb-dha { width: 32px; height: 32px; font-size: 22px; }
+.lb-drow { display: flex; gap: 10px; }
+.lb-drow .lb-ds { flex: 1.5 1 0; min-height: 54px; }
+.lb-drow .lb-ds b { font-size: 11px; letter-spacing: .08em; }
+.lb-dm { flex: 1 1 0; min-width: 0; min-height: 54px; border-radius: 999px; cursor: pointer; background: rgba(255,248,239,.95); border: 1.5px solid #C5A46A; color: #800F32; box-shadow: 0 3px 10px rgba(80,40,20,.18); -webkit-tap-highlight-color: transparent; }
+.lb-dm b { font: 700 11px/1.1 Inter, Arial, sans-serif; letter-spacing: .1em; text-transform: uppercase; }
+.lb-dock { gap: 8px; padding: 10px 16px 4px; }
+.lb-dock .lb-dh { min-height: 56px; }
+.lb-dock .lb-dht b { font-size: 19px; }
+.lb-drow .lb-ds, .lb-dm { min-height: 48px; }
+.lb-dock { gap: 7px; padding: 8px 16px 2px; }
+.lb-dock .lb-dh { min-height: 52px; }
+.lb-dock .lb-dht b { font-size: 18px; }
+.lb-drow .lb-ds, .lb-dm { min-height: 44px; }
+
+/* dock v3: bajo la escena viven Hall+Spa, accesos rápidos, próxima experiencia, pauta de aliadas */
+.fx-foot { height: auto; padding-bottom: 104px; }
+.lb-dock { gap: 12px; padding: 12px 14px 4px; }
+.lb-drow { display: flex; gap: 10px; width: 100%; }
+.lb-dock .lb-dh { flex: 1.45 1 0; width: auto; min-height: 56px; padding: 0 10px 0 16px; }
+.lb-dock .lb-dht b { font-size: 13.5px; letter-spacing: .03em; white-space: nowrap; }
+.lb-dock .lb-dht small { font-size: 8.5px; }
+.lb-dock .lb-dha { width: 24px; height: 24px; font-size: 16px; }
+.lb-drow .lb-ds { flex: 1 1 0; min-height: 56px; padding: 0 8px; }
+.lb-drow .lb-ds b { font-size: 10px; letter-spacing: .06em; }
+.lb-drow .lb-ds svg { width: 20px; height: 20px; }
+.lb-qa, .lb-gx, .lb-ads { width: 100%; box-sizing: border-box; border-radius: 22px; background: rgba(255,250,244,.94); border: 1.5px solid #E5CC9A; box-shadow: 0 4px 14px rgba(110,60,30,.14); }
+.lb-qa { padding: 10px 8px 8px; }
+.lb-qat, .lb-adh { display: block; font: italic 600 18px/1 "Cormorant Garamond", Georgia, serif; color: #8a6a34; text-align: center; margin-bottom: 8px; }
+.lb-qag { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.lb-qi { background: none; border: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.lb-qi i { width: 62px; height: 62px; border-radius: 50%; background-size: cover; background-position: center; border: 2px solid #D9B872; box-shadow: 0 3px 8px rgba(80,40,20,.25); }
+.lb-qi span { font: 700 8.5px/1.15 Inter, Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #6e1230; text-align: center; }
+.lb-gx { position: relative; display: block; height: 118px; padding: 0; overflow: hidden; cursor: pointer; text-align: left; }
+.lb-gx i { position: absolute; inset: 0; background-size: cover; background-position: 70% 50%; }
+.lb-gx::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,248,240,.96) 0%, rgba(255,248,240,.82) 45%, rgba(255,248,240,0) 78%); }
+.lb-gxt { position: absolute; z-index: 1; left: 14px; top: 12px; right: 40%; display: flex; flex-direction: column; gap: 3px; }
+.lb-gxt small { font: 500 8px/1 Inter, Arial, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: #8a6a34; }
+.lb-gxt b { font: 700 19px/1 "Cormorant Garamond", Georgia, serif; color: #6e1230; text-transform: uppercase; }
+.lb-gxt em { font: 400 10px/1.25 Inter, Arial, sans-serif; color: #5a3a30; font-style: normal; }
+.lb-gxb { position: absolute; z-index: 1; left: 14px; bottom: 10px; padding: 7px 14px; border-radius: 999px; background: linear-gradient(180deg, #9a1c44, #800F32); color: #FFF8EF; font: 700 9px/1 Inter, Arial, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+.lb-ads { padding: 10px 10px 10px; }
+.lb-adb { width: 100%; display: flex; flex-direction: column; gap: 4px; align-items: center; text-align: center; padding: 14px 12px; border-radius: 16px; border: 1.5px dashed #C5A46A; background: rgba(255,255,255,.6); cursor: pointer; }
+.lb-ad1 { font: 700 12px/1 Inter, Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #800F32; }
+.lb-ad2 { font: 400 11px/1.3 Inter, Arial, sans-serif; color: #5a3a30; }
+.lb-tag { margin: 2px 8px 0; text-align: center; font: italic 500 16px/1.2 "Cormorant Garamond", Georgia, serif; color: #8a6a34; }
+.lb-dock .lb-dht b { font-size: 11.5px; letter-spacing: 0; }
+.lb-dock .lb-dh { gap: 4px; padding: 0 8px 0 12px; }
+.lb-dock .lb-dha { width: 20px; height: 20px; font-size: 14px; }
+.lb-dock .lb-dht small { letter-spacing: .16em; }
+/* calma y simetría */
+.lb-dock .lb-dh, .lb-drow .lb-ds { flex: 1 1 0; }
+.lb-dock .lb-dht b { font-size: 11px; }
+.lb-adb { width: 100%; box-sizing: border-box; background: rgba(255,250,244,.9); }
+.lb-ad2 { font-size: 10.5px; }
+.lb-qi i { width: 58px; height: 58px; }
+.lb-dock .lb-dha { display: none; }
+.lb-dock .lb-dh { justify-content: center; padding: 0 6px; }
+.lb-dock .lb-dht { align-items: center; }
+.lb-dock .lb-dht b { font-size: 12px; letter-spacing: 0; }
+.lb-gx { height: 128px; }
+.lb-gxt em { display: none; }
+.lb-gxt b { font-size: 22px; }

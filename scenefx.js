@@ -43,7 +43,7 @@ function fill(rootEl, name) {
   if (!rootEl || rootEl.__foot) return; const foot = mk("fx-foot"); foot.setAttribute("aria-hidden", "true"); foot.style.setProperty("--g", "linear-gradient(90deg," + FOOT[name].join(",") + ")");
   rootEl.after(foot); rootEl.__foot = foot;
   const nav = () => { let top = innerHeight; document.querySelectorAll(".quick-btn").forEach(b => { const r = b.getBoundingClientRect(); if (r.height && r.top > innerHeight / 2) top = Math.min(top, r.top); }); return top; };
-  const upd = () => { if (!document.body.contains(rootEl) || !rootEl.offsetParent) return; const r = rootEl.getBoundingClientRect(), bottom = r.bottom + scrollY; foot.style.height = Math.max(rootEl.__minFoot || 0, Math.round(innerHeight - (innerHeight - nav()) - bottom + 6)) + "px"; foot.style.width = r.width + "px"; foot.style.marginLeft = "0px"; foot.style.marginLeft = Math.round(r.left - foot.getBoundingClientRect().left) + "px"; };
+  const upd = () => { if (!document.body.contains(rootEl) || !rootEl.offsetParent) return; const r = rootEl.getBoundingClientRect(), bottom = r.bottom + scrollY; foot.style.minHeight = Math.max(rootEl.__minFoot || 0, Math.round(innerHeight - (innerHeight - nav()) - bottom + 6)) + "px"; foot.style.width = r.width + "px"; foot.style.marginLeft = "0px"; foot.style.marginLeft = Math.round(r.left - foot.getBoundingClientRect().left) + "px"; };
   upd(); setTimeout(upd, 300); setTimeout(upd, 1200); addEventListener("resize", upd); if (window.ResizeObserver) new ResizeObserver(upd).observe(rootEl);
   document.addEventListener("cml:page", () => setTimeout(upd, 60)); rootEl.__upd = upd;
 }

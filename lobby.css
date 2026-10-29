@@ -25,9 +25,9 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 /* saludo + marca (sobre el cielo) */
 .lb-hello { left: 250px; top: 40px; width: 600px; height: 230px; pointer-events: none; text-align: center; color: var(--color-wine); }
 .lb-hello > div { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-.lb-greet { font: var(--weight-heading) calc(var(--inv) * 16px)/1.15 var(--font-editorial); letter-spacing: var(--tracking-heading); text-shadow: 0 0 calc(var(--inv) * 8px) rgba(255,255,255,.9), 0 0 calc(var(--inv) * 3px) rgba(255,255,255,.9); animation: lbGreet 6.4s ease both; transform: translateY(105px); }
+.lb-greet { font: var(--weight-heading) calc(var(--inv) * 16px)/1.15 var(--font-editorial); letter-spacing: var(--tracking-heading); text-shadow: 0 0 calc(var(--inv) * 8px) rgba(255,255,255,.9), 0 0 calc(var(--inv) * 3px) rgba(255,255,255,.9); animation: lbGreet 6.4s ease both; transform: translateY(124px); }
 .lb-greet i { display: inline-block; font-style: normal; opacity: 0; transform: translateX(-70px); animation: lbLetter .55s cubic-bezier(.2,.8,.2,1) forwards; white-space: pre; }
-.lb-brand { transform: translateY(-34px); opacity: 0; animation: lbBrand 1.2s ease 5.3s forwards; }
+.lb-brand { transform: translateY(-52px); opacity: 0; animation: lbBrand 1.2s ease 5.3s forwards; }
 .lb-brand img { display: block; width: 380px; height: auto; filter: drop-shadow(0 2px 6px rgba(255,255,255,.55)); }
 @keyframes lbLetter { to { opacity: 1; transform: none; } }
 @keyframes lbGreet { 0%, 66% { opacity: 1; } 80%, 100% { opacity: 0; } }
