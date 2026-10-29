@@ -27,10 +27,8 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 .lb-hello > div { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .lb-greet { font: var(--weight-heading) calc(var(--inv) * 16px)/1.15 var(--font-editorial); letter-spacing: var(--tracking-heading); text-shadow: 0 0 calc(var(--inv) * 8px) rgba(255,255,255,.9), 0 0 calc(var(--inv) * 3px) rgba(255,255,255,.9); animation: lbGreet 6.4s ease both; }
 .lb-greet i { display: inline-block; font-style: normal; opacity: 0; transform: translateX(-70px); animation: lbLetter .55s cubic-bezier(.2,.8,.2,1) forwards; white-space: pre; }
-.lb-brand { opacity: 0; animation: lbBrand 1.2s ease 4.9s forwards; text-shadow: 0 0 calc(var(--inv) * 8px) rgba(255,255,255,.85); }
-.lb-brand .k { font: 400 calc(var(--inv) * 30px)/1 "Great Vibes", cursive; color: var(--color-wine); }
-.lb-brand .n { font: 700 calc(var(--inv) * 15px)/1.05 var(--font-editorial); letter-spacing: var(--tracking-heading); text-transform: uppercase; margin-top: calc(var(--inv) * -2px); }
-.lb-brand .t { font: 500 calc(var(--inv) * 5.5px)/1 var(--font-ui); letter-spacing: .3em; color: var(--color-soft-black); margin-top: calc(var(--inv) * 5px); }
+.lb-brand { opacity: 0; animation: lbBrand 1.2s ease 4.9s forwards; }
+.lb-brand img { display: block; width: 380px; height: auto; filter: drop-shadow(0 2px 6px rgba(255,255,255,.55)); }
 @keyframes lbLetter { to { opacity: 1; transform: none; } }
 @keyframes lbGreet { 0%, 66% { opacity: 1; } 80%, 100% { opacity: 0; } }
 @keyframes lbBrand { to { opacity: 1; } }
