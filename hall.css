@@ -567,3 +567,12 @@ html.lobby-on .lb-greet { font-size: calc(var(--inv) * 32px); }
 .es-ped .es-bt { height: min(31vh, 250px); } .es-fgb { padding-bottom: 54%; padding-top: 56px; }
 .es-gl .es-chips { gap: 6px; } .es-mini { width: 44px; height: 62px; } .es-cp { width: 28px; height: 28px; } .es-pl { padding: 6px 11px; font-size: 11px; }
 .es-dotp { position: absolute; left: 50%; top: 62%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; border: 2px solid #fff3cf; background: rgba(255,226,150,.35); box-shadow: 0 0 0 0 rgba(255,226,150,.9); animation: lbSpPulse 2.2s ease-in-out infinite; }
+.es-fade { position: absolute; inset: 0; z-index: 19; background: #140b07; opacity: 0; pointer-events: none; transition: opacity .45s; } .es-fade.on { opacity: 1; }
+.es-nv { position: absolute; z-index: 18; top: 38%; width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid rgba(255,232,170,.8); background: rgba(28,16,12,.55); color: #FFF1D6; font-size: 26px; line-height: 1; cursor: pointer; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); } .es-nv.l { left: 8px; } .es-nv.r { right: 8px; } .es-nv[hidden] { display: none; }
+.es-st.sc-ing .es-orc, .es-st.sc-bot .es-orc, .es-st.sc-ing .es-win, .es-st.sc-bot .es-win, .es-st.sc-ing .es-lamp, .es-st.sc-bot .es-lamp, .es-st.sc-ing .es-sp, .es-st.sc-bot .es-sp, .es-st.sc-ing .es-wisp, .es-st.sc-bot .es-wisp { display: none; }
+.es-st.sc-ing .es-hs, .es-st.sc-bot .es-hs { border-radius: 18px; }
+/* tarros e ingredientes: sin cajas, solo un punto de luz; al elegir se ilumina */
+.es-st.sc-ing .es-hs, .es-st.sc-bot .es-hs { border-color: transparent; background: none; box-shadow: none; animation: none; transform: none; }
+.es-st.sc-ing .es-hs::after, .es-st.sc-bot .es-hs::after { content: ""; position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: rgba(255,244,214,.9); box-shadow: 0 0 0 0 rgba(255,232,170,.9), 0 0 10px 2px rgba(255,226,150,.9); animation: lbSpPulse 2.2s ease-in-out infinite; }
+.es-st.sc-ing .es-hs.on, .es-st.sc-bot .es-hs.on { border-color: #fff3cf; background: rgba(255,232,170,.22); box-shadow: 0 0 22px 4px rgba(255,226,150,.95); }
+.es-st.sc-ing .es-hs.on::after, .es-st.sc-bot .es-hs.on::after { content: "✓"; width: 24px; height: 24px; margin: -12px 0 0 -12px; display: grid; place-items: center; background: #F2D9A0; color: #3a1c10; font: 700 14px/1 Inter, Arial, sans-serif; animation: none; }

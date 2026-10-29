@@ -3,8 +3,8 @@
 const C = () => window.CML, L = () => (C() && C().lang() === "en") ? 1 : 0;
 const AR = 1672 / 941, IW = 1672, IH = 941;
 const GEO = [
-  { img: "lobby/esencias.webp?v=20261029a", jars: [[1415,190,"rosa"],[1458,190,"manzanilla"],[1501,190,"jazmin"],[1547,190,"romero"],[1597,190,"menta"],[1648,190,"albahaca"],[1415,250,"peonia"],[1458,250,"orquidea"],[1501,250,"vainilla"],[1547,250,"eucalipto"],[1597,250,"menta"],[1648,250,"naranja"],[1415,335,"jazmin"],[1458,335,"sandalo"],[1501,335,"vainilla"],[1547,335,"canela"],[1597,335,"incienso"],[1648,335,"romero"],[1415,415,"canela"],[1458,415,"lavanda"],[1501,415,"rosa"],[1547,415,"eucalipto"],[1597,415,"manzanilla"],[1648,415,"peonia"],[1415,485,"naranja"],[1458,485,"limon"],[1501,485,"canela"],[1547,485,"albahaca"],[1597,485,"incienso"],[1648,485,"menta"]], jw: 44, jh: 54, cam: { ov: [.5, .66, .36], R: [.915, .36, .27], L: [.1, .36, .3], T: [.5, .74, .5] }, bot: [[70, 190], [150, 205], [215, 300]], z: { z1: [0.6, 9.6, 19.6, 49], z2: [77, 9.6, 22, 55], z3: [21.8, 7.5, 7.8, 45], z4: [28, 50, 44.6, 44], z5: [66, 13, 8, 47] }, orc: [41.5, 38.8, 10.6, 18.6, 46.5, 47.7], win: [56, 22, 8.4, 27], l1: [31, 28], l2: [51.8, 30.5] },
-  { img: "lobby/esencias-en.webp?v=20261029a", jars: [[1493,195,"rosa"],[1547,195,"lavanda"],[1601,195,"manzanilla"],[1654,195,"menta"],[1493,290,"eucalipto"],[1547,290,"jazmin"],[1601,290,"naranja"],[1654,290,"romero"],[1493,395,"canela"],[1547,395,"peonia"],[1601,395,"sandalo"],[1654,395,"albahaca"],[1493,495,"orquidea"],[1547,495,"vainilla"],[1601,495,"incienso"],[1654,495,"limon"]], jw: 50, jh: 62, cam: { ov: [.5, .66, .36], R: [.945, .36, .24], L: [.1, .38, .3], T: [.5, .76, .5] }, bot: [[75, 210], [170, 300], [300, 215]], z: { z1: [0, 4, 23.6, 49], z2: [75.4, 3, 24.6, 57], z3: [24, 8, 7, 35], z4: [26.3, 60.5, 50.8, 35], z5: [67.6, 8, 7, 35] }, orc: [40.7, 42.5, 14.05, 19.1, 47.3, 52.6], win: [61.6, 14, 6, 40], l1: [30.8, 30], l2: [54.3, 30.6] }];
+  { img: "lobby/esencias.webp?v=20261029a", cam: { ov: [.5, .66, .36], R: [.915, .36, .27], L: [.1, .36, .3], T: [.5, .74, .5] }, z: { z1: [0.6, 9.6, 19.6, 49], z2: [77, 9.6, 22, 55], z3: [21.8, 7.5, 7.8, 45], z4: [28, 50, 44.6, 44], z5: [66, 13, 8, 47] }, orc: [41.5, 38.8, 10.6, 18.6, 46.5, 47.7], win: [56, 22, 8.4, 27], l1: [31, 28], l2: [51.8, 30.5] },
+  { img: "lobby/esencias-en.webp?v=20261029a", cam: { ov: [.5, .66, .36], R: [.945, .36, .24], L: [.1, .38, .3], T: [.5, .76, .5] }, z: { z1: [0, 4, 23.6, 49], z2: [75.4, 3, 24.6, 57], z3: [24, 8, 7, 35], z4: [26.3, 60.5, 50.8, 35], z5: [67.6, 8, 7, 35] }, orc: [40.7, 42.5, 14.05, 19.1, 47.3, 52.6], win: [61.6, 14, 6, 40], l1: [30.8, 30], l2: [54.3, 30.6] }];
 const ING = {
   rosa: { c: "#E58FA6", t: ["Rosa", "Rose"], d: ["dulce y aterciopelada", "sweet and velvety"], g: 0 }, lavanda: { c: "#A58BCB", t: ["Lavanda", "Lavender"], d: ["calmante, como un campo al atardecer", "calming, like a field at dusk"], g: 0 },
   jazmin: { c: "#F3E7B8", t: ["Jazmín", "Jasmine"], d: ["cálido, sensual y luminoso", "warm, sensual and radiant"], g: 0 }, orquidea: { c: "#D96FB0", t: ["Orquídea", "Orchid"], d: ["exótica, suave y cremosa", "exotic, soft and creamy"], g: 0 },
@@ -13,7 +13,21 @@ const ING = {
   eucalipto: { c: "#8DB7A8", t: ["Eucalipto", "Eucalyptus"], d: ["aire de bosque tras la lluvia", "forest air after rain"], g: 1 }, albahaca: { c: "#5E8C4A", t: ["Albahaca", "Basil"], d: ["verde, jugosa y viva", "green, juicy and alive"], g: 1 },
   naranja: { c: "#F0A24B", t: ["Naranja", "Orange"], d: ["dulce, soleada y vibrante", "sweet, sunny and vibrant"], g: 1 }, limon: { c: "#F4DD6A", t: ["Limón", "Lemon"], d: ["chispeante y limpio", "sparkling and clean"], g: 1 },
   sandalo: { c: "#C9A073", t: ["Sándalo", "Sandalwood"], d: ["cremoso, profundo y envolvente", "creamy, deep and enveloping"], g: 2 }, vainilla: { c: "#E7C58F", t: ["Vainilla", "Vanilla"], d: ["abrazo cálido y dulce", "a warm, sweet embrace"], g: 2 },
+  calendula: { c: "#F0A020", t: ["Caléndula", "Calendula"], d: ["radiante, solar y cálida", "radiant, sunny and warm"], g: 0 }, hibisco: { c: "#9E1F40", t: ["Hibisco", "Hibiscus"], d: ["vibrante, frutal y sensual", "vibrant, fruity and sensual"], g: 0 },
+  azul: { c: "#5B6FC0", t: ["Flor azul", "Blue flower"], d: ["misteriosa y serena", "mysterious and serene"], g: 0 }, salvia: { c: "#8DA58A", t: ["Salvia", "Sage"], d: ["limpia, sabia y balsámica", "clean, wise and balsamic"], g: 1 },
+  hierbalimon: { c: "#B8C76B", t: ["Hierba limón", "Lemongrass"], d: ["cítrica, verde y alegre", "citrusy, green and joyful"], g: 1 }, cardamomo: { c: "#8C8B4A", t: ["Cardamomo", "Cardamom"], d: ["especiado, fresco y elegante", "spiced, fresh and elegant"], g: 2 },
+  pimienta: { c: "#D44B5A", t: ["Pimienta rosa", "Pink pepper"], d: ["chispeante y delicada", "sparkling and delicate"], g: 2 }, jengibre: { c: "#D9B77E", t: ["Jengibre", "Ginger"], d: ["cálido y energizante", "warm and energizing"], g: 2 },
+  anis: { c: "#6B3A22", t: ["Anís estrellado", "Star anise"], d: ["dulce, oscuro y misterioso", "sweet, dark and mysterious"], g: 2 },
   canela: { c: "#B5693B", t: ["Canela", "Cinnamon"], d: ["cálida y especiada, como hogar", "warm and spiced, like home"], g: 2 }, incienso: { c: "#D8CBB0", t: ["Incienso", "Frankincense"], d: ["sereno, ahumado y sagrado", "serene, smoky and sacred"], g: 2 } };
+const SC = {
+  ing: { img: "lobby/at-ingredientes.webp?v=1", cams: [[.2, .55, .34], [.5, .55, .34], [.8, .55, .34]], items: [
+    [160, 760, 320, 210, "rosa"], [440, 700, 360, 200, "lavanda"], [665, 640, 330, 170, "manzanilla"], [870, 615, 320, 150, "calendula"], [1060, 570, 330, 140, "hibisco"], [1190, 520, 300, 150, "menta"], [1360, 515, 270, 130, "romero"], [1500, 500, 250, 140, "salvia"],
+    [60, 320, 120, 230, "rosa"], [225, 290, 170, 240, "lavanda"], [398, 300, 160, 230, "manzanilla"], [545, 280, 140, 230, "hibisco"], [672, 265, 120, 220, "salvia"], [800, 270, 120, 220, "eucalipto"], [895, 235, 100, 190, "limon"],
+    [500, 495, 330, 110, "naranja"], [200, 575, 300, 120, "limon"], [130, 430, 250, 190, "albahaca"], [380, 420, 190, 160, "menta"], [730, 480, 200, 70, "azul"], [570, 400, 140, 120, "cardamomo"], [692, 395, 110, 110, "pimienta"],
+    [890, 345, 100, 110, "vainilla"], [1040, 375, 120, 100, "jengibre"], [940, 460, 180, 90, "hierbalimon"], [1250, 405, 200, 80, "anis"], [1385, 255, 110, 120, "jazmin"], [1130, 290, 100, 140, "peonia"], [1215, 290, 90, 140, "naranja"], [1300, 270, 80, 110, "canela"]] },
+  bot: { img: "lobby/at-frascos.webp?v=1", cams: [[.22, .55, .36], [.5, .55, .36], [.78, .55, .36]], items: [
+    [65, 500, 120, 210, 1, 1], [230, 420, 150, 230, 1, 0], [395, 380, 150, 200, 1, 1], [530, 400, 110, 170, 0, 0], [640, 420, 110, 260, 2, 0], [735, 380, 110, 150, 0, 2], [245, 660, 160, 160, 0, 1], [365, 480, 150, 190, 2, 2],
+    [130, 600, 160, 200, 1, 2], [500, 570, 140, 200, 1, 0], [770, 560, 110, 220, 2, 0], [1250, 520, 150, 300, 2, 0], [1210, 580, 110, 200, 2, 2], [1450, 560, 130, 230, 0, 0]] } };
 const INT = [{ k: "calma", t: ["Calma", "Calm"] }, { k: "amor", t: ["Amor propio", "Self-love"] }, { k: "energia", t: ["Energía", "Energy"] }, { k: "sueno", t: ["Dormir en paz", "Restful sleep"] }];
 const CAPS = ["#C9A169", "#E8A8B8", "#F1EAE0"];
 const LABS = [["#FBF4E6", "#C9A169", "#5a2a1a"], ["#F8D9E1", "#B7456B", "#6E0C2B"], ["#2a1a22", "#D9B872", "#F6E7C6"]];
@@ -22,12 +36,12 @@ const SP = [[8, 30], [14, 34], [20, 28], [11, 48], [24, 46], [5, 62], [17, 60], 
 const S = {
   es: { title: "Atelier de Esencias", close: "Cerrar", z1: "Perfumería", z2: "Aromaterapia", z3: "Frascos", z4: "Mesa de mezcla", z5: "Utensilios",
     d1: "Perfumería: elige tu frasco y crea tu propio perfume.", d2: "Aromaterapia: toca los tarros para elegir tus flores y hierbas.", d3: "Cada frasco es tuyo. Lo elegirás al terminar la mezcla.", d5: "Morteros, cucharas y goteros de oro para tu mezcla.",
-    intro: "Toca Aromaterapia o Perfumería para empezar a crear", introB: "Empezar", pickB: "Elige un frasco, el que más te guste", pickJ: "Toca los tarros para elegir hasta 4 ingredientes", mix: "Mezclar", more: "Elige al menos 2", mixing: "Mezclando tus notas…", mix2: "Cada flor, una nota de ti",
+    intro: "Toca Aromaterapia o Perfumería para empezar a crear", introB: "Empezar", pickB: "Desliza y toca el frasco que más te guste", pickedB: "Buen gusto. Ahora tus ingredientes", pickJ: "Desliza y toca los ingredientes: hasta 4", mix: "Mezclar", more: "Elige al menos 2", mixing: "Mezclando tus notas…", mix2: "Cada flor, una nota de ti",
     bt: "Dale forma a tu creación", nm: "Escribe su nombre", cap: "Tapa", labw: "Etiqueta", int: "Intención", pk: "Empacar", pkT: "Empácala", pk1: "Caja", pk2: "Lazo", dedic: "Mensaje en la tarjeta (opcional)", dedicDef: "Para ti, con amor", packNext: "Empacar mi esencia", packing: "Empacando con cariño…", packing2: "Tu creación, lista para llevar",
     ready: "Tu esencia está lista", readyP: "Tu perfume está listo", order: "Llévatela · Pedir mi esencia", ordered: "¡Listo! Recibimos tu pedido. Te contactaremos para entregártela.", again: "Crear otra", back: "Atrás", def: "Mi esencia", defP: "Mi perfume", notes: ["Salida", "Corazón", "Fondo"], brand: "CÓDIGO MUJER LIBRE", box: ["Marfil", "Rosa", "Esmeralda", "Noche"], rib: ["Oro", "Rosa", "Champán"], labs: ["Clásica", "Rosa", "Noche"], snd: "Música" },
   en: { title: "Essence Atelier", close: "Close", z1: "Perfumery", z2: "Aromatherapy", z3: "Bottles", z4: "Blending table", z5: "Tools",
     d1: "Perfumery: pick your bottle and create your own perfume.", d2: "Aromatherapy: tap the jars to choose your flowers and herbs.", d3: "Every bottle is yours. You will pick it after blending.", d5: "Golden mortars, spoons and droppers for your blend.",
-    intro: "Tap Aromatherapy or Perfumery to start creating", introB: "Start", pickB: "Pick a bottle, the one you love", pickJ: "Tap the jars to choose up to 4 ingredients", mix: "Blend", more: "Choose at least 2", mixing: "Blending your notes…", mix2: "Every flower, a note of you",
+    intro: "Tap Aromatherapy or Perfumery to start creating", introB: "Start", pickB: "Swipe and tap the bottle you love", pickedB: "Lovely taste. Now your ingredients", pickJ: "Swipe and tap the ingredients: up to 4", mix: "Blend", more: "Choose at least 2", mixing: "Blending your notes…", mix2: "Every flower, a note of you",
     bt: "Shape your creation", nm: "Write its name", cap: "Cap", labw: "Label", int: "Intention", pk: "Pack it", pkT: "Pack it", pk1: "Box", pk2: "Ribbon", dedic: "Card message (optional)", dedicDef: "For you, with love", packNext: "Pack my essence", packing: "Packing with love…", packing2: "Your creation, ready to take home",
     ready: "Your essence is ready", readyP: "Your perfume is ready", order: "Take it home · Order my essence", ordered: "Done! We received your order. We will contact you to deliver it.", again: "Create another", back: "Back", def: "My essence", defP: "My perfume", notes: ["Top", "Heart", "Base"], brand: "CÓDIGO MUJER LIBRE", box: ["Ivory", "Rose", "Emerald", "Midnight"], rib: ["Gold", "Rose", "Champagne"], labs: ["Classic", "Rose", "Night"], snd: "Music" } };
 const s = k => S[L() ? "en" : "es"][k];
@@ -88,10 +102,30 @@ function open() {
   const showNote = t => { note.textContent = t; note.classList.remove("on"); void note.offsetWidth; note.classList.add("on"); };
   const zoneEls = [];
   Object.keys(G.z).forEach(k => { const z = G.z[k], b = mk("es-zone " + k, k === "z4" ? '<span class="es-pill">' + s(k) + '</span>' : '<span class="es-dotp"></span>', "button"); b.type = "button"; b.style.cssText = "left:" + z[0] + "%;top:" + z[1] + "%;width:" + z[2] + "%;height:" + z[3] + "%"; b.addEventListener("click", () => zone(k)); stg.appendChild(b); zoneEls.push(b); });
-  const jarEls = [], botEls = [];
-  G.jars.forEach(j => { const b = hs(j[0] - G.jw / 2, j[1] - G.jh / 2, G.jw, G.jh, "es-jar"); b.dataset.k = j[2]; b.hidden = true; b.addEventListener("click", () => pickJar(j, b)); jarEls.push(b); });
-  G.bot.forEach((p, i) => { const b = hs(p[0] - 32, p[1] - 44, 64, 88, "es-bot"); b.hidden = true; b.addEventListener("click", () => { st.bs = i; tink(); botEls.forEach((e, n) => e.classList.toggle("on", n === i)); showNote(s("pickB")); stepJars(); }); botEls.push(b); });
-  const setVis = (zones, jars, bots) => { zoneEls.forEach(e => e.hidden = !zones); jarEls.forEach(e => e.hidden = !jars); botEls.forEach(e => e.hidden = !bots); };
+  const setVis = zones => zoneEls.forEach(e => e.hidden = !zones);
+  let items = [], camIdx = 1, curScene = "at", dragMoved = false;
+  const cropOf = (img, x, y, w, h) => "background-image:url(" + img + ");background-size:" + (IW / w * 100) + "% " + (IH / h * 100) + "%;background-position:" + ((x - w / 2) / (IW - w) * 100) + "% " + ((y - h / 2) / (IH - h) * 100) + "%";
+  const ingItem = k => SC.ing.items.find(x => x[4] === k);
+  const fade = mk("es-fade"); ov.appendChild(fade);
+  const nvL = mk("es-nv l", "‹", "button"), nvR = mk("es-nv r", "›", "button"); nvL.type = nvR.type = "button"; nvL.hidden = nvR.hidden = true; ov.append(nvL, nvR);
+  const nav = d => { const sc = SC[curScene]; if (!sc) return; camIdx = Math.max(0, Math.min(sc.cams.length - 1, camIdx + d)); place(sc.cams[camIdx]); };
+  nvL.addEventListener("click", () => nav(-1)); nvR.addEventListener("click", () => nav(1));
+  function scene(name, idx) {
+    const apply = () => {
+      curScene = name; stg.classList.remove("sc-at", "sc-ing", "sc-bot"); stg.classList.add("sc-" + name);
+      items.forEach(e => e.remove()); items = []; const sc = SC[name]; const img = name === "at" ? G.img : sc.img; stg.style.backgroundImage = "url(" + img + ")"; bg.style.backgroundImage = "url(" + img + ")";
+      nvL.hidden = nvR.hidden = name === "at"; setVis(name === "at");
+      if (name === "ing") sc.items.forEach(it => { const b = hs(it[0] - it[2] / 2, it[1] - it[3] / 2, it[2], it[3], "es-jar"); b.dataset.k = it[4]; b.addEventListener("click", () => pickIng(it)); items.push(b); });
+      if (name === "bot") sc.items.forEach((it, i) => { const b = hs(it[0] - it[2] / 2, it[1] - it[3] / 2, it[2], it[3], "es-bot"); b.addEventListener("click", () => pickBottle(it, i)); items.push(b); });
+      if (name !== "at") { camIdx = idx == null ? 1 : idx; stg.classList.add("nt"); place(sc.cams[camIdx]); void stg.offsetWidth; stg.classList.remove("nt"); }
+    };
+    if (curScene === name) { if (name !== "at") { camIdx = idx == null ? camIdx : idx; place(SC[name].cams[camIdx]); } return; }
+    fade.classList.add("on"); setTimeout(() => { apply(); setTimeout(() => fade.classList.remove("on"), 60); }, 480);
+  }
+  /* arrastrar para recorrer la mesa */
+  { let d0 = null; cam.addEventListener("pointerdown", e => { if (curScene === "at") return; d0 = { x: e.clientX, fx: curCam[0] }; dragMoved = false; });
+    cam.addEventListener("pointermove", e => { if (!d0) return; const dx = e.clientX - d0.x; if (Math.abs(dx) > 8) { dragMoved = true; stg.classList.add("nt"); const z = VW / (curCam[2] * W0); place([Math.max(.15, Math.min(.85, d0.fx - dx / (W0 * z))), curCam[1], curCam[2]]); } });
+    const up = () => { if (d0) { d0 = null; stg.classList.remove("nt"); } }; cam.addEventListener("pointerup", up); cam.addEventListener("pointercancel", up); cam.addEventListener("click", e => { if (dragMoved) { e.stopPropagation(); e.preventDefault(); dragMoved = false; } }, true); }
   const glass = (...kids) => { gl.replaceChildren(...kids); gl.classList.remove("in"); void gl.offsetWidth; gl.classList.add("in"); };
   const btn = (txt, cls, fn) => { const b = mk("es-b " + (cls || ""), txt, "button"); b.type = "button"; b.addEventListener("click", fn); return b; };
   const chime = () => [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, 2.4, .03, i * .22));
@@ -103,33 +137,38 @@ function open() {
   /* ---- pasos ---- */
   let panT = null; const stopPan = () => { if (panT) { clearInterval(panT); panT = null; } };
   function intro() {
-    st.step = 0; stopPan(); stg.classList.remove("dim"); setVis(true, false, false); const xs = [.3, .5, .7, .5]; let i = 0; const mv = () => { place([xs[i % 4], .66, .36]); i++; }; mv(); panT = setInterval(mv, 6500);
+    st.step = 0; stopPan(); stg.classList.remove("dim"); scene("at"); setVis(curScene === "at"); const xs = [.3, .5, .7, .5]; let i = 0; const mv = () => { place([xs[i % 4], .66, .36]); i++; }; mv(); panT = setInterval(mv, 6500);
     const r = mk("es-chips"); r.append(btn(s("z2"), "", () => zone("z2")), btn(s("z1"), "ghost", () => zone("z1")));
     glass(mk("es-t", s("title")), mk("es-p", s("intro")), r);
   }
   function zone(k) {
     stopPan(); tink(); const d = { z1: "d1", z2: "d2", z3: "d3", z5: "d5" }[k]; if (d) showNote(s(d));
-    if (k === "z1") { st.mode = "perfume"; st.sel = []; stepBottles(); } else if (k === "z2" || k === "z4") { st.mode = "aroma"; if (k === "z2") st.sel = []; stepJars(); }
+    if (k === "z1") { st.mode = "perfume"; st.sel = []; stepBottles(); } else if (k === "z3") { stepBottles(); } else if (k === "z2" || k === "z4") { st.mode = "aroma"; if (k === "z2") st.sel = []; stepJars(); }
   }
-  function stepBottles() { st.step = 1; go("L"); setVis(false, false, true); glass(mk("es-t", s("z1")), mk("es-p", s("pickB"))); }
+  function stepBottles() { st.step = 1; scene("bot", 1); glass(mk("es-t", s("z1")), mk("es-p", s("pickB"))); }
   function stepJars() {
-    st.step = 2; go("R"); setVis(false, true, false); jarEls.forEach(e => e.classList.toggle("on", st.sel.includes(e.dataset.k)));
-    const row = mk("es-chips"); st.sel.forEach(k => { const j = G.jars.find(x => x[2] === k); const c = mk("es-chip", '<i style="' + crop(j[0], j[1], G.jw + 8, G.jh + 8) + '"></i><span>' + ING[k].t[L()] + '</span>'); row.appendChild(c); });
+    st.step = 2; scene("ing", curScene === "ing" ? camIdx : 1); setTimeout(() => items.forEach(e => e.classList.toggle("on", st.sel.includes(e.dataset.k))), curScene === "ing" ? 0 : 700);
+    const row = mk("es-chips"); st.sel.forEach(k => { const j = ingItem(k); const c = mk("es-chip", '<i style="' + cropOf(SC.ing.img, j[0], j[1], Math.min(j[2], 200), Math.min(j[3], 200)) + '"></i><span>' + ING[k].t[L()] + '</span>'); row.appendChild(c); });
     const last = st.sel[st.sel.length - 1];
     const go2 = btn(st.sel.length < 2 ? s("more") : s("mix") + " · " + st.sel.length, "", mixing); go2.disabled = st.sel.length < 2;
     glass(mk("es-p", last ? ING[last].t[L()] + " · " + ING[last].d[L()] : s("pickJ")), row, go2);
   }
-  function pickJar(j, el) {
-    const k = j[2]; tink(); const i = st.sel.indexOf(k);
+  function pickIng(it) {
+    const k = it[4]; tink(); const i = st.sel.indexOf(k);
     if (i >= 0) st.sel.splice(i, 1); else { if (st.sel.length >= 4) st.sel.shift(); st.sel.push(k); }
-    const f = mk("es-fly", "", "i"); f.style.cssText = crop(j[0], j[1], G.jw + 8, G.jh + 8) + ";left:" + (j[0] / IW * 100) + "%;top:" + (j[1] / IH * 100) + "%;width:" + ((G.jw + 8) / IW * 100) + "%;height:" + ((G.jh + 8) / IH * 100) + "%"; stg.appendChild(f); setTimeout(() => f.remove(), 1300);
+    const f = mk("es-fly", "", "i"); f.style.cssText = cropOf(SC.ing.img, it[0], it[1], Math.min(it[2], 200), Math.min(it[3], 200)) + ";left:" + (it[0] / IW * 100) + "%;top:" + (it[1] / IH * 100) + "%;width:" + (Math.min(it[2], 200) / IW * 100) + "%;height:" + (Math.min(it[3], 200) / IH * 100) + "%"; stg.appendChild(f); setTimeout(() => f.remove(), 1300);
+    items.forEach(e => e.classList.toggle("on", st.sel.includes(e.dataset.k)));
     stepJars();
   }
+  function pickBottle(it, i) {
+    st.bs = it[4]; st.cap = it[5]; st.bi = it; tink(); items.forEach((e, n) => e.classList.toggle("on", n === i)); showNote(s("pickedB"));
+    setTimeout(() => { if (st.sel.length >= 2) stepForm(); else stepJars(); }, 900);
+  }
   function mixing() {
-    musicOn(); const cs = cols(); setVis(false, false, false);
+    musicOn(); const cs = cols(); setVis(false); nvL.hidden = nvR.hidden = true;
     const m = mk("es-fg es-mixv", '<div class="es-mt">' + s("mixing") + '</div><div class="es-mf">' + beaker(120) + '</div><div class="es-ms">' + s("mix2") + '</div>');
     m.style.setProperty("--lq", mixc(cs)); const f = m.querySelector(".es-mf");
-    st.sel.forEach((k, ci) => { const j = G.jars.find(x => x[2] === k); for (let n = 0; n < 8; n++) { const p = mk("es-fall"); p.style.cssText = crop(j[0], j[1], 26, 30) + ";left:" + (36 + ((n * 13 + ci * 9) % 28)) + "%;animation-delay:" + (ci * .9 + n * .26).toFixed(2) + "s"; f.appendChild(p); } });
+    st.sel.forEach((k, ci) => { const j = ingItem(k); for (let n = 0; n < 8; n++) { const p = mk("es-fall"); p.style.cssText = cropOf(SC.ing.img, j[0], j[1], Math.min(j[2], 120), Math.min(j[3], 140)) + ";left:" + (36 + ((n * 13 + ci * 9) % 28)) + "%;animation-delay:" + (ci * .9 + n * .26).toFixed(2) + "s"; f.appendChild(p); } });
     for (let n = 0; n < 5; n++) { const w = mk("es-steam"); w.style.cssText = "left:" + (38 + n * 6) + "%;animation-delay:" + (n * .7) + "s"; f.appendChild(w); }
     glass(mk("es-p", s("mix2"))); ov.appendChild(m); const liq = m.querySelector(".es-liq2");
     for (let n = 0; n < 12; n++) tone(500 + Math.random() * 600, .35, .008, n * .38);
@@ -146,7 +185,7 @@ function open() {
     const lb = row(s("labs"), st.lab, t => mk("es-pl", t, "button"), i => { st.lab = i; });
     const it = row(INT, INT.findIndex(i => i.k === st.intent), i => mk("es-pl", i.t[L()], "button"), i => { st.intent = INT[i].k; });
     const inp = mk("es-in", "", "input"); inp.maxLength = 22; inp.placeholder = s("nm"); inp.value = st.name || ""; inp.addEventListener("input", () => { st.name = inp.value; const bt = fg.querySelector(".es-bt"); if (bt) { const n = fg.querySelector(".es-ped"); n.innerHTML = bottle(st.bs, CAPS[st.cap], cs, -34, labOf()); } });
-    setVis(false, false, false); stg.classList.add("dim"); paint();
+    setVis(false); stg.classList.add("dim"); paint();
     const r1 = mk("es-chips es-r1"); bs.childNodes.forEach(n => r1.appendChild(n.cloneNode(true))); 
     glass(inp, bs, cp, lb, it, btn(s("pk"), "", stepPack));
   }
