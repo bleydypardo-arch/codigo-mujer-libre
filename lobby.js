@@ -126,6 +126,8 @@ function tvPool(kind) {
   const ok = p => (p.kind === "event" || p.kind === "wellness" || (C.sideTrip && C.sideTrip(p))) && (!p.event_date || p.event_date >= today);
   const by = {}; cats.forEach(c => by[c] = []);
   plans.filter(ok).forEach(p => { const c = C.eventCategory(p); if (by[c]) by[c].push(p); });
+  const shuf = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  cats.forEach(c => shuf(by[c]));
   cats.forEach(c => by[c].sort((a, b) => (C.activePromo && C.activePromo(a) ? 0 : 1) - (C.activePromo && C.activePromo(b) ? 0 : 1)));
   const out = []; for (let i = 0, more = true; more; i++) { more = false; cats.forEach(c => { if (by[c][i]) { out.push(by[c][i]); more = true; } }); }
   return out;
@@ -143,9 +145,12 @@ function tvSlide(p, i) {
   const sl = mk("lb-tvs" + (i ? "" : " on")), u = tvImg(p), c = C.eventCategory(p);
   const ph = mk("lb-tvp"); sl.appendChild(ph);
   const emoji = c === "dining" ? "🍽️" : c === "social" ? "🍹" : c === "wellness" ? "🌿" : "✨";
+  sl.__load = () => { if (sl.__ld) return; sl.__ld = 1;
   if (u) { const im = new Image(); im.alt = ""; im.referrerPolicy = "no-referrer"; im.decoding = "async";
     im.addEventListener("error", () => { if (!im.dataset.r && /^https?:/i.test(u)) { im.dataset.r = "1"; im.src = "https://wsrv.nl/?url=" + encodeURIComponent(u.replace(/^https?:\/\//i, "")) + "&w=600&output=jpg"; } else { im.remove(); ph.textContent = emoji; } });
     im.src = u; ph.appendChild(im); } else ph.textContent = emoji;
+  };
+  if (!u) sl.__load();
   const pr = C.activePromo ? C.activePromo(p) : null;
   const tx = mk("lb-tvt"); tx.append(mk("lb-tvk", esc(pr ? "✦ " + pr.promo : tvKicker(p))), mk("lb-tvn", esc(C.pick(p, "title") || "")));
   sl.appendChild(tx); sl.dataset.cat = c; return sl;
@@ -154,13 +159,14 @@ function tvBuild(kind, pool) {
   const tv = mk("lb-tv"); tv.dataset.kind = kind; const wr = mk("lb-tvw");
   pool.forEach((p, i) => wr.appendChild(tvSlide(p, i)));
   wr.appendChild(mk("lb-tvb", "<i></i>")); tv.appendChild(wr); tv.appendChild(mk("lb-tva", esc(t("lbTvAll")) + " ›"));
-  tv.__n = pool.length; tv.__i = 0;
+  tv.__n = pool.length; tv.__i = Math.floor(Math.random() * pool.length);
+  { const l = wr.querySelectorAll(".lb-tvs"); l.forEach(x => x.classList.remove("on")); l[tv.__i].classList.add("on"); l[tv.__i].__load(); l[(tv.__i + 1) % l.length].__load(); }
   tv.addEventListener("click", e => { e.stopPropagation(); const sl = tv.querySelectorAll(".lb-tvs")[tv.__i]; const c = sl && sl.dataset.cat; C.showEventsCat(c === "events" ? "events" : c || "all"); });
   return tv;
 }
 function tvStep() {
   stage.querySelectorAll(".lb-tv").forEach(tv => {
-    if (tv.__n < 2) return; const l = tv.querySelectorAll(".lb-tvs"); l[tv.__i].classList.remove("on"); tv.__i = (tv.__i + 1) % tv.__n; l[tv.__i].classList.add("on");
+    if (tv.__n < 2) return; const l = tv.querySelectorAll(".lb-tvs"); l[tv.__i].classList.remove("on"); tv.__i = (tv.__i + 1) % tv.__n; l[tv.__i].classList.add("on"); l[tv.__i].__load(); l[(tv.__i + 1) % tv.__n].__load();
     const b = tv.querySelector(".lb-tvb i"); if (b) { b.style.animation = "none"; void b.offsetWidth; b.style.animation = ""; }
   });
 }
