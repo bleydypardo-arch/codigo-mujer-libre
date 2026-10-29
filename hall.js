@@ -16,7 +16,7 @@ C.addStrings({
   hlPod: "Entre Nosotras", hlPodS: "Podcast · Historias que inspiran",
   hlAmilu: "Mundo Amilú", hlAmiluS: "Juego virtual",
   hlTiendaHint: "Desliza para recorrer la tienda", hlSoonT: "Muy pronto", hlGrowBanner: "🚧 En construcción · Muy pronto", hlGrowSoon: "Crece y Florece está en construcción: lo estamos reconstruyendo para ti. Muy pronto.", hlBoutSoon: "La Tienda de Bienestar abre pronto: piezas con propósito, esencias y cuidado de la piel, elegidas para ti.", hlAmiluSoon: "Mundo Amilú, nuestro juego virtual, abre pronto. Te avisamos.",
-  hlBack: "Volver al lobby"
+  hlBack: "Volver al lobby", hlBackHome: "Inicio", lbSpaBtn: "Spa & Wellness"
 }, {
   hlTitle: "Hall of Experiences", hlT1: "Hall of", hlT2: "Experiences", hlTag: "Discover · Connect · Enjoy",
   hlTravel: "Let's Travel Together", hlTravelS: "Destinations that inspire",
@@ -27,7 +27,7 @@ C.addStrings({
   hlPod: "Between Us", hlPodS: "Podcast · Stories that inspire",
   hlAmilu: "Amilú's World", hlAmiluS: "Virtual game",
   hlTiendaHint: "Swipe to walk through the store", hlSoonT: "Coming soon", hlGrowBanner: "🚧 Under construction · Coming soon", hlGrowSoon: "Grow & Bloom is under construction: we are rebuilding it for you. Coming soon.", hlBoutSoon: "The Wellness Shop opens soon: pieces with purpose, essences and skincare, chosen for you.", hlAmiluSoon: "Amilú's World, our virtual game, opens soon. We'll let you know.",
-  hlBack: "Back to the lobby"
+  hlBack: "Back to the lobby", hlBackHome: "Home", lbSpaBtn: "Spa & Wellness"
 });
 
 const ICON = {
@@ -67,7 +67,7 @@ const ZONES = [
   { k: "amilu",  r: [640,634,108,246], go: () => soon("hlAmilu", "hlAmiluSoon") }
 ];
 
-let page, root, stage, built = false;
+let page, root, stage, built = false, hallDock = null;
 function mk(cls, html, tag) { const n = document.createElement(tag || "div"); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; }
 
 /* homografía: rectángulo (0,0,w,h) → cuadrilátero q  →  matrix3d */
@@ -113,7 +113,7 @@ function paint() {
   stage.querySelector(".hl-door .tt").textContent = t("hlAmilu"); stage.querySelector(".hl-door .ss").textContent = t("hlAmiluS");
   ZONES.forEach(z => { const b = stage.querySelector('.hl-zone[data-k="' + z.k + '"]'); b.setAttribute("aria-label", t("hl" + cap(z.k))); });
   page.querySelector(".back-btn").setAttribute("aria-label", t("hlBack"));
-  fitText();
+  fitText(); if (hallDock && hallDock.__paint) hallDock.__paint();
 }
 const NAMES = { travel: "Travel", bout: "Bout", exp: "Exp", grow: "Grow", matcha: "Matcha", pod: "Pod", amilu: "Amilu" };
 function cap(k) { return NAMES[k]; }
@@ -166,13 +166,15 @@ function build() {
     b.appendChild(mk("hl-tap", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10l5.2 1.3A2.5 2.5 0 0 1 19 13.7V16c0 3-2 5-5 5h-2.2c-1.6 0-2.7-.7-3.6-2L4.6 14.8a1.4 1.4 0 0 1 2-2L9 14.6z"/></svg>'));
     b.addEventListener("click", z.go); stage.appendChild(b);
   });
-  root.appendChild(stage); page.appendChild(root); built = true; if (window.CMLScene) window.CMLScene.fill(root, "hall");
+  root.appendChild(stage); page.appendChild(root); built = true; if (window.CMLScene) { window.CMLScene.fill(root, "hall"); hallDock = window.CMLScene.dock(root, [
+    { cls: "ghost", label: () => t("hlBackHome"), go: () => C.showPage("home") },
+    { cls: "wine", label: () => t("lbSpaBtn"), go: () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); } }]); }
   fit(); if (window.ResizeObserver) new ResizeObserver(() => { fit(); }).observe(root); else addEventListener("resize", fit);
   paint();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitText);
 }
 function open() { build(); C.showPage("hall", false); fit(); paint(); setTimeout(() => { fit(); fitText(); }, 120); window.scrollTo({ top: 0 }); }
-window.CMLHall = { open, paint, enterBar };
+window.CMLHall = { open, paint, enterBar, leaveBar };
 function paintTienda() {
   const host = document.getElementById("tienda"); if (!host || !host.classList.contains("active")) return;
   const en = C.lang() === "en";

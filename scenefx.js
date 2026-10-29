@@ -28,24 +28,31 @@ function apply(stage, o) {
 }
 /* relleno bajo la escena: la misma foto en espejo que se difumina hacia el fondo, para que ninguna pantalla muestre una franja vacía */
 const FOOT = {"home": ["#d4a47d", "#cda07e", "#ddb290", "#dab08f", "#e0b695", "#c2997c", "#c69b7c"], "hall": ["#4b3918", "#d0966a", "#e3b99f", "#c0a6a9", "#d8a78a", "#b37d5f", "#453416"], "spa": ["#3f3011", "#745138", "#ad7d5f", "#9a6138", "#9b653f", "#c88f69", "#e0a16e"]};
-/* escala: llena el alto disponible (hasta 6 % más grande que el ancho) y deja deslizar de lado lo que sobra */
+/* escala: llena el alto disponible (sin cortar los lados que el ancho) y deja deslizar de lado lo que sobra */
 function navTop() { let top = innerHeight; document.querySelectorAll("nav button").forEach(b => { const r = b.getBoundingClientRect(); if (r.height && r.top > innerHeight / 2) top = Math.min(top, r.top); }); return top; }
 function fit(root, stage, W, H) {
   const w = root.clientWidth || 390, s0 = w / W;
   let sz = stage.parentNode; if (!sz || !sz.classList.contains("fx-pan")) { sz = mk("fx-pan"); stage.parentNode && stage.parentNode.insertBefore(sz, stage); sz.appendChild(stage); }
   const top = root.getBoundingClientRect().top + scrollY, avail = navTop() - top - 4;
-  const s = Math.min(Math.max(s0, avail / H), s0 * 1.06);
+  const s = Math.min(Math.max(s0, avail / H), s0 * 1.0);
   stage.style.transform = "scale(" + s + ")"; sz.style.width = Math.round(W * s) + "px"; sz.style.height = Math.round(H * s) + "px"; root.style.height = Math.round(H * s) + "px";
   if (root.__w !== w || root.__s !== s) { root.__w = w; root.__s = s; root.scrollLeft = Math.max(0, (W * s - w) / 2); }
   return s;
 }
 function fill(rootEl, name) {
-  if (!rootEl || rootEl.__foot) return; const foot = mk("fx-foot"); foot.setAttribute("aria-hidden", "true"); foot.style.backgroundImage = "linear-gradient(90deg," + FOOT[name].join(",") + ")";
+  if (!rootEl || rootEl.__foot) return; const foot = mk("fx-foot"); foot.setAttribute("aria-hidden", "true"); foot.style.setProperty("--g", "linear-gradient(90deg," + FOOT[name].join(",") + ")");
   rootEl.after(foot); rootEl.__foot = foot;
   const nav = () => { let top = innerHeight; document.querySelectorAll(".quick-btn").forEach(b => { const r = b.getBoundingClientRect(); if (r.height && r.top > innerHeight / 2) top = Math.min(top, r.top); }); return top; };
-  const upd = () => { if (!document.body.contains(rootEl) || !rootEl.offsetParent) return; const r = rootEl.getBoundingClientRect(), bottom = r.bottom + scrollY; foot.style.height = Math.max(0, Math.round(innerHeight - (innerHeight - nav()) - bottom + 6)) + "px"; foot.style.width = r.width + "px"; foot.style.marginLeft = "0px"; foot.style.marginLeft = Math.round(r.left - foot.getBoundingClientRect().left) + "px"; };
+  const upd = () => { if (!document.body.contains(rootEl) || !rootEl.offsetParent) return; const r = rootEl.getBoundingClientRect(), bottom = r.bottom + scrollY; foot.style.height = Math.max(rootEl.__minFoot || 0, Math.round(innerHeight - (innerHeight - nav()) - bottom + 6)) + "px"; foot.style.width = r.width + "px"; foot.style.marginLeft = "0px"; foot.style.marginLeft = Math.round(r.left - foot.getBoundingClientRect().left) + "px"; };
   upd(); setTimeout(upd, 300); setTimeout(upd, 1200); addEventListener("resize", upd); if (window.ResizeObserver) new ResizeObserver(upd).observe(rootEl);
   document.addEventListener("cml:page", () => setTimeout(upd, 60)); rootEl.__upd = upd;
 }
-window.CMLScene = { apply, fill, fit };
+function dock(rootEl, items) {
+  if (!rootEl || !rootEl.__foot) return null; rootEl.__minFoot = 78;
+  const d = mk("lb-dock");
+  items.forEach(it => { const b = document.createElement("button"); b.type = "button"; b.className = "lb-dbtn " + (it.cls || ""); b.addEventListener("click", it.go); d.appendChild(b); });
+  d.__paint = () => d.querySelectorAll(".lb-dbtn").forEach((b, i) => { b.textContent = items[i].label(); });
+  d.__paint(); rootEl.__foot.appendChild(d); if (rootEl.__upd) rootEl.__upd(); return d;
+}
+window.CMLScene = { apply, fill, fit, dock };
 })();

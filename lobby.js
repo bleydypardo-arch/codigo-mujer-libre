@@ -11,13 +11,13 @@ try {
 
 const ES = {
   lbExploreK: "Explora el", lbExploreT: "Hall de Experiencias", lbCode: "Tu Código Hoy", lbCodeWeek: "Escoge tu código de la semana", lbCodeWeekAria: "Tu código esta semana",
-  lbEvents: "Eventos Especiales", lbRecs: "Nuestra Recomendación", lbTalk: "Hablemos", lbDyk: "¿Sabías que?", lbSeeAll: "Ver todo", lbClose: "Cerrar",
+  lbEvents: "Eventos Especiales", lbRecs: "Recomendados", lbTalk: "Hablemos", lbDyk: "¿Sabías que?", lbSeeAll: "Ver todo", lbClose: "Cerrar",
   lbBub1: "Toca la placa y ve tu mensaje de hoy", lbBub2: "Aquí tienes un lugar para ti", lbSoonT: "Pronto, un nuevo plan", lbSoonD: "Estamos preparando algo especial para ti.",
   lbHappy: "Happy Hour", lbDine: "Restaurante", lbWell: "Bienestar", lbEvent: "Evento", lbSocialK: "Social", lbWellPromo: "Bienestar", lbWellPromoS: "y promociones", lbSocial: "Social", lbSocialS: "planes con amigas", lbTours: "Tours y experiencias", lbToursS: "tu ciudad", lbRest: "Restaurante", lbHappyH: "Happy Hour", lbWeekS: "de la semana", lbCodeSub: "Mensaje para hoy"
 };
 const EN = {
   lbExploreK: "Explore the", lbExploreT: "Experiences Hall", lbCode: "Your Code Today", lbCodeWeek: "Choose your code of the week", lbCodeWeekAria: "Your code this week",
-  lbEvents: "Special Events", lbRecs: "Our Recommendation", lbTalk: "Let's talk", lbDyk: "Did you know?", lbSeeAll: "See all", lbClose: "Close",
+  lbEvents: "Special Events", lbRecs: "Our picks", lbTalk: "Let's talk", lbDyk: "Did you know?", lbSeeAll: "See all", lbClose: "Close",
   lbBub1: "Tap the plaque for today's message", lbBub2: "A place picked just for you", lbSoonT: "Soon, a new plan", lbSoonD: "We're preparing something special for you.",
   lbHappy: "Happy Hour", lbDine: "Restaurant", lbWell: "Wellness", lbEvent: "Event", lbSocialK: "Social", lbWellPromo: "Wellness", lbWellPromoS: "& promotions", lbSocial: "Social", lbSocialS: "plans with friends", lbTours: "Tours & experiences", lbToursS: "your city", lbRest: "Restaurant", lbHappyH: "Happy Hour", lbWeekS: "of the week", lbCodeSub: "Message for today"
 };
@@ -147,14 +147,13 @@ function tvSlide(p, i) {
     im.addEventListener("error", () => { if (!im.dataset.r && /^https?:/i.test(u)) { im.dataset.r = "1"; im.src = "https://wsrv.nl/?url=" + encodeURIComponent(u.replace(/^https?:\/\//i, "")) + "&w=600&output=jpg"; } else { im.remove(); ph.textContent = emoji; } });
     im.src = u; ph.appendChild(im); } else ph.textContent = emoji;
   const pr = C.activePromo ? C.activePromo(p) : null;
-  const tx = mk("lb-tvt"); tx.append(mk("lb-tvk", esc(tvKicker(p))), mk("lb-tvn", esc(C.pick(p, "title") || "")));
-  const line = pr ? "✦ " + pr.promo : (p.location ? "📍 " + p.location : ""); if (line) tx.appendChild(mk("lb-tvl", esc(line)));
+  const tx = mk("lb-tvt"); tx.append(mk("lb-tvk", esc(pr ? "✦ " + pr.promo : tvKicker(p))), mk("lb-tvn", esc(C.pick(p, "title") || "")));
   sl.appendChild(tx); sl.dataset.cat = c; return sl;
 }
 function tvBuild(kind, pool) {
-  const tv = mk("lb-tv"); tv.dataset.kind = kind;
-  pool.forEach((p, i) => tv.appendChild(tvSlide(p, i)));
-  tv.appendChild(mk("lb-tvb", "<i></i>")); tv.appendChild(mk("lb-tva", esc(t("lbTvAll")) + " ›"));
+  const tv = mk("lb-tv"); tv.dataset.kind = kind; const wr = mk("lb-tvw");
+  pool.forEach((p, i) => wr.appendChild(tvSlide(p, i)));
+  wr.appendChild(mk("lb-tvb", "<i></i>")); tv.appendChild(wr); tv.appendChild(mk("lb-tva", esc(t("lbTvAll")) + " ›"));
   tv.__n = pool.length; tv.__i = 0;
   tv.addEventListener("click", e => { e.stopPropagation(); const sl = tv.querySelectorAll(".lb-tvs")[tv.__i]; const c = sl && sl.dataset.cat; C.showEventsCat(c === "events" ? "events" : c || "all"); });
   return tv;
@@ -227,12 +226,18 @@ function build() {
 
   // Explora el Hall
   const ex = place(mk("lb-abs lb-ex", MEDAL.replace(/lb(Gold|Rose|Wine|Amber|Shine|Clip)/g, "lbx$1") + '<span class="tx"><small></small><b></b></span><span class="lb-go"><svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 8h34M29 2l7 6-7 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>', "button"), 245, 1248, 610, 112); ex.type = "button";
-  ex.addEventListener("click", () => { document.dispatchEvent(new CustomEvent("cml:hall")); if (window.CMLHall && window.CMLHall.open) window.CMLHall.open(); else seeAll("events"); }); stage.appendChild(ex);
+  ex.addEventListener("click", () => { document.dispatchEvent(new CustomEvent("cml:hall")); if (window.CMLHall && window.CMLHall.open) window.CMLHall.open(); else seeAll("events"); }); /* el botón vive ahora en el dock inferior */
 
   // Spa & Wellness
   const sp = place(mk("lb-abs lb-sp", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg><b></b>', "button"), 290, 1368, 520, 54); sp.type = "button";
-  sp.querySelector("b").textContent = t("lbSpaBtn"); sp.addEventListener("click", () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); }); stage.appendChild(sp);
-  root.appendChild(stage); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) window.CMLScene.fill(root, "home");
+  sp.querySelector("b").textContent = t("lbSpaBtn"); sp.addEventListener("click", () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); });
+  root.appendChild(stage); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) {
+    root.__minFoot = 76; window.CMLScene.fill(root, "home");
+    const dock = mk("lb-dock", '<button type="button" class="lb-dh"><span class="lb-dhm"></span><span class="lb-dht"><small></small><b></b></span><span class="lb-dha">›</span></button><button type="button" class="lb-ds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg><b></b></button>');
+    dock.querySelector(".lb-dh").addEventListener("click", () => { document.dispatchEvent(new CustomEvent("cml:hall")); if (window.CMLHall && window.CMLHall.open) window.CMLHall.open(); else seeAll("events"); });
+    dock.querySelector(".lb-ds").addEventListener("click", () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); });
+    root.__foot.appendChild(dock); setTimeout(labels, 0);
+  }
   fit(); fitAll(); if (window.ResizeObserver) new ResizeObserver(fit).observe(root); else addEventListener("resize", fit);
 }
 /* mismo tamaño en cada grupo (títulos, categorías...): se reduce de a poco hasta que nada se salga de su caja */
@@ -253,7 +258,8 @@ function labels() {
   stage.querySelector(".lb-box").setAttribute("aria-label", t("lbCodeWeekAria"));
   stage.querySelector(".lb-plq").setAttribute("aria-label", t("lbCode"));
   const pcs = stage.querySelectorAll(".lb-pc"); pcs[0].querySelector("span").textContent = t("lbTalk"); pcs[0].setAttribute("aria-label", t("lbTalk")); pcs[1].querySelector("span").textContent = t("lbDyk"); pcs[1].setAttribute("aria-label", t("lbDyk"));
-  const ex = stage.querySelector(".lb-ex"); ex.querySelector("small").textContent = t("lbExploreK"); ex.querySelector("b").textContent = t("lbExploreT"); ex.setAttribute("aria-label", t("lbExploreK") + " " + t("lbExploreT"));
+  const dk = document.querySelector(".lb-dock");
+  if (dk) { dk.querySelector(".lb-dh small").textContent = t("lbExploreK"); dk.querySelector(".lb-dh b").textContent = t("lbExploreT"); dk.querySelector(".lb-dh").setAttribute("aria-label", t("lbExploreK") + " " + t("lbExploreT")); dk.querySelector(".lb-ds b").textContent = t("lbSpaBtn"); }
 }
 function paint() {
   if (!built) return; labels(); paintHello();
@@ -273,7 +279,7 @@ function init() {
   document.addEventListener("cml:session", () => setTimeout(paint, 60));
   document.addEventListener("cml:lang", () => setTimeout(paint, 60));
   document.addEventListener("cml:page", e => { if (built) syncArt(); if (e.detail && e.detail.page === "home") { fit(); paintHello(); } else closeSheet(); });
-  window.CMLLobby = { paint, openSheet };
+  window.CMLLobby = { paint, openSheet, closeSheet };
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
 })();
