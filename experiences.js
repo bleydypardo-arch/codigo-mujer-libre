@@ -400,7 +400,7 @@ function init() {
   C = window.CML;
   if (!C) return;
   C.addStrings(ES, EN);
-  window.CMLExp = { defaults: { es: ES, en: EN }, campaignCard, paintTravelPage, paintHome, heroPhoto: () => HERO_PHOTO, cityTrips: () => featuredFirst(upcomingTrips()), dateRange, typeKey: k => TYPE_KEY[k] || "expTrip", stageImages };
+  window.CMLExp = { seaPlay: () => { if (!SEA.on) seaSet(true); }, defaults: { es: ES, en: EN }, campaignCard, paintTravelPage, paintHome, heroPhoto: () => HERO_PHOTO, cityTrips: () => featuredFirst(upcomingTrips()), dateRange, typeKey: k => TYPE_KEY[k] || "expTrip", stageImages };
   document.addEventListener("cml:render", paintAll);
   document.addEventListener("cml:lang", () => { paintAll(); paintTravelPage(); });
   document.addEventListener("cml:session", paintAll);

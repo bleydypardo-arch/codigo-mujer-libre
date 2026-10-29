@@ -54,7 +54,7 @@ const SIGNS = [
 ];
 // zonas tocables (rectángulos sobre la foto)
 const ZONES = [
-  { k: "travel", r: [38,108,284,412], go: () => { if (window.CMLRedesign && window.CMLRedesign.paintTravel) window.CMLRedesign.paintTravel(); C.showPage("travel"); } },
+  { k: "travel", r: [38,108,284,412], go: () => { if (window.CMLRedesign && window.CMLRedesign.paintTravel) window.CMLRedesign.paintTravel(); C.showPage("travel"); if (window.CMLExp && window.CMLExp.seaPlay) window.CMLExp.seaPlay(); } },
   { k: "exp",    r: [38,538,284,330], go: () => C.showEventsCat("all") },
   { k: "matcha", r: [30,890,292,300], go: () => enterBar() },
   { k: "bout",   r: [776,112,276,408], go: () => soon("hlBout", "hlBoutSoon") },
