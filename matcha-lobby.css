@@ -94,3 +94,9 @@ html.lobby-on #matcha .mx-photo.art { aspect-ratio: 16 / 7; }
 html.lobby-on #matcha .mx-cups { aspect-ratio: auto; height: auto; object-fit: initial; }
 html.lobby-on #matcha .mxc-plan .mx-d, html.lobby-on #matcha .mxc-cre .mx-d { display: block; }
 html.lobby-on #matcha .mx-hero-full { margin-bottom: 12px; }
+/* cabecera = tazas; cierre = orquídea */
+html.lobby-on #matcha .mx-hero { min-height: 0; padding: 4px 16px 0; overflow: visible; background: none; }
+html.lobby-on #matcha .mx-hero-txt { max-width: none; gap: 6px; }
+html.lobby-on #matcha .mx-h1 { font-size: clamp(40px, 12.5vw, 50px); line-height: .95; }
+html.lobby-on #matcha .mx-hero-cups { display: block; width: 100%; height: auto; margin-top: 12px; border-radius: 22px; box-shadow: 0 4px 14px rgba(101,13,41,.07); }
+html.lobby-on #matcha .mx-cups.mx-flor { aspect-ratio: 16 / 11; object-fit: cover; object-position: 50% 38%; }

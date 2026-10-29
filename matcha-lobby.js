@@ -32,12 +32,9 @@ function paint(x) {
   const txt = mk("mx-hero-txt"); 
   txt.append(mk("mx-k", ""), mk("mx-h1", ""), mk("mx-tag", ""), mk("mx-rule", ""));
   txt.children[0].textContent = t("mxKicker"); txt.children[1].textContent = t("mxTitle"); txt.children[2].textContent = t("mxTag");
-  const orq = new Image(); orq.src = "lobby/mx-hero.webp?v=8"; orq.alt = ""; orq.className = "mx-orq";
-  hero.append(txt, orq);
-  if (t("mxKicker") === "TU RINCÓN") { // español: imagen aprobada completa
-    const full = new Image(); full.src = "lobby/mx-hero-full.webp?v=1"; full.alt = "TU RINCÓN · Matcha & Café · SABOREA · CREA · CONECTA"; full.className = "mx-hero-full";
-    x.hero.replaceChildren(full);
-  } else x.hero.replaceChildren(hero);
+  const tz = new Image(); tz.src = "lobby/mx-tazas.webp?v=10"; tz.alt = ""; tz.className = "mx-hero-cups";
+  hero.append(txt, tz);
+  x.hero.replaceChildren(hero);
   if (x.barBtn) x.barBtn.classList.add("mx-bar");
   const list = [];
   
@@ -66,7 +63,7 @@ function paint(x) {
   const creHead = mk("mx-headrow"); const ct = mk("mx-ptxt"); ct.append(h("mx-k", t("mxCreK")), h("mx-h2 big", t("mxCreT")), h("mx-d", t("mxCreD"))); creHead.append(ct, ico(PPL));
   list.push(card("cre", [creHead, img("mx-arte.webp", "mx-photo art")], x.sharesBox));
   // cierre
-  const close = mk("mx-close"); close.append(h("mx-quote", t("mxClose")), img("mx-tazas.webp", "mx-cups")); list.push(close);
+  const close = mk("mx-close"); close.append(h("mx-quote", t("mxClose")), img("mx-florero.webp", "mx-cups mx-flor")); list.push(close);
   x.body.replaceChildren(...list);
 }
 function init() {
