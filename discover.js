@@ -493,7 +493,7 @@ function renderMatchaPage() {
     b.addEventListener("click", () => { const n = document.getElementById(id); if (n) n.scrollIntoView({ behavior: "smooth", block: "start" }); });
     nav.appendChild(b);
   });
-  body.replaceChildren(nav, left, right, meetBox, sharesBox);
+  body.replaceChildren(left, right, meetBox, sharesBox);
   applySearch();
 }
 

@@ -133,17 +133,16 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 #lobby .lb-pc span { letter-spacing: -.005em; -webkit-text-stroke: .6px var(--color-wine); text-shadow: 0 0 4px rgba(255,248,239,1), 0 0 9px rgba(255,248,239,.95), 0 0 14px rgba(255,248,239,.8); }
 .lb-brow .lb-cat, .lb-big h2 { letter-spacing: -.01em; -webkit-text-stroke: .4px var(--color-wine); }
 
-/* PÁGINA MATCHA (recorrido ordenado tras el bar): solo con el lobby encendido */
+/* PÁGINA MATCHA (recorrido ordenado tras el bar): solo con el lobby encendido.
+   Orden: Receta del mes → ¿Dónde nos vemos? → Próximos encuentros → Comunidad. Sin guía repetida, cabecera compacta. */
 html.lobby-on #matchaBody { grid-template-columns: minmax(0, 1fr); max-width: 640px; margin-inline: auto; }
-html.lobby-on #matchaBody .ma-nav { order: 0; grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-html.lobby-on #matchaBody .ma-meetbox { order: 1; grid-column: 1 / -1; }
-html.lobby-on #matchaBody .ma-left { order: 2; grid-column: 1 / -1; }
+html.lobby-on #matchaBody .ma-left { order: 1; grid-column: 1 / -1; }
+html.lobby-on #matchaBody .ma-meetbox { order: 2; grid-column: 1 / -1; }
 html.lobby-on #matchaBody .ma-right { order: 3; grid-column: 1 / -1; }
 html.lobby-on #matchaBody .ma-sharesbox { order: 4; grid-column: 1 / -1; }
-.ma-nav-b { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 58px; padding: 8px 6px; border-radius: 14px; border: 1.5px solid #D9B872; background: #FFF8EF; color: #800F32; font: 700 12.5px/1.1 Inter, Arial, sans-serif; text-align: center; cursor: pointer; }
-.ma-nav-b.main { grid-column: 1 / -1; flex-direction: row; gap: 8px; min-height: 54px; font-size: 16px; background: linear-gradient(180deg,#8a1740,#650D29); color: #FFF3D6; border-color: #D9B872; box-shadow: 0 4px 12px rgba(128,15,50,.28); }
-.ma-nav-b .ic { font-size: 16px; }
-html.lobby-on #matchaBody .ma-meetbox { border: 2px solid #D9B872; box-shadow: 0 8px 22px rgba(128,15,50,.16); background: linear-gradient(180deg,#FFF8EF,#fff); }
-html.lobby-on #matchaBody .ma-meetbox h2 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: 26px; color: #800F32; text-transform: uppercase; letter-spacing: -.01em; }
+html.lobby-on .matcha-hero .ma-hero-img, html.lobby-on .matcha-hero .ma-intro { display: none; }
+html.lobby-on .matcha-hero { max-width: 640px; margin-inline: auto; }
+html.lobby-on .matcha-hero .ma-hero-txt { padding: 14px 16px; }
+html.lobby-on #matchaBody .ma-meetbox { border: 2px solid #D9B872; box-shadow: 0 6px 18px rgba(128,15,50,.12); background: #FFF8EF; }
+html.lobby-on #matchaBody .ma-section h2, html.lobby-on #matchaBody .ma-meetbox h2 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; color: #800F32; text-transform: uppercase; letter-spacing: -.01em; font-size: 24px; }
 html.lobby-on #matchaBody .ma-section { scroll-margin-top: 12px; }
-html.lobby-on #matchaBody .ma-section h2 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; color: #800F32; }
