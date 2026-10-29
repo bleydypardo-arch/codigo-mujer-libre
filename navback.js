@@ -6,6 +6,7 @@ const C = () => window.CML;
 try { history.replaceState({ cml: "base" }, "", location.href); history.pushState({ cml: "guard" }, "", location.href); } catch (e) {}
 function push() { try { history.pushState({ cml: 1 }, "", location.href); } catch (e) {} }
 function overlay() {
+  const es = document.querySelector(".es-ov"); if (es && window.CMLEssenceLab) return () => window.CMLEssenceLab.close();
   const sp = document.querySelector(".sp-enter"); if (sp && window.CMLSpaHall) return () => window.CMLSpaHall.leaveSpa();
   const bar = document.querySelector(".hl-bar"); if (bar && window.CMLHall && window.CMLHall.leaveBar) return () => window.CMLHall.leaveBar(true);
   const sh = document.querySelector(".lb-sheet.open"); if (sh && window.CMLLobby && window.CMLLobby.closeSheet) return () => window.CMLLobby.closeSheet();
