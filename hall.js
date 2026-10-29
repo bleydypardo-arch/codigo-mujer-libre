@@ -63,7 +63,7 @@ const ZONES = [
     if (ok && window.CMLFlorece && window.CMLFlorece.open) { const f = document.getElementById("florece"); if (f) f.dataset.soon = t("hlGrowBanner"); window.CMLFlorece.open(); }
     else soon("hlGrow", "hlGrowSoon");
   } },
-  { k: "pod",    r: [776,886,276,304], go: () => { C.showPage("wellness"); setTimeout(() => { const n = document.getElementById("wellPodcast"); if (n && !n.hidden) n.scrollIntoView({ behavior: "smooth", block: "start" }); }, 200); } },
+  { k: "pod",    r: [776,886,276,304], go: () => { C.showPage("podhall"); } },
   { k: "amilu",  r: [640,634,108,246], go: () => soon("hlAmilu", "hlAmiluSoon") }
 ];
 

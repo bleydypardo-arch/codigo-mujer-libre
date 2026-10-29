@@ -10,7 +10,7 @@ const TOPICS = ["entrepreneurship", "spirituality", "emotional", "wellness", "he
 const ES = {
   podName: "Entre Nosotras", podTag: "Dos voces. Dos miradas. Conversaciones que importan.",
   podK: "PODCAST", podNew: "NUEVO EPISODIO", podNext: "PRÓXIMO ESTRENO", podSoonT: "Muy pronto: nuestro primer episodio", podSoonP: "Amor, salud, dinero, bienestar, belleza, propósito y emprendimiento. Conversaciones que importan.",
-  podListen: "Escuchar el podcast", podTopicsLine: "Amor · Salud · Dinero · Bienestar · Belleza · Propósito · Emprendimiento · Vida", podPlay: "Reproducir", podCal: "Agregar al calendario", podShare: "Compartir", podAll: "Todos", podMore: "Ver más episodios", podNone: "No hay episodios de este tema todavía.",
+  podVidSoon: "Aquí verás el video de cada episodio", podListen: "Escuchar el podcast", podTopicsLine: "Amor · Salud · Dinero · Bienestar · Belleza · Propósito · Emprendimiento · Vida", podPlay: "Reproducir", podCal: "Agregar al calendario", podShare: "Compartir", podAll: "Todos", podMore: "Ver más episodios", podNone: "No hay episodios de este tema todavía.",
   podLibK: "PODCAST", podLibT: "Entre Nosotras", podOpenYt: "Abrir en YouTube", podClose: "Cerrar", podShareMsg: n => "Escucha «" + n + "» en Entre Nosotras, el podcast de Código Mujer Libre:",
   podSoonK: "MUY PRONTO", podLatest: "ÚLTIMO EPISODIO", podMeet: "Escúchalo aquí", podMoreEps: "Más episodios", podSeeAll: "Ver todos los episodios",
   podSoonP2: "Amor, salud, dinero, bienestar, belleza, espiritualidad y emprendimiento: cada semana un tema distinto, en una conversación entre dos voces.", podWeekly: "Un episodio nuevo cada semana. Aquí lo escuchas y no te pierdes ninguno.",
@@ -21,7 +21,7 @@ const ES = {
 const EN = {
   podName: "Between Us", podTag: "Two voices. Two perspectives. Conversations that matter.",
   podK: "PODCAST", podNew: "NEW EPISODE", podNext: "NEXT PREMIERE", podSoonT: "Coming soon: our first episode", podSoonP: "Love, health, money, wellness, beauty, purpose and entrepreneurship. Conversations that matter.",
-  podListen: "Listen to the podcast", podTopicsLine: "Love · Health · Money · Wellness · Beauty · Purpose · Entrepreneurship · Life", podPlay: "Play", podCal: "Add to calendar", podShare: "Share", podAll: "All", podMore: "Show more episodes", podNone: "No episodes on this topic yet.",
+  podVidSoon: "Each episode’s video will play here", podListen: "Listen to the podcast", podTopicsLine: "Love · Health · Money · Wellness · Beauty · Purpose · Entrepreneurship · Life", podPlay: "Play", podCal: "Add to calendar", podShare: "Share", podAll: "All", podMore: "Show more episodes", podNone: "No episodes on this topic yet.",
   podLibK: "PODCAST", podLibT: "Between Us", podOpenYt: "Open on YouTube", podClose: "Close", podShareMsg: n => "Listen to “" + n + "” on Between Us, the Código Mujer Libre podcast:",
   podSoonK: "COMING SOON", podLatest: "LATEST EPISODE", podMeet: "Listen here", podMoreEps: "More episodes", podSeeAll: "See all episodes",
   podSoonP2: "Love, health, money, wellness, beauty, spirituality and entrepreneurship: a different topic every week, as a conversation between two voices.", podWeekly: "A new episode every week. Listen here and never miss one.",
@@ -159,14 +159,14 @@ function leavesNode(c) {
 }
 const recent = e => { const d = (new Date(today() + "T12:00") - new Date(e.date + "T12:00")) / 86400000; return d <= 10; };
 let homeSig = "", homeIO = null, homeRO = null;
-function renderHome() {
-  const host = document.getElementById("homePodcast");
+function renderHome(hostArg) {
+  const host = hostArg || document.getElementById("homePodcast");
   if (!host || !C) return;
-  if (!C.session()) { host.hidden = true; host.replaceChildren(); homeSig = ""; return; }
+  if (!C.session()) { host.hidden = true; host.replaceChildren(); if (!hostArg) homeSig = ""; return; }
   const f = featured(episodes());
   const lang = C.lang() === "en" ? "en" : "es";
   const sig = lang + "|" + (f ? f.ep.id + "|" + f.upcoming + "|" + titleOf(f.ep) : "none");
-  if (sig === homeSig && host.firstChild) return;   // nothing changed: keep the animation running, no flicker
+  if (!hostArg && sig === homeSig && host.firstChild) return;   // nothing changed: keep the animation running, no flicker
   const c = COVER[lang];
   host.hidden = false;
   host.className = "ph-card";
@@ -181,13 +181,14 @@ function renderHome() {
     el("div", { class: "ph-kline" }, f ? chip(f.ep.topic) : null, el("small", { class: "ph-k", text: kick })),
     el("b", { class: "ph-t", text: head }), btn);
   host.replaceChildren(stage, foot);
-  homeSig = sig;
+  if (!hostArg) homeSig = sig;
   const open = () => openWindow(btn, f ? f.ep.id : null);
   btn.addEventListener("click", open);
   stage.addEventListener("click", open);
   // keep the fall distance in step with the photo's height, and pause everything while off-screen (saves battery)
   const setH = () => stage.style.setProperty("--H", Math.round(stage.clientHeight * 0.5) + "px");
   setH();
+  if (hostArg) return;
   if (homeRO) homeRO.disconnect();
   if ("ResizeObserver" in window) { homeRO = new ResizeObserver(setH); homeRO.observe(stage); }
   if (homeIO) homeIO.disconnect();
@@ -232,7 +233,10 @@ function winEpisodeView(sel, all, f) {
 }
 function winSoonView() {
   const chips = el("div", { class: "pw-topics" }, ...["love", "health", "money", "wellness", "beauty", "spirituality", "entrepreneurship", "emotional", "purpose", "life"].map(k => chip(k)));
-  return [el("div", { class: "pw-soon" }, el("span", { class: "pod-mic big" }, micNode()),
+  const vid = el("div", { class: "pw-vid-soon", role: "img", "aria-label": t("podVidSoon") },
+    el("img", { src: COVER[C.lang() === "en" ? "en" : "es"].img, alt: "", loading: "lazy" }),
+    el("span", { class: "pw-vid-play", "aria-hidden": "true", text: "▶" }), el("small", { text: t("podVidSoon") }));
+  return [vid, el("div", { class: "pw-soon" }, el("span", { class: "pod-mic big" }, micNode()),
     el("h3", { class: "pw-ep-t", id: "pwEpT", text: t("podSoonT") }),
     el("p", { class: "pw-desc", text: t("podSoonP2") }), chips, el("p", { class: "pw-desc pw-weekly", text: t("podWeekly") }))];
 }
@@ -325,6 +329,9 @@ function init() {
   C.addStrings(ES, EN);
   window.CMLPodcast = { TOPICS, topicLabel, ytId, render };
   ["cml:session", "cml:lang", "cml:render"].forEach(ev => document.addEventListener(ev, render));
+  const paintHallCover = () => { const h = document.getElementById("podhallCard"); if (h && document.getElementById("podhall").classList.contains("active")) { h.className = "ph-card"; renderHome(h); } };
+  document.addEventListener("cml:page", e => { if (e.detail && e.detail.page === "podhall") paintHallCover(); });
+  document.addEventListener("cml:lang", paintHallCover);
   render();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
