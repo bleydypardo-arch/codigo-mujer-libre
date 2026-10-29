@@ -138,7 +138,7 @@ function build() {
   const img = new Image(); img.src = "lobby/home.webp?v=20261028b"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
 
   // saludo y marca
-  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club.webp?v=20261028i" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
+  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club.webp?v=20261028j" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
   stage.appendChild(hello);
 
   // pantallas (tocar = se abre ampliada con las tres categorías)
@@ -165,7 +165,7 @@ function build() {
   fly.addEventListener("click", () => { if (!openSheet("homeDyk")) C.showPage("home"); }); stage.appendChild(fly);
 
   // Explora el Hall
-  const ex = place(mk("lb-abs lb-ex", '<svg viewBox="0 0 40 40" style="width:calc(var(--inv)*20px);height:auto;flex:none;fill:currentColor"><g><ellipse cx="20" cy="9" rx="5" ry="8"/><ellipse cx="10" cy="19" rx="7" ry="4.5" transform="rotate(-25 10 19)"/><ellipse cx="30" cy="19" rx="7" ry="4.5" transform="rotate(25 30 19)"/><ellipse cx="20" cy="28" rx="6" ry="5"/></g></svg><span class="tx"><small></small><b></b></span><span class="lb-go">›</span>', "button"), 245, 1290, 610, 116); ex.type = "button";
+  const ex = place(mk("lb-abs lb-ex", MEDAL.replace(/lb(Gold|Rose|Wine|Amber|Shine|Clip)/g, "lbx$1") + '<span class="tx"><small></small><b></b></span><span class="lb-go">›</span>', "button"), 245, 1290, 610, 116); ex.type = "button";
   ex.addEventListener("click", () => { document.dispatchEvent(new CustomEvent("cml:hall")); if (window.CMLHall && window.CMLHall.open) window.CMLHall.open(); else seeAll("events"); }); stage.appendChild(ex);
 
   root.appendChild(stage); host.insertBefore(root, host.firstChild); built = true;

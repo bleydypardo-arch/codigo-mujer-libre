@@ -87,10 +87,12 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 @keyframes lbBeat { 50% { transform: scale(1.14); } }
 
 /* botón Explora el Hall */
-.lb-ex { display: flex; align-items: center; gap: 12px; padding: 0 18px 0 16px; border-radius: 999px; border: calc(var(--inv) * 1.2px) solid var(--color-champagne); color: var(--color-champagne); box-shadow: 0 3px 8px rgba(0,0,0,.3); background: var(--color-olive); }
+.lb-ex { display: flex; align-items: center; gap: 12px; padding: 0 20px 0 10px; border-radius: 999px; border: calc(var(--inv) * 1.6px) solid #E6C275; color: #E6C275; box-shadow: 0 3px 10px rgba(0,0,0,.35), 0 0 14px rgba(230,194,117,.45), inset 0 0 0 1px rgba(255,240,200,.25); background: var(--color-olive); }
+.lb-ex .code-medal-wrap { width: 96px; height: 96px; flex: none; }
+.lb-ex small, .lb-ex b { background: linear-gradient(180deg,#FFF1C2 0%,#F0CE7A 38%,#C9962F 70%,#F6DC94 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; filter: drop-shadow(0 1px 1px rgba(0,0,0,.45)); }
 .lb-ex .tx { flex: 1; text-align: center; display: flex; flex-direction: column; gap: 4px; }
-.lb-ex small { font: 500 calc(var(--inv) * 7.5px)/1 var(--font-ui); letter-spacing: .2em; text-transform: uppercase; }
-.lb-ex b { font: var(--weight-heading) calc(var(--inv) * var(--fs-hall, 13.5) * 1px)/1.05 var(--font-editorial); letter-spacing: var(--tracking-heading); text-transform: uppercase; white-space: nowrap; }
+.lb-ex small { font: 600 calc(var(--inv) * 7.5px)/1 var(--font-ui); letter-spacing: .2em; text-transform: uppercase; }
+.lb-ex b { font: 700 calc(var(--inv) * var(--fs-hall, 13.5) * 1px)/1.05 var(--font-editorial); letter-spacing: var(--tracking-heading); text-transform: uppercase; white-space: nowrap; }
 .lb-ex .lb-go { width: calc(var(--inv) * 15px); height: calc(var(--inv) * 15px); background: var(--color-champagne); border-color: #fff6; color: var(--color-olive); font-size: calc(var(--inv) * 10px); line-height: calc(var(--inv) * 13px); }
 
 /* hoja: componentes ya existentes (tarjeta del día, Hablemos, ¿Sabías que?, código de la semana) y panel ampliado */
