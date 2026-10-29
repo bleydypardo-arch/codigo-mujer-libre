@@ -526,3 +526,8 @@ html.lobby-on .lb-greet { font-size: calc(var(--inv) * 32px); }
 .bx.s5 .bx-tag, .bx.done .bx-tag { opacity: 1; animation: pkSwing 3.4s ease-in-out infinite alternate; } @keyframes pkSwing { from { transform: rotate(-4deg); } to { transform: rotate(4deg); } }
 .es-packv { background: radial-gradient(circle at 50% 45%, #5a2a3a, #1b0f0a 75%); }
 .es-rb .bx { width: 230px; height: 230px; filter: drop-shadow(0 0 30px rgba(255,214,140,.5)); }
+/* aroma: el perfume se ve subir */
+.es-wisp { position: absolute; width: 22px; height: 60px; pointer-events: none; opacity: 0; border-radius: 50%; background: radial-gradient(ellipse at 50% 80%, rgba(255,240,210,.7), rgba(255,240,210,0) 70%); filter: blur(4px); animation: esWisp 7s ease-in-out infinite; }
+@keyframes esWisp { 0% { transform: translate(0, 0) scale(.6); opacity: 0; } 25% { opacity: .75; } 100% { transform: translate(14px, -80px) scale(1.5, 2); opacity: 0; } }
+.es-scent { position: relative; min-height: 34px; margin: 4px 0 2px; padding-top: 4px; font: italic 600 15px/1.25 "Cormorant Garamond", Georgia, serif; color: #8a4a5a; } .es-scent span { animation: esIn .8s both; }
+.es-scent i { position: absolute; left: 50%; top: 0; width: 18px; height: 34px; margin-left: -9px; border-radius: 50%; background: radial-gradient(ellipse, var(--c, #E58FA6), transparent 70%); filter: blur(6px); opacity: 0; animation: esWisp 3.2s ease-out infinite; } .es-scent i:nth-child(2) { margin-left: -30px; animation-delay: .8s; } .es-scent i:nth-child(3) { margin-left: 12px; animation-delay: 1.6s; }
