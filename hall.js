@@ -15,7 +15,7 @@ C.addStrings({
   hlMatcha: "Matcha Café", hlMatchaS: "Sabores que conectan",
   hlPod: "Entre Nosotras", hlPodS: "Podcast · Historias que inspiran",
   hlAmilu: "Mundo Amilú", hlAmiluS: "Juego virtual",
-  hlSoonT: "Muy pronto", hlGrowBanner: "🚧 En construcción · Muy pronto", hlGrowSoon: "Crece y Florece está en construcción: lo estamos reconstruyendo para ti. Muy pronto.", hlBoutSoon: "La Tienda de Bienestar abre pronto: piezas con propósito, esencias y cuidado de la piel, elegidas para ti.", hlAmiluSoon: "Mundo Amilú, nuestro juego virtual, abre pronto. Te avisamos.",
+  hlTiendaHint: "Desliza para recorrer la tienda", hlSoonT: "Muy pronto", hlGrowBanner: "🚧 En construcción · Muy pronto", hlGrowSoon: "Crece y Florece está en construcción: lo estamos reconstruyendo para ti. Muy pronto.", hlBoutSoon: "La Tienda de Bienestar abre pronto: piezas con propósito, esencias y cuidado de la piel, elegidas para ti.", hlAmiluSoon: "Mundo Amilú, nuestro juego virtual, abre pronto. Te avisamos.",
   hlBack: "Volver al lobby"
 }, {
   hlTitle: "Hall of Experiences", hlT1: "Hall of", hlT2: "Experiences", hlTag: "Discover · Connect · Enjoy",
@@ -26,7 +26,7 @@ C.addStrings({
   hlMatcha: "Matcha Café", hlMatchaS: "Flavors that connect",
   hlPod: "Between Us", hlPodS: "Podcast · Stories that inspire",
   hlAmilu: "Amilú's World", hlAmiluS: "Virtual game",
-  hlSoonT: "Coming soon", hlGrowBanner: "🚧 Under construction · Coming soon", hlGrowSoon: "Grow & Bloom is under construction: we are rebuilding it for you. Coming soon.", hlBoutSoon: "The Wellness Shop opens soon: pieces with purpose, essences and skincare, chosen for you.", hlAmiluSoon: "Amilú's World, our virtual game, opens soon. We'll let you know.",
+  hlTiendaHint: "Swipe to walk through the store", hlSoonT: "Coming soon", hlGrowBanner: "🚧 Under construction · Coming soon", hlGrowSoon: "Grow & Bloom is under construction: we are rebuilding it for you. Coming soon.", hlBoutSoon: "The Wellness Shop opens soon: pieces with purpose, essences and skincare, chosen for you.", hlAmiluSoon: "Amilú's World, our virtual game, opens soon. We'll let you know.",
   hlBack: "Back to the lobby"
 });
 
@@ -57,7 +57,7 @@ const ZONES = [
   { k: "travel", r: [38,108,284,412], go: () => { if (window.CMLRedesign && window.CMLRedesign.paintTravel) window.CMLRedesign.paintTravel(); C.showPage("travel"); if (window.CMLExp && window.CMLExp.seaPlay) window.CMLExp.seaPlay(); } },
   { k: "exp",    r: [38,538,284,330], go: () => C.showEventsCat("all") },
   { k: "matcha", r: [30,890,292,300], go: () => enterBar() },
-  { k: "bout",   r: [776,112,276,408], go: () => soon("hlBout", "hlBoutSoon") },
+  { k: "bout",   r: [776,112,276,408], go: () => C.showPage("tienda") },
   { k: "grow",   r: [776,538,276,330], go: () => {
     let ok = false; try { ok = !!(window.CMLPremium && window.CMLPremium.can("florece")); } catch (e) {}
     if (ok && window.CMLFlorece && window.CMLFlorece.open) { const f = document.getElementById("florece"); if (f) f.dataset.soon = t("hlGrowBanner"); window.CMLFlorece.open(); }
@@ -170,7 +170,20 @@ function build() {
 }
 function open() { build(); C.showPage("hall", false); fit(); paint(); setTimeout(() => { fit(); fitText(); }, 120); window.scrollTo({ top: 0 }); }
 window.CMLHall = { open, paint, enterBar };
-document.addEventListener("cml:lang", paint);
+function paintTienda() {
+  const host = document.getElementById("tienda"); if (!host || !host.classList.contains("active")) return;
+  const en = C.lang() === "en";
+  const h = mk("h2", "", "h2"); h.className = "tn-title"; h.textContent = t("hlBout");
+  const sc = mk("div", ""); sc.className = "tn-scroll";
+  const im = new Image(); im.src = "lobby/tienda-" + (en ? "en" : "es") + ".webp?v=1"; im.alt = t("hlBout"); im.className = "tn-img";
+  sc.appendChild(im);
+  const hint = mk("p", ""); hint.className = "tn-hint"; hint.textContent = t("hlTiendaHint");
+  host.replaceChildren(h, sc, hint);
+  const center = () => { sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) / 2; };
+  im.addEventListener("load", center); center();
+}
+document.addEventListener("cml:lang", () => { paint(); paintTienda(); });
+document.addEventListener("cml:page", e => { if (e.detail && e.detail.page === "tienda") paintTienda(); });
 document.addEventListener("cml:page", e => { if (built && page && page.classList.contains("active")) { fit(); paint(); } });
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
