@@ -12,7 +12,7 @@ C.addStrings({
   hlBout: "Boutique", hlBoutS: "Piezas con propósito",
   hlExp: "Experiencias", hlExpS: "Planes que te conectan",
   hlGrow: "Crece y Florece", hlGrowS: "Lectura · Cursos · Charlas",
-  hlMatcha: "Matcha Café", hlMatchaS: "Sabores que nutren",
+  hlMatcha: "Matcha Café", hlMatchaS: "Sabores que conectan",
   hlPod: "Entre Nosotras", hlPodS: "Podcast · Historias que inspiran",
   hlAmilu: "Mundo Amilú", hlAmiluS: "Juego virtual",
   hlSoonT: "Muy pronto", hlBoutSoon: "La Boutique abre pronto: piezas con propósito, esencias y cuidado de la piel, elegidas para ti.", hlAmiluSoon: "Mundo Amilú, nuestro juego virtual, abre pronto. Te avisamos.",
@@ -23,7 +23,7 @@ C.addStrings({
   hlBout: "Boutique", hlBoutS: "Pieces with purpose",
   hlExp: "Experiences", hlExpS: "Plans that connect you",
   hlGrow: "Grow & Bloom", hlGrowS: "Reading · Courses · Talks",
-  hlMatcha: "Matcha Café", hlMatchaS: "Flavors that nourish",
+  hlMatcha: "Matcha Café", hlMatchaS: "Flavors that connect",
   hlPod: "Between Us", hlPodS: "Podcast · Stories that inspire",
   hlAmilu: "Amilú's World", hlAmiluS: "Virtual game",
   hlSoonT: "Coming soon", hlBoutSoon: "The Boutique opens soon: pieces with purpose, essences and skincare, chosen for you.", hlAmiluSoon: "Amilú's World, our virtual game, opens soon. We'll let you know.",
@@ -122,10 +122,10 @@ function build() {
   page = document.getElementById("hall"); if (!page) return;
   page.innerHTML = '<div class="page-back"><button type="button" class="back-btn" data-go="home"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>';
   root = mk("hl-root"); stage = mk("hl-stage");
-  const img = new Image(); img.src = "lobby/hall.webp?v=20261028t"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
+  const img = new Image(); img.src = "lobby/hall.webp?v=20261028u"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
   SIGNS.forEach(sg => {
     const w = 540, h = 170;
-    const n = mk("hl-sign" + (sg.badge ? " has-badge" : sg.img ? " has-ico" : ""), (sg.badge ? BADGE[sg.badge] : sg.img ? '<img class="hl-ico ' + sg.img + '" src="lobby/ic-' + sg.img + '.webp?v=20261028t" alt="">' : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');
+    const n = mk("hl-sign" + (sg.badge ? " has-badge" : sg.img ? " has-ico" : ""), (sg.badge ? BADGE[sg.badge] : sg.img ? '<img class="hl-ico ' + sg.img + '" src="lobby/ic-' + sg.img + '.webp?v=20261028u" alt="">' : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');
     n.dataset.k = sg.k; n.style.width = w + "px"; n.style.height = h + "px"; n.style.transform = homography(w, h, sg.q); stage.appendChild(n);
   });
   // cartel grande vino
