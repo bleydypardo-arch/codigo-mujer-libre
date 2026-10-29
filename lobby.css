@@ -69,10 +69,15 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 @keyframes lbFloat { 0% { transform: translateY(0); opacity: 0; } 25% { opacity: 1; } 100% { transform: translateY(-34px); opacity: 0; } }
 @keyframes lbPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
 
+.lb-tap { position: absolute; right: -6px; bottom: -4px; width: 30px; height: 30px; border-radius: 50%; background: rgba(255,248,239,.92); border: 1px solid var(--color-champagne); box-shadow: 0 0 0 0 rgba(255,235,190,.8); display: grid; place-items: center; pointer-events: none; animation: lbTap 2.4s ease-out infinite; }
+.lb-tap svg { width: 18px; height: 18px; fill: var(--color-wine); transform-origin: 50% 90%; animation: lbPoint 2.4s ease-in-out infinite; }
+@keyframes lbTap { 0% { box-shadow: 0 0 0 0 rgba(255,235,190,.85); } 70%, 100% { box-shadow: 0 0 0 16px rgba(255,235,190,0); } }
+@keyframes lbPoint { 0%, 100% { transform: translateY(0) rotate(-8deg); } 50% { transform: translateY(-3px) rotate(-8deg); } }
+
 /* sobre (Hablemos) y mariposa (¿Sabías que?) */
 .lb-pc { display: flex; flex-direction: column; align-items: center; background: none; border: 0; padding: 0; }
 .lb-pc svg { width: 100%; height: auto; overflow: visible; }
-.lb-pc span { display: block; width: 100%; overflow: hidden; text-align: center; white-space: nowrap; font: 700 calc(var(--inv) * var(--fs-pc, 6.5) * 1px)/1.1 var(--font-editorial); letter-spacing: var(--tracking-heading); text-transform: uppercase; color: var(--color-wine); margin-top: calc(var(--inv) * 3px); text-shadow: 0 0 calc(var(--inv) * 5px) rgba(255,255,255,.85); }
+.lb-pc span { display: block; width: 100%; overflow: hidden; text-align: center; white-space: nowrap; font: 700 calc(var(--inv) * var(--fs-pc, 6.5) * 1px)/1.1 var(--font-editorial); letter-spacing: var(--tracking-heading); text-transform: uppercase; color: var(--color-wine); margin-top: -24px; -webkit-text-stroke: .35px var(--color-wine); text-shadow: 0 0 calc(var(--inv) * 4px) rgba(255,255,255,.9); }
 .lb-env { animation: lbBob 3.4s ease-in-out infinite; width: 100%; }
 .lb-fly { animation: lbBob 2.6s ease-in-out infinite; width: 100%; }
 .lb-wl, .lb-wr { animation: lbFlap 1.2s ease-in-out infinite; transform-origin: 50px 50px; }
@@ -106,5 +111,5 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 .lb-brow .lb-go { width: 28px; height: 28px; font-size: 16px; line-height: 25px; }
 @media (prefers-reduced-motion: reduce) { #lobby *, #lobby *::before { animation-duration: .01s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; } .lb-brand { opacity: 1; } .lb-greet { animation: none; opacity: 0; } }
 
-/* etiquetas junto a la anfitriona: idénticas en tamaño y letra */
-#lobby .lb-bub, #lobby .lb-boxl { font-family: var(--font-ui); font-weight: 600; font-size: calc(var(--inv) * 6.2px); line-height: 1.25; letter-spacing: 0; }
+
+.lb-pc:has(.lb-env) span { margin-top: -6px; }
