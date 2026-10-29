@@ -9,24 +9,24 @@ C = window.CML; if (!C) return; t = k => C.t(k);
 C.addStrings({
   hlTitle: "Hall de Experiencias", hlT1: "Hall de", hlT2: "Experiencias", hlTag: "Descubre · Conecta · Disfruta",
   hlTravel: "Viajemos Juntas", hlTravelS: "Destinos que inspiran",
-  hlBout: "Boutique", hlBoutS: "Piezas con propósito",
+  hlBout: "Tienda de Bienestar", hlBoutS: "Piezas con propósito",
   hlExp: "Experiencias", hlExpS: "Planes que te conectan",
   hlGrow: "Crece y Florece", hlGrowS: "Lectura · Cursos · Charlas",
   hlMatcha: "Matcha Café", hlMatchaS: "Sabores que conectan",
   hlPod: "Entre Nosotras", hlPodS: "Podcast · Historias que inspiran",
   hlAmilu: "Mundo Amilú", hlAmiluS: "Juego virtual",
-  hlSoonT: "Muy pronto", hlGrowBanner: "🚧 En construcción · Muy pronto", hlGrowSoon: "Crece y Florece está en construcción: lo estamos reconstruyendo para ti. Muy pronto.", hlBoutSoon: "La Boutique abre pronto: piezas con propósito, esencias y cuidado de la piel, elegidas para ti.", hlAmiluSoon: "Mundo Amilú, nuestro juego virtual, abre pronto. Te avisamos.",
+  hlSoonT: "Muy pronto", hlGrowBanner: "🚧 En construcción · Muy pronto", hlGrowSoon: "Crece y Florece está en construcción: lo estamos reconstruyendo para ti. Muy pronto.", hlBoutSoon: "La Tienda de Bienestar abre pronto: piezas con propósito, esencias y cuidado de la piel, elegidas para ti.", hlAmiluSoon: "Mundo Amilú, nuestro juego virtual, abre pronto. Te avisamos.",
   hlBack: "Volver al lobby"
 }, {
   hlTitle: "Hall of Experiences", hlT1: "Hall of", hlT2: "Experiences", hlTag: "Discover · Connect · Enjoy",
   hlTravel: "Let's Travel Together", hlTravelS: "Destinations that inspire",
-  hlBout: "Boutique", hlBoutS: "Pieces with purpose",
+  hlBout: "Wellness Shop", hlBoutS: "Pieces with purpose",
   hlExp: "Experiences", hlExpS: "Plans that connect you",
   hlGrow: "Grow & Bloom", hlGrowS: "Reading · Courses · Talks",
   hlMatcha: "Matcha Café", hlMatchaS: "Flavors that connect",
   hlPod: "Between Us", hlPodS: "Podcast · Stories that inspire",
   hlAmilu: "Amilú's World", hlAmiluS: "Virtual game",
-  hlSoonT: "Coming soon", hlGrowBanner: "🚧 Under construction · Coming soon", hlGrowSoon: "Grow & Bloom is under construction: we are rebuilding it for you. Coming soon.", hlBoutSoon: "The Boutique opens soon: pieces with purpose, essences and skincare, chosen for you.", hlAmiluSoon: "Amilú's World, our virtual game, opens soon. We'll let you know.",
+  hlSoonT: "Coming soon", hlGrowBanner: "🚧 Under construction · Coming soon", hlGrowSoon: "Grow & Bloom is under construction: we are rebuilding it for you. Coming soon.", hlBoutSoon: "The Wellness Shop opens soon: pieces with purpose, essences and skincare, chosen for you.", hlAmiluSoon: "Amilú's World, our virtual game, opens soon. We'll let you know.",
   hlBack: "Back to the lobby"
 });
 
@@ -46,7 +46,7 @@ const BADGE = {
 // cuatro esquinas de cada letrero sobre la foto (px de la imagen 1086×1448): arriba-izq, arriba-der, abajo-der, abajo-izq
 const SIGNS = [
   { k: "travel", icon: "globe", img: "viajemos", q: [[42,113],[303,233],[303,308],[42,207]] },
-  { k: "bout",   icon: "bag", img: "boutique",   q: [[782,241],[1042,118],[1042,212],[782,312]] },
+  { k: "bout",   icon: "bag", img: "tienda",   q: [[782,241],[1042,118],[1042,212],[782,312]] },
   { k: "exp",    icon: "lotus", img: "experiencias", q: [[40,541],[298,556],[298,619],[40,598]] },
   { k: "grow",   icon: "book", badge: "tree",  q: [[782,554],[1042,544],[1042,599],[782,623]] },
   { k: "matcha", icon: "cup", badge: "matcha",   q: [[38,924],[300,898],[300,962],[38,1003]] },
@@ -143,10 +143,10 @@ function build() {
   page = document.getElementById("hall"); if (!page) return;
   page.innerHTML = '<div class="page-back"><button type="button" class="back-btn" data-go="home"><svg class="ci" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg></button></div>';
   root = mk("hl-root"); stage = mk("hl-stage");
-  const img = new Image(); img.src = "lobby/hall.webp?v=20261028x"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
+  const img = new Image(); img.src = "lobby/hall.webp?v=20261029t"; img.alt = ""; img.decoding = "async"; stage.appendChild(img);
   SIGNS.forEach(sg => {
     const w = 540, h = 170;
-    const n = mk("hl-sign" + (sg.badge ? " has-badge" : sg.img ? " has-ico" : ""), (sg.badge ? BADGE[sg.badge] : sg.img ? '<img class="hl-ico ' + sg.img + '" src="lobby/ic-' + sg.img + '.webp?v=20261028x" alt="">' : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');
+    const n = mk("hl-sign" + (sg.badge ? " has-badge" : sg.img ? " has-ico" : ""), (sg.badge ? BADGE[sg.badge] : sg.img ? '<img class="hl-ico ' + sg.img + '" src="lobby/ic-' + sg.img + '.webp?v=20261029t" alt="">' : '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">' + ICON[sg.icon] + '</svg>') + '<div class="tx"><div class="tt"></div><div class="ss"></div></div>');
     n.dataset.k = sg.k; n.style.width = w + "px"; n.style.height = h + "px"; n.style.transform = homography(w, h, sg.q); stage.appendChild(n);
   });
   // cartel grande vino
