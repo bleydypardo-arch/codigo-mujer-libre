@@ -48,3 +48,5 @@ html.lobby-on #matchaBody .rc-card .rc-teaser, html.lobby-on #matchaBody .rc-car
 .mx-close { position: relative; margin: 4px 0 0; border-radius: 22px; overflow: hidden; background: linear-gradient(180deg, #FBEFE8, #F5DDE5); padding: 26px 18px 0; text-align: center; }
 .mx-quote { font: italic 600 26px/1.18 var(--font-editorial); color: var(--c-gold); text-shadow: 0 0 1px rgba(101,13,41,.35); max-width: 330px; margin: 0 auto; text-wrap: balance; }
 .mx-cups { display: block; width: calc(100% + 36px); max-width: none; margin: 14px -18px 0; height: auto; }
+
+html.lobby-on #matcha .mx-hero-full { display: block; width: 100%; height: auto; border-radius: 0 0 22px 22px; }

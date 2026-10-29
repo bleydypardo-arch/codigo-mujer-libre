@@ -34,7 +34,10 @@ function paint(x) {
   txt.children[0].textContent = t("mxKicker"); txt.children[1].textContent = t("mxTitle"); txt.children[2].textContent = t("mxTag");
   const orq = new Image(); orq.src = "lobby/mx-hero.webp?v=8"; orq.alt = ""; orq.className = "mx-orq";
   hero.append(txt, orq);
-  x.hero.replaceChildren(hero);
+  if (t("mxKicker") === "TU RINCÓN") { // español: imagen aprobada completa
+    const full = new Image(); full.src = "lobby/mx-hero-full.webp?v=1"; full.alt = "TU RINCÓN · Matcha & Café · SABOREA · CREA · CONECTA"; full.className = "mx-hero-full";
+    x.hero.replaceChildren(full);
+  } else x.hero.replaceChildren(hero);
   if (x.barBtn) x.barBtn.classList.add("mx-bar");
   const list = [];
   if (x.barBtn) list.push(x.barBtn);
