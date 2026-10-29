@@ -32,7 +32,7 @@ function paint(x) {
   const txt = mk("mx-hero-txt"); 
   txt.append(mk("mx-k", ""), mk("mx-h1", ""), mk("mx-tag", ""), mk("mx-rule", ""));
   txt.children[0].textContent = t("mxKicker"); txt.children[1].textContent = t("mxTitle"); txt.children[2].textContent = t("mxTag");
-  const orq = new Image(); orq.src = "lobby/mx-hero.webp?v=7"; orq.alt = ""; orq.className = "mx-orq";
+  const orq = new Image(); orq.src = "lobby/mx-hero.webp?v=8"; orq.alt = ""; orq.className = "mx-orq";
   hero.append(txt, orq);
   x.hero.replaceChildren(hero);
   if (x.barBtn) x.barBtn.classList.add("mx-bar");
