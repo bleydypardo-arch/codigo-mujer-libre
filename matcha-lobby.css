@@ -100,3 +100,4 @@ html.lobby-on #matcha .mx-hero-txt { max-width: none; gap: 6px; }
 html.lobby-on #matcha .mx-h1 { font-size: clamp(40px, 12.5vw, 50px); line-height: .95; }
 html.lobby-on #matcha .mx-hero-cups { display: block; width: 100%; height: auto; margin-top: 12px; border-radius: 22px; box-shadow: 0 4px 14px rgba(101,13,41,.07); }
 html.lobby-on #matcha .mx-cups.mx-flor { aspect-ratio: 16 / 11; object-fit: cover; object-position: 50% 38%; }
+html.lobby-on #matcha .mxc-meet .mx-photo { object-position: 50% 55%; }

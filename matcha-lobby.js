@@ -55,7 +55,7 @@ function paint(x) {
   const img = (src, cls) => { const i = new Image(); i.src = "lobby/" + src + "?v=4"; i.alt = ""; i.className = cls; i.loading = "lazy"; return i; };
   // ¿Dónde nos vemos?
   const meetHead = mk("mx-row"); meetHead.append(ico(PIN), h("mx-h2 big", t("mxMeetT")));
-  list.push(card("meet", [meetHead, img("mx-cafe.webp", "mx-photo")], x.meetBox));
+  list.push(card("meet", [meetHead, img("mx-cafe2.webp", "mx-photo")], x.meetBox));
   // Próximos encuentros
   const planHead = mk("mx-headrow"); const pt = mk("mx-ptxt"); pt.append(h("mx-k", t("mxPlanK")), h("mx-h2 big", t("mxPlanT")), h("mx-d", t("mxPlanD"))); planHead.append(pt, ico(CAL));
   list.push(card("plan", [planHead], x.plansBox));
