@@ -117,11 +117,11 @@ let barBox = null;
 function enterBar() {
   if (barBox) return;
   const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-  barBox = mk("hl-bar", '<iframe src="bar/index.html" title="Matcha" allow="autoplay"></iframe><div class="hl-dl"></div><div class="hl-dr"></div>');
+  barBox = mk("hl-bar", '<iframe src="bar/index.html?auto=1" title="Matcha" allow="autoplay"></iframe><div class="hl-dl"></div><div class="hl-dr"></div>');
   document.body.appendChild(barBox); document.documentElement.classList.add("hl-bar-open");
   requestAnimationFrame(() => requestAnimationFrame(() => barBox && barBox.classList.add("open")));
   if (still) barBox.classList.add("still");
-  setTimeout(() => { if (barBox) barBox.classList.add("go"); }, still ? 0 : 1500);
+  setTimeout(() => { if (barBox) barBox.classList.add("go"); }, still ? 0 : 1300);
 }
 function leaveBar() {
   if (!barBox) return; barBox.remove(); barBox = null; document.documentElement.classList.remove("hl-bar-open");
@@ -165,7 +165,7 @@ function build() {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitText);
 }
 function open() { build(); C.showPage("hall", false); fit(); paint(); setTimeout(() => { fit(); fitText(); }, 120); window.scrollTo({ top: 0 }); }
-window.CMLHall = { open, paint };
+window.CMLHall = { open, paint, enterBar };
 document.addEventListener("cml:lang", paint);
 document.addEventListener("cml:page", e => { if (built && page && page.classList.contains("active")) { fit(); paint(); } });
 }

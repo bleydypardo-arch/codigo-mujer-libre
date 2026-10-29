@@ -542,4 +542,6 @@ $('frecipe').onclick=()=>{if(!cardCv)return;const a=loadRec();if(a.length>=MAXR)
 $('wrap').appendChild($('final'));$('exitbar').onclick=()=>{if(window.parent&&window.parent!==window){window.parent.postMessage({cmlBarExit:1},location.origin);return}if(window.opener){window.close();setTimeout(()=>{location.href='../index.html'},250)}else location.href='../index.html'};
 trDom(document.body);
 window.__t={spr:sprinkle,sAdd:scoopAdd,bAdd:blendAdd,bServe:blendServe,mach:machinePour,bowl:bowlPour,setZone:k=>{Z=k;buildZone();renderTabs()},pour,S:()=>S,pick:k=>document.querySelector('.vcard[data-k='+k+']').click()};
+
+if(/[?&]auto=1/.test(location.search)){setTimeout(()=>{const e=$('enter');if(e)e.click()},650)}
 </script></body></html>

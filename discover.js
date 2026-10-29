@@ -427,7 +427,7 @@ function barBtn() {
   b.addEventListener("click", openBar);
   return b;
 }
-function openBar() { window.open("bar/index.html", "_blank", "noopener"); }
+function openBar() { if (document.documentElement.classList.contains("lobby-on") && window.CMLHall && window.CMLHall.enterBar) window.CMLHall.enterBar(); else window.open("bar/index.html", "_blank", "noopener"); }
 function renderMatchaPage() {
   const hero = document.getElementById("matchaHero"), body = document.getElementById("matchaBody");
   if (!hero || !body || !C) return;
@@ -485,6 +485,10 @@ function renderMatchaPage() {
   if (rc) colA.unshift(rc);
   meetBox.classList.add("ma-meetbox"); sharesBox.classList.add("ma-sharesbox");
   const left = el("div", { class: "ma-col ma-left" }, ...colA), right = el("div", { class: "ma-col ma-right" }, ...colB);
+  if (document.documentElement.classList.contains("lobby-on") && window.CMLMatchaLobby) {
+    window.CMLMatchaLobby.paint({ hero, body, meetBox, plansBox, sharesBox, rc, cityRow, barBtn: C.session() ? barBtn() : null });
+    applySearch(); return;
+  }
   meetBox.id = "maMeet"; plansBox.id = "maPlansBox"; sharesBox.id = "maShares"; if (rc) left.id = "maRecipe";
   const nav = el("div", { class: "ma-nav", role: "navigation", "aria-label": t("maNavK") });
   [["maMeet", "maNavM", "📍"], ["maRecipe", "maNavR", "🍵"], ["maPlansBox", "maNavP", "📅"], ["maShares", "maNavC", "✨"]].forEach(([id, k, ic]) => {
