@@ -183,7 +183,7 @@ function paintTienda() {
   const im = new Image(); im.src = "lobby/tienda-" + (en ? "en" : "es") + ".webp?v=1"; im.alt = t("hlBout"); im.className = "tn-img";
   sc.appendChild(im);
   const hint = mk("p", ""); hint.className = "tn-hint"; hint.textContent = t("hlTiendaHint");
-  host.replaceChildren(h, sc, hint);
+  host.replaceChildren(h, sc, hint); if (window.CMLEssenceLab) host.appendChild(window.CMLEssenceLab.button());
   const center = () => { sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) / 2; };
   im.addEventListener("load", center); center();
 }
