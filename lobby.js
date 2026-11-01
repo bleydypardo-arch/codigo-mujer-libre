@@ -118,7 +118,7 @@ function rowEl(row, big) {
 }
 
 /* ---------- televisores del lobby: rotan TODO (spa, experiencias, promociones | happy hour, restaurantes) ---------- */
-const TV_MS = 60000;   // cada foto dura 1 minuto: da tiempo de leer nombre e información
+const TV_MS = 50000; let tvLast = Date.now();   // cada foto dura 1 minuto: da tiempo de leer nombre e información
 const TV_STATE = {};
 const TV_CATS = { events: ["wellness", "events"], recs: ["social", "dining"] };
 function tvPool(kind) {
@@ -161,6 +161,7 @@ function tvSlide(p, i) {
   sl.appendChild(tx); sl.dataset.cat = c; return sl;
 }
 function tvBuild(kind, pool) {
+  tvLast = Date.now();
   const tv = mk("lb-tv"); tv.dataset.kind = kind; const wr = mk("lb-tvw");
   pool.forEach((p, i) => wr.appendChild(tvSlide(p, i)));
   wr.appendChild(mk("lb-tvb", "<i></i>")); tv.appendChild(wr); tv.appendChild(mk("lb-tva", esc(t("lbTvAll")) + " ›"));
@@ -170,6 +171,7 @@ function tvBuild(kind, pool) {
   return tv;
 }
 function tvStep() {
+  tvLast = Date.now();
   stage.querySelectorAll(".lb-tv").forEach(tv => {
     if (tv.__n < 2) return; const l = tv.querySelectorAll(".lb-tvs"); l[tv.__i].classList.remove("on"); tv.__i = (tv.__i + 1) % tv.__n; if (TV_STATE[tv.dataset.kind]) TV_STATE[tv.dataset.kind].idx = tv.__i; l[tv.__i].classList.add("on"); l[tv.__i].__load(); l[(tv.__i + 1) % tv.__n].__load();
     const b = tv.querySelector(".lb-tvb i"); if (b) { b.style.animation = "none"; void b.offsetWidth; b.style.animation = ""; }
@@ -293,7 +295,7 @@ function syncArt() { const src = document.getElementById("codeArt"), d = src && 
 function start() {
   timers.forEach(clearInterval); timers = [];
   timers.push(setInterval(() => { if (!document.hidden) { rotateThumbs(stage); if (sheetNode) rotateThumbs(sheetNode); }; }, 5500));
-  timers.push(setInterval(() => { if (!document.hidden) tvStep(); }, TV_MS));
+  timers.push(setInterval(() => { if (!document.hidden && Date.now() - tvLast >= TV_MS) tvStep(); }, 2000));
 }
 function init() {
   C = window.CML; if (!C) return;
@@ -302,7 +304,7 @@ function init() {
   build(); paint(); start();
   document.addEventListener("cml:session", () => setTimeout(paint, 60));
   document.addEventListener("cml:lang", () => setTimeout(paint, 60));
-  document.addEventListener("cml:page", e => { if (built) syncArt(); if (e.detail && e.detail.page === "home") { fit(); paintHello(); } else closeSheet(); });
+  document.addEventListener("cml:page", e => { if (built) syncArt(); if (e.detail && e.detail.page === "home") { fit(); paintHello(); tvLast = Date.now(); } else closeSheet(); });
   window.CMLLobby = { paint, openSheet, closeSheet };
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
