@@ -3,7 +3,8 @@
   /* ---- Boutiques (cada una es solo datos: Villa Navidad y Raíz Verde se agregan aquí) ---- */
   const B = {
     "luz-de-casa": {
-      pre: "luz-", name: "Luz de Casa", sub: "Velas artesanales", cur: "USD", cta: "Comprar", room: "img/luz-de-casa.jpg",
+      pre: "luz-", name: "Luz de Casa", sub: "Velas artesanales", cur: "USD", cta: "Comprar", room: "img/luz-de-casa.jpg", yaw0: 61, music: "audio/luz-de-casa.mp3",
+      studio: { kind: "candle", title: "Haz tu propia vela", sub: "Elige el color, escribe tu nombre y mira cómo queda.", price: 38, opts: [{ n: "Rosa", c: "#f0b6c4", d: "#d98aa0" }, { n: "Vino", c: "#9b2c47", d: "#6e1830" }, { n: "Marfil", c: "#f3e6cd", d: "#d9c49b" }] },
       points: [
         { x: 47, y: 68, l: "Mesa central", items: [
           { n: "Vela de soja en vaso de vidrio", d: "Aromas de vainilla, rosa y sándalo. 45 horas de duración.", p: 24, img: "mesa" },
@@ -18,7 +19,8 @@
       ]
     }    ,
     "raiz-verde": {
-      pre: "raiz-", name: "Raíz Verde", sub: "Productos naturales", cur: "USD", cta: "Comprar", room: "img/raiz-verde.jpg",
+      pre: "raiz-", name: "Raíz Verde", sub: "Productos naturales", cur: "USD", cta: "Comprar", room: "img/raiz-verde.jpg", music: "audio/raiz-verde.mp3",
+      studio: { kind: "soap", title: "Arma tu jabón de regalo", sub: "Elige el aroma, escribe tu nombre y mira cómo queda.", price: 12, opts: [{ n: "Lavanda", c: "#b9a1d6", d: "#8d72b4" }, { n: "Oliva", c: "#9fb27a", d: "#738a4c" }, { n: "Miel", c: "#e8c377", d: "#c19a45" }] },
       points: [
         { x: 15, y: 40, l: "Jabones líquidos y cuidado", items: [{ n: "Jabón líquido de manos", d: "Fórmula vegetal con aceites esenciales. Frasco de vidrio 300 ml.", p: 14, img: "estante1" }] },
         { x: 25, y: 47, l: "Cremas y lociones", items: [{ n: "Crema corporal natural", d: "Manteca de karité y aceite de coco. Sin parabenos.", p: 22, img: "estante2" }] },
@@ -32,7 +34,8 @@
       ]
     }    ,
     "villa-navidad": {
-      pre: "villa-", name: "Villa Navidad", sub: "Manualidades navideñas", cur: "USD", cta: "Comprar", room: "img/villa-navidad.jpg",
+      pre: "villa-", name: "Villa Navidad", sub: "Manualidades navideñas", cur: "USD", cta: "Comprar", room: "img/villa-navidad.jpg", music: "audio/villa-navidad.mp3",
+      studio: { kind: "ball", title: "Crea tu esfera navideña", sub: "Elige el color, escribe tu nombre y mira cómo queda.", price: 22, opts: [{ n: "Rojo", c: "#c1272d", d: "#7e1218" }, { n: "Dorado", c: "#e2b857", d: "#a67c1f" }, { n: "Verde", c: "#2f6b45", d: "#173d27" }] }, span: 150, pmin: -6, pmax: 6, pitchEnd: 0,
       points: [
         { x: 65, y: 40, l: "Árbol de Navidad", items: [{ n: "Adornos de árbol artesanales", d: "Esferas y lazos en rojo y dorado, hechos a mano. Set de 12.", p: 36, img: "arbol" }] },
         { x: 65, y: 70, l: "Cajas de regalo", items: [{ n: "Cajas de regalo decoradas", d: "Envueltas con listón dorado, listas para regalar.", p: 15, img: "regalos" }] },
@@ -50,9 +53,8 @@
   const slug = (new URLSearchParams(location.search).get("b") || "luz-de-casa"), S = B[slug] || B["luz-de-casa"];
   document.title = S.name + " · Código ML";
   $("#sName").textContent = S.name; $("#sSub").textContent = S.sub; $("#bname").textContent = S.name;
-  $("#roomImg").src = S.room; $("#roomImg").alt = "Interior de " + S.name;
   const money = v => new Intl.NumberFormat("en-US", { style: "currency", currency: S.cur, maximumFractionDigits: 0 }).format(v);
-  const room = $("#room"), scene = $("#scene"), doors = $("#doors"), tour = $("#tour");
+  const scene = $("#scene"), doors = $("#doors"), tour = $("#tour");
 
   /* ---- sonido muy suave (con botón para quitarlo) ---- */
   let ctx = null, on = true;
@@ -60,13 +62,11 @@
   function tone(f, t0, dur, vol) { const c = ac(); if (!c || !on) return; const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; o.frequency.value = f; const t = c.currentTime + t0; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + dur + 0.05); }
   const chime = () => [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, i * 0.28, 2.6, 0.035));
   const tick = () => { tone(880, 0, 0.7, 0.03); tone(1318.5, 0.08, 0.8, 0.02); };
-  /* piano suave generado (notas con caída lenta, pausas largas); se reemplaza por una grabación real cuando exista el archivo */
-  let pt = null, pn = 0;
-  const SCALE = [261.63, 293.66, 329.63, 392, 440, 523.25, 587.33, 659.25];
-  const SEQ = [0, 2, 4, 2, 5, 4, 2, 1, 0, 2, 4, 6, 5, 4, 2, 0];
-  function key(f, t0, vol) { const c = ac(); if (!c || !on) return; const t = c.currentTime + t0, m = c.createGain(); m.gain.setValueAtTime(0, t); m.gain.linearRampToValueAtTime(vol, t + 0.012); m.gain.exponentialRampToValueAtTime(0.0001, t + 4.2); m.connect(c.destination); [[1, 1], [2, 0.28], [3, 0.1], [4, 0.04]].forEach(([k, a]) => { const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; o.frequency.value = f * k; g.gain.value = a; o.connect(g); g.connect(m); o.start(t); o.stop(t + 4.3); }); }
-  function ambience() { if (pt || !ac() || !on) return; const step = () => { if (!on) { pt = null; return; } const i = SEQ[pn++ % SEQ.length]; key(SCALE[i], 0, 0.045); if (Math.random() < 0.3) key(SCALE[i] / 2, 0, 0.03); pt = setTimeout(step, 1700 + Math.random() * 1500); }; pt = setTimeout(step, 400); }
-  function stopAmb() { clearTimeout(pt); pt = null; }
+  /* música real: archivo por boutique (audio/<boutique>.mp3). Si no existe, queda en silencio. */
+  let bg = null;
+  function ambience() { if (!on || !S.music) return; if (!bg) { bg = new Audio(S.music); bg.loop = true; bg.volume = 0; bg.addEventListener("error", () => { bg = null; }); }
+    const p = bg.play(); p && p.catch(() => {}); let v = 0; const f = setInterval(() => { if (!bg) return clearInterval(f); v = Math.min(.3, v + .02); bg.volume = v; if (v >= .3) clearInterval(f); }, 120); }
+  function stopAmb() { if (bg) { bg.pause(); } }
   $("#snd").addEventListener("click", e => { on = !on; e.currentTarget.setAttribute("aria-pressed", String(on)); if (on) ambience(); else stopAmb(); });
 
   /* ---- ventanas ---- */
@@ -76,11 +76,14 @@
   }
   function zone(p) {
     modal("<h3>" + esc(p.l) + "</h3>" + p.items.map((it, i) => '<div class="item"><img class="sheet-photo" src="img/' + S.pre + it.img + '.jpg" alt="' + esc(it.n) + '"><div class="row"><div><b>' + esc(it.n) + "</b><span>" + esc(it.d) + '</span><span class="pp">' + money(it.p) + '</span></div><button class="btn wine" data-i="' + i + '">' + S.cta + "</button></div></div>").join("") + '<p class="note">Demostración: productos y precios de ejemplo.</p>', (ov, close) => {
-      ov.querySelectorAll(".btn").forEach(b => b.addEventListener("click", () => { close(); buy(); }));
+      ov.querySelectorAll(".btn").forEach(b => b.addEventListener("click", () => { const it = p.items[+b.dataset.i]; close(); buy(it.n, it.url); }));
     });
   }
-  function buy() {
-    modal("<h3>Aquí se conectará tu tienda</h3><p>Este botón se conectará con el catálogo y el sistema de venta de la emprendedora (su tienda en línea, su WhatsApp o su sistema de reservas). Ella cobra directamente y gestiona la entrega.</p><p class=\"note\">Demostración: no se realiza ninguna compra.</p><div class=\"acts\"><button class=\"btn ghost\" id=\"ok\">Entendido</button></div>", (ov, close) => $("#ok", ov).addEventListener("click", close));
+  function buy(name, url) {
+    modal('<h3>Vas a la tienda de ' + esc(S.name) + '</h3><p>' + (name ? '<b>' + esc(name) + '</b><br>' : '') + 'Para pagar y coordinar la entrega pasas a la tienda de la emprendedora: su catálogo, su WhatsApp o su tienda en línea. Ella cobra directamente y tú sigues su proceso.</p><div class="acts"><button class="btn ghost" id="bk">Seguir recorriendo</button><button class="btn wine" id="go">Continuar a su tienda</button></div><p class="note">Demostración: en una boutique real, este botón abre el enlace de compra de ese producto.</p>', (ov, close) => {
+      $("#bk", ov).addEventListener("click", close);
+      $("#go", ov).addEventListener("click", () => { if (url) { window.open(url, "_blank", "noopener"); close(); } else { $("#go", ov).textContent = "Aquí se abre su tienda"; $("#go", ov).disabled = true; } });
+    });
   }
   function interest() {
     modal('<h3>Quiero mi boutique virtual</h3><p>Cuéntanos de tu marca y te escribimos con una propuesta.</p><label>Tu nombre<input id="in" autocomplete="name"></label><label>Nombre de tu marca<input id="ib"></label><label>Instagram o TikTok<input id="is" placeholder="@tumarca"></label><label>Ciudad y país<input id="ic"></label><label>¿Qué vendes?<input id="it"></label><label>Tu correo o WhatsApp<input id="ie"></label><div class="acts"><button class="btn wine" id="send">Enviar mi interés</button></div><p class="note">Se abrirá tu correo con el mensaje listo para enviar a Código ML. Tus datos no se publican.</p>', (ov, close) => {
@@ -95,24 +98,64 @@
   $("#want").addEventListener("click", interest);
 
   /* ---- puntos dorados ---- */
-  S.points.forEach(p => { const b = document.createElement("button"); b.type = "button"; b.className = "hot"; b.style.left = p.x + "%"; b.style.top = p.y + "%"; b.setAttribute("data-l", p.l); b.setAttribute("aria-label", p.l); b.addEventListener("click", () => { if (tour.__moved) return; tick(); zone(p); }); room.appendChild(b); });
 
-  /* ---- puerta y recorrido ---- */
+
+  /* ---- experiencia inmersiva: crea el tuyo ---- */
+  function art(kind, o, name) {
+    const nm = esc(name || "Tu nombre"), fs = (name || "").length > 9 ? 30 : 40, F = "font-family=\"Great Vibes,Cormorant Garamond,cursive\"";
+    if (kind === "candle") return '<svg viewBox="0 0 300 340" role="img" aria-label="Vela personalizada"><defs><linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".65"/><stop offset=".25" stop-color="#fff" stop-opacity=".08"/><stop offset=".8" stop-color="#000" stop-opacity=".12"/><stop offset="1" stop-color="#fff" stop-opacity=".4"/></linearGradient><linearGradient id="wx" x1="0" x2="1"><stop offset="0" stop-color="' + o.c + '"/><stop offset="1" stop-color="' + o.d + '"/></linearGradient><radialGradient id="fl" cx=".5" cy=".7"><stop offset="0" stop-color="#fff7c8"/><stop offset=".6" stop-color="#ffc247"/><stop offset="1" stop-color="#ff8a2b" stop-opacity="0"/></radialGradient></defs><ellipse cx="150" cy="312" rx="96" ry="12" fill="#000" opacity=".16"/><ellipse cx="150" cy="84" rx="70" ry="60" fill="url(#fl)" opacity=".45"/><path d="M150 40c14 22 16 38 0 52-16-14-14-30 0-52z" fill="url(#fl)"/><rect x="148" y="86" width="4" height="22" fill="#3a2a22"/><rect x="62" y="104" width="176" height="204" rx="22" fill="url(#wx)"/><rect x="62" y="104" width="176" height="204" rx="22" fill="url(#gl)"/><rect x="62" y="104" width="176" height="204" rx="22" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="2"/><ellipse cx="150" cy="104" rx="88" ry="10" fill="#fff" opacity=".25"/><rect x="86" y="168" width="128" height="92" rx="6" fill="#fff8ec" stroke="#c9a45c" stroke-width="1.5"/><rect x="92" y="174" width="116" height="80" rx="3" fill="none" stroke="#c9a45c" stroke-width=".8"/><text x="150" y="196" text-anchor="middle" font-size="11" letter-spacing="3" fill="#9a6f2c" font-family="Inter,sans-serif">LUZ DE CASA</text><text x="150" y="236" text-anchor="middle" font-size="' + fs + '" fill="#3a2314" ' + F + '>' + nm + '</text></svg>';
+    if (kind === "ball") return '<svg viewBox="0 0 300 340" role="img" aria-label="Esfera personalizada"><defs><radialGradient id="bs" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".12" stop-color="' + o.c + '"/><stop offset="1" stop-color="' + o.d + '"/></radialGradient></defs><ellipse cx="150" cy="322" rx="84" ry="9" fill="#000" opacity=".14"/><path d="M150 18v34" stroke="#b58a2c" stroke-width="3"/><circle cx="150" cy="16" r="8" fill="none" stroke="#b58a2c" stroke-width="3"/><rect x="128" y="48" width="44" height="22" rx="5" fill="#d9ae4a"/><rect x="128" y="48" width="44" height="7" rx="3" fill="#f3d98a"/><circle cx="150" cy="186" r="118" fill="url(#bs)"/><path d="M64 156c56 22 116 22 172 0" fill="none" stroke="#f3d98a" stroke-width="3" opacity=".9"/><text x="150" y="214" text-anchor="middle" font-size="' + (fs + 4) + '" fill="#fff3cf" ' + F + '>' + nm + '</text><g fill="#f3d98a" opacity=".9"><circle cx="92" cy="130" r="3"/><circle cx="212" cy="262" r="3"/><circle cx="108" cy="268" r="2"/><circle cx="204" cy="128" r="2"/></g></svg>';
+    return '<svg viewBox="0 0 300 340" role="img" aria-label="Jabón personalizado"><defs><linearGradient id="sp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + o.c + '"/><stop offset="1" stop-color="' + o.d + '"/></linearGradient></defs><ellipse cx="150" cy="294" rx="110" ry="12" fill="#000" opacity=".14"/><rect x="48" y="104" width="204" height="170" rx="26" fill="url(#sp)"/><rect x="48" y="104" width="204" height="60" rx="26" fill="#fff" opacity=".18"/><rect x="48" y="150" width="204" height="86" fill="#fbf4e4"/><rect x="48" y="150" width="204" height="86" fill="none" stroke="#d9c49b" stroke-width="1.5"/><path d="M48 160h204M48 226h204" stroke="#c9a45c" stroke-width=".8" stroke-dasharray="3 4"/><text x="150" y="176" text-anchor="middle" font-size="10" letter-spacing="3" fill="#6b7a45" font-family="Inter,sans-serif">RAÍZ VERDE</text><text x="150" y="215" text-anchor="middle" font-size="' + fs + '" fill="#3a2a1a" ' + F + '>' + nm + '</text><path d="M150 104v170" stroke="#8a6a3a" stroke-width="3" opacity=".7"/><path d="M150 96c-22-26-44-24-52-6 20 8 40 8 52 6zM150 96c22-26 44-24 52-6-20 8-40 8-52 6z" fill="#6d8a4a"/></svg>';
+  }
+  function makeYours() {
+    const st = S.studio; let cur = st.opts[0], nm = "";
+    modal('<h3>' + esc(st.title) + '</h3><p>' + esc(st.sub) + '</p><div class="art" id="art"></div><label>Tu nombre<input id="nm" maxlength="14" autocomplete="off" placeholder="Escribe tu nombre"></label><div class="chips" id="chips">' + st.opts.map((o, i) => '<button type="button" class="chip' + (i ? "" : " on") + '" data-i="' + i + '"><i style="background:' + o.c + '"></i>' + o.n + "</button>").join("") + '</div><div class="acts"><span class="pp2">' + money(st.price) + '</span><button class="btn wine" id="mine">Pedir el mío</button></div><p class="note">Demostración: en tu boutique este botón se conecta con tu sistema de pedidos.</p>', (ov, close) => {
+      const draw = () => { $("#art", ov).innerHTML = art(st.kind, cur, nm); };
+      draw(); $("#nm", ov).addEventListener("input", e => { nm = e.target.value.trim(); draw(); });
+      ov.querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => { ov.querySelectorAll(".chip").forEach(x => x.classList.remove("on")); b.classList.add("on"); cur = st.opts[+b.dataset.i]; tick(); draw(); }));
+      $("#mine", ov).addEventListener("click", () => { close(); buy(st.title.replace(/^\S+ \S+ /, "") + (nm ? " · " + nm : ""), st.url); });
+    });
+  }
+  $("#mk").textContent = S.studio.title; $("#mk").addEventListener("click", makeYours);
+  /* ---- panorama esférico ---- */
+  const cv = $("#gl"), hots = $("#hots");
+  let P = null, zoom = 1, hotEls = [];
+  const base = () => { const a = cv.clientWidth / Math.max(1, cv.clientHeight); return a < 1 ? Math.min(100, 2 * Math.atan(Math.tan(35 * Math.PI / 180) / a) * 180 / Math.PI) : 72; };
+  const applyFov = () => { if (P) P.S.fov = Math.min(base() * zoom, (S.span || 360) / 2 - .01); };
+  function paint() { if (!P) return; applyFov(); P.draw(); hotEls.forEach(h => { const q = P.project(h.p.x, h.p.y); if (!q) { h.el.style.visibility = "hidden"; return; } h.el.style.visibility = "visible"; h.el.style.left = q.x + "px"; h.el.style.top = q.y + "px"; }); }
+  const img = new Image(); img.onload = () => {
+    P = CMLPano(cv, img, { span: S.span || 360, yaw: S.yaw0 || 0, pitch: S.pitch0 || 0, fov: 75, pitchMin: S.pmin == null ? -22 : S.pmin, pitchMax: S.pmax == null ? 32 : S.pmax });
+    if (!P) { $("#tour").classList.add("nogl"); return; }
+    S.points.forEach(p => { const b = document.createElement("button"); b.type = "button"; b.className = "hot"; b.setAttribute("data-l", p.l); b.setAttribute("aria-label", p.l); b.addEventListener("click", () => { if (drag.moved) return; tick(); zone(p); }); hots.appendChild(b); hotEls.push({ p, el: b }); });
+    zoom = 1.45; paint(); window.addEventListener("resize", () => requestAnimationFrame(paint));
+  }; img.src = S.room;
+
+  /* ---- arrastrar para mirar alrededor (dedo o mouse) ---- */
+  const drag = { on: false, moved: false, x: 0, y: 0, vx: 0, vy: 0, id: null };
+  const degPerPx = () => { const vf = P.S.fov, hf = 2 * Math.atan(Math.tan(vf * Math.PI / 360) * cv.clientWidth / cv.clientHeight) * 180 / Math.PI; return { h: hf / cv.clientWidth, v: vf / cv.clientHeight }; };
+  tour.addEventListener("pointerdown", e => { if (!P || e.target.closest(".arr,#snd")) return; drag.on = true; drag.moved = false; drag.x = e.clientX; drag.y = e.clientY; drag.vx = drag.vy = 0; drag.id = e.pointerId; tour.setPointerCapture && tour.setPointerCapture(e.pointerId); stopInertia(); });
+  tour.addEventListener("pointermove", e => { if (!drag.on || !P) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 5) drag.moved = true; if (!drag.moved) return; const k = degPerPx(); P.S.yaw -= dx * k.h; P.S.pitch += dy * k.v; drag.vx = dx * k.h; drag.vy = dy * k.v; drag.x = e.clientX; drag.y = e.clientY; tour.classList.add("drag"); $("#hint").style.opacity = 0; paint(); });
+  const endDrag = () => { if (!drag.on) return; drag.on = false; tour.classList.remove("drag"); if (drag.moved) inertia(); setTimeout(() => { drag.moved = false; }, 80); };
+  tour.addEventListener("pointerup", endDrag); tour.addEventListener("pointercancel", endDrag);
+  let raf = 0; const stopInertia = () => cancelAnimationFrame(raf);
+  function inertia() { stopInertia(); const step = () => { drag.vx *= .94; drag.vy *= .94; if (Math.abs(drag.vx) + Math.abs(drag.vy) < .02) return; P.S.yaw -= drag.vx; P.S.pitch += drag.vy; paint(); raf = requestAnimationFrame(step); }; raf = requestAnimationFrame(step); }
+  tour.addEventListener("wheel", e => { if (!P) return; e.preventDefault(); zoom = Math.max(.55, Math.min(1.3, zoom * (e.deltaY > 0 ? 1.06 : .94))); paint(); }, { passive: false });
+  const turn = d => { if (!P) return; stopInertia(); const t0 = P.S.yaw, t1 = t0 + d, st = performance.now(); (function f(t) { const k = Math.min(1, (t - st) / 600), e = 1 - Math.pow(1 - k, 3); P.S.yaw = t0 + (t1 - t0) * e; paint(); if (k < 1) requestAnimationFrame(f); })(st); };
+  $("#aL").addEventListener("click", () => turn(-40)); $("#aR").addEventListener("click", () => turn(40));
+
+  /* ---- puerta: se abre y la cámara avanza hacia adentro ---- */
   let opened = false;
+  function enter() {
+    if (!P) return; const z0 = zoom, z1 = 1, t0 = performance.now(), yaw0 = P.S.yaw, pit0 = P.S.pitch;
+    (function f(t) { const k = Math.min(1, (t - t0) / 4200), e = 1 - Math.pow(1 - k, 3); zoom = z0 + (z1 - z0) * e; P.S.pitch = pit0 + (S.pitchEnd == null ? -4 : S.pitchEnd) * e; paint(); if (k < 1) requestAnimationFrame(f); })(t0);
+  }
   function open() {
     if (opened) return; opened = true; ac(); chime();
-    scene.classList.add("opening"); $("#flash").classList.add("on"); doors.classList.add("open");
-    setTimeout(() => { doors.classList.add("gone"); scene.classList.add("ready"); ["#top", "#hint", "#aL", "#aR"].forEach(s => $(s).hidden = false); ambience(); center(); }, 2900);
-    setTimeout(() => { $("#hint").style.opacity = 0; }, 11000);
+    scene.classList.add("opening"); $("#flash").classList.add("on"); doors.classList.add("open"); enter();
+    setTimeout(() => { doors.classList.add("gone"); scene.classList.add("ready"); ["#top", "#hint", "#aL", "#aR"].forEach(s => $(s).hidden = false); ambience(); }, 2900);
+    setTimeout(() => { $("#hint").style.opacity = 0; }, 12000);
   }
   doors.addEventListener("click", open); doors.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
-  function center() { tour.scrollTo({ left: (tour.scrollWidth - tour.clientWidth) * 0.42 }); setTimeout(() => tour.scrollTo({ left: (tour.scrollWidth - tour.clientWidth) * 0.55, behavior: "smooth" }), 400); }
-  $("#aL").addEventListener("click", () => tour.scrollBy({ left: -tour.clientWidth * 0.6, behavior: "smooth" }));
-  $("#aR").addEventListener("click", () => tour.scrollBy({ left: tour.clientWidth * 0.6, behavior: "smooth" }));
-  tour.addEventListener("scroll", () => { $("#hint").style.opacity = 0; }, { passive: true, once: true });
-  let dx = 0, sx = 0, down = false;
-  tour.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") return; down = true; tour.__moved = false; sx = e.clientX; dx = tour.scrollLeft; });
-  window.addEventListener("pointermove", e => { if (!down) return; if (Math.abs(e.clientX - sx) > 4) { tour.__moved = true; tour.classList.add("drag"); } if (tour.__moved) tour.scrollLeft = dx - (e.clientX - sx); });
-  window.addEventListener("pointerup", () => { down = false; tour.classList.remove("drag"); setTimeout(() => { tour.__moved = false; }, 60); });
+
   document.addEventListener("visibilitychange", () => { if (document.hidden) stopAmb(); else if (opened && on) ambience(); });
 })();

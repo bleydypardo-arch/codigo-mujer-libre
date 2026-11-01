@@ -7,19 +7,19 @@
 <meta name="description" content="Entra a una boutique del centro comercial virtual Código ML.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&family=Great+Vibes&display=swap">
 <link rel="stylesheet" href="style.css?v=2">
 <link rel="stylesheet" href="entrada.css?v=3">
-<link rel="stylesheet" href="tienda.css?v=1">
+<link rel="stylesheet" href="tienda.css?v=2">
 </head>
 <body class="ex">
 <main>
   <section id="scene" aria-label="Entrada a la boutique">
     <div id="tour" tabindex="0" aria-label="Interior de la boutique. Desliza para mirar alrededor.">
-      <div id="room"><img id="roomImg" alt="Interior de la boutique" draggable="false"></div>
+      <canvas id="gl" aria-label="Interior de la boutique en 360 grados"></canvas><div id="hots"></div>
     </div>
     <div id="hint" hidden><span class="hand">↔</span> Desliza para mirar alrededor · toca los puntos dorados</div>
-    <div id="top" hidden><span class="nm" id="bname"></span><button id="snd" type="button" aria-label="Sonido" aria-pressed="true">♪</button></div>
+    <div id="top" hidden><span class="nm" id="bname"></span><button id="mk" class="mk" type="button"></button><button id="snd" type="button" aria-label="Sonido" aria-pressed="true">♪</button></div>
     <button class="arr l" id="aL" aria-label="Mirar a la izquierda" hidden>‹</button>
     <button class="arr r" id="aR" aria-label="Mirar a la derecha" hidden>›</button>
     <div id="doors" role="button" tabindex="0" aria-label="Abrir la puerta de la boutique">
@@ -63,6 +63,7 @@
 </main>
 <script src="data.js?v=1"></script>
 <script src="icons.js?v=1"></script>
-<script src="tienda.js?v=4"></script>
+<script src="pano.js?v=1"></script>
+<script src="tienda.js?v=8"></script>
 </body>
 </html>
