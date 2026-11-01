@@ -3,7 +3,7 @@
   /* ---- Boutiques (cada una es solo datos: Villa Navidad y Raíz Verde se agregan aquí) ---- */
   const B = {
     "luz-de-casa": {
-      pre: "luz-", name: "Luz de Casa", sub: "Velas artesanales", cur: "USD", cta: "Comprar", room: "img/luz-de-casa.jpg", yaw0: 61, music: "audio/luz-de-casa.mp3",
+      pre: "luz-", name: "Luz de Casa", sub: "Velas artesanales", cur: "USD", cta: "Comprar (demo)", room: "img/luz-de-casa.jpg", yaw0: 61, music: "audio/luz-de-casa.mp3",
       studio: { kind: "candle", title: "Haz tu propia vela", sub: "Elige el color, escribe tu nombre y mira cómo queda.", price: 38, opts: [{ n: "Rosa", c: "#f0b6c4", d: "#d98aa0" }, { n: "Vino", c: "#9b2c47", d: "#6e1830" }, { n: "Marfil", c: "#f3e6cd", d: "#d9c49b" }] },
       points: [
         { x: 47, y: 68, l: "Mesa central", items: [
@@ -19,7 +19,7 @@
       ]
     }    ,
     "raiz-verde": {
-      pre: "raiz-", name: "Raíz Verde", sub: "Productos naturales", cur: "USD", cta: "Comprar", room: "img/raiz-verde.jpg", music: "audio/raiz-verde.mp3",
+      pre: "raiz-", name: "Raíz Verde", sub: "Productos naturales", cur: "USD", cta: "Comprar (demo)", room: "img/raiz-verde.jpg", music: "audio/raiz-verde.mp3",
       studio: { kind: "soap", title: "Arma tu jabón de regalo", sub: "Elige el aroma, escribe tu nombre y mira cómo queda.", price: 12, opts: [{ n: "Lavanda", c: "#b9a1d6", d: "#8d72b4" }, { n: "Oliva", c: "#9fb27a", d: "#738a4c" }, { n: "Miel", c: "#e8c377", d: "#c19a45" }] },
       points: [
         { x: 15, y: 40, l: "Jabones líquidos y cuidado", items: [{ n: "Jabón líquido de manos", d: "Fórmula vegetal con aceites esenciales. Frasco de vidrio 300 ml.", p: 14, img: "estante1" }] },
@@ -34,7 +34,7 @@
       ]
     }    ,
     "villa-navidad": {
-      pre: "villa-", name: "Villa Navidad", sub: "Manualidades navideñas", cur: "USD", cta: "Comprar", room: "img/villa-navidad.jpg", music: "audio/villa-navidad.mp3",
+      pre: "villa-", name: "Villa Navidad", sub: "Manualidades navideñas", cur: "USD", cta: "Comprar (demo)", room: "img/villa-navidad.jpg", music: "audio/villa-navidad.mp3",
       studio: { kind: "ball", title: "Crea tu esfera navideña", sub: "Elige el color, escribe tu nombre y mira cómo queda.", price: 22, opts: [{ n: "Rojo", c: "#c1272d", d: "#7e1218" }, { n: "Dorado", c: "#e2b857", d: "#a67c1f" }, { n: "Verde", c: "#2f6b45", d: "#173d27" }] }, span: 150, pmin: -6, pmax: 6, pitchEnd: 0,
       points: [
         { x: 65, y: 40, l: "Árbol de Navidad", items: [{ n: "Adornos de árbol artesanales", d: "Esferas y lazos en rojo y dorado, hechos a mano. Set de 12.", p: 36, img: "arbol" }] },
@@ -75,7 +75,7 @@
     const close = () => ov.remove(); ov.addEventListener("click", e => { if (e.target === ov) close(); }); $(".x", ov).addEventListener("click", close); mount && mount(ov, close); return close;
   }
   function zone(p) {
-    modal("<h3>" + esc(p.l) + "</h3>" + p.items.map((it, i) => '<div class="item"><img class="sheet-photo" src="img/' + S.pre + it.img + '.jpg" alt="' + esc(it.n) + '"><div class="row"><div><b>' + esc(it.n) + "</b><span>" + esc(it.d) + '</span><span class="pp">' + money(it.p) + '</span></div><button class="btn wine" data-i="' + i + '">' + S.cta + "</button></div></div>").join("") + '<p class="note">Demostración: productos y precios de ejemplo.</p>', (ov, close) => {
+    modal("<h3>" + esc(p.l) + "</h3>" + p.items.map((it, i) => '<div class="item"><img class="sheet-photo" src="img/' + S.pre + it.img + '.jpg" alt="' + esc(it.n) + '"><div class="row"><div><b>' + esc(it.n) + "</b><span>" + esc(it.d) + '</span><span class="pp">' + money(it.p) + '</span><span class="demo">Producto de demostración · sin compra real conectada</span></div><button class="btn wine" data-i="' + i + '">' + S.cta + "</button></div></div>").join("") + '<p class="note">Demostración: productos y precios de ejemplo.</p>', (ov, close) => {
       ov.querySelectorAll(".btn").forEach(b => b.addEventListener("click", () => { const it = p.items[+b.dataset.i]; close(); buy(it.n, it.url, it.p, S.pre + it.img); }));
     });
   }
