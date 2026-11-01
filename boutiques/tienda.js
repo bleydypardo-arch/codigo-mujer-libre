@@ -3,7 +3,7 @@
   /* ---- Boutiques (cada una es solo datos: Villa Navidad y Raíz Verde se agregan aquí) ---- */
   const B = {
     "luz-de-casa": {
-      pre: "luz-", name: "Luz de Casa", sub: "Velas artesanales", cur: "USD", cta: "Comprar (demo)", room: "img/luz-de-casa.jpg", yaw0: 61, music: "audio/luz-de-casa.mp3",
+      pre: "luz-", name: "Luz de Casa", sub: "Velas artesanales", cur: "USD", cta: "Comprar (demo)", room: "img/luz-de-casa.jpg", door: "img/puerta-luz-de-casa.jpg", yaw0: 61, music: "audio/luz-de-casa.mp3",
       studio: { kind: "candle", title: "Haz tu propia vela", sub: "Elige el color, escribe tu nombre y mira cómo queda.", price: 38, opts: [{ n: "Rosa", c: "#f0b6c4", d: "#d98aa0" }, { n: "Vino", c: "#9b2c47", d: "#6e1830" }, { n: "Marfil", c: "#f3e6cd", d: "#d9c49b" }] },
       points: [
         { x: 47, y: 68, l: "Mesa central", items: [
