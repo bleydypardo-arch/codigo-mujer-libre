@@ -2220,20 +2220,21 @@ async function loadAll() {
     settings = {};
     (st.data || []).forEach(r => { settings[r.key] = r.value; });
     plans = plans.filter(shownTo);
-    await Promise.all([loadResponses(), refreshCounts()]);
+    settingsReady = true;
+    // todo lo que sigue se pide al mismo tiempo (antes era una fila: por eso la entrada tardaba)
+    await Promise.all([
+      loadResponses(), refreshCounts(),
+      loadMembers().catch(() => {}),
+      (window.CMLCommunity ? window.CMLCommunity.loadBlocks() : Promise.resolve()).catch(() => {}),
+      loadPosts().catch(() => {}),
+      loadMessages().catch(() => {}),
+      (window.CMLPolls ? Promise.resolve().then(() => window.CMLPolls.reload()).catch(() => {}) : Promise.resolve())
+    ]);
     flushInterest();
   } catch {
     announce("loadError");
   }
   settingsReady = true;
-  await Promise.all([
-    loadMembers().catch(() => {}),
-    (window.CMLCommunity ? window.CMLCommunity.loadBlocks() : Promise.resolve()).catch(() => {}),
-    loadPosts().catch(() => {}),
-    loadMessages().catch(() => {})
-  ]);
-  if (!session || session.user.id !== uid) return;
-  if (window.CMLPolls) { try { await window.CMLPolls.reload(); } catch { /* polls are optional */ } }
   if (!session || session.user.id !== uid) return;
   applyCopy();
   viewBar();

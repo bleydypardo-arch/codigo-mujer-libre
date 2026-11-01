@@ -118,7 +118,8 @@ function rowEl(row, big) {
 }
 
 /* ---------- televisores del lobby: rotan TODO (spa, experiencias, promociones | happy hour, restaurantes) ---------- */
-const TV_MS = 9000;
+const TV_MS = 60000;   // cada foto dura 1 minuto: da tiempo de leer nombre e información
+const TV_STATE = {};
 const TV_CATS = { events: ["wellness", "events"], recs: ["social", "dining"] };
 function tvPool(kind) {
   if (!C.session()) return [];
@@ -130,7 +131,11 @@ function tvPool(kind) {
   cats.forEach(c => shuf(by[c]));
   cats.forEach(c => by[c].sort((a, b) => (C.activePromo && C.activePromo(a) ? 0 : 1) - (C.activePromo && C.activePromo(b) ? 0 : 1)));
   const out = []; for (let i = 0, more = true; more; i++) { more = false; cats.forEach(c => { if (by[c][i]) { out.push(by[c][i]); more = true; } }); }
-  return out;
+  const sig = out.map(p => p.id).sort().join(",");
+  let st = TV_STATE[kind];
+  if (!st || st.sig !== sig) { st = TV_STATE[kind] = { sig, order: out.map(p => p.id), idx: Math.floor(Math.random() * Math.max(1, out.length)) }; }
+  const byId = {}; out.forEach(p => { byId[p.id] = p; });
+  return st.order.map(id => byId[id]).filter(Boolean);
 }
 function tvKicker(p) {
   const c = C.eventCategory(p);
@@ -159,14 +164,14 @@ function tvBuild(kind, pool) {
   const tv = mk("lb-tv"); tv.dataset.kind = kind; const wr = mk("lb-tvw");
   pool.forEach((p, i) => wr.appendChild(tvSlide(p, i)));
   wr.appendChild(mk("lb-tvb", "<i></i>")); tv.appendChild(wr); tv.appendChild(mk("lb-tva", esc(t("lbTvAll")) + " ›"));
-  tv.__n = pool.length; tv.__i = Math.floor(Math.random() * pool.length);
+  tv.__n = pool.length; tv.__i = (TV_STATE[kind] ? TV_STATE[kind].idx : 0) % pool.length;
   { const l = wr.querySelectorAll(".lb-tvs"); l.forEach(x => x.classList.remove("on")); l[tv.__i].classList.add("on"); l[tv.__i].__load(); l[(tv.__i + 1) % l.length].__load(); }
   tv.addEventListener("click", e => { e.stopPropagation(); const sl = tv.querySelectorAll(".lb-tvs")[tv.__i]; const c = sl && sl.dataset.cat; C.showEventsCat(c === "events" ? "events" : c || "all"); });
   return tv;
 }
 function tvStep() {
   stage.querySelectorAll(".lb-tv").forEach(tv => {
-    if (tv.__n < 2) return; const l = tv.querySelectorAll(".lb-tvs"); l[tv.__i].classList.remove("on"); tv.__i = (tv.__i + 1) % tv.__n; l[tv.__i].classList.add("on"); l[tv.__i].__load(); l[(tv.__i + 1) % tv.__n].__load();
+    if (tv.__n < 2) return; const l = tv.querySelectorAll(".lb-tvs"); l[tv.__i].classList.remove("on"); tv.__i = (tv.__i + 1) % tv.__n; if (TV_STATE[tv.dataset.kind]) TV_STATE[tv.dataset.kind].idx = tv.__i; l[tv.__i].classList.add("on"); l[tv.__i].__load(); l[(tv.__i + 1) % tv.__n].__load();
     const b = tv.querySelector(".lb-tvb i"); if (b) { b.style.animation = "none"; void b.offsetWidth; b.style.animation = ""; }
   });
 }
