@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Boutique Código ML · Experiencia</title>
+<meta name="description" content="Entra a una boutique virtual de Código ML y vive la experiencia.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="entrada.css?v=3">
+</head>
+<body class="ex">
+<main>
+  <!-- ESCENA: puerta de cristal + recorrido por la boutique -->
+  <section id="scene" aria-label="Entrada a la boutique">
+    <div id="tour" tabindex="0" aria-label="Interior de la boutique. Desliza para mirar alrededor.">
+      <div id="room"><img id="roomImg" src="img/interior.webp" alt="Interior de la boutique Código ML" draggable="false"></div>
+    </div>
+    <div id="hint" hidden><span class="hand">↔</span> Desliza para mirar alrededor · toca los puntos dorados</div>
+    <div id="top" hidden><span class="nm">Boutique de ejemplo</span><button id="snd" type="button" aria-label="Sonido" aria-pressed="true">♪</button></div>
+    <button class="arr l" id="aL" aria-label="Mirar a la izquierda" hidden>‹</button>
+    <button class="arr r" id="aR" aria-label="Mirar a la derecha" hidden>›</button>
+    <div id="doors" role="button" tabindex="0" aria-label="Abrir la puerta de la boutique">
+      <div class="half hl"><div class="in"><img src="img/puerta.jpg" alt=""></div></div>
+      <div class="half hr"><div class="in"><img src="img/puerta.jpg" alt=""></div></div>
+      <div class="sign"><div class="in"><img src="img/puerta.jpg" alt="Código ML · Boutique"></div></div>
+      <div id="tap"><span>Toca para entrar</span></div>
+    </div>
+    <div id="flash"></div>
+  </section>
+
+  <!-- EXPLICACIÓN -->
+  <div class="pad" id="info">
+    <section class="intro">
+      <div class="kicker">Esto podría ser tu marca</div>
+      <h2>Una boutique con tu nombre, dentro de un hotel de lujo</h2>
+      <p class="lead">Lo que acabas de recorrer es una boutique de ejemplo. Tu boutique tendría tu logo en la pared, tus productos o servicios en las vitrinas y un enlace propio para compartir en Instagram, TikTok y WhatsApp.</p>
+    </section>
+
+    <section>
+      <div class="steps">
+        <div class="step"><b>Una puerta con tu marca</b><span>Tus seguidoras llegan directo a tu boutique y entran como a una tienda de lujo.</span></div>
+        <div class="step"><b>Compran a tu manera</b><span>Cada producto lleva a tu tienda (Shopify, WooCommerce, reservas o tu pago). El dinero es tuyo.</span></div>
+        <div class="step"><b>Descubren el hotel</b><span>Antes de comprar recorren el spa, el café y las demás experiencias. Tu comunidad crece con la nuestra.</span></div>
+      </div>
+    </section>
+
+    <section class="vision">
+      <div class="kicker">Lo que viene</div>
+      <h2>Comprar será una experiencia, no una lista</h2>
+      <p class="lead">El comercio está pasando de catálogos a experiencias inmersivas. Estamos construyendo hacia ese futuro: más adelante, tus clientas podrán entrar a tu boutique con gafas de realidad aumentada y vivir la compra de forma casi real. Las marcas que entren ahora serán parte de esa historia desde el principio.</p>
+    </section>
+
+    <section class="offer2">
+      <div class="priceCard">
+        <div class="kicker" style="color:var(--gold-d)">Boutiques fundadoras · cupos limitados</div>
+        <div class="big" id="pr">USD 9</div>
+        <div style="font-size:14px;color:var(--mute)" id="pr2"></div>
+        <ul>
+          <li>Boutique propia con tu identidad y tu enlace exclusivo</li>
+          <li>Panel con las mujeres que entran por tu enlace</li>
+          <li>Participación en las ventas de Código ML a las mujeres que traigas (condiciones por definir)</li>
+          <li>Cupos limitados por ciudad y categoría: Orlando, Bogotá, Barranquilla y Granada-Costa</li>
+        </ul>
+        <button class="btn wine" id="want" style="width:100%">Quiero mi boutique virtual</button>
+      </div>
+    </section>
+    <footer>Código ML · Demo comercial. Los productos y precios del recorrido son de ejemplo. <a href="index.html">Ver galería de boutiques</a></footer>
+  </div>
+</main>
+<script src="data.js?v=1"></script>
+<script src="icons.js?v=1"></script>
+<script src="entrada.js?v=2"></script>
+</body>
+</html>
