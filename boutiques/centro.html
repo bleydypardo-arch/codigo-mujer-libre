@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Centro comercial virtual · Código ML</title>
+<meta name="description" content="Demostración del centro comercial virtual Código ML: entra a tres boutiques de ejemplo.">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="centro.css?v=4">
+</head>
+<body class="cc">
+<header class="cchero">
+  <div class="mono">ML</div>
+  <h1>Entra a tu boutique<br>como si estuvieras ahí</h1>
+  <p>Un centro comercial virtual abierto las 24 horas. Cada emprendedora tiene su propia puerta, su propio local y sus productos a la vista.</p>
+  <a class="btn wine" href="#puertas">Ver las boutiques de ejemplo</a>
+</header>
+<main>
+  <section id="puertas" class="doors">
+    <h2>Tres boutiques de ejemplo</h2>
+    <p class="sub">Toca una puerta, entra y recorre el local. Desliza para mirar alrededor y toca los puntos dorados para ver los productos.</p>
+    <div class="grid">
+      <a class="shop" href="tienda.html?b=luz-de-casa"><img src="img/mini-luz-de-casa.jpg" alt="Interior de Luz de Casa" loading="lazy"><span class="cap"><b>Luz de Casa</b><small>Velas artesanales</small></span></a>
+      <a class="shop" href="tienda.html?b=villa-navidad"><img src="img/mini-villa-navidad.jpg" alt="Interior de Villa Navidad" loading="lazy"><span class="cap"><b>Villa Navidad</b><small>Manualidades navideñas</small></span></a>
+      <a class="shop" href="tienda.html?b=raiz-verde"><img src="img/mini-raiz-verde.jpg" alt="Interior de Raíz Verde" loading="lazy"><span class="cap"><b>Raíz Verde</b><small>Productos naturales</small></span></a>
+    </div>
+    <p class="fic">Marcas, productos y precios de ejemplo.</p>
+  </section>
+  <section class="how">
+    <h2>Cómo creamos tu boutique</h2>
+    <p class="sub">Es un trabajo de diseño hecho a la medida. Lo hacemos nosotras por ti.</p>
+    <div class="steps">
+      <div class="step"><b>1. Tu local, diseñado para tu marca</b><span>Con tu nombre en la puerta, tus colores y el ambiente que representa tu negocio.</span></div>
+      <div class="step"><b>2. Tus productos con fotografías reales</b><span>Cada producto se ve con detalle, con su descripción y su precio.</span></div>
+      <div class="step"><b>3. Compra desde tu propio sistema</b><span>El botón "Comprar" lleva a tu catálogo, tu WhatsApp o tu tienda en línea. Tú cobras y tú entregas.</span></div>
+      <div class="step"><b>4. Una comunidad que te visita</b><span>Las visitantes se registran gratis y recorren todas las boutiques. Campañas como Día de la Madre o Black Friday traen visitas a todo el centro comercial.</span></div>
+    </div>
+  </section>
+  <section class="cta">
+    <div class="kicker">Boutiques piloto · cupos limitados</div>
+    <h2>Que tu marca tenga su puerta</h2>
+    <p>El piloto no tiene costo. Montamos tu boutique y la compartes con tus seguidoras.</p>
+    <button class="btn wine" id="want">Quiero mi boutique virtual</button>
+  </section>
+</main>
+<footer>Código ML · Centro comercial virtual · Demostración</footer>
+<script src="data.js?v=1"></script>
+<script>
+(function(){
+const $=(s,r)=>(r||document).querySelector(s);
+$("#want").addEventListener("click",()=>{
+ const ov=document.createElement("div");ov.className="ov";
+ ov.innerHTML='<div class="modal" role="dialog" aria-modal="true"><button class="x" aria-label="Cerrar">×</button><h3>Quiero mi boutique virtual</h3><p>Cuéntanos de tu marca y te escribimos con una propuesta.</p><label>Tu nombre<input id="in" autocomplete="name"></label><label>Nombre de tu marca<input id="ib"></label><label>Instagram o TikTok<input id="is" placeholder="@tumarca"></label><label>Ciudad y país<input id="ic"></label><label>¿Qué vendes?<input id="it"></label><label>Tu correo o WhatsApp<input id="ie"></label><div class="acts"><button class="btn wine" id="send">Enviar mi interés</button></div><p class="note">Se abrirá tu correo con el mensaje listo para enviar a Código ML. Tus datos no se publican.</p></div>';
+ document.body.appendChild(ov);const close=()=>ov.remove();
+ ov.addEventListener("click",e=>{if(e.target===ov)close();});$(".x",ov).addEventListener("click",close);
+ $("#send",ov).addEventListener("click",()=>{const v=id=>$("#"+id,ov).value.trim();
+  if(!v("in")||!v("ie")){const t=document.createElement("div");t.className="toast";t.textContent="Falta tu nombre y un medio de contacto.";document.body.appendChild(t);setTimeout(()=>t.remove(),2800);return;}
+  const body=["Quiero mi boutique virtual en Código ML.","","Nombre: "+v("in"),"Marca: "+v("ib"),"Redes: "+v("is"),"Ciudad y país: "+v("ic"),"Vendo: "+v("it"),"Contacto: "+v("ie")].join("\n");
+  close();location.href="mailto:"+(window.CMLB?CMLB.email:"codigomujerlibre@gmail.com")+"?subject="+encodeURIComponent("Quiero mi boutique virtual · "+(v("ib")||v("in")))+"&body="+encodeURIComponent(body);});
+});
+})();
+</script>
+</body>
+</html>

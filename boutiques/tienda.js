@@ -30,6 +30,21 @@
         { x: 73, y: 46, l: "Estante de aceites", items: [{ n: "Aceites esenciales", d: "Aceites puros para difusor y masajes.", p: 16, img: "estanteder" }] },
         { x: 85, y: 54, l: "Mostrador", items: [{ n: "Kit de bienvenida", d: "Selección de mini productos para conocer la marca.", p: 34, img: "mostrador" }] }
       ]
+    }    ,
+    "villa-navidad": {
+      pre: "villa-", name: "Villa Navidad", sub: "Manualidades navideñas", cur: "USD", cta: "Comprar", room: "img/villa-navidad.jpg",
+      points: [
+        { x: 65, y: 40, l: "Árbol de Navidad", items: [{ n: "Adornos de árbol artesanales", d: "Esferas y lazos en rojo y dorado, hechos a mano. Set de 12.", p: 36, img: "arbol" }] },
+        { x: 65, y: 70, l: "Cajas de regalo", items: [{ n: "Cajas de regalo decoradas", d: "Envueltas con listón dorado, listas para regalar.", p: 15, img: "regalos" }] },
+        { x: 36, y: 55, l: "Casitas de cerámica", items: [{ n: "Casita de cerámica con luz", d: "Pintada a mano, con luz cálida interior.", p: 42, img: "casitas" }] },
+        { x: 36, y: 76, l: "Arbolitos", items: [{ n: "Arbolitos decorativos", d: "Pequeños árboles en tela y madera para mesa o repisa.", p: 19, img: "arbolitos" }] },
+        { x: 22, y: 38, l: "Muñecos y figuras", items: [{ n: "Figuras navideñas de colección", d: "Muñecos y personajes de Navidad pintados a mano.", p: 28, img: "estante" }] },
+        { x: 94, y: 30, l: "Renos y árboles dorados", items: [{ n: "Renos blancos y árboles dorados", d: "Figuras decorativas para el hogar. Acabado artesanal.", p: 34, img: "renos" }] },
+        { x: 92, y: 47, l: "Esferas grandes", items: [{ n: "Esferas rojas y doradas", d: "Esferas decorativas de gran tamaño, pintadas a mano.", p: 26, img: "esferas" }] },
+        { x: 96, y: 66, l: "Globos de nieve", items: [{ n: "Globos de nieve", d: "Globos de vidrio con escenas navideñas. Piezas de colección.", p: 24, img: "globos" }] },
+        { x: 4, y: 53, l: "Mostrador", items: [{ n: "Muñecos del mostrador", d: "Pareja de muñecos navideños, edición limitada.", p: 45, img: "mostrador" }] },
+        { x: 4, y: 82, l: "Linterna", items: [{ n: "Linterna dorada con velas", d: "Linterna decorativa con velas LED incluidas.", p: 39, img: "linterna" }] }
+      ]
     }
   };
   const slug = (new URLSearchParams(location.search).get("b") || "luz-de-casa"), S = B[slug] || B["luz-de-casa"];
