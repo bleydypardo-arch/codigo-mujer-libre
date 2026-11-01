@@ -72,7 +72,7 @@ function helloText() {
 }
 function paintHello() {
   const g = stage.querySelector(".lb-greet"); if (!g) return;
-  g.setAttribute("data-k", t("lbWelcomeK")); g.replaceChildren(); const ht = helloText(), cut = ht.indexOf(", ") + 2; [...ht].forEach((ch, i) => { const s = document.createElement("i"); s.textContent = ch; if (cut > 1 && i >= cut) s.className = "nm"; s.style.animationDelay = (0.25 + i * 0.055).toFixed(2) + "s"; g.appendChild(s); });
+  g.setAttribute("data-k", t("lbWelcomeK")); g.replaceChildren(); [...helloText()].forEach((ch, i) => { const s = document.createElement("i"); s.textContent = ch; s.style.animationDelay = (0.25 + i * 0.055).toFixed(2) + "s"; g.appendChild(s); });
   const clone = g.cloneNode(true); g.parentNode.replaceChild(clone, g);   // reinicia la animación
 }
 
@@ -206,7 +206,7 @@ function build() {
     sway: [[392, 846, 290, 206]] });
 
   // saludo y marca
-  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club-3.webp?v=20261031i" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
+  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club-2.webp?v=20261031f" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
   stage.appendChild(hello);
 
   // pantallas (tocar = se abre ampliada con las tres categorías)

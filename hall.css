@@ -576,9 +576,3 @@ html.lobby-on .lb-greet { font-size: calc(var(--inv) * 32px); }
 .es-st.sc-ing .es-hs::after, .es-st.sc-bot .es-hs::after { content: ""; position: absolute; left: 50%; top: 50%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: rgba(255,244,214,.9); box-shadow: 0 0 0 0 rgba(255,232,170,.9), 0 0 10px 2px rgba(255,226,150,.9); animation: lbSpPulse 2.2s ease-in-out infinite; }
 .es-st.sc-ing .es-hs.on, .es-st.sc-bot .es-hs.on { border-color: #fff3cf; background: rgba(255,232,170,.22); box-shadow: 0 0 22px 4px rgba(255,226,150,.95); }
 .es-st.sc-ing .es-hs.on::after, .es-st.sc-bot .es-hs.on::after { content: "✓"; width: 24px; height: 24px; margin: -12px 0 0 -12px; display: grid; place-items: center; background: #F2D9A0; color: #3a1c10; font: 700 14px/1 Inter, Arial, sans-serif; animation: none; }
-
-/* Bienvenida glamurosa: cursiva fina, "Bienvenida" en dorado y el nombre en otro color */
-html.lobby-on .lb-greet, html.lobby-on .lb-greet i { font-family: "Great Vibes", "Cormorant Garamond", cursive; font-style: normal; font-weight: 400; letter-spacing: .01em; }
-html.lobby-on .lb-greet { font-size: calc(var(--inv) * 38px); color: #5A1A33; line-height: 1.1; }
-html.lobby-on .lb-greet i.nm { color: #B0305C; }
-html.lobby-on .lb-greet::before { font: 400 calc(var(--inv) * 54px)/1.05 "Great Vibes", cursive; letter-spacing: .01em; text-transform: none; padding-left: 0; margin-bottom: calc(var(--inv) * 2px); background: linear-gradient(180deg, #F3DC9A 0%, #D4AF5F 45%, #A8803A 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; text-shadow: none; filter: drop-shadow(0 calc(var(--inv) * 1px) calc(var(--inv) * 2px) rgba(255,255,255,.9)); }
