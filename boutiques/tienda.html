@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title id="ttl">Boutique · Código ML</title>
+<meta name="description" content="Entra a una boutique del centro comercial virtual Código ML.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="entrada.css?v=3">
+<link rel="stylesheet" href="tienda.css?v=1">
+</head>
+<body class="ex">
+<main>
+  <section id="scene" aria-label="Entrada a la boutique">
+    <div id="tour" tabindex="0" aria-label="Interior de la boutique. Desliza para mirar alrededor.">
+      <div id="room"><img id="roomImg" alt="Interior de la boutique" draggable="false"></div>
+    </div>
+    <div id="hint" hidden><span class="hand">↔</span> Desliza para mirar alrededor · toca los puntos dorados</div>
+    <div id="top" hidden><span class="nm" id="bname"></span><button id="snd" type="button" aria-label="Sonido" aria-pressed="true">♪</button></div>
+    <button class="arr l" id="aL" aria-label="Mirar a la izquierda" hidden>‹</button>
+    <button class="arr r" id="aR" aria-label="Mirar a la derecha" hidden>›</button>
+    <div id="doors" role="button" tabindex="0" aria-label="Abrir la puerta de la boutique">
+      <div class="half hl"><div class="in"><img src="img/puerta-limpia.jpg" alt=""></div></div>
+      <div class="half hr"><div class="in"><img src="img/puerta-limpia.jpg" alt=""></div></div>
+      <div class="sign"><div class="in"><img src="img/puerta-limpia.jpg" alt=""></div>
+        <div class="plate"><b id="sName"></b><small id="sSub"></small></div></div>
+      <div id="tap"><span>Toca para entrar</span></div>
+    </div>
+    <div id="flash"></div>
+  </section>
+
+  <div class="pad" id="info">
+    <section class="intro">
+      <div class="kicker">Esto podría ser tu marca</div>
+      <h2>Tu boutique, dentro de un centro comercial virtual de lujo</h2>
+      <p class="lead">Lo que acabas de recorrer es una boutique de ejemplo. La tuya tendría tu nombre en la puerta, tus productos en las vitrinas y un enlace propio para compartir con tus seguidoras.</p>
+    </section>
+    <section>
+      <div class="steps">
+        <div class="step"><b>Un local abierto 24 horas</b><span>Tu tienda recibe visitas de cualquier ciudad o país, todo el año.</span></div>
+        <div class="step"><b>Una comunidad compartida</b><span>Las visitantes se registran gratis en Código ML y recorren también las demás boutiques. Campañas como Día de la Madre o Black Friday traen más visitas a todas.</span></div>
+        <div class="step"><b>Tú vendes a tu manera</b><span>Cada producto conecta con tu catálogo o WhatsApp. Código ML no cobra tus ventas ni retiene tu dinero.</span></div>
+        <div class="step"><b>Tu local es tuyo</b><span>Tendrás tu propia llave de acceso. Ninguna otra tienda puede entrar a la tuya.</span></div>
+      </div>
+    </section>
+    <section class="offer2">
+      <div class="priceCard">
+        <div class="kicker" style="color:var(--gold-d)">Boutiques piloto · cupos limitados</div>
+        <div class="big">Piloto sin costo</div>
+        <ul>
+          <li>Montamos tu boutique con tu logo, colores y fotografías reales</li>
+          <li>Información de visitas y clics de tu tienda</li>
+          <li>Participas en las campañas del centro comercial</li>
+        </ul>
+        <button class="btn wine" id="want" style="width:100%">Quiero mi boutique virtual</button>
+      </div>
+    </section>
+    <footer>Código ML · Demostración. Productos y precios de ejemplo.</footer>
+  </div>
+</main>
+<script src="data.js?v=1"></script>
+<script src="icons.js?v=1"></script>
+<script src="tienda.js?v=1"></script>
+</body>
+</html>
