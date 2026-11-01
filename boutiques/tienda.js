@@ -34,19 +34,29 @@
       ]
     }    ,
     "villa-navidad": {
-      pre: "villa-", door: "img/puerta-villa-navidad.jpg", name: "Villa Navidad", sub: "Manualidades navideñas", cur: "USD", cta: "Comprar (demo)", room: "img/villa-navidad.jpg", music: "audio/villa-navidad.mp3",
-      studio: { kind: "ball", title: "Crea tu esfera navideña", sub: "Elige el color, escribe tu nombre y mira cómo queda.", price: 22, opts: [{ n: "Rojo", c: "#c1272d", d: "#7e1218" }, { n: "Dorado", c: "#e2b857", d: "#a67c1f" }, { n: "Verde", c: "#2f6b45", d: "#173d27" }] }, span: 150, pmin: -6, pmax: 6, pitchEnd: 0,
-      points: [
-        { x: 65, y: 40, l: "Árbol de Navidad", items: [{ n: "Adornos de árbol artesanales", d: "Esferas y lazos en rojo y dorado, hechos a mano. Set de 12.", p: 36, img: "arbol" }] },
-        { x: 65, y: 70, l: "Cajas de regalo", items: [{ n: "Cajas de regalo decoradas", d: "Envueltas con listón dorado, listas para regalar.", p: 15, img: "regalos" }] },
-        { x: 36, y: 55, l: "Casitas de cerámica", items: [{ n: "Casita de cerámica con luz", d: "Pintada a mano, con luz cálida interior.", p: 42, img: "casitas" }] },
-        { x: 36, y: 76, l: "Arbolitos", items: [{ n: "Arbolitos decorativos", d: "Pequeños árboles en tela y madera para mesa o repisa.", p: 19, img: "arbolitos" }] },
-        { x: 22, y: 38, l: "Muñecos y figuras", items: [{ n: "Figuras navideñas de colección", d: "Muñecos y personajes de Navidad pintados a mano.", p: 28, img: "estante" }] },
-        { x: 94, y: 30, l: "Renos y árboles dorados", items: [{ n: "Renos blancos y árboles dorados", d: "Figuras decorativas para el hogar. Acabado artesanal.", p: 34, img: "renos" }] },
-        { x: 92, y: 47, l: "Esferas grandes", items: [{ n: "Esferas rojas y doradas", d: "Esferas decorativas de gran tamaño, pintadas a mano.", p: 26, img: "esferas" }] },
-        { x: 96, y: 66, l: "Globos de nieve", items: [{ n: "Globos de nieve", d: "Globos de vidrio con escenas navideñas. Piezas de colección.", p: 24, img: "globos" }] },
-        { x: 4, y: 53, l: "Mostrador", items: [{ n: "Muñecos del mostrador", d: "Pareja de muñecos navideños, edición limitada.", p: 45, img: "mostrador" }] },
-        { x: 4, y: 82, l: "Linterna", items: [{ n: "Linterna dorada con velas", d: "Linterna decorativa con velas LED incluidas.", p: 39, img: "linterna" }] }
+      pre: "villa-", door: "img/puerta-villa-navidad.jpg", name: "Villa Navidad", sub: "Manualidades navideñas", cur: "USD", cta: "Comprar (demo)", music: "audio/villa-navidad.mp3",
+      studio: { kind: "ball", title: "Crea tu esfera navideña", sub: "Elige el color, escribe tu nombre y mira cómo queda.", price: 22, opts: [{ n: "Rojo", c: "#c1272d", d: "#7e1218" }, { n: "Dorado", c: "#e2b857", d: "#a67c1f" }, { n: "Verde", c: "#2f6b45", d: "#173d27" }] },
+      scenes: [
+        { room: "img/villa-pasillo.jpg", span: 130, pmin: -4, pmax: 4, pitchEnd: 0,
+          links: [{ x: 51, y: 60, l: "Ver el local en 360°", to: 1 }],
+          points: [
+            { x: 10, y: 45, l: "Papel y listones", items: [{ n: "Papel de regalo navideño", d: "Rollos y listones en rojo, dorado y marfil.", p: 8, img: "p-papel" }] },
+            { x: 51, y: 70, l: "Mesa central", items: [{ n: "Muñeco de nieve y esferas", d: "Muñeco de peluche, esferas y velas decorativas.", p: 29, img: "p-mesa" }] },
+            { x: 94, y: 33, l: "Esferas colgantes", items: [{ n: "Esferas de árbol", d: "Esferas rojas, doradas y plateadas. Caja de 12.", p: 36, img: "p-esferas" }] },
+            { x: 78, y: 59, l: "Medias navideñas", items: [{ n: "Medias navideñas bordadas", d: "Para chimenea o puerta, bordadas a mano.", p: 18, img: "p-medias" }] },
+            { x: 59, y: 43, l: "Árbol de Navidad", items: [{ n: "Árbol decorado", d: "Árbol en rojo, dorado y marfil con lazos.", p: 120, img: "p-arbol" }] },
+            { x: 33, y: 55, l: "Mostrador", items: [{ n: "Figura del mostrador", d: "Muñeco navideño de colección.", p: 45, img: "p-mostrador" }] }
+          ] },
+        { room: "img/villa-centro.jpg", span: 360, yaw0: 0,
+          links: [{ x: 43, y: 68, l: "Volver al pasillo", to: 0 }],
+          points: [
+            { x: 6, y: 37, l: "Árbol de Navidad", items: [{ n: "Adornos de árbol artesanales", d: "Esferas y lazos en rojo y dorado, hechos a mano. Set de 12.", p: 36, img: "c-arbol" }] },
+            { x: 8, y: 80, l: "Cajas de regalo", items: [{ n: "Cajas de regalo decoradas", d: "Envueltas con listón dorado, listas para regalar.", p: 15, img: "c-regalos" }] },
+            { x: 50, y: 58, l: "Casitas y velas", items: [{ n: "Casita de cerámica con luz", d: "Pintada a mano, con luz cálida interior.", p: 42, img: "c-mesa" }] },
+            { x: 72, y: 62, l: "Mostrador", items: [{ n: "Muñecos del mostrador", d: "Pareja de muñecos navideños, edición limitada.", p: 45, img: "c-mostrador" }] },
+            { x: 91, y: 45, l: "Figuras navideñas", items: [{ n: "Figuras navideñas de colección", d: "Muñecos y personajes de Navidad pintados a mano.", p: 28, img: "c-estante" }] },
+            { x: 17, y: 38, l: "Renos y arbolitos", items: [{ n: "Renos y arbolitos decorativos", d: "Figuras blancas y doradas para el hogar.", p: 34, img: "c-izq" }] }
+          ] }
       ]
     }
   };
@@ -118,18 +128,30 @@
     });
   }
   $("#mk").textContent = S.studio.title; $("#mk").addEventListener("click", makeYours);
-  /* ---- panorama esférico ---- */
-  const cv = $("#gl"), hots = $("#hots");
-  let P = null, zoom = 1, hotEls = [];
+  /* ---- panorama esférico (una o varias vistas conectadas) ---- */
+  const cv = $("#gl"), hots = $("#hots"), SC = S.scenes || [S];
+  let P = null, zoom = 1, hotEls = [], cur = 0, busy = false;
   const base = () => { const a = cv.clientWidth / Math.max(1, cv.clientHeight); return a < 1 ? Math.min(100, 2 * Math.atan(Math.tan(35 * Math.PI / 180) / a) * 180 / Math.PI) : 72; };
-  const applyFov = () => { if (P) P.S.fov = Math.min(base() * zoom, (S.span || 360) / 2 - .01); };
+  const applyFov = () => { if (P) P.S.fov = Math.min(base() * zoom, P.span / 2 - .01); };
   function paint() { if (!P) return; applyFov(); P.draw(); hotEls.forEach(h => { const q = P.project(h.p.x, h.p.y); if (!q) { h.el.style.visibility = "hidden"; return; } h.el.style.visibility = "visible"; h.el.style.left = q.x + "px"; h.el.style.top = q.y + "px"; }); }
-  const img = new Image(); img.onload = () => {
-    P = CMLPano(cv, img, { span: S.span || 360, yaw: S.yaw0 || 0, pitch: S.pitch0 || 0, fov: 75, pitchMin: S.pmin == null ? -22 : S.pmin, pitchMax: S.pmax == null ? 32 : S.pmax });
-    if (!P) { $("#tour").classList.add("nogl"); return; }
-    S.points.forEach(p => { const b = document.createElement("button"); b.type = "button"; b.className = "hot"; b.setAttribute("data-l", p.l); b.setAttribute("aria-label", p.l); b.addEventListener("click", () => { if (drag.moved) return; tick(); zone(p); }); hots.appendChild(b); hotEls.push({ p, el: b }); });
-    zoom = 1.45; paint(); window.addEventListener("resize", () => requestAnimationFrame(paint));
-  }; img.src = S.room;
+  function setHots(sc) {
+    hots.innerHTML = ""; hotEls = [];
+    (sc.points || []).forEach(p => { const b = document.createElement("button"); b.type = "button"; b.className = "hot"; b.setAttribute("data-l", p.l); b.setAttribute("aria-label", p.l); b.addEventListener("click", () => { if (drag.moved) return; tick(); zone(p); }); hots.appendChild(b); hotEls.push({ p, el: b }); });
+    (sc.links || []).forEach(p => { const b = document.createElement("button"); b.type = "button"; b.className = "hot go"; b.setAttribute("data-l", p.l); b.setAttribute("aria-label", p.l); b.textContent = "➜"; b.addEventListener("click", () => { if (drag.moved) return; tick(); loadScene(p.to, false); }); hots.appendChild(b); hotEls.push({ p, el: b }); });
+  }
+  function loadScene(i, first) {
+    if (busy) return; busy = true; const sc = SC[i], im = new Image();
+    im.onload = () => {
+      const go = () => {
+        P = CMLPano(cv, im, { span: sc.span || 360, yaw: sc.yaw0 || 0, pitch: sc.pitch0 || 0, fov: 75, pitchMin: sc.pmin == null ? -22 : sc.pmin, pitchMax: sc.pmax == null ? 32 : sc.pmax });
+        if (!P) { $("#tour").classList.add("nogl"); busy = false; return; }
+        P.span = sc.span || 360; cur = i; setHots(sc); zoom = first ? 1.45 : 1.35; paint(); cv.style.opacity = 1; busy = false;
+        if (!first) { const z0 = zoom, t0 = performance.now(); (function f(t) { const k = Math.min(1, (t - t0) / 1200), e = 1 - Math.pow(1 - k, 3); zoom = z0 + (1 - z0) * e; paint(); if (k < 1) requestAnimationFrame(f); })(t0); }
+      };
+      if (first) go(); else { cv.style.opacity = 0; setTimeout(go, 320); }
+    }; im.src = sc.room;
+  }
+  loadScene(0, true); window.addEventListener("resize", () => requestAnimationFrame(paint));
 
   /* ---- arrastrar para mirar alrededor (dedo o mouse) ---- */
   const drag = { on: false, moved: false, x: 0, y: 0, vx: 0, vy: 0, id: null };
@@ -152,7 +174,7 @@
   let opened = false;
   function enter() {
     if (!P) return; const z0 = zoom, z1 = 1, t0 = performance.now(), yaw0 = P.S.yaw, pit0 = P.S.pitch;
-    (function f(t) { const k = Math.min(1, (t - t0) / 4200), e = 1 - Math.pow(1 - k, 3); zoom = z0 + (z1 - z0) * e; P.S.pitch = pit0 + (S.pitchEnd == null ? -4 : S.pitchEnd) * e; paint(); if (k < 1) requestAnimationFrame(f); })(t0);
+    (function f(t) { const k = Math.min(1, (t - t0) / 4200), e = 1 - Math.pow(1 - k, 3); zoom = z0 + (z1 - z0) * e; P.S.pitch = pit0 + (SC[0].pitchEnd == null ? -4 : SC[0].pitchEnd) * e; paint(); if (k < 1) requestAnimationFrame(f); })(t0);
   }
   function open() {
     if (opened) return; opened = true; ac(); chime();
