@@ -63,16 +63,24 @@
   /* Luz de Casa: dos vistas conectadas */
   B["luz-de-casa"].scenes = [
     { room: B["luz-de-casa"].room, yaw0: 61, points: B["luz-de-casa"].points, links: [{ x: 67, y: 66, l: "Ver desde el centro", to: 1 }] },
-    { room: "img/luz-centro.jpg", span: 360, yaw0: 0, links: [{ x: 42, y: 62, l: "Volver a la entrada", to: 0 }], points: [
+    { room: "img/luz-centro.jpg", span: 360, yaw0: 0, links: [{ x: 42, y: 62, l: "Volver a la entrada", to: 0 }, { x: 60, y: 70, l: "Ver el pasillo", to: 2 }], points: [
       { x: 46, y: 80, l: "Mesa de velas", items: [{ n: "Velas de soja en vaso de vidrio", d: "Aromas a lavanda, cítricos, rosa y vainilla. 45 horas de duración.", p: 24, img: "c-mesa" }] },
       { x: 56, y: 42, l: "Orquídeas", items: [{ n: "Arreglo de orquídeas", d: "Orquídeas naturales en florero de cristal.", p: 62, img: "c-orquidea" }] },
       { x: 25, y: 60, l: "Mostrador", items: [{ n: "Vela personalizada con tu nombre", d: "Pedido especial. Entrega en 7 a 10 días.", p: 38, img: "c-mostrador" }] },
       { x: 85, y: 50, l: "Estantes de velas", items: [{ n: "Colección de velas en frasco", d: "Frascos de colores con aromas de temporada.", p: 28, img: "c-der" }] },
       { x: 6, y: 50, l: "Velas y cajas", items: [{ n: "Cajas regalo de velas", d: "Tres velas pequeñas y tarjeta con tu mensaje.", p: 48, img: "c-izq" }] },
       { x: 73, y: 59, l: "Rincón de descanso", items: [{ n: "Vela de ambiente", d: "Para tu sala o tu rincón favorito.", p: 32, img: "c-sillon" }] }
+    ] },
+    { room: "img/luz-pasillo.jpg", span: 130, pmin: -4, pmax: 4, links: [{ x: 50, y: 66, l: "Volver al centro", to: 1 }], points: [
+      { x: 36, y: 80, l: "Mesa de velas", items: [{ n: "Velas de soja con flores y cítricos", d: "Naranja, romero, lavanda y rosa. 45 horas de duración.", p: 24, img: "p-velas" }] },
+      { x: 28, y: 50, l: "Orquídeas", items: [{ n: "Arreglo de orquídeas", d: "Orquídeas naturales en florero de cristal.", p: 62, img: "p-orquidea" }] },
+      { x: 68, y: 61, l: "Mostrador", items: [{ n: "Vela personalizada con tu nombre", d: "Pedido especial. Entrega en 7 a 10 días.", p: 38, img: "p-mostrador" }] },
+      { x: 92, y: 51, l: "Estantes de velas", items: [{ n: "Velas en frasco de colores", d: "Aromas de temporada en vaso de vidrio.", p: 28, img: "p-der" }] },
+      { x: 7, y: 45, l: "Velas y cajas regalo", items: [{ n: "Caja regalo de velas", d: "Velas y tarjeta con tu mensaje.", p: 48, img: "p-izq" }] },
+      { x: 50, y: 57, l: "Mesa del fondo", items: [{ n: "Set de regalo", d: "Vela, difusor y tarjeta personalizada.", p: 54, img: "p-fondo" }] }
     ] }
   ];
-  const slug = (new URLSearchParams(location.search).get("b") || "luz-de-casa"), S = B[slug] || B["luz-de-casa"];
+  /* fin Luz de Casa */  const slug = (new URLSearchParams(location.search).get("b") || "luz-de-casa"), S = B[slug] || B["luz-de-casa"];
   document.title = S.name + " · Código ML";
   if (S.door) document.querySelectorAll("#doors img").forEach(i => { i.src = S.door; });
   $("#sName").textContent = S.name; $("#sSub").textContent = S.sub; $("#bname").textContent = S.name;
