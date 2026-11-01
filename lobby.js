@@ -70,10 +70,21 @@ function helloText() {
   const h = new Date().getHours(), p = C.profile && C.profile(), first = p && p.first_name ? p.first_name : "";
   return t(h >= 5 && h < 12 ? "greetMorning" : h >= 12 && h < 19 ? "greetAfternoon" : "greetEvening", first);
 }
+let helloFont = false;
 function paintHello() {
-  const g = stage.querySelector(".lb-greet"); if (!g) return;
-  g.setAttribute("data-k", t("lbWelcomeK")); g.replaceChildren(); const ht = helloText(), cut = ht.indexOf(", ") + 2; [...ht].forEach((ch, i) => { const s = document.createElement("i"); s.textContent = ch; if (cut > 1 && i >= cut) s.className = "nm"; s.style.animationDelay = (0.25 + i * 0.055).toFixed(2) + "s"; g.appendChild(s); });
-  const clone = g.cloneNode(true); g.parentNode.replaceChild(clone, g);   // reinicia la animación
+  let g = stage.querySelector(".lb-greet"); if (!g) return;
+  if (!helloFont) {                                   // espera la letra cursiva para que no "salte" al aparecer
+    g.style.visibility = "hidden";
+    const go = () => { if (helloFont) return; helloFont = true; paintHello(); };
+    if (document.fonts && document.fonts.load) { Promise.race([document.fonts.load('30px "Great Vibes"'), new Promise(r => setTimeout(r, 1800))]).then(go, go); } else go();
+    return;
+  }
+  const ht = helloText(), key = C.lang() + "|" + ht;
+  if (g.__key === key && Date.now() - g.__at < 7000) return;   // misma frase y animación en curso: no la reinicies
+  g.style.visibility = "";
+  g.setAttribute("data-k", t("lbWelcomeK")); g.replaceChildren(); const cut = ht.indexOf(", ") + 2;
+  [...ht].forEach((ch, i) => { const s = document.createElement("i"); s.textContent = ch; if (cut > 1 && i >= cut) s.className = "nm"; s.style.animationDelay = (0.45 + i * 0.055).toFixed(2) + "s"; g.appendChild(s); });
+  const clone = g.cloneNode(true); clone.__key = key; clone.__at = Date.now(); g.parentNode.replaceChild(clone, g);   // reinicia la animación
 }
 
 /* ---------- pantallas: tres categorías, con miniatura que rota ---------- */
@@ -206,7 +217,7 @@ function build() {
     sway: [[392, 846, 290, 206]] });
 
   // saludo y marca
-  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club-3.webp?v=20261031k" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
+  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club-3.webp?v=20261031l" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
   stage.appendChild(hello);
 
   // pantallas (tocar = se abre ampliada con las tres categorías)

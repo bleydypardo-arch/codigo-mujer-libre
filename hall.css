@@ -582,3 +582,5 @@ html.lobby-on .lb-greet, html.lobby-on .lb-greet i { font-family: "Great Vibes",
 html.lobby-on .lb-greet { font-size: calc(var(--inv) * 24px); color: #5A1A33; line-height: 1.1; transform: translateY(150px); }
 html.lobby-on .lb-greet i.nm { color: #B0305C; }
 html.lobby-on .lb-greet::before { font: 400 calc(var(--inv) * 30px)/1.05 "Great Vibes", cursive; letter-spacing: 0; text-transform: none; padding-left: 0; margin-bottom: calc(var(--inv) * 1px); background: linear-gradient(180deg, #E9C777 0%, #C39A44 55%, #8E6A2A 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; text-shadow: none; filter: drop-shadow(0 0 calc(var(--inv) * 3px) rgba(255,255,255,.95)); }
+html.lobby-on .lb-greet::before { opacity: 0; animation: lbKey .9s ease .2s forwards; }
+@keyframes lbKey { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
