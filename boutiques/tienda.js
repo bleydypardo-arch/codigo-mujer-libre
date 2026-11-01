@@ -62,7 +62,14 @@
   };
   /* Luz de Casa: dos vistas conectadas */
   B["luz-de-casa"].scenes = [
-    { room: B["luz-de-casa"].room, yaw0: 61, points: B["luz-de-casa"].points, links: [{ x: 67, y: 66, l: "Ver desde el centro", to: 1 }] },
+    { room: "img/luz-entrada.jpg", yaw0: 68, links: [{ x: 70, y: 63, l: "Ver desde el centro", to: 1 }], points: [
+      { x: 50, y: 72, l: "Mesa de velas", items: [{ n: "Velas de soja con frutas y flores", d: "Naranja, limón, lavanda, romero y rosa. 45 horas de duración.", p: 24, img: "e-mesa" }, { n: "Difusor de varillas", d: "Aroma a orquídea y té blanco, frasco de vidrio. 120 ml.", p: 32, img: "e-difusor" }] },
+      { x: 48, y: 43, l: "Orquídeas", items: [{ n: "Arreglo de orquídeas", d: "Orquídeas naturales en florero de cristal.", p: 62, img: "e-orquidea" }] },
+      { x: 25, y: 47, l: "Velas rosa y marfil", items: [{ n: "Colección rosa y marfil", d: "Velas en vaso con tapa, cera de soja natural.", p: 28, img: "e-izq" }] },
+      { x: 36, y: 47, l: "Velas de colores", items: [{ n: "Colección de colores", d: "Aromas intensos y frutales en vaso de vidrio.", p: 30, img: "e-centro" }] },
+      { x: 7, y: 63, l: "Rincón de descanso", items: [{ n: "Vela de ambiente", d: "Para tu sala o tu rincón favorito.", p: 32, img: "e-sillon" }] },
+      { x: 91, y: 59, l: "Mostrador", items: [{ n: "Vela personalizada con tu nombre", d: "Pedido especial. Entrega en 7 a 10 días.", p: 38, img: "e-mostrador" }] }
+    ] },
     { room: "img/luz-centro.jpg", span: 360, yaw0: 0, links: [{ x: 42, y: 62, l: "Volver a la entrada", to: 0 }, { x: 60, y: 70, l: "Ver el pasillo", to: 2 }], points: [
       { x: 46, y: 80, l: "Mesa de velas", items: [{ n: "Velas de soja en vaso de vidrio", d: "Aromas a lavanda, cítricos, rosa y vainilla. 45 horas de duración.", p: 24, img: "c-mesa" }] },
       { x: 56, y: 42, l: "Orquídeas", items: [{ n: "Arreglo de orquídeas", d: "Orquídeas naturales en florero de cristal.", p: 62, img: "c-orquidea" }] },
