@@ -206,7 +206,7 @@ function build() {
     sway: [[392, 846, 290, 206]] });
 
   // saludo y marca
-  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club.webp?v=20261028m" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
+  const hello = place(mk("lb-abs lb-hello", '<div><div class="lb-greet"></div></div><div class="lb-brand"><img src="lobby/logo-club-2.webp?v=20261031a" alt="Club Código Mujer Libre — Conecta · Vive · Crece"></div>'), 250, 40);
   stage.appendChild(hello);
 
   // pantallas (tocar = se abre ampliada con las tres categorías)
