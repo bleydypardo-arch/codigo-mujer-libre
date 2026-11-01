@@ -152,6 +152,7 @@ function init() {
   document.addEventListener("cml:session", () => { flipped = false; dykFlipped = false; factOffset = 0; loadFacts(); });
   document.addEventListener("cml:lang", paintDyk);
   document.addEventListener("cml:render", paintDyk);
+  document.addEventListener("cml:newday", () => { factOffset = 0; paintDyk(); });
   if (C.session()) loadFacts();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();

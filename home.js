@@ -345,12 +345,12 @@ function talkItem() {
     const q = String(s["body_" + lang] || s["body_" + other] || "").trim();
     if (q) return [String(s["title_" + lang] || s["title_" + other] || "").trim(), q];
   }
-  // Library pasted in Admin (settings.talk_library): a new phrase every 2 days. Without it, the 70 built-in phrases rotate the same way.
+  // Library pasted in Admin (settings.talk_library): a new phrase every day. Without it, the 70 built-in phrases rotate the same way.
   const lib = C.setting && C.setting("talk_library");
   const own = Array.isArray(lib) ? lib.filter(x => x && x.es && x.es[1]) : [];
   const items = own.length ? own : TALK70;
   if (items.length) {
-    const n = Math.floor((day0().getTime() - new Date(2026, 0, 5).getTime()) / (2 * DAY));
+    const n = window.CMLDaily ? window.CMLDaily.dayNumber(window.CMLDaily.orlandoToday()) : Math.floor(day0().getTime() / DAY);
     const it = items[((n % items.length) + items.length) % items.length];
     const pick = it[lang] && it[lang][1] ? it[lang] : it.es;
     return [pick[0] || "", pick[1]];
@@ -382,6 +382,7 @@ function render(fromFetch) {
   if (!fromFetch && C.session() && Date.now() - extra.at > 60000) fetchExtra();
 }
 
+document.addEventListener("cml:newday", () => { try { renderTalk(); } catch {} });
 function init() {
   C = window.CML;
   if (!C) return;

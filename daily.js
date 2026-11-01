@@ -44,7 +44,11 @@ function repaint() {
   lastDay = orlandoToday();
   if (window.CMLRedesign && window.CMLRedesign.renderCode) window.CMLRedesign.renderCode();
 }
-function tick() { if (loaded && orlandoToday() !== lastDay) repaint(); }
+let seenDay = orlandoToday();
+function tick() {
+  if (loaded && orlandoToday() !== lastDay) repaint();
+  if (orlandoToday() !== seenDay) { seenDay = orlandoToday(); document.dispatchEvent(new CustomEvent("cml:newday")); }
+}
 
 function init() {
   C = window.CML; if (!C) return;
