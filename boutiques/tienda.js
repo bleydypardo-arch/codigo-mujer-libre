@@ -76,13 +76,13 @@
   }
   function zone(p) {
     modal("<h3>" + esc(p.l) + "</h3>" + p.items.map((it, i) => '<div class="item"><img class="sheet-photo" src="img/' + S.pre + it.img + '.jpg" alt="' + esc(it.n) + '"><div class="row"><div><b>' + esc(it.n) + "</b><span>" + esc(it.d) + '</span><span class="pp">' + money(it.p) + '</span></div><button class="btn wine" data-i="' + i + '">' + S.cta + "</button></div></div>").join("") + '<p class="note">Demostración: productos y precios de ejemplo.</p>', (ov, close) => {
-      ov.querySelectorAll(".btn").forEach(b => b.addEventListener("click", () => { const it = p.items[+b.dataset.i]; close(); buy(it.n, it.url); }));
+      ov.querySelectorAll(".btn").forEach(b => b.addEventListener("click", () => { const it = p.items[+b.dataset.i]; close(); buy(it.n, it.url, it.p, S.pre + it.img); }));
     });
   }
-  function buy(name, url) {
-    modal('<h3>Vas a la tienda de ' + esc(S.name) + '</h3><p>' + (name ? '<b>' + esc(name) + '</b><br>' : '') + 'Para pagar y coordinar la entrega pasas a la tienda de la emprendedora: su catálogo, su WhatsApp o su tienda en línea. Ella cobra directamente y tú sigues su proceso.</p><div class="acts"><button class="btn ghost" id="bk">Seguir recorriendo</button><button class="btn wine" id="go">Continuar a su tienda</button></div><p class="note">Demostración: en una boutique real, este botón abre el enlace de compra de ese producto.</p>', (ov, close) => {
+  function buy(name, url, price, img) {
+    modal('<h3>Vas a la tienda de ' + esc(S.name) + '</h3><p>' + (name ? '<b>' + esc(name) + '</b><br>' : '') + 'Para pagar y coordinar la entrega pasas a la tienda de la emprendedora: su catálogo, su WhatsApp o su tienda en línea. Ella cobra directamente.</p><div class="acts"><button class="btn ghost" id="bk">Seguir recorriendo</button><button class="btn wine" id="go">Continuar a su tienda</button></div><p class="note">Demostración: se abrirá una página de ejemplo. En una boutique real se abre el enlace de compra de ese producto.</p>', (ov, close) => {
       $("#bk", ov).addEventListener("click", close);
-      $("#go", ov).addEventListener("click", () => { if (url) { window.open(url, "_blank", "noopener"); close(); } else { $("#go", ov).textContent = "Aquí se abre su tienda"; $("#go", ov).disabled = true; } });
+      $("#go", ov).addEventListener("click", () => { const u = url || ("pago-demo.html?b=" + slug + "&n=" + encodeURIComponent(name || "") + "&p=" + (price || 0) + "&i=" + encodeURIComponent(img || "")); window.open(u, "_blank", "noopener"); close(); });
     });
   }
   function interest() {
@@ -113,7 +113,7 @@
       const draw = () => { $("#art", ov).innerHTML = art(st.kind, cur, nm); };
       draw(); $("#nm", ov).addEventListener("input", e => { nm = e.target.value.trim(); draw(); });
       ov.querySelectorAll(".chip").forEach(b => b.addEventListener("click", () => { ov.querySelectorAll(".chip").forEach(x => x.classList.remove("on")); b.classList.add("on"); cur = st.opts[+b.dataset.i]; tick(); draw(); }));
-      $("#mine", ov).addEventListener("click", () => { close(); buy(st.title.replace(/^\S+ \S+ /, "") + (nm ? " · " + nm : ""), st.url); });
+      $("#mine", ov).addEventListener("click", () => { close(); buy(st.title.replace(/^\S+ \S+ /, "") + (nm ? " · " + nm : ""), st.url, st.price, "mini-" + slug); });
     });
   }
   $("#mk").textContent = S.studio.title; $("#mk").addEventListener("click", makeYours);
