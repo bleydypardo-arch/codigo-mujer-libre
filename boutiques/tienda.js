@@ -90,7 +90,7 @@
   /* fin Luz de Casa */  /* Raíz Verde: dos vistas conectadas */
   { const R = B["raiz-verde"]; R.scenes = [
     { room: R.room, yaw0: 0, points: R.points, links: [{ x: 63, y: 78, l: "Ver desde el centro", to: 1 }] },
-    { room: "img/raiz-centro.jpg", span: 360, yaw0: 0, links: [{ x: 36, y: 80, l: "Volver a la entrada", to: 0 }], points: [
+    { room: "img/raiz-centro.jpg", span: 360, yaw0: 0, links: [{ x: 36, y: 80, l: "Volver a la entrada", to: 0 }, { x: 73, y: 80, l: "Ver desde el rincón", to: 2 }], points: [
       { x: 51, y: 73, l: "Mesa de jabones", items: [{ n: "Set de jabones artesanales", d: "Jabones envueltos a mano con cuerda natural, en caja de regalo.", p: 26, img: "c-mesa" }] },
       { x: 51, y: 56, l: "Lavanda y aceites", items: [{ n: "Aceites y ramo de lavanda", d: "Aceites esenciales y lavanda de cultivo orgánico.", p: 18, img: "c-lavanda" }] },
       { x: 7, y: 37, l: "Jabones líquidos", items: [{ n: "Jabón líquido de manos", d: "Fórmula vegetal con aceites esenciales. Frasco de vidrio 300 ml.", p: 14, img: "c-izq" }] },
@@ -99,6 +99,13 @@
       { x: 32, y: 56, l: "Rincón de descanso", items: [{ n: "Vela y aroma de ambiente", d: "Para tu rincón favorito. Aromas naturales.", p: 22, img: "c-sillones" }] },
       { x: 62, y: 47, l: "Estante de aceites", items: [{ n: "Aceites esenciales", d: "Aceites puros para difusor y masajes.", p: 16, img: "c-der" }] },
       { x: 95, y: 63, l: "Mesa lateral", items: [{ n: "Canasta de regalo natural", d: "Jabón, crema y aceite esencial en canasta tejida.", p: 58, img: "c-lateral" }] }
+    ] },
+    { room: "img/raiz-rincon.jpg", span: 360, yaw0: 0, links: [{ x: 32, y: 82, l: "Volver al centro", to: 1 }], points: [
+      { x: 27, y: 59, l: "Mostrador", items: [{ n: "Kit de bienvenida", d: "Selección de mini productos para conocer la marca.", p: 34, img: "r-mostrador" }] },
+      { x: 15, y: 50, l: "Jabones líquidos y cremas", items: [{ n: "Crema corporal natural", d: "Manteca de karité y aceite de coco. Sin parabenos.", p: 22, img: "r-izq" }] },
+      { x: 50, y: 65, l: "Mesa de jabones", items: [{ n: "Set de jabones artesanales", d: "Jabones envueltos a mano con cuerda natural, en caja de regalo.", p: 26, img: "r-mesa" }] },
+      { x: 73, y: 47, l: "Estantes de productos", items: [{ n: "Jabón líquido de manos", d: "Fórmula vegetal con aceites esenciales. Frasco de vidrio 300 ml.", p: 14, img: "r-der" }] },
+      { x: 19, y: 69, l: "Canasta", items: [{ n: "Canasta de regalo natural", d: "Jabón, crema y aceite esencial en canasta tejida.", p: 58, img: "r-canasta" }] }
     ] }
   ]; }
   const slug = (new URLSearchParams(location.search).get("b") || "luz-de-casa"), S = B[slug] || B["luz-de-casa"];
