@@ -40,13 +40,18 @@
   const room = $("#room"), scene = $("#scene"), doors = $("#doors"), tour = $("#tour");
 
   /* ---- sonido muy suave (con botón para quitarlo) ---- */
-  let ctx = null, on = true, pad = null;
+  let ctx = null, on = true;
   const ac = () => { if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (ctx && ctx.state === "suspended") ctx.resume(); return ctx; };
   function tone(f, t0, dur, vol) { const c = ac(); if (!c || !on) return; const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; o.frequency.value = f; const t = c.currentTime + t0; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.05); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + dur + 0.05); }
   const chime = () => [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, i * 0.28, 2.6, 0.035));
   const tick = () => { tone(880, 0, 0.7, 0.03); tone(1318.5, 0.08, 0.8, 0.02); };
-  function ambience() { const c = ac(); if (!c || !on || pad) return; const g = c.createGain(); g.gain.value = 0; g.connect(c.destination); g.gain.linearRampToValueAtTime(0.02, c.currentTime + 4); pad = [261.63, 329.63, 392, 523.25].map(f => { const o = c.createOscillator(); o.type = "sine"; o.frequency.value = f; const og = c.createGain(); og.gain.value = 0.5; o.connect(og); og.connect(g); o.start(); return o; }); pad.g = g; }
-  function stopAmb() { if (pad) { const c = ctx, p = pad; pad = null; p.g.gain.linearRampToValueAtTime(0, c.currentTime + 0.8); setTimeout(() => p.forEach(o => { try { o.stop(); } catch (e) {} }), 1000); } }
+  /* piano suave generado (notas con caída lenta, pausas largas); se reemplaza por una grabación real cuando exista el archivo */
+  let pt = null, pn = 0;
+  const SCALE = [261.63, 293.66, 329.63, 392, 440, 523.25, 587.33, 659.25];
+  const SEQ = [0, 2, 4, 2, 5, 4, 2, 1, 0, 2, 4, 6, 5, 4, 2, 0];
+  function key(f, t0, vol) { const c = ac(); if (!c || !on) return; const t = c.currentTime + t0, m = c.createGain(); m.gain.setValueAtTime(0, t); m.gain.linearRampToValueAtTime(vol, t + 0.012); m.gain.exponentialRampToValueAtTime(0.0001, t + 4.2); m.connect(c.destination); [[1, 1], [2, 0.28], [3, 0.1], [4, 0.04]].forEach(([k, a]) => { const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; o.frequency.value = f * k; g.gain.value = a; o.connect(g); g.connect(m); o.start(t); o.stop(t + 4.3); }); }
+  function ambience() { if (pt || !ac() || !on) return; const step = () => { if (!on) { pt = null; return; } const i = SEQ[pn++ % SEQ.length]; key(SCALE[i], 0, 0.045); if (Math.random() < 0.3) key(SCALE[i] / 2, 0, 0.03); pt = setTimeout(step, 1700 + Math.random() * 1500); }; pt = setTimeout(step, 400); }
+  function stopAmb() { clearTimeout(pt); pt = null; }
   $("#snd").addEventListener("click", e => { on = !on; e.currentTarget.setAttribute("aria-pressed", String(on)); if (on) ambience(); else stopAmb(); });
 
   /* ---- ventanas ---- */
