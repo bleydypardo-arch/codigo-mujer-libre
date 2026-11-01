@@ -35,3 +35,9 @@ body.cc{padding:0!important;max-width:none!important}body.cc>*{max-width:none}.c
 .cc .hgrid img{width:100%;height:100%;object-fit:cover;display:block}
 .cc .hgrid figcaption{position:absolute;inset:auto 0 0 0;padding:40px 14px 12px;background:linear-gradient(transparent,rgba(30,12,4,.78));color:#fff;font:600 19px "Cormorant Garamond",Georgia,serif}
 @media(max-width:720px){.cc .hgrid{grid-template-columns:1fr}.cc .hgrid figure{aspect-ratio:4/3}}
+.cc h1,.cc h2{text-transform:uppercase;letter-spacing:.04em}
+.cc h1{font-size:clamp(28px,7.4vw,52px)}
+.cc h2{font-size:clamp(23px,5.6vw,34px)}
+.cc .step b,.cc .hgrid figcaption{text-transform:uppercase;letter-spacing:.04em}
+.cc .step b{font-size:18px}
+.cc .hgrid figcaption{font-size:17px}
