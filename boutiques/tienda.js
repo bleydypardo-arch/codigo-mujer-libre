@@ -19,7 +19,7 @@
       ]
     }    ,
     "raiz-verde": {
-      pre: "raiz-", name: "Raíz Verde", sub: "Productos naturales", cur: "USD", cta: "Comprar (demo)", room: "img/raiz-verde.jpg", music: "audio/raiz-verde.mp3",
+      pre: "raiz-", door: "img/puerta-raiz-verde.jpg", name: "Raíz Verde", sub: "Productos naturales", cur: "USD", cta: "Comprar (demo)", room: "img/raiz-verde.jpg", music: "audio/raiz-verde.mp3",
       studio: { kind: "soap", title: "Arma tu jabón de regalo", sub: "Elige el aroma, escribe tu nombre y mira cómo queda.", price: 12, opts: [{ n: "Lavanda", c: "#b9a1d6", d: "#8d72b4" }, { n: "Oliva", c: "#9fb27a", d: "#738a4c" }, { n: "Miel", c: "#e8c377", d: "#c19a45" }] },
       points: [
         { x: 15, y: 40, l: "Jabones líquidos y cuidado", items: [{ n: "Jabón líquido de manos", d: "Fórmula vegetal con aceites esenciales. Frasco de vidrio 300 ml.", p: 14, img: "estante1" }] },
@@ -34,7 +34,7 @@
       ]
     }    ,
     "villa-navidad": {
-      pre: "villa-", name: "Villa Navidad", sub: "Manualidades navideñas", cur: "USD", cta: "Comprar (demo)", room: "img/villa-navidad.jpg", music: "audio/villa-navidad.mp3",
+      pre: "villa-", door: "img/puerta-villa-navidad.jpg", name: "Villa Navidad", sub: "Manualidades navideñas", cur: "USD", cta: "Comprar (demo)", room: "img/villa-navidad.jpg", music: "audio/villa-navidad.mp3",
       studio: { kind: "ball", title: "Crea tu esfera navideña", sub: "Elige el color, escribe tu nombre y mira cómo queda.", price: 22, opts: [{ n: "Rojo", c: "#c1272d", d: "#7e1218" }, { n: "Dorado", c: "#e2b857", d: "#a67c1f" }, { n: "Verde", c: "#2f6b45", d: "#173d27" }] }, span: 150, pmin: -6, pmax: 6, pitchEnd: 0,
       points: [
         { x: 65, y: 40, l: "Árbol de Navidad", items: [{ n: "Adornos de árbol artesanales", d: "Esferas y lazos en rojo y dorado, hechos a mano. Set de 12.", p: 36, img: "arbol" }] },
@@ -52,6 +52,7 @@
   };
   const slug = (new URLSearchParams(location.search).get("b") || "luz-de-casa"), S = B[slug] || B["luz-de-casa"];
   document.title = S.name + " · Código ML";
+  if (S.door) document.querySelectorAll("#doors img").forEach(i => { i.src = S.door; });
   $("#sName").textContent = S.name; $("#sSub").textContent = S.sub; $("#bname").textContent = S.name;
   const money = v => new Intl.NumberFormat("en-US", { style: "currency", currency: S.cur, maximumFractionDigits: 0 }).format(v);
   const scene = $("#scene"), doors = $("#doors"), tour = $("#tour");
