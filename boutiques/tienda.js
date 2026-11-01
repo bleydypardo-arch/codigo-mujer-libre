@@ -37,19 +37,8 @@
       pre: "villa-", door: "img/puerta-villa-navidad.jpg", name: "Villa Navidad", sub: "Manualidades navideñas", cur: "USD", cta: "Comprar (demo)", music: "audio/villa-navidad.mp3",
       studio: { kind: "ball", title: "Crea tu esfera navideña", sub: "Elige el color, escribe tu nombre y mira cómo queda.", price: 22, opts: [{ n: "Rojo", c: "#c1272d", d: "#7e1218" }, { n: "Dorado", c: "#e2b857", d: "#a67c1f" }, { n: "Verde", c: "#2f6b45", d: "#173d27" }] },
       scenes: [
-        { room: "img/villa-simetrica.jpg", span: 130, pmin: -4, pmax: 4, pitchEnd: 0,
-          links: [{ x: 50, y: 72, l: "Caminar hacia el árbol", to: 1 }],
-          points: [
-            { x: 50, y: 48, l: "Árbol de Navidad", items: [{ n: "Árbol decorado", d: "Árbol en rojo, dorado y marfil con lazos.", p: 120, img: "s-arbol" }] },
-            { x: 7, y: 43, l: "Esferas de árbol", items: [{ n: "Esferas de árbol artesanales", d: "Esferas rojas, doradas y plateadas. Caja de 12.", p: 36, img: "s-izq" }] },
-            { x: 18, y: 68, l: "Medias navideñas", items: [{ n: "Medias navideñas bordadas", d: "Para chimenea o puerta, bordadas a mano.", p: 18, img: "s-medias" }] },
-            { x: 17, y: 30, l: "Casitas navideñas", items: [{ n: "Casita navideña con luz", d: "Cerámica pintada a mano, con luz cálida.", p: 42, img: "s-casitas" }] },
-            { x: 69, y: 45, l: "Mostrador", items: [{ n: "Figura del mostrador", d: "Muñeco navideño de colección.", p: 45, img: "s-der" }] },
-            { x: 91, y: 47, l: "Esferas colgantes", items: [{ n: "Esferas rojas, doradas y plateadas", d: "Esferas decorativas pintadas a mano.", p: 26, img: "s-esferas" }] },
-            { x: 81, y: 70, l: "Medias navideñas", items: [{ n: "Medias bordadas rojas", d: "Edición navideña, bordadas a mano.", p: 18, img: "s-medias2" }] }
-          ] },
         { room: "img/villa-pasillo.jpg", span: 130, pmin: -4, pmax: 4, pitchEnd: 0,
-          links: [{ x: 50, y: 52, l: "Ver el local en 360°", to: 2 }],
+          links: [{ x: 50, y: 52, l: "Ver el local en 360°", to: 1 }],
           points: [
             { x: 10, y: 45, l: "Papel y listones", items: [{ n: "Papel de regalo navideño", d: "Rollos y listones en rojo, dorado y marfil.", p: 8, img: "p-papel" }] },
             { x: 51, y: 70, l: "Mesa central", items: [{ n: "Muñeco de nieve y esferas", d: "Muñeco de peluche, esferas y velas decorativas.", p: 29, img: "p-mesa" }] },
@@ -59,7 +48,7 @@
             { x: 33, y: 55, l: "Mostrador", items: [{ n: "Figura del mostrador", d: "Muñeco navideño de colección.", p: 45, img: "p-mostrador" }] }
           ] },
         { room: "img/villa-centro.jpg", span: 360, yaw0: 0,
-          links: [{ x: 43, y: 68, l: "Volver al pasillo", to: 1 }, { x: 62, y: 72, l: "Ver desde el fondo", to: 3 }],
+          links: [{ x: 43, y: 68, l: "Volver al pasillo", to: 0 }, { x: 62, y: 72, l: "Ver desde el fondo", to: 2 }],
           points: [
             { x: 6, y: 37, l: "Árbol de Navidad", items: [{ n: "Adornos de árbol artesanales", d: "Esferas y lazos en rojo y dorado, hechos a mano. Set de 12.", p: 36, img: "c-arbol" }] },
             { x: 8, y: 80, l: "Cajas de regalo", items: [{ n: "Cajas de regalo decoradas", d: "Envueltas con listón dorado, listas para regalar.", p: 15, img: "c-regalos" }] },
@@ -68,7 +57,7 @@
             { x: 91, y: 45, l: "Figuras navideñas", items: [{ n: "Figuras navideñas de colección", d: "Muñecos y personajes de Navidad pintados a mano.", p: 28, img: "c-estante" }] },
             { x: 17, y: 38, l: "Renos y arbolitos", items: [{ n: "Renos y arbolitos decorativos", d: "Figuras blancas y doradas para el hogar.", p: 34, img: "c-izq" }] }
           ] },
-        { room: "img/villa-fondo.jpg", span: 130, pmin: -4, pmax: 4, links: [{ x: 50, y: 62, l: "Volver al centro", to: 2 }],
+        { room: "img/villa-fondo.jpg", span: 130, pmin: -4, pmax: 4, links: [{ x: 50, y: 62, l: "Volver al centro", to: 1 }],
           points: [
             { x: 34, y: 45, l: "Árbol de Navidad", items: [{ n: "Árbol decorado", d: "Árbol en rojo, dorado y marfil con lazos.", p: 120, img: "f-arbol" }] },
             { x: 48, y: 68, l: "Mesa central", items: [{ n: "Muñeco de nieve y esferas", d: "Muñeco de peluche, esferas y velas decorativas.", p: 29, img: "f-mesa" }] },
