@@ -3,7 +3,7 @@
   /* ---- Boutiques (cada una es solo datos: Villa Navidad y Raíz Verde se agregan aquí) ---- */
   const B = {
     "luz-de-casa": {
-      name: "Luz de Casa", sub: "Velas artesanales", cur: "USD", cta: "Comprar", room: "img/luz-de-casa.jpg",
+      pre: "luz-", name: "Luz de Casa", sub: "Velas artesanales", cur: "USD", cta: "Comprar", room: "img/luz-de-casa.jpg",
       points: [
         { x: 47, y: 68, l: "Mesa central", items: [
           { n: "Vela de soja en vaso de vidrio", d: "Aromas de vainilla, rosa y sándalo. 45 horas de duración.", p: 24, img: "mesa" },
@@ -15,6 +15,20 @@
         { x: 49, y: 46, l: "Orquídeas", items: [{ n: "Arreglo de orquídeas", d: "Orquídeas naturales en florero de cristal.", p: 62, img: "orquideas" }] },
         { x: 88, y: 40, l: "Sets de regalo", items: [{ n: "Set de regalo con tarjeta", d: "Vela, difusor y tarjeta personalizada.", p: 54, img: "sets" }] },
         { x: 91, y: 58, l: "Mostrador", items: [{ n: "Vela personalizada con tu nombre", d: "Pedido especial. Entrega en 7 a 10 días.", p: 38, img: "mostrador" }] }
+      ]
+    }    ,
+    "raiz-verde": {
+      pre: "raiz-", name: "Raíz Verde", sub: "Productos naturales", cur: "USD", cta: "Comprar", room: "img/raiz-verde.jpg",
+      points: [
+        { x: 15, y: 40, l: "Jabones líquidos y cuidado", items: [{ n: "Jabón líquido de manos", d: "Fórmula vegetal con aceites esenciales. Frasco de vidrio 300 ml.", p: 14, img: "estante1" }] },
+        { x: 25, y: 47, l: "Cremas y lociones", items: [{ n: "Crema corporal natural", d: "Manteca de karité y aceite de coco. Sin parabenos.", p: 22, img: "estante2" }] },
+        { x: 15, y: 63, l: "Jabones en barra", items: [{ n: "Jabón artesanal en barra", d: "Elaborado en frío con avena, lavanda y miel.", p: 9, img: "jabones" }] },
+        { x: 45, y: 64, l: "Mesa central de jabones", items: [{ n: "Set de jabones artesanales", d: "Tres jabones envueltos a mano en caja de regalo.", p: 26, img: "centro" }] },
+        { x: 44, y: 46, l: "Lavanda", items: [{ n: "Ramo de lavanda seca", d: "Para aromatizar tu casa o tu clóset. Cultivo orgánico.", p: 18, img: "lavanda" }] },
+        { x: 57, y: 56, l: "Mesa del fondo", items: [{ n: "Bolsitas aromáticas", d: "Hierbas y flores secas en bolsa de lino.", p: 12, img: "fondo" }] },
+        { x: 72, y: 62, l: "Canasta", items: [{ n: "Canasta de regalo natural", d: "Jabón, crema y aceite esencial en canasta tejida.", p: 58, img: "canasta" }] },
+        { x: 73, y: 46, l: "Estante de aceites", items: [{ n: "Aceites esenciales", d: "Aceites puros para difusor y masajes.", p: 16, img: "estanteder" }] },
+        { x: 85, y: 54, l: "Mostrador", items: [{ n: "Kit de bienvenida", d: "Selección de mini productos para conocer la marca.", p: 34, img: "mostrador" }] }
       ]
     }
   };
@@ -41,7 +55,7 @@
     const close = () => ov.remove(); ov.addEventListener("click", e => { if (e.target === ov) close(); }); $(".x", ov).addEventListener("click", close); mount && mount(ov, close); return close;
   }
   function zone(p) {
-    modal("<h3>" + esc(p.l) + "</h3>" + p.items.map((it, i) => '<div class="item"><img class="sheet-photo" src="img/luz-' + it.img + '.jpg" alt="' + esc(it.n) + '"><div class="row"><div><b>' + esc(it.n) + "</b><span>" + esc(it.d) + '</span><span class="pp">' + money(it.p) + '</span></div><button class="btn wine" data-i="' + i + '">' + S.cta + "</button></div></div>").join("") + '<p class="note">Demostración: productos y precios de ejemplo.</p>', (ov, close) => {
+    modal("<h3>" + esc(p.l) + "</h3>" + p.items.map((it, i) => '<div class="item"><img class="sheet-photo" src="img/' + S.pre + it.img + '.jpg" alt="' + esc(it.n) + '"><div class="row"><div><b>' + esc(it.n) + "</b><span>" + esc(it.d) + '</span><span class="pp">' + money(it.p) + '</span></div><button class="btn wine" data-i="' + i + '">' + S.cta + "</button></div></div>").join("") + '<p class="note">Demostración: productos y precios de ejemplo.</p>', (ov, close) => {
       ov.querySelectorAll(".btn").forEach(b => b.addEventListener("click", () => { close(); buy(); }));
     });
   }
