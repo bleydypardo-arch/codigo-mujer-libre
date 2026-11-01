@@ -143,6 +143,10 @@
   const turn = d => { if (!P) return; stopInertia(); const t0 = P.S.yaw, t1 = t0 + d, st = performance.now(); (function f(t) { const k = Math.min(1, (t - st) / 600), e = 1 - Math.pow(1 - k, 3); P.S.yaw = t0 + (t1 - t0) * e; paint(); if (k < 1) requestAnimationFrame(f); })(st); };
   $("#aL").addEventListener("click", () => turn(-40)); $("#aR").addEventListener("click", () => turn(40));
 
+  /* avanzar / retroceder: la cámara se acerca o se aleja con suavidad */
+  function walk(k) { if (!P) return; stopInertia(); const z0 = zoom, z1 = Math.max(.5, Math.min(1.35, z0 * k)), t0 = performance.now(); tick(); (function f(t) { const q = Math.min(1, (t - t0) / 900), e = 1 - Math.pow(1 - q, 3); zoom = z0 + (z1 - z0) * e; paint(); if (q < 1) requestAnimationFrame(f); })(t0); }
+  $("#wf").addEventListener("click", () => walk(.72)); $("#wb").addEventListener("click", () => walk(1.32));
+
   /* ---- puerta: se abre y la cámara avanza hacia adentro ---- */
   let opened = false;
   function enter() {
@@ -152,7 +156,7 @@
   function open() {
     if (opened) return; opened = true; ac(); chime();
     scene.classList.add("opening"); $("#flash").classList.add("on"); doors.classList.add("open"); enter();
-    setTimeout(() => { doors.classList.add("gone"); scene.classList.add("ready"); ["#top", "#hint", "#aL", "#aR"].forEach(s => $(s).hidden = false); ambience(); }, 2900);
+    setTimeout(() => { doors.classList.add("gone"); scene.classList.add("ready"); ["#top", "#hint", "#aL", "#aR", "#walk"].forEach(s => $(s).hidden = false); ambience(); }, 2900);
     setTimeout(() => { $("#hint").style.opacity = 0; }, 12000);
   }
   doors.addEventListener("click", open); doors.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });

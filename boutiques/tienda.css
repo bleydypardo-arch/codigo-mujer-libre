@@ -33,3 +33,9 @@
 .chip.on{border-color:#b98a3e;background:#fff6e0}
 .pp2{font:600 22px var(--serif);color:var(--wine);margin-right:auto}
 #top .mk,#top #snd{pointer-events:auto}
+#walk{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:6;display:flex;gap:10px}
+#walk[hidden]{display:none}
+#walk button{padding:11px 16px;border-radius:999px;background:rgba(40,18,24,.78);color:#fff;font:600 13px/1 Inter,sans-serif;border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(6px)}
+#walk{bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+#walk button{white-space:nowrap}
+#hint{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
