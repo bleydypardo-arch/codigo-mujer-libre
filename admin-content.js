@@ -878,7 +878,7 @@ async function cityListTab() {
       country.value = ["CO", "US", "ES", "DO"].includes(c.country) ? c.country : "";
       country.addEventListener("change", () => { c.country = country.value; });
       const rm = K.button(tx("cityRemove"), "secondary", () => { list.splice(i, 1); draw(); });
-      return el("div", { class: "rf-pair" }, el("label", {}, el("small", { text: tx("cityName") }), name), el("label", {}, el("small", { text: tx("cityCountry") }), country), rm);
+      return el("div", { class: "rf-pair city-row" }, el("label", {}, el("small", { text: tx("cityName") }), name), el("label", {}, el("small", { text: tx("cityCountry") }), country), rm);
     });
     box.replaceChildren(...rows, el("div", { class: "admin-bar" },
       K.button(tx("cityAdd"), "secondary", () => { if (list.length < 40) { list.push({ name: "", country: "CO" }); draw(); } }),

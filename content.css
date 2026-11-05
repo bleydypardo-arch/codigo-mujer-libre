@@ -140,3 +140,9 @@
 @keyframes rcNudge { 0%, 70%, 100% { transform: scale(1); } 80% { transform: scale(1.06); } 90% { transform: scale(1); } }
 #matcha .rc-open-btn { background: linear-gradient(120deg, #3F6B45 0%, #5E8A55 38%, #A8679B 78%, #B97AB3 100%); color: #fff; }
 #matcha .rc-close-btn { color: #3F6B45; }
+
+/* Admin > Mis ciudades: each row (city, country, remove) stays inside the frame, also with the longer country names */
+.city-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: end; }
+.city-row label { display: block; min-width: 0; }
+.city-row input, .city-row select { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; }
+@media (max-width: 560px) { .city-row { grid-template-columns: minmax(0, 1fr); align-items: stretch; } .city-row > button { justify-self: start; } }
