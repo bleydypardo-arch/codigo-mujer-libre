@@ -57,10 +57,13 @@ const ES_LINES = [{ num: "112", es: "Emergencias (policía, bomberos, ambulancia
   { num: "016", es: "Violencia de género · 24 h (no deja rastro en la factura)", en: "Gender-violence helpline · 24/7 (leaves no trace on the phone bill)" },
   { num: "024", es: "Salud mental y conducta suicida · 24 h", en: "Mental health & suicide-prevention line · 24/7" },
   { num: "900200999", es: "Instituto Andaluz de la Mujer · información gratuita (Andalucía)", en: "Andalusian Women's Institute · free information (Andalusia)" }];
+const DO_LINES = [{ num: "911", es: "Emergencias (policía, bomberos, ambulancia)", en: "Emergencies (police, fire, ambulance)" },
+  { num: "*212", es: "Línea Mujer · violencia contra la mujer · 24 h", en: "Línea Mujer · violence against women · 24/7" },
+  { num: "809-200-1400", es: "Salud mental · todos los días, 8 a. m. a medianoche", en: "Mental health · daily, 8 a.m. to midnight" }];
 // By country: Colombia's 106 mental-health line is Bogotá's, so other Colombian cities start with 123 and 155 only.
 const defaultLines = city => {
   const country = C && C.cityCountry ? C.cityCountry(city) : "";
-  const base = country === "ES" ? ES_LINES : country === "CO" ? (city === "bogota" ? CO : CO.slice(0, 2)) : US;
+  const base = country === "ES" ? ES_LINES : country === "DO" ? DO_LINES : country === "CO" ? (city === "bogota" ? CO : CO.slice(0, 2)) : US;
   return base.map(x => Object.assign({}, x));
 };
 const cleanNum = n => String(n || "").replace(/[^0-9+*#]/g, "");

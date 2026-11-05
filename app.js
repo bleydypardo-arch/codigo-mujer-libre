@@ -608,7 +608,8 @@ const cityKey = v => String(v || "").normalize("NFD").replace(/[\u0300-\u036f]/g
 // The city list is editable in Admin (settings.cities = [{name, country}]); without it these built-in cities are used.
 const DEFAULT_CITIES = [
   { name: "Orlando", country: "US" }, { name: "Bogotá", country: "CO" }, { name: "Barranquilla", country: "CO" }, { name: "Miami", country: "US" },
-  { name: "Medellín", country: "CO" }, { name: "Cartagena", country: "CO" }, { name: "New York", country: "US" }, { name: "Boston", country: "US" }, { name: "Charlotte", country: "US" }, { name: "Raleigh", country: "US" }, { name: "Granada y Costa", country: "ES" }
+  { name: "Medellín", country: "CO" }, { name: "Cartagena", country: "CO" }, { name: "New York", country: "US" }, { name: "Boston", country: "US" }, { name: "Charlotte", country: "US" }, { name: "Raleigh", country: "US" }, { name: "Granada y Costa", country: "ES" },
+  { name: "Santo Domingo", country: "DO" }, { name: "Santiago", country: "DO" }, { name: "Punta Cana", country: "DO" }
 ];
 function cities() {
   const raw = settings && Array.isArray(settings.cities) ? settings.cities : [];
@@ -624,9 +625,10 @@ const CITY_PLACE = {
   northcarolina: ["North Carolina", "US"],
   bogota: ["Bogotá", "CO"], medellin: ["Medellín, Antioquia", "CO"], barranquilla: ["Barranquilla, Atlántico", "CO"], cartagena: ["Cartagena, Bolívar", "CO"],
   granada: ["Granada, Andalucía", "ES"], granadaycosta: ["Granada y Costa, Andalucía", "ES"], motril: ["Motril, Granada, Andalucía", "ES"], almunecar: ["Almuñécar, Granada, Andalucía", "ES"],
-  malaga: ["Málaga, Andalucía", "ES"], sevilla: ["Sevilla, Andalucía", "ES"], cordoba: ["Córdoba, Andalucía", "ES"], cadiz: ["Cádiz, Andalucía", "ES"]
+  malaga: ["Málaga, Andalucía", "ES"], sevilla: ["Sevilla, Andalucía", "ES"], cordoba: ["Córdoba, Andalucía", "ES"], cadiz: ["Cádiz, Andalucía", "ES"],
+  santodomingo: ["Santo Domingo", "DO"], santiago: ["Santiago de los Caballeros", "DO"], puntacana: ["Punta Cana, La Altagracia", "DO"]
 };
-const COUNTRY_NAME = { US: ["USA", "USA"], CO: ["Colombia", "Colombia"], ES: ["España", "Spain"] };
+const COUNTRY_NAME = { US: ["USA", "USA"], CO: ["Colombia", "Colombia"], ES: ["España", "Spain"], DO: ["República Dominicana", "Dominican Republic"] };
 function cityFull(name) {
   const base = String(name || "").trim(), k = cityKey(base);
   if (!k) return "";
@@ -639,7 +641,7 @@ window.CMLPlace = { full: cityFull };
 function renderSignupCities() { fillSignupCities(); }
 const knownCities = () => cities().map(c => cityKey(c.name));
 const cityName = key => { const c = cities().find(x => cityKey(x.name) === key); return c ? c.name : ""; };
-const cityCountry = key => { const c = cities().find(x => cityKey(x.name) === key); return c ? c.country : ""; };
+const cityCountry = key => { const c = cities().find(x => cityKey(x.name) === key); return c ? c.country : (CITY_PLACE[key] ? CITY_PLACE[key][1] : ""); };
 // Anyone can look at any city's content: the city button ("cml_viewas" on this device) wins; otherwise her own profile city.
 const viewAs = () => { try { return localStorage.getItem("cml_viewas") || ""; } catch { return ""; } };
 function viewCity() {
@@ -2324,12 +2326,13 @@ async function handleSignup(event) {
 const SIGNUP_CITIES = [   // fixed list for the sign-up and the profile: only where we are open today
   ["USA", ["Orlando", "Miami", "New York", "Boston", "North Carolina"]],
   ["Colombia", ["Bogotá", "Barranquilla", "Medellín", "Cartagena"]],
-  ["España", ["Granada", "Motril", "Almuñécar", "Málaga", "Sevilla"]]
+  ["España", ["Granada", "Motril", "Almuñécar", "Málaga", "Sevilla"]],
+  ["República Dominicana", ["Santo Domingo", "Santiago", "Punta Cana"]]
 ];
 // Towns of Andalucía belong to the zone "Granada y Costa" for city content (events, restaurants, tours...).
 const CITY_ZONE = { granada: "granadaycosta", motril: "granadaycosta", almunecar: "granadaycosta", malaga: "granadaycosta", sevilla: "granadaycosta" };
 function signupCityGroups() {
-  const groupLabel = g => (g === "España" && currentLanguage === "en" ? "Spain" : g);
+  const groupLabel = g => (currentLanguage === "en" ? (g === "España" ? "Spain" : g === "República Dominicana" ? "Dominican Republic" : g) : g);
   return SIGNUP_CITIES.map(([g, list]) => el("optgroup", { label: groupLabel(g) }, ...list.map(c => el("option", { value: c, text: cityFull(c) }))));
 }
 window.CMLPlace.groups = signupCityGroups;
