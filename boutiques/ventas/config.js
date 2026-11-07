@@ -9,13 +9,13 @@ window.CMLV = {
   pago: { separa: 0.3, cuotas: 2, limite: "15 de diciembre" },   // separa con el 30 %; el resto en 2 pagos antes del límite
   paises: ["República Dominicana", "Colombia", "España", "Otro país"],
 
-  /* Códigos de asesora. El código define el país (y por tanto la lista de precios). CAMBIA estos códigos de ejemplo. */
+  /* Códigos de asesora: 4 dígitos. El código define el país (y por tanto la lista de precios). CAMBIA estos códigos de ejemplo. */
   asesoras: [
-    { codigo: "DO-EMILY", pais: "do", nombre: "Emily · República Dominicana" },
-    { codigo: "CO-ASESORA1", pais: "co", nombre: "Asesora Colombia 1" },
-    { codigo: "CO-ASESORA2", pais: "co", nombre: "Asesora Colombia 2" },
-    { codigo: "ES-ASESORA1", pais: "es", nombre: "Asesora España" },
-    { codigo: "US-JAZZ", pais: "us", nombre: "Jazz · Estados Unidos" }
+    { codigo: "7316", pais: "do", nombre: "Emily · República Dominicana" },
+    { codigo: "4592", pais: "co", nombre: "Asesora Colombia 1" },
+    { codigo: "8037", pais: "co", nombre: "Asesora Colombia 2" },
+    { codigo: "2864", pais: "es", nombre: "Asesora España" },
+    { codigo: "9150", pais: "us", nombre: "Jazz · Estados Unidos" }
   ],
 
 
