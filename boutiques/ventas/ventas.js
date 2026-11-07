@@ -284,13 +284,13 @@
   const setRep = on => { $("#guion").hidden = !on; $("#bRep").setAttribute("aria-pressed", String(on)); if (on) renderGuion(); };
   const vpais = a => { try { return (a.admin && sessionStorage.getItem("cml_vista")) || a.pais; } catch (e) { return a.pais; } };
   function login(a) { asesora = a; pais = vpais(a); try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(true); toast("Hola, " + a.nombre + ". Precios de " + cp().nombre + " activados."); }
-  function logout() { asesora = null; pais = null; try { sessionStorage.removeItem("cml_asesora"); localStorage.removeItem("cml_asesora"); } catch (e) {} setRep(false); toast("Sesión de asesora cerrada. Ya no se muestran precios."); }
-  const find = c => C.asesoras.find(a => a.codigo.toLowerCase() === String(c).trim().toLowerCase());
+  function logout() { asesora = null; pais = null; try { sessionStorage.removeItem("cml_sesion"); sessionStorage.removeItem("cml_asesora"); localStorage.removeItem("cml_asesora"); } catch (e) {} setRep(false); toast("Sesión de asesora cerrada. Ya no se muestran precios."); }
+  const find = c => (C.asesoras || []).find(a => a.codigo.toLowerCase() === String(c).trim().toLowerCase());
   function askCode() {
     if (document.querySelector(".pg")) return;
     const g = document.createElement("div"); g.className = "pg"; g.setAttribute("role", "dialog"); g.setAttribute("aria-label", "Entrada de asesoras");
     const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"].map(k => k === "" ? "<span></span>" : '<button type="button" data-k="' + k + '" aria-label="' + (k === "del" ? "Borrar" : k) + '">' + (k === "del" ? "⌫" : k) + "</button>").join("");
-    g.innerHTML = '<div class="pgk"><div class="pgt">Sala de asesoras</div><div class="pgs">Escribe tu código de 4 dígitos</div><div class="pgd"><i></i><i></i><i></i><i></i></div><div class="pgm" aria-live="polite"></div><div class="pgn">' + keys + '</div><button class="pgx" type="button">Cancelar</button></div><div class="pgc"></div><div class="pgl"></div><div class="pgr"></div>';
+    g.innerHTML = '<div class="pgk"><div class="pgt">Sala de asesoras</div><div class="pgs">Escribe tu código</div><div class="pgd"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="pgm" aria-live="polite"></div><div class="pgn">' + keys + '</div><button class="pgx" type="button">Cancelar</button></div><div class="pgc"></div><div class="pgl"></div><div class="pgr"></div>';
     document.body.appendChild(g);
     let code = "", busy = false;
     const dots = [...g.querySelectorAll(".pgd i")], msg = g.querySelector(".pgm");
@@ -298,13 +298,23 @@
     const end = () => { document.removeEventListener("keydown", kd); g.classList.add("out"); setTimeout(() => g.remove(), 500); };
     function add(k) {
       if (busy) return; msg.textContent = "";
-      if (k === "del") code = code.slice(0, -1); else if (code.length < 4) code += k;
+      if (k === "del") code = code.slice(0, -1); else if (code.length < 6) code += k;
       paint(); tone(520 + code.length * 60, 0, .18, .05);
-      if (code.length === 4) check();
+      if (code.length === 6 || (code.length === 4 && find(code))) check();
     }
     function check() {
-      const a = find(code); busy = true;
-      if (!a) { g.querySelector(".pgk").classList.add("bad"); tone(180, 0, .35, .06); msg.textContent = "Ese código no es válido. Inténtalo de nuevo."; setTimeout(() => { g.querySelector(".pgk").classList.remove("bad"); code = ""; paint(); busy = false; }, 700); return; }
+      busy = true; const c = code;
+      const fail = m => { g.querySelector(".pgk").classList.add("bad"); tone(180, 0, .35, .06); msg.textContent = m || "Ese código no es válido. Inténtalo de nuevo."; setTimeout(() => { g.querySelector(".pgk").classList.remove("bad"); code = ""; paint(); busy = false; }, 700); };
+      (window.CMLACC ? CMLACC.login(c) : Promise.resolve({ ok: false, error: "sin_backend" })).then(r => {
+        let a = null;
+        if (r && r.ok) a = { codigo: r.id, nombre: r.nombre, pais: r.pais, admin: r.rol === "admin" };
+        else if (r && r.error === "sin_backend") a = find(c);
+        else return fail(({ bloqueado: "Tu acceso está desactivado. Escríbele a Jazz.", vencido: "Tu código venció. Pídele a Jazz el nuevo.", demasiados: "Demasiados intentos. Espera unos minutos.", sin_conexion: "No hay internet." })[r && r.error]);
+        if (!a) return fail();
+        proceed(a);
+      });
+    }
+    function proceed(a) {
       dots.forEach(d => d.classList.add("ok")); tone(660, 0, .5, .06); tone(880, .15, .6, .05); tone(1175, .3, .8, .05);
       const pc = C.precios[a.pais], nom = a.nombre.split("·")[0].trim();
       setTimeout(() => g.classList.remove("open"), 650);
@@ -404,7 +414,7 @@
   }
   /* ---------- inicio ---------- */
   const sp = new URLSearchParams(location.search), h0 = /^#sala(\d)$/.exec(location.hash);
-  try { try { localStorage.removeItem("cml_asesora"); } catch (e) {} const k = sessionStorage.getItem("cml_asesora") || sp.get("codigo"); const a = k && find(k); if (a) { asesora = a; pais = vpais(a); try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(sp.get("rep") === "1"); } } catch (e) {}
+  try { try { localStorage.removeItem("cml_asesora"); } catch (e) {} let ss = null; try { ss = JSON.parse(sessionStorage.getItem("cml_sesion") || "null"); } catch (e) {} const k = sessionStorage.getItem("cml_asesora") || sp.get("codigo"); const a = ss ? { codigo: ss.id, nombre: ss.nombre, pais: ss.pais, admin: ss.rol === "admin" } : (k && find(k)); if (a) { asesora = a; pais = vpais(a); try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(sp.get("rep") === "1"); } } catch (e) {}
   const start = sp.get("sala") != null ? +sp.get("sala") : (sp.get("app") === "1" && asesora ? PUB : 0);
   if (start > 0) opened = true;
   show(Math.min(Math.max(start || 0, 0), ROOMS.length - 1));

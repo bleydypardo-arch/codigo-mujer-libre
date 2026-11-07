@@ -341,7 +341,7 @@
 
   /* ---------- ADMINISTRACIÓN (solo Jazz) ---------- */
   const MODS = [["agenda", "Mi agenda"], ["eventos", "Agenda de eventos"], ["vivo", "Eventos en vivo"], ["gastos", "Presupuesto y gastos"], ["empresas", "Empresas"], ["provs", "Proveedores"], ["ventas", "Ventas y comisiones"], ["academia", "Academia"]];
-  function admin() {
+  function adminLegacy() {
     if (!A.admin) { main.innerHTML = head("Administración", "Solo para la fundadora.") + '<div class="empty"><i>🔒</i><p>Esta sección es solo para Jazz.</p></div>'; return; }
     const P = (() => { try { return JSON.parse(localStorage.getItem("cml_admin_perm") || "{}"); } catch (e) { return {}; } })();
     main.innerHTML = head("Administración", "Usuarias, permisos y bloqueos.") +
@@ -352,6 +352,36 @@
     $("#vsel", main).onchange = e => { try { sessionStorage.setItem("cml_vista", e.target.value); } catch (x) {} toast("Ahora ves los precios de " + C.precios[e.target.value].nombre + "."); };
     $$("[data-b]", main).forEach(b => b.onclick = () => { P["b" + b.dataset.b] = !P["b" + b.dataset.b]; localStorage.setItem("cml_admin_perm", JSON.stringify(P)); admin(); });
     $$("[data-p]", main).forEach(i => i.onchange = () => { P["p" + i.dataset.p] = i.checked; localStorage.setItem("cml_admin_perm", JSON.stringify(P)); });
+  }
+
+  const addDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return ymd(d); };
+  const rnd = () => String(Math.floor(100000 + Math.random() * 900000));
+  const PAISES = [["co", "Colombia"], ["do", "República Dominicana"], ["es", "España"], ["us", "Estados Unidos"]];
+  function admin() {
+    if (!A.admin) { main.innerHTML = head("Administración", "Solo para la fundadora.") + '<div class="empty"><i>🔒</i><p>Esta sección es solo para Jazz.</p></div>'; return; }
+    if (A.legacy) { adminLegacy(); return; }
+    main.innerHTML = head("Administración", "Personas, códigos, vencimientos y bloqueos.") + '<div class="empty s"><p>Cargando…</p></div>';
+    CMLACC.admin("admin_list").then(L => adminDraw(L)).catch(() => { main.innerHTML = head("Administración", "") + '<div class="empty"><i>⚠️</i><p>No pude cargar la lista. Revisa tu internet e inténtalo otra vez.</p></div>'; });
+  }
+  function adminDraw(L) {
+    const hoy = today(), est = p => !p.activo ? ["Bloqueada", "bad"] : p.valid_from > hoy ? ["Empieza " + fdate(p.valid_from), "wait"] : p.valid_to && p.valid_to < hoy ? ["Vencida", "bad"] : p.valid_to ? ["Vence " + fdate(p.valid_to), "ok"] : ["Sin vencimiento", "ok"];
+    main.innerHTML = head("Administración", "Personas, códigos, vencimientos y bloqueos.") +
+      '<h4 class="sh">Ver todo como país</h4><select id="vsel" class="srch">' + Object.keys(C.precios).map(k => '<option value="' + k + '"' + (vista() === k ? " selected" : "") + ">" + C.precios[k].nombre + "</option>").join("") + '</select><p class="note">Cambia los precios y la moneda que ves en la app y en la Sala. Tu código entra a todo.</p>' +
+      '<h4 class="sh">Personas con acceso (' + L.length + ')</h4><div class="lst">' + L.map(p => { const e = est(p); return '<div class="pc"><div class="pt"><b>' + esc(p.nombre) + '</b><span class="bd ' + e[1] + '">' + e[0] + '</span></div><small>' + esc(p.ciudad || "—") + " · " + (C.precios[p.pais] || {}).nombre + " · " + ({ admin: "administradora", lider: "líder", asesora: "asesora" })[p.rol] + (p.last_login ? " · última vez " + fdate(p.last_login.slice(0, 10)) : "") + '</small><div class="cd"><code data-c="' + p.code + '">••••••</code><button type="button" data-sh="' + p.id + '">Ver código</button></div><div class="pb"><button type="button" data-ed="' + p.id + '">Editar</button><button type="button" data-rn="' + p.id + '">Renovar 30 días</button>' + (p.id === A.codigo ? "" : '<button type="button" class="' + (p.activo ? "dn" : "up") + '" data-bl="' + p.id + '">' + (p.activo ? "Bloquear" : "Activar") + "</button>") + "</div></div>"; }).join("") + "</div>" +
+      '<div class="bar"><button type="button" class="bt2 w" data-nw>+ Nueva persona</button></div><p class="fine">Los códigos viven en la base de datos, no en los archivos de la app. Al bloquear a alguien, deja de entrar en todos sus dispositivos.</p>';
+    const byId = id => L.find(x => x.id === id), redo = () => admin();
+    $("#vsel", main).onchange = e => { try { sessionStorage.setItem("cml_vista", e.target.value); } catch (x) {} toast("Ahora ves los precios de " + C.precios[e.target.value].nombre + "."); };
+    $$("[data-sh]", main).forEach(b => b.onclick = () => { const c = b.previousElementSibling, on = c.textContent.includes("•"); c.textContent = on ? c.dataset.c : "••••••"; b.textContent = on ? "Ocultar" : "Ver código"; });
+    $$("[data-bl]", main).forEach(b => b.onclick = () => { const p = byId(b.dataset.bl), q = p.activo ? "¿Bloquear a " + p.nombre + "? Dejará de entrar al instante." : "¿Volver a activar a " + p.nombre + "?"; confirmBox(q, () => CMLACC.admin("admin_set_active", { p_id: p.id, p_activo: !p.activo }).then(r => { toast(r && r.ok ? (p.activo ? "Bloqueada." : "Activada.") : "No se pudo."); redo(); }).catch(() => toast("No se pudo. Revisa tu internet.")), p.activo ? "Sí, bloquear" : "Sí, activar"); });
+    const save = (p, o, done) => CMLACC.admin("admin_save", { p_id: p ? p.id : null, p_code: o.code, p_nombre: o.nombre, p_ciudad: o.ciudad, p_pais: o.pais, p_rol: o.rol, p_from: o.desde || null, p_to: o.hasta || null }).then(r => { if (r && r.ok) { done && done(); redo(); } else toast(r && r.error === "codigo_repetido" ? "Ese código ya lo tiene otra persona. Usa otro." : "No se pudo guardar."); }).catch(() => toast("No se pudo guardar. Revisa tu internet."));
+    const F = [{ k: "nombre", l: "Nombre", req: 1 }, { k: "ciudad", l: "Ciudad", ph: "Bogotá, Santo Domingo…" }, { k: "pais", l: "País (para precios)", type: "select", opts: PAISES }, { k: "rol", l: "Rol", type: "select", opts: [["asesora", "Asesora"], ["lider", "Líder de ciudad"], ["admin", "Administradora"]] }, { k: "code", l: "Código (6 números)", type: "text", req: 1, ph: "Toca “Generar” abajo" }, { k: "desde", l: "Sirve desde", type: "date" }, { k: "hasta", l: "Sirve hasta (vacío = sin vencimiento)", type: "date" }];
+    const form = (p) => { const v = p ? { nombre: p.nombre, ciudad: p.ciudad, pais: p.pais, rol: p.rol, code: p.code, desde: p.valid_from, hasta: p.valid_to || "" } : { pais: "co", rol: "asesora", code: rnd(), desde: hoy, hasta: addDays(30) };
+      formModal(p ? "Editar a " + p.nombre : "Nueva persona", F, v, o => { if (!/^\d{6}$/.test(o.code)) { toast("El código debe tener 6 números."); return; } save(p, o, () => toast("Guardado.")); });
+      setTimeout(() => { const f = $(".ov .frm"); if (f) { const g = document.createElement("button"); g.type = "button"; g.className = "lnk"; g.textContent = "Generar un código nuevo al azar"; g.onclick = () => { $('[name="code"]', f).value = rnd(); }; $('[name="code"]', f).insertAdjacentElement("afterend", g); } }, 30); };
+    $("[data-nw]", main).onclick = () => form(null);
+    $$("[data-ed]", main).forEach(b => b.onclick = () => form(byId(b.dataset.ed)));
+    $$("[data-rn]", main).forEach(b => b.onclick = () => { const p = byId(b.dataset.rn), nc = rnd(), hasta = addDays(30);
+      modal('<div class="kick">Renovar</div><h3>' + esc(p.nombre) + '</h3><p>Su acceso quedará activo hasta el <b>' + fdate(hasta) + '</b>.</p><label class="chk"><input type="checkbox" id="rnn" checked> Darle un código nuevo (recomendado)</label><div class="row2"><button class="bt2 w" type="button" id="rok">Renovar</button></div>', (ov, cl) => { $("#rok", ov).onclick = () => { const code = $("#rnn", ov).checked ? nc : p.code; cl(); save(p, { code, nombre: p.nombre, ciudad: p.ciudad, pais: p.pais, rol: p.rol, desde: hoy, hasta }, () => { const t = "Hola " + p.nombre.split(" ")[0] + " 🌸 Tu código de Código ML Asesoras es " + code + ". Sirve hasta el " + fdate(hasta) + ". No lo compartas con nadie."; modal('<div class="kick">Listo</div><h3>Mensaje para ' + esc(p.nombre) + '</h3><div class="omsg pre">' + esc(t) + '</div><div class="row2"><button class="bt2" type="button" data-cp>Copiar</button><a class="bt2 w" target="_blank" rel="noopener" href="' + waLink(t) + '">WhatsApp</a></div>', o2 => { $("[data-cp]", o2).onclick = () => copy(t); }); }); }; }); });
   }
 
   /* ---------- MI CUENTA, RESPALDO E INSTALACIÓN ---------- */
@@ -405,34 +435,46 @@
   });
 
   /* ---------- ingreso ---------- */
-  const find = c => C.asesoras.find(a => a.codigo === String(c).trim());
-  /* El ingreso dura solo mientras la app está abierta: al cerrarla, hay que entrar otra vez. Los códigos bloqueados viven en asesoras/acceso.json. */
+  /* El ingreso dura solo mientras la app está abierta y se vuelve a pedir tras 5 minutos fuera. Los códigos viven en Supabase (se activan, vencen y bloquean desde Administración).
+     Mientras Supabase no esté activado, se usan los códigos de prueba de config.js y la lista asesoras/acceso.json. */
+  const find = c => (C.asesoras || []).find(a => a.codigo === String(c).trim());
   const blocked = c => fetch("asesoras/acceso.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.json()).then(j => (j.bloqueados || []).map(String).includes(String(c))).catch(() => false);
-  const logout = msg => { try { localStorage.removeItem("cml_asesora"); sessionStorage.removeItem("cml_asesora"); } catch (e) {} A = null; location.hash = ""; start(); if (msg) $("#lgErr").textContent = msg; };
+  const mk = s => ({ codigo: s.id || s.codigo, nombre: s.nombre, pais: s.pais, ciudad: s.ciudad || "", rol: s.rol, admin: s.rol === "admin", token: s.token, legacy: !!s.legacy });
+  const sesion = () => { const s = CMLACC.sesion(); if (s) return s; let k = null; try { k = sessionStorage.getItem("cml_asesora"); } catch (e) {} const a = k && find(k); return a ? { legacy: true, id: a.codigo, nombre: a.nombre, pais: a.pais, rol: a.admin ? "admin" : "asesora" } : null; };
+  const logout = msg => { CMLACC.salir(); A = null; location.hash = ""; start(); if (msg) $("#lgErr").textContent = msg; };
+  const MSG = { invalido: "Ese código no existe. Revísalo o pídele el tuyo a Jazz.", bloqueado: "Tu acceso está desactivado. Escríbele a Jazz.", vencido: "Tu código venció. Pídele a Jazz el código nuevo.", demasiados: "Demasiados intentos. Espera unos minutos e inténtalo de nuevo.", sin_conexion: "No hay internet. Conéctate para entrar." };
+  function vigilar() {
+    if (!A) return; const id = A.codigo;
+    if (A.legacy) { blocked(A.codigo).then(b => { if (b && A && A.codigo === id) logout(MSG.bloqueado); }); return; }
+    CMLACC.check().then(r => { if (r && r.ok === false && A && A.codigo === id) logout("Tu acceso ya no está activo. Escríbele a Jazz."); });
+  }
   function start() {
-    const app = $("#app"), lg = $("#login");
-    let k = null; try { localStorage.removeItem("cml_asesora"); k = sessionStorage.getItem("cml_asesora"); } catch (e) {}
-    const a = k && find(k);
-    if (a) { A = a; lg.hidden = true; app.hidden = false; $("#who").textContent = first(); route(); blocked(a.codigo).then(b => { if (b && A && A.codigo === a.codigo) logout("Tu acceso está desactivado. Escríbele a Jazz."); }); return; }
+    const app = $("#app"), lg = $("#login"); try { localStorage.removeItem("cml_asesora"); } catch (e) {}
+    const s = sesion();
+    if (s) { A = mk(s); lg.hidden = true; app.hidden = false; $("#who").textContent = first(); route(); vigilar(); return; }
     A = null; app.hidden = true; lg.hidden = false;
   }
-  let hiddenAt = 0; document.addEventListener("visibilitychange", () => { if (document.hidden) hiddenAt = Date.now(); else if (A) { if (hiddenAt && Date.now() - hiddenAt > 5 * 60 * 1000) logout("Por seguridad, vuelve a entrar con tu código."); else blocked(A.codigo).then(b => { if (b && A) logout("Tu acceso está desactivado. Escríbele a Jazz."); }); } });
-  let code = "";
+  let hiddenAt = 0; document.addEventListener("visibilitychange", () => { if (document.hidden) hiddenAt = Date.now(); else if (A) { if (hiddenAt && Date.now() - hiddenAt > 5 * 60 * 1000) logout("Por seguridad, vuelve a entrar con tu código."); else vigilar(); } });
+  let code = "", busy = false;
   const dots = () => $$("#lgDots i").forEach((d, i) => d.classList.toggle("on", i < code.length));
+  const bad = m => { $("#lgErr").textContent = m; const d = $("#lgDots"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake"); code = ""; setTimeout(dots, 350); };
   function tryCode() {
-    const a = find(code);
-    if (!a) { $("#lgErr").textContent = "Ese código no existe. Revísalo o pídele el tuyo a Jazz."; const d = $("#lgDots"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake"); code = ""; setTimeout(dots, 350); return; }
-    blocked(a.codigo).then(b => { if (b) { $("#lgErr").textContent = "Tu acceso está desactivado. Escríbele a Jazz."; code = ""; dots(); return; } enter(a); });
+    if (busy || code.length < 4) return; busy = true; const c = code;
+    CMLACC.login(c).then(r => {
+      busy = false;
+      if (r && r.ok) return enter();
+      if (r && r.error === "sin_backend") { const a = find(c); if (!a) return bad(MSG.invalido); return blocked(a.codigo).then(b => { if (b) return bad(MSG.bloqueado); try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (x) {} enter(); }); }
+      bad(MSG[(r && r.error) || "invalido"] || MSG.invalido);
+    });
   }
-  function enter(a) {
-    try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (x) {}
+  function enter() {
     $("#lgErr").textContent = ""; $("#login").classList.add("bloom"); setTimeout(() => { $("#login").classList.remove("bloom", "open"); code = ""; dots(); location.hash = "inicio"; start(); }, 1100);
   }
   function key(k) {
     if ($("#login").hidden || !$("#login").classList.contains("open")) return;
     $("#lgErr").textContent = "";
-    if (k === "b") code = code.slice(0, -1); else if (k === "e") { if (code.length === 4) tryCode(); } else if (/^\d$/.test(k) && code.length < 4) code += k;
-    dots(); if (code.length === 4 && k !== "e" && k !== "b") setTimeout(tryCode, 250);
+    if (k === "b") code = code.slice(0, -1); else if (k === "e") tryCode(); else if (/^\d$/.test(k) && code.length < 6) code += k;
+    dots(); if (code.length === 6 && k !== "e") setTimeout(tryCode, 200);
   }
   $$("#lgPad .keys button").forEach(b => b.addEventListener("click", () => key(b.dataset.k)));
   addEventListener("keydown", e => { if (/^\d$/.test(e.key)) key(e.key); else if (e.key === "Backspace") key("b"); else if (e.key === "Enter") key("e"); });
