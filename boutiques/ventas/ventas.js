@@ -272,9 +272,41 @@
   function logout() { asesora = null; pais = null; try { sessionStorage.removeItem("cml_asesora"); } catch (e) {} setRep(false); toast("Sesión de asesora cerrada. Ya no se muestran precios."); }
   const find = c => C.asesoras.find(a => a.codigo.toLowerCase() === String(c).trim().toLowerCase());
   function askCode() {
-    modal('<div class="kick">Sala de asesoras</div><h3>Ingresa tu código</h3><p>Con tu código se activan los precios de tu país y tu guion de venta.</p><form id="cf" autocomplete="off"><label>País<select name="pa">' + Object.keys(C.precios).map(k => '<option value="' + k + '">' + esc(C.precios[k].nombre) + "</option>").join("") + '</select></label><label>Código de asesora<input name="c" required inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="4 dígitos"></label><div class="acts"><button class="bt2 w" type="submit">Entrar</button></div></form><p class="note" id="ce"></p>', (ov, close) => {
-      $("#cf", ov).addEventListener("submit", e => { e.preventDefault(); const a = find(e.target.c.value); if (!a || a.pais !== e.target.pa.value) { $("#ce", ov).textContent = "No reconocemos ese código para ese país. Revisa el país y que el código esté escrito igual."; return; } close(); login(a); });
-    });
+    if (document.querySelector(".pg")) return;
+    const g = document.createElement("div"); g.className = "pg"; g.setAttribute("role", "dialog"); g.setAttribute("aria-label", "Entrada de asesoras");
+    const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "del"].map(k => k === "" ? "<span></span>" : '<button type="button" data-k="' + k + '" aria-label="' + (k === "del" ? "Borrar" : k) + '">' + (k === "del" ? "⌫" : k) + "</button>").join("");
+    g.innerHTML = '<div class="pgk"><div class="pgt">Sala de asesoras</div><div class="pgs">Escribe tu código de 4 dígitos</div><div class="pgd"><i></i><i></i><i></i><i></i></div><div class="pgm" aria-live="polite"></div><div class="pgn">' + keys + '</div><button class="pgx" type="button">Cancelar</button></div><div class="pgc"></div><div class="pgl"></div><div class="pgr"></div>';
+    document.body.appendChild(g);
+    let code = "", busy = false;
+    const dots = [...g.querySelectorAll(".pgd i")], msg = g.querySelector(".pgm");
+    const paint = () => dots.forEach((d, n) => d.classList.toggle("on", n < code.length));
+    const end = () => { document.removeEventListener("keydown", kd); g.classList.add("out"); setTimeout(() => g.remove(), 500); };
+    function add(k) {
+      if (busy) return; msg.textContent = "";
+      if (k === "del") code = code.slice(0, -1); else if (code.length < 4) code += k;
+      paint(); tone(520 + code.length * 60, 0, .18, .05);
+      if (code.length === 4) check();
+    }
+    function check() {
+      const a = find(code); busy = true;
+      if (!a) { g.querySelector(".pgk").classList.add("bad"); tone(180, 0, .35, .06); msg.textContent = "Ese código no es válido. Inténtalo de nuevo."; setTimeout(() => { g.querySelector(".pgk").classList.remove("bad"); code = ""; paint(); busy = false; }, 700); return; }
+      dots.forEach(d => d.classList.add("ok")); tone(660, 0, .5, .06); tone(880, .15, .6, .05); tone(1175, .3, .8, .05);
+      const pc = C.precios[a.pais], nom = a.nombre.split("·")[0].trim();
+      setTimeout(() => g.classList.remove("open"), 650);
+      setTimeout(() => {
+        g.querySelector(".pgc").innerHTML = '<div class="pgc-in"><div class="pgc-k">Bienvenida, ' + esc(nom) + '</div><div class="pgc-p">' + esc(pc.nombre) + '</div><div class="pgc-n">Precios en ' + esc((pc.moneda + pc.sufijo).trim() || "tu moneda") + ' activados · tu guion de venta está listo</div><button class="bt2 w pgc-b" type="button">Entrar a mi sala</button></div>';
+        g.classList.add("show"); g.querySelector(".pgc-b").addEventListener("click", enter);
+      }, 1500);
+      setTimeout(() => g.classList.add("open"), 1650);
+      entT = setTimeout(enter, 4800);
+      function enter() { if (entered) return; entered = true; clearTimeout(entT); login(a); end(); }
+    }
+    let entT, entered = false;
+    const kd = e => { if (e.key >= "0" && e.key <= "9") add(e.key); else if (e.key === "Backspace") add("del"); else if (e.key === "Escape" && !busy) end(); };
+    document.addEventListener("keydown", kd);
+    g.querySelectorAll(".pgn button").forEach(b => b.addEventListener("click", () => add(b.dataset.k)));
+    g.querySelector(".pgx").addEventListener("click", () => { if (!busy) end(); });
+    void g.offsetWidth; setTimeout(() => g.classList.add("open"), 80);
   }
   $("#bRep").addEventListener("click", () => { if (!asesora) askCode(); else setRep($("#guion").hidden); }); $("#gX").addEventListener("click", () => setRep(false));
   const rnd = m => { const a = new Uint32Array(1), lim = Math.floor(4294967296 / m) * m; do { crypto.getRandomValues(a); } while (a[0] >= lim); return a[0] % m; };
