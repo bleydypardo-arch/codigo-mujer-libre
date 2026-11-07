@@ -123,3 +123,5 @@ body.as.home #main{padding-top:0;padding-left:0;padding-right:0;max-width:720px}
 .docb{display:flex;align-items:center;gap:12px;width:calc(100% - 32px);margin:10px 16px 0;padding:13px 16px;border-radius:18px;background:#fffaf2;border:1.5px solid var(--gold);color:var(--wine-d);text-align:left;box-shadow:0 8px 18px -12px rgba(74,10,30,.6)}.docb i{font-style:normal;font-size:28px}.docb b{display:block;font:600 20px var(--serif)}.docb small{display:block;color:var(--mute);font-size:12.5px}
 .note{font-size:12.5px;color:var(--mute);margin-top:8px}
 a.bt2{text-decoration:none;color:var(--wine-d)}a.bt2.w{color:#fff}
+.lginst{margin-top:14px;padding:9px 16px;border-radius:999px;border:1px solid var(--gold);color:var(--gold-l);font:600 13px var(--sans);background:rgba(255,255,255,.06)}
+#login:not(.open) .lginst{display:none}

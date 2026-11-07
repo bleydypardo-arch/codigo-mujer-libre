@@ -337,7 +337,8 @@
   let ip = null; addEventListener("beforeinstallprompt", e => { e.preventDefault(); ip = e; });
   function installHelp() {
     if (ip) { ip.prompt(); ip.userChoice.finally(() => { ip = null; }); return; }
-    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent), pc = !/android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent);
+    if (pc) { modal('<div class="kick">Instalar en el computador</div><h3>Ponla como app</h3><ol class="oplan"><li>En <b>Chrome</b>, mira la barra donde está la dirección. A la derecha hay un icono de <b>pantalla con una flecha hacia abajo</b>. Tócalo y elige <b>Instalar</b>.</li><li>Si no lo ves: toca los <b>tres puntos ⋮</b> arriba a la derecha → <b>Transmitir, guardar y compartir</b> → <b>Instalar página como aplicación</b>.</li><li>Se abre en su propia ventana, con el icono de la orquídea. Búscalo en el menú de inicio de Windows y fíjalo a la barra de tareas.</li></ol>'); return; }
     modal('<div class="kick">Instalar</div><h3>Ponla en tu celular</h3>' + (ios ? '<ol class="oplan"><li>Abre esta página en <b>Safari</b> (no en el navegador de WhatsApp).</li><li>Toca el botón <b>Compartir</b> (el cuadrado con la flecha hacia arriba).</li><li>Elige <b>Agregar a pantalla de inicio</b>.</li><li>Toca <b>Agregar</b>. Listo: ya tienes el icono.</li></ol>' : '<ol class="oplan"><li>Abre esta página en <b>Chrome</b>.</li><li>Toca los <b>tres puntos</b> arriba a la derecha.</li><li>Elige <b>Instalar app</b> o <b>Agregar a pantalla de inicio</b>.</li><li>Confirma. Listo: ya tienes el icono.</li></ol>') + '<p class="note">Si ves “Instalar” arriba, también puedes tocarlo.</p>');
   }
 
@@ -401,7 +402,7 @@
   $$("#lgPad .keys button").forEach(b => b.addEventListener("click", () => key(b.dataset.k)));
   addEventListener("keydown", e => { if (/^\d$/.test(e.key)) key(e.key); else if (e.key === "Backspace") key("b"); else if (e.key === "Enter") key("e"); });
   $("#orq").addEventListener("click", () => { $("#login").classList.add("open"); });
-  $("#hInst").addEventListener("click", installHelp);
+  $("#hInst").addEventListener("click", installHelp); $("#lgInst").addEventListener("click", installHelp); if (matchMedia("(display-mode: standalone)").matches || navigator.standalone) $("#lgInst").hidden = true;
   $("#hAcc").addEventListener("click", () => { location.hash = "cuenta"; });
   if (matchMedia("(display-mode: standalone)").matches || navigator.standalone) $("#hInst").hidden = true;
   if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("../sw.js").catch(() => {}));
