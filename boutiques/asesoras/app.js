@@ -318,7 +318,7 @@
     if (!A.admin) { main.innerHTML = head("Administración", "Solo para la fundadora.") + '<div class="empty"><i>🔒</i><p>Esta sección es solo para Jazz.</p></div>'; return; }
     const P = (() => { try { return JSON.parse(localStorage.getItem("cml_admin_perm") || "{}"); } catch (e) { return {}; } })();
     main.innerHTML = head("Administración", "Usuarias, permisos y bloqueos.") +
-      '<div class="warn"><b>Importante:</b> hoy cada teléfono guarda sus propios datos y los códigos viven en la app. Por eso los permisos y bloqueos de abajo son un tablero de planeación: para que de verdad bloqueen a alguien o te muestren las ventas de todas, hay que conectar la base de datos (Supabase). Es el siguiente paso.</div>' +
+      '<div class="warn"><b>Cómo se bloquea a alguien hoy:</b> el ingreso dura solo mientras la app está abierta y se vuelve a pedir el código después de 5 minutos fuera. Para sacar a una persona definitivamente, su código se agrega a la lista de bloqueados (archivo acceso.json) y deja de entrar en todos sus dispositivos. Pídeme que lo haga y queda en 2 minutos. La versión con usuarios y claves propios (Supabase) es el paso siguiente.</div>' +
       '<h4 class="sh">Asesoras</h4><div class="lst">' + C.asesoras.map(a => '<div class="li"><i>' + (P["b" + a.codigo] ? "⛔" : "👩") + '</i><span><b>' + esc(a.nombre) + "</b><small>Código " + a.codigo + " · " + (C.precios[a.pais] || {}).nombre + (a.admin ? " · administradora" : "") + '</small></span>' + (a.admin ? "" : '<button type="button" class="bt2 sm" data-b="' + a.codigo + '">' + (P["b" + a.codigo] ? "Desbloquear" : "Bloquear") + "</button>") + "</div>").join("") + "</div>" +
       '<h4 class="sh">Permisos por módulo (planeación)</h4><div class="perm"><table class="cmp"><thead><tr><th></th>' + C.asesoras.map(a => "<th>" + a.codigo + "</th>").join("") + "</tr></thead><tbody>" + MODS.map(m => "<tr><td>" + m[1] + "</td>" + C.asesoras.map(a => '<td><input type="checkbox" data-p="' + m[0] + a.codigo + '" ' + (P["p" + m[0] + a.codigo] === false ? "" : "checked") + ' aria-label="' + m[1] + " " + a.codigo + '"></td>').join("") + "</tr>").join("") + "</tbody></table></div>" +
       '<h4 class="sh">Qué falta para que sea real</h4><ul class="ck"><li>Base de datos central (Supabase) para ver las mujeres, ventas y gastos de todas las asesoras.</li><li>Ingreso con correo y clave en vez de códigos de 4 dígitos.</li><li>Campo “código de asesora” en el registro de mujeres para atribuir cada una.</li><li>Pasarela de pago para cobrar las reservas y calcular comisiones solas.</li></ul>';
@@ -328,11 +328,11 @@
 
   /* ---------- MI CUENTA, RESPALDO E INSTALACIÓN ---------- */
   function cuenta() {
-    main.innerHTML = head("Mi cuenta", A.nombre) + '<div class="lst"><button type="button" class="li" data-inst><i>📲</i><span><b>Instalar en mi celular</b><small>Queda como una app con su icono</small></span></button><button type="button" class="li" data-bk><i>💾</i><span><b>Descargar respaldo</b><small>Guarda todos tus datos en un archivo</small></span></button><label class="li filebtn"><i>♻️</i><span><b>Recuperar respaldo</b><small>Carga el archivo que descargaste</small></span><input type="file" accept=".json,application/json" hidden></label><button type="button" class="li" data-out><i>🚪</i><span><b>Cerrar sesión</b><small>Tus datos quedan guardados en este teléfono</small></span></button></div><p class="fine">Tus datos viven solo en este teléfono. Descarga un respaldo de vez en cuando, sobre todo si cambias de celular.</p>';
+    main.innerHTML = head("Mi cuenta", A.nombre) + '<div class="lst"><button type="button" class="li" data-inst><i>📲</i><span><b>Instalar en mi celular</b><small>Queda como una app con su icono</small></span></button><button type="button" class="li" data-bk><i>💾</i><span><b>Descargar respaldo</b><small>Guarda todos tus datos en un archivo</small></span></button><label class="li filebtn"><i>♻️</i><span><b>Recuperar respaldo</b><small>Carga el archivo que descargaste</small></span><input type="file" accept=".json,application/json" hidden></label><button type="button" class="li" data-out><i>🚪</i><span><b>Cerrar sesión</b><small>Para volver a entrar necesitas tu código</small></span></button></div><p class="fine">Tus datos viven solo en este teléfono. Descarga un respaldo de vez en cuando, sobre todo si cambias de celular.</p>';
     $("[data-inst]", main).onclick = installHelp;
     $("[data-bk]", main).onclick = () => { const o = {}, p = "cml_of_" + A.codigo + "_"; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k.startsWith(p)) o[k.slice(p.length)] = localStorage.getItem(k); } save(JSON.stringify({ app: "cml-asesoras", codigo: A.codigo, fecha: today(), datos: o }), "respaldo-asesoras-" + today() + ".json", "application/json"); };
     $(".filebtn input", main).onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const j = JSON.parse(r.result); if (j.app !== "cml-asesoras" || j.codigo !== A.codigo) { toast("Ese respaldo es de otro código."); return; } Object.keys(j.datos).forEach(k => localStorage.setItem(KEY(k), j.datos[k])); toast("Respaldo recuperado."); } catch (x) { toast("No pude leer ese archivo."); } }; r.readAsText(f); };
-    $("[data-out]", main).onclick = () => { try { localStorage.removeItem("cml_asesora"); sessionStorage.removeItem("cml_asesora"); } catch (e) {} A = null; location.hash = ""; start(); };
+    $("[data-out]", main).onclick = () => logout();
   }
   let ip = null; addEventListener("beforeinstallprompt", e => { e.preventDefault(); ip = e; });
   function installHelp() {
@@ -378,19 +378,26 @@
 
   /* ---------- ingreso ---------- */
   const find = c => C.asesoras.find(a => a.codigo === String(c).trim());
+  /* El ingreso dura solo mientras la app está abierta: al cerrarla, hay que entrar otra vez. Los códigos bloqueados viven en asesoras/acceso.json. */
+  const blocked = c => fetch("asesoras/acceso.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.json()).then(j => (j.bloqueados || []).map(String).includes(String(c))).catch(() => false);
+  const logout = msg => { try { localStorage.removeItem("cml_asesora"); sessionStorage.removeItem("cml_asesora"); } catch (e) {} A = null; location.hash = ""; start(); if (msg) $("#lgErr").textContent = msg; };
   function start() {
     const app = $("#app"), lg = $("#login");
-    let k = null; try { k = localStorage.getItem("cml_asesora") || sessionStorage.getItem("cml_asesora"); } catch (e) {}
+    let k = null; try { localStorage.removeItem("cml_asesora"); k = sessionStorage.getItem("cml_asesora"); } catch (e) {}
     const a = k && find(k);
-    if (a) { A = a; lg.hidden = true; app.hidden = false; $("#who").textContent = first(); route(); return; }
+    if (a) { A = a; lg.hidden = true; app.hidden = false; $("#who").textContent = first(); route(); blocked(a.codigo).then(b => { if (b && A && A.codigo === a.codigo) logout("Tu acceso está desactivado. Escríbele a Jazz."); }); return; }
     A = null; app.hidden = true; lg.hidden = false;
   }
+  let hiddenAt = 0; document.addEventListener("visibilitychange", () => { if (document.hidden) hiddenAt = Date.now(); else if (A) { if (hiddenAt && Date.now() - hiddenAt > 5 * 60 * 1000) logout("Por seguridad, vuelve a entrar con tu código."); else blocked(A.codigo).then(b => { if (b && A) logout("Tu acceso está desactivado. Escríbele a Jazz."); }); } });
   let code = "";
   const dots = () => $$("#lgDots i").forEach((d, i) => d.classList.toggle("on", i < code.length));
   function tryCode() {
     const a = find(code);
     if (!a) { $("#lgErr").textContent = "Ese código no existe. Revísalo o pídele el tuyo a Jazz."; const d = $("#lgDots"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake"); code = ""; setTimeout(dots, 350); return; }
-    try { localStorage.setItem("cml_asesora", a.codigo); } catch (x) {}
+    blocked(a.codigo).then(b => { if (b) { $("#lgErr").textContent = "Tu acceso está desactivado. Escríbele a Jazz."; code = ""; dots(); return; } enter(a); });
+  }
+  function enter(a) {
+    try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (x) {}
     $("#lgErr").textContent = ""; $("#login").classList.add("bloom"); setTimeout(() => { $("#login").classList.remove("bloom", "open"); code = ""; dots(); location.hash = "inicio"; start(); }, 1100);
   }
   function key(k) {

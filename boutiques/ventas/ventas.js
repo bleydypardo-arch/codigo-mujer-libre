@@ -282,8 +282,8 @@
     $("#dW").addEventListener("click", sortear); $("#dS").addEventListener("click", () => csv(store("cml_sorteo"), "sorteo-codigo-ml.csv")); $("#dR").addEventListener("click", () => csv(store("cml_reservas"), "reservas-codigo-ml.csv")); $("#dO").addEventListener("click", logout); $("#dP").addEventListener("click", () => window.open("ventas/formulario.html", "_blank"));
   }
   const setRep = on => { $("#guion").hidden = !on; $("#bRep").setAttribute("aria-pressed", String(on)); if (on) renderGuion(); };
-  function login(a) { asesora = a; pais = a.pais; try { sessionStorage.setItem("cml_asesora", a.codigo); localStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(true); toast("Hola, " + a.nombre + ". Precios de " + cp().nombre + " activados."); }
-  function logout() { asesora = null; pais = null; try { sessionStorage.removeItem("cml_asesora"); } catch (e) {} setRep(false); toast("Sesión de asesora cerrada. Ya no se muestran precios."); }
+  function login(a) { asesora = a; pais = a.pais; try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(true); toast("Hola, " + a.nombre + ". Precios de " + cp().nombre + " activados."); }
+  function logout() { asesora = null; pais = null; try { sessionStorage.removeItem("cml_asesora"); localStorage.removeItem("cml_asesora"); } catch (e) {} setRep(false); toast("Sesión de asesora cerrada. Ya no se muestran precios."); }
   const find = c => C.asesoras.find(a => a.codigo.toLowerCase() === String(c).trim().toLowerCase());
   function askCode() {
     if (document.querySelector(".pg")) return;
@@ -403,7 +403,7 @@
   }
   /* ---------- inicio ---------- */
   const sp = new URLSearchParams(location.search), h0 = /^#sala(\d)$/.exec(location.hash);
-  try { const k = sessionStorage.getItem("cml_asesora") || localStorage.getItem("cml_asesora") || sp.get("codigo"); const a = k && find(k); if (a) { asesora = a; pais = a.pais; try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(sp.get("rep") === "1"); } } catch (e) {}
+  try { try { localStorage.removeItem("cml_asesora"); } catch (e) {} const k = sessionStorage.getItem("cml_asesora") || sp.get("codigo"); const a = k && find(k); if (a) { asesora = a; pais = a.pais; try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(sp.get("rep") === "1"); } } catch (e) {}
   const start = sp.get("sala") != null ? +sp.get("sala") : (sp.get("app") === "1" && asesora ? PUB : 0);
   if (start > 0) opened = true;
   show(Math.min(Math.max(start || 0, 0), ROOMS.length - 1));
