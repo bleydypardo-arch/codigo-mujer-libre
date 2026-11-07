@@ -21,12 +21,15 @@
     '<button class="tile" data-a="demo:pasos"><i>▶</i><b>Cómo funcionan los paquetes</b><span>Gold, Platinum y Diamond en seis pasos.</span></button>' +
     '</div><div class="ft">Toca la pantalla para empezar</div></div>';
 
+  const demoScreen = '<button type="button" class="ds" data-a="cml" aria-label="Ver el demo de Código Mujer Libre">' +
+    [1, 2, 3, 4].map(n => '<i style="background-image:url(ventas/img/demo-' + n + '.webp);animation-delay:' + (n - 1) * 5 + 's"></i>').join("") +
+    '<span class="dsl"></span><span class="dst"><small>Código Mujer Libre</small><b>Conoce el hotel<br>por dentro</b><em>▶ Ver demo · ES / EN</em></span></button>';
   const ROOMS = [
     { id: "puerta", name: "Entrada", src: "puerta.webp", w: 941, h: 1672, fit: "tall", focus: 50, quads: [],
       hs: [hot(50.5, 51.3, "Toca para entrar", "go:1")], hint: "Toca la puerta para entrar",
       guion: "<h5>Qué decir</h5><p>“Bienvenida a la Sala de reservas y ventas de Código ML. En unos minutos vas a ver cómo tu marca puede tener su propia boutique dentro de un hotel virtual.”</p><h5>Qué hacer</h5><ul><li>Pídele que toque la puerta dorada.</li></ul>" },
-    { id: "recepcion", name: "Recepción", src: "recepcion.webp", w: 1774, h: 887, fit: "wide", focus: 60, quads: [],
-      hs: [hot(58.8, 40, "Bienvenida", "bienvenida"), hot(75.5, 57, "Boutique inaugural", "tienda"), hot(22, 62, "Charla de capacitación", "charla"), hot(97.4, 47.5, "Sala de paquetes →", "go:2")],
+    { id: "recepcion", name: "Recepción", src: "recepcion.webp", w: 1774, h: 887, fit: "wide", focus: 60, quads: [q("cml", [[928,262],[1084,262],[1084,446],[928,446]], 320, 380, demoScreen)],
+      hs: [hot(67.8, 41, "Bienvenida", "bienvenida"), hot(75.5, 57, "Boutique inaugural", "tienda"), hot(22, 62, "Charla de capacitación", "charla"), hot(97.4, 47.5, "Sala de paquetes →", "go:2")],
       hint: "Desliza para mirar alrededor · toca los puntos dorados",
       guion: "<h5>Qué decir</h5><p>“Esta es la recepción de nuestro hotel virtual. Código ML reúne bienestar, comunidad y boutiques de mujeres emprendedoras en un solo lugar.”</p><h5>Qué mostrar</h5><ul><li><b>Boutique inaugural:</b> cómo participar en el sorteo.</li><li><b>Charla de capacitación:</b> cómo expandir y vender más.</li><li>Pasillo de la derecha: sala de paquetes.</li></ul><h5>Cuidado</h5><ul><li>No prometas resultados de ventas.</li><li>El sorteo se cuenta con calma: sin prisa, sin presión.</li></ul>" },
     { id: "paquetes", name: "Sala de paquetes", src: "paquetes.webp", w: 1774, h: 887, fit: "wide", focus: 50,
@@ -330,6 +333,12 @@
     });
   }
 
+  function openCml() {
+    const ov = document.createElement("div"); ov.className = "dv"; ov.innerHTML = '<iframe src="../demo.html?lang=' + (/^en/i.test(navigator.language) ? "en" : "es") + '" title="Demo de Código Mujer Libre" allow="fullscreen"></iframe><button class="dvx" aria-label="Cerrar demo">×</button><a class="dvo" href="../demo.html" target="_blank" rel="noopener">Abrir en pantalla completa ↗</a>';
+    document.body.appendChild(ov);
+    const close = () => { ov.remove(); document.removeEventListener("keydown", k); }, k = e => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", k); ov.querySelector(".dvx").onclick = close;
+  }
   function openOf(key) {
     if (!asesora || !window.CMLO) return;
     const X = { a: asesora, C, toast, esc, cp, money, PR, OBJ, PLAN }, r = CMLO.render(key, X); if (!r) return;
@@ -338,7 +347,7 @@
   /* ---------- acciones ---------- */
   function act(a) {
     const [k, v] = String(a).split(":"); tick();
-    ({ go: () => go(+v), bienvenida, tienda, charla, comparar, condiciones, reservar: () => reservar(), pack: () => pack(v), pilar: () => pilar(+v), demo: () => demo(v), of: () => openOf(v) }[k] || (() => {}))();
+    ({ go: () => go(+v), bienvenida, tienda, charla, comparar, condiciones, reservar: () => reservar(), pack: () => pack(v), pilar: () => pilar(+v), demo: () => demo(v), of: () => openOf(v), cml: () => openCml() }[k] || (() => {}))();
   }
   layer.addEventListener("click", e => { if (moved) return; const t = e.target.closest("[data-a]"); if (t) act(t.dataset.a); });
   layer.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.dataset && e.target.dataset.a) { e.preventDefault(); act(e.target.dataset.a); } });
