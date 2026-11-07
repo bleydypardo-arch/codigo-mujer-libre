@@ -48,7 +48,7 @@
       guion: "<h5>Qué decir</h5><p>“Estos seis pilares son todo lo que vive en Código ML. Tu boutique es uno de ellos. Para separar tu cupo, toca la tableta del escritorio.”</p><h5>Cierre</h5><ul><li>Confirma el paquete y el país.</li><li>Pregunta si quiere separar hoy con el 30 %.</li><li>Anota su código de representante en el formulario.</li><li>Lee con ella la letra pequeña (libro rojo).</li></ul>" },
     { id: "mioficina", name: "Mi oficina", src: "mioficina.webp", w: 1774, h: 887, fit: "wide", focus: 75,
       quads: [q("o_metas", [[1256,318],[1398,330],[1398,390],[1256,384]], 273, 120, CMLO.panel("metas")),q("o_plan", [[1413,331],[1520,344],[1520,397],[1413,393]], 233, 120, CMLO.panel("plan")),q("o_mujeres", [[1531,347],[1609,359],[1609,403],[1531,398]], 178, 120, CMLO.panel("mujeres")),q("o_incent", [[1255,401],[1399,404],[1399,473],[1255,476]], 230, 120, CMLO.panel("incent")),q("o_saldo", [[1413,408],[1520,409],[1520,466],[1413,468]], 214, 120, CMLO.panel("saldo")),q("o_reglas", [[1531,414],[1609,415],[1609,463],[1531,465]], 189, 120, CMLO.panel("reglas"))],
-      hs: [hot(12.4,37.5,"Speech","of:speech",1),hot(19.6,39.5,"Entrenamiento","of:entrenamiento",1),hot(25.8,40.4,"Estrategia","of:estrategia",1),hot(12.4,45.9,"Liderazgo","of:liderazgo",1),hot(19.7,45.9,"Marketing","of:marketing",1),hot(25.8,46.2,"Ventas","of:ventas",1),hot(12.4,52.2,"Bienestar","of:bienestar",1),hot(19.7,52.2,"Experiencias","of:experiencias",1),hot(25.8,51.9,"Premium","of:premium",1),hot(73.3,62.6,"Mi agenda","of:agenda",1),hot(84.3,58.3,"Mi saldo","of:saldo",1),hot(90,57.5,"Reunión con Jazz","of:reunion",1),hot(68.5,69,"Reglas","of:reglas",1),hot(2.2,55,"← Recepción","go:1"),hot(22.3,71,"Tu frase de hoy","of:frase")],
+      hs: [hot(12.4,37.5,"Speech","of:speech",1),hot(19.6,39.5,"Entrenamiento","of:entrenamiento",1),hot(25.8,40.4,"Estrategia","of:estrategia",1),hot(12.4,45.9,"Liderazgo","of:liderazgo",1),hot(19.7,45.9,"Marketing","of:marketing",1),hot(25.8,46.2,"Ventas","of:ventas",1),hot(12.4,52.2,"Bienestar","of:bienestar",1),hot(19.7,52.2,"Experiencias","of:experiencias",1),hot(25.8,51.9,"Premium","of:premium",1),hot(73.3,62.6,"Mi agenda","tools:agenda",1),hot(50,63,"Mis herramientas","tools:inicio"),hot(84.3,58.3,"Mi saldo","of:saldo",1),hot(90,57.5,"Reunión con Jazz","of:reunion",1),hot(68.5,69,"Reglas","of:reglas",1),hot(2.2,55,"← Recepción","go:1"),hot(22.3,71,"Tu frase de hoy","of:frase")],
       hint: "Toca los tableros, los estantes y el escritorio · toca el mar",
       guion: "<h5>Tu oficina</h5><p>Aquí tienes tus metas, tu plan semanal, tu lista de mujeres y tu biblioteca. Toca los tableros de la pared y los libros del estante.</p>",
       live: { sea: { x: 622, y: 440, w: 436, h: 38 }, sun: [760, 428], glow: { x: 610, y: 490, w: 460, h: 62 }, fire: [[836, 514]], lamps: [[645, 534], [1043, 534]] } },
@@ -341,6 +341,11 @@
     const close = () => { ov.remove(); document.removeEventListener("keydown", k); }, k = e => { if (e.key === "Escape") close(); };
     document.addEventListener("keydown", k); ov.querySelector(".dvx").onclick = close;
   }
+  function openTools(h) {
+    const ov = document.createElement("div"); ov.className = "dv"; ov.innerHTML = '<iframe src="asesoras.html?emb=1#' + (h || "inicio") + '" title="Mis herramientas"></iframe><button class="dvx" aria-label="Volver a la oficina">×</button>';
+    document.body.appendChild(ov); const close = () => { ov.remove(); document.removeEventListener("keydown", k); }, k = e => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", k); ov.querySelector(".dvx").onclick = close;
+  }
   function openOf(key) {
     if (!asesora || !window.CMLO) return;
     const X = { a: asesora, C, toast, esc, cp, money, PR, OBJ, PLAN, tone: tick }, r = CMLO.render(key, X); if (!r) return;
@@ -349,7 +354,7 @@
   /* ---------- acciones ---------- */
   function act(a) {
     const [k, v] = String(a).split(":"); tick();
-    ({ go: () => go(+v), bienvenida, tienda, charla, comparar, condiciones, reservar: () => reservar(), pack: () => pack(v), pilar: () => pilar(+v), demo: () => demo(v), of: () => openOf(v), cml: () => openCml() }[k] || (() => {}))();
+    ({ go: () => go(+v), bienvenida, tienda, charla, comparar, condiciones, reservar: () => reservar(), pack: () => pack(v), pilar: () => pilar(+v), demo: () => demo(v), of: () => openOf(v), cml: () => openCml(), tools: () => openTools(v) }[k] || (() => {}))();
   }
   layer.addEventListener("click", e => { if (moved) return; const t = e.target.closest("[data-a]"); if (t) act(t.dataset.a); });
   layer.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.dataset && e.target.dataset.a) { e.preventDefault(); act(e.target.dataset.a); } });

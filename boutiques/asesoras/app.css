@@ -74,3 +74,4 @@ html{background:var(--ivory)}
 @media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}.kpis{grid-template-columns:repeat(4,1fr)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .door{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;text-align:left;padding:16px;border-radius:18px;background:linear-gradient(135deg,#C5A46A,#EBD6A4);border:1px solid var(--gold-d);color:var(--wine-d);box-shadow:0 10px 24px -14px rgba(74,10,30,.7)}.door i{font-style:normal;font-size:34px}.door b{display:block;font:600 21px var(--serif)}.door small{display:block;font-size:13px}
+.emb .top .hb:first-of-type{display:none}.emb .top{padding-right:60px}

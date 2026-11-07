@@ -2,6 +2,7 @@
    Los datos se guardan en este teléfono (localStorage). Respaldo: Más › Mi cuenta › Descargar respaldo.
    Más adelante se conectará a Supabase para que Jazz vea todo en un solo lugar. */
 (function () {
+  const EMB = /[?&]emb=1/.test(location.search); if (EMB) document.documentElement.classList.add("emb");
   const C = window.CMLV, D = window.CMLD, $ = (s, r) => (r || document).querySelector(s), $$ = (s, r) => [...(r || document).querySelectorAll(s)];
   const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const num = n => { n = +n || 0; return Number.isInteger(n) ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".") : n.toFixed(2).replace(".", ","); };
@@ -296,7 +297,7 @@
 
   /* ---------- INICIO ---------- */
   const GRUPOS = [
-    ["Hoy", [["🚪", "Sala de ventas", "url:ventas.html?app=1"], ["📅", "Mi agenda", "agenda"], ["🎪", "Eventos", "eventos"], ["🧭", "Centro de control", "control"], ["✨", "Frase del día", "of:frase"]]],
+    ["Hoy", [["📅", "Mi agenda", "agenda"], ["🎪", "Eventos", "eventos"], ["🧭", "Centro de control", "control"], ["✨", "Frase del día", "of:frase"]]],
     ["Vender", [["🌸", "Speeches", "academia"], ["🛍️", "Objeciones", "of:ventas"], ["🏢", "Empresas", "empresas"], ["🎓", "Entrenamiento", "of:entrenamiento"]]],
     ["Crecer", [["📆", "Marketing por mes", "mkt"], ["📺", "En vivo tiendas", "vivo"], ["🤝", "Proveedores", "provs"], ["🎁", "Premios", "of:estrategia"]]],
     ["Dinero y oficina", [["🧾", "Presupuesto", "gastos"], ["💰", "Ventas y comisión", "ventas"], ["🗂️", "Mi oficina", "oficina"], ["✦", "Incentivos", "of:incent"]]]
@@ -306,7 +307,7 @@
     const h = new Date().getHours(), sal = h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches";
     const td = get("agenda_v2", []).filter(i => i.fecha === today() && !i.hecho).sort((a, b) => (a.hora || "99").localeCompare(b.hora || "99"));
     main.innerHTML = '<div class="hero"><small>' + sal + "</small><h2>" + esc(first()) + ' 🌸</h2><p>' + (td.length ? "Tienes " + td.length + (td.length === 1 ? " pendiente" : " pendientes") + " hoy." : "Hoy no tienes pendientes anotados.") + "</p></div>" +
-      '<button type="button" class="door" data-go="url:ventas.html?app=1"><i>🚪</i><span><b>Entrar a la Sala de ventas</b><small>La puerta dorada, los paquetes y el demo</small></span></button>' + (td.length ? '<div class="lst">' + td.slice(0, 3).map(i => '<button type="button" class="li" data-go="agenda"><i>' + i.emoji + "</i><span><b>" + esc(i.t) + "</b><small>" + esc(i.hora || "Sin hora") + "</small></span></button>").join("") + "</div>" : "") +
+      (EMB ? "" : '<button type="button" class="door" data-go="url:ventas.html?app=1"><i>🚪</i><span><b>Entrar a la Sala de ventas</b><small>La puerta dorada, los paquetes y el demo</small></span></button>') + (td.length ? '<div class="lst">' + td.slice(0, 3).map(i => '<button type="button" class="li" data-go="agenda"><i>' + i.emoji + "</i><span><b>" + esc(i.t) + "</b><small>" + esc(i.hora || "Sin hora") + "</small></span></button>").join("") + "</div>" : "") +
       GRUPOS.map(g => '<h4 class="sh">' + g[0] + '</h4><div class="grid">' + g[1].map(tileH).join("") + "</div>").join("") + (A.admin ? '<h4 class="sh">Administración</h4><div class="grid">' + tileH(["⚙️", "Administración", "admin"]) + tileH(["📲", "Instalar app", "cuenta"]) + "</div>" : "");
   }
   function mas() {
