@@ -9,7 +9,18 @@
     chStart: "Empezar una conversación", chWrite: "Escribir", chPlaceholder: "Escribe un mensaje…", chSend: "Enviar",
     chNoMsgs: n => "Escríbele a " + n + ". Sé amable: aquí nos cuidamos.", chFail: "No se pudo enviar. Revisa tu conexión e intenta de nuevo.",
     chSafe: "Por tu seguridad: no compartas tu dirección, contraseñas ni dinero. Si algo te incomoda, repórtalo o bloquea.",
-    chNew: n => n + " nuevo" + (n === 1 ? "" : "s"), chYou: "Tú: ", chLoadFail: "No se pudieron cargar los mensajes.", chUnsend: "Borrar", chToday: "Hoy"
+    chNew: n => n + " nuevo" + (n === 1 ? "" : "s"), chYou: "Tú: ", chLoadFail: "No se pudieron cargar los mensajes.", chUnsend: "Borrar", chToday: "Hoy",
+    pactT: "Nuestro pacto de respeto", pactIntro: "Código ML es un lugar seguro para mujeres. Para escribirnos aquí, me comprometo a:",
+    pact1: "Hablar con respeto y cariño: sin groserías, burlas, insultos ni discriminación.",
+    pact2: "Cuidar la privacidad: no comparto lo que me cuentan, ni capturas ni datos de otras mujeres.",
+    pact3: "No vender ni ofrecer productos o servicios de afuera. Sí puedo recomendar tiendas, experiencias, tours y salas que están dentro de Código ML.",
+    pact4: "No pedir ni enviar dinero, ni compartir mi dirección, claves o datos bancarios.",
+    pact5: "Si algo me incomoda, bloqueo o reporto. La administradora puede suspender a quien no cumpla este pacto.",
+    pactOk: "Acepto el pacto y quiero escribir", pactLater: "Ahora no", pactRead: "Pacto de respeto",
+    chBadWords: "Ese mensaje tiene palabras que no van con nuestro pacto de respeto. Escríbelo de otra forma, por favor.",
+    chBadLink: "Aquí solo compartimos enlaces de Código ML y mapas. Si es un lugar, envía su ubicación en un mapa.",
+    chSales: "Recuerda: aquí no se venden productos ni servicios de afuera. Solo se comparte lo que está dentro de Código ML. ¿Tu mensaje es sobre algo que está en la plataforma?",
+    chSalesYes: "Sí, enviar", chSalesNo: "Cambiar mi mensaje"
   };
   const EN = {
     chTitle: "My conversations", chEntry: "My conversations", chEntrySub: "Write to the women you are already connected with.",
@@ -17,7 +28,18 @@
     chStart: "Start a conversation", chWrite: "Write", chPlaceholder: "Write a message…", chSend: "Send",
     chNoMsgs: n => "Write to " + n + ". Be kind: here we take care of each other.", chFail: "Could not send. Check your connection and try again.",
     chSafe: "For your safety: don't share your address, passwords or money. If something makes you uncomfortable, report or block.",
-    chNew: n => n + " new", chYou: "You: ", chLoadFail: "Could not load the messages.", chUnsend: "Delete", chToday: "Today"
+    chNew: n => n + " new", chYou: "You: ", chLoadFail: "Could not load the messages.", chUnsend: "Delete", chToday: "Today",
+    pactT: "Our respect pact", pactIntro: "Código ML is a safe place for women. To write to each other here, I commit to:",
+    pact1: "Speak with respect and kindness: no rude words, mockery, insults or discrimination.",
+    pact2: "Protect privacy: I do not share what I am told, nor screenshots or other women's details.",
+    pact3: "Not sell or offer outside products or services. I can recommend shops, experiences, tours and rooms that are inside Código ML.",
+    pact4: "Not ask for or send money, or share my address, passwords or bank details.",
+    pact5: "If something bothers me, I block or report. The administrator may suspend anyone who breaks this pact.",
+    pactOk: "I accept the pact and want to write", pactLater: "Not now", pactRead: "Respect pact",
+    chBadWords: "That message has words that do not fit our respect pact. Please write it another way.",
+    chBadLink: "Here we only share Código ML links and maps. If it is a place, send its location on a map.",
+    chSales: "Remember: outside products or services are not sold here. Only what is inside Código ML is shared. Is your message about something on the platform?",
+    chSalesYes: "Yes, send", chSalesNo: "Change my message"
   };
   let C = null, ok = true, all = [], partner = "", timer = null, unread = 0, busy = false;
   const t = (k, ...a) => { const v = C ? C.t(k) : ""; return typeof v === "function" ? v(...a) : (v || k); };
@@ -25,6 +47,40 @@
   const me = () => (C && C.session() && C.session().user.id) || "";
   const CN = () => window.CMLConnect;
   const blocked = id => !!(window.CMLCommunity && window.CMLCommunity.isBlocked(id));
+
+
+  // ---- Pacto de respeto y revisión de mensajes ----
+  const PACT_KEY = () => "cml_chat_pact_v1_" + me();
+  const pactOk = () => { try { return localStorage.getItem(PACT_KEY()) === "1"; } catch (e) { return false; } };
+  function ensurePact() {
+    if (pactOk()) return Promise.resolve(true);
+    return new Promise(res => {
+      const ov = el("div", { class: "ch-pact", role: "dialog", "aria-modal": "true", "aria-label": t("pactT") });
+      const ok = el("button", { type: "button", class: "primary", text: t("pactOk") }), no = el("button", { type: "button", class: "link-btn", text: t("pactLater") });
+      const done = v => { ov.remove(); res(v); };
+      ok.addEventListener("click", () => { try { localStorage.setItem(PACT_KEY(), "1"); } catch (e) {} done(true); });
+      no.addEventListener("click", () => done(false));
+      ov.appendChild(el("div", { class: "ch-pact-box" }, el("h2", { text: t("pactT") }), el("p", { text: t("pactIntro") }),
+        el("ol", {}, ...[1, 2, 3, 4, 5].map(n => el("li", { text: t("pact" + n) }))), el("div", { class: "ch-pact-act" }, ok, no)));
+      document.body.appendChild(ov); ok.focus();
+    });
+  }
+  function readPact() {
+    const ov = el("div", { class: "ch-pact", role: "dialog", "aria-modal": "true", "aria-label": t("pactT") }), x = el("button", { type: "button", class: "primary", text: t("chBack") });
+    x.addEventListener("click", () => ov.remove());
+    ov.appendChild(el("div", { class: "ch-pact-box" }, el("h2", { text: t("pactT") }), el("p", { text: t("pactIntro") }), el("ol", {}, ...[1, 2, 3, 4, 5].map(n => el("li", { text: t("pact" + n) }))), el("div", { class: "ch-pact-act" }, x)));
+    document.body.appendChild(ov);
+  }
+  const WORDS = /(?<![\p{L}])(puta|putas|puto|hijueputa|hijo de puta|hijos de puta|malparida|malparido|mierda|co[ñn]o|verga|pendej[oa]s?|marica|maricon|zorra|joder|fuck|fucking|shit|bitch|asshole)(?![\p{L}])/iu;
+  const SALES = /(?<![\p{L}])(vendo|vendemos|te vendo|se vende|ofrezco|ofrecemos|descuento|cat[aá]logo|cotizaci[oó]n|pedidos?|c[oó]mprame|compra mi|gana dinero|ingresos extra|inversi[oó]n|multinivel|selling|i sell|discount|catalog|buy from me)(?![\p{L}])/iu;
+  const OK_HOSTS = ["maps.google.com", "google.com", "goo.gl", "maps.app.goo.gl", "waze.com", "ul.waze.com"];
+  function badLink(text) {
+    const m = text.match(/(https?:\/\/[^\s]+|www\.[^\s]+|\b[a-z0-9-]+\.(?:com|co|net|org|app|shop|store|me|link|ly|io|info|biz)\b[^\s]*)/gi) || [];
+    return m.some(u => { let h = ""; try { h = new URL(/^https?:/i.test(u) ? u : "https://" + u).hostname.replace(/^www\./, "").toLowerCase(); } catch (e) { return true; }
+      if (h === location.hostname.toLowerCase()) return false;
+      if (h === "google.com" && !/\/maps/i.test(u)) return true;
+      return !OK_HOSTS.includes(h); });
+  }
 
   function init() { C = window.CML; if (C && C.addStrings && !init.done) { init.done = true; C.addStrings(ES, EN); } return !!C; }
   const active = () => { const p = document.getElementById("chat"); return !!p && p.classList.contains("active"); };
@@ -92,6 +148,7 @@
   async function openThread(id) {
     if (!init()) return;
     if (window.CMLWelcome && !(await window.CMLWelcome.ensurePhoto())) return;
+    if (!(await ensurePact())) return;
     partner = id; C.showPage("chat", false);
     if (!all.length) await fetchAll();
     paintThread(true); markRead(); start();
@@ -121,14 +178,23 @@
     const fb = el("p", { class: "form-feedback", role: "alert", hidden: true });
     send.addEventListener("click", async () => {
       const text = ta.value.trim(); if (!text || busy) return;
-      busy = true; send.disabled = true; fb.hidden = true;
+      fb.hidden = true;
+      if (WORDS.test(text)) { fb.textContent = t("chBadWords"); fb.hidden = false; return; }
+      if (badLink(text)) { fb.textContent = t("chBadLink"); fb.hidden = false; return; }
+      if (SALES.test(text) && !ta.dataset.salesOk) {
+        const yes = el("button", { type: "button", class: "primary", text: t("chSalesYes") }), no = el("button", { type: "button", class: "link-btn", text: t("chSalesNo") });
+        yes.addEventListener("click", () => { ta.dataset.salesOk = "1"; send.click(); }); no.addEventListener("click", () => { fb.hidden = true; ta.focus(); });
+        fb.replaceChildren(el("span", { text: t("chSales") }), el("span", { class: "ch-fbact" }, yes, no)); fb.hidden = false; return;
+      }
+      delete ta.dataset.salesOk;
+      busy = true; send.disabled = true;
       const r = await C.db.from("chat_messages").insert({ sender: me(), recipient: partner, body: text.slice(0, 1000) }).select("id,sender,recipient,body,created_at,read_at").single();
       busy = false; send.disabled = false;
       if (r.error) { fb.textContent = t("chFail"); fb.hidden = false; return; }
       all.push(Object.assign({ created_at: new Date().toISOString() }, r.data)); draft = ""; paintThread(true);
     });
     const head = el("div", { class: "ch-head" }, backBtn(() => { stop(); partner = ""; paintInbox(); }), avatar(m, "avatar-sm"), el("b", { class: "ch-name", text: m.first_name }));
-    host.replaceChildren(head, el("p", { class: "ch-safe", text: "🛡 " + t("chSafe") }), msgs, el("div", { class: "ch-compose" }, ta, send), fb, window.CMLCommunity ? window.CMLCommunity.memberLinks(m) : null);
+    host.replaceChildren(head, el("p", { class: "ch-safe" }, "🛡 " + t("chSafe") + " ", (() => { const a = el("button", { type: "button", class: "link-btn", text: t("pactRead") }); a.addEventListener("click", readPact); return a; })()), msgs, el("div", { class: "ch-compose" }, ta, send), fb, window.CMLCommunity ? window.CMLCommunity.memberLinks(m) : null);
     if (scroll || atEnd) msgs.scrollTop = msgs.scrollHeight; else msgs.scrollTop = keep;
   }
 
@@ -145,5 +211,5 @@
   document.addEventListener("cml:lang", () => { if (active()) (partner ? paintThread(false) : paintInbox()); });
   document.addEventListener("cml:session", () => { all = []; unread = 0; partner = ""; stop(); if (init() && C.session()) setTimeout(() => fetchAll().catch(() => {}), 1500); });
 
-  window.CMLChat = { entry, open: openInbox, openWith: openThread, unread: () => unread };
+  window.CMLChat = { ready: () => (init() && C.session() ? fetchAll() : Promise.resolve(false)), entry, open: openInbox, openWith: openThread, unread: () => unread };
 })();

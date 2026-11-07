@@ -31,3 +31,15 @@
 .ch-input { flex: 1; min-height: 48px; max-height: 120px; resize: none; border-radius: 14px; border: 1.5px solid #E6C9CE; padding: 10px 12px; font: inherit; font-size: 16px; }
 .ch-send { min-height: 48px; padding: 0 18px; }
 @media (prefers-reduced-motion: reduce) { .ch-msgs { scroll-behavior: auto; } }
+
+/* Pacto de respeto */
+.ch-pact { position: fixed; inset: 0; z-index: 400; background: rgba(40,14,22,.62); display: flex; align-items: center; justify-content: center; padding: 16px; overflow: auto; }
+.ch-pact-box { width: min(480px, 100%); background: #FFF8F3; border: 1.5px solid #C9A25A; border-radius: 22px; padding: 22px 20px 18px; box-shadow: 0 24px 60px -20px #000; }
+.ch-pact-box h2 { margin: 0 0 8px; font-size: 22px; color: #7A2238; }
+.ch-pact-box p { margin: 0 0 10px; font-size: 14.5px; line-height: 1.45; color: #4a372b; }
+.ch-pact-box ol { margin: 0 0 14px; padding-left: 20px; display: grid; gap: 8px; font-size: 14px; line-height: 1.45; color: #3a2a24; }
+.ch-pact-act { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.ch-fbact { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 8px; }
+.ch-safe .link-btn { display: inline; padding: 0; font-size: inherit; text-decoration: underline; }
+.msg-chat { margin: 0 0 14px; }
+.msg-chat h2, .msg-admin h2 { font-size: 15px; margin: 0 0 8px; color: #7A2238; }

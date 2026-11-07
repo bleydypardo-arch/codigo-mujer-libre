@@ -269,7 +269,7 @@ Object.assign(translations.es, {
   postFail: "No se pudo publicar. Inténtalo de nuevo.",
   postDeleted: "Publicación eliminada.",
   communityLocalNote: "Las publicaciones las ve toda la comunidad.",
-  messagesIntro: "Escríbele en privado a la administradora cuando quieras hablar, preguntar o compartir algo. Solo ella puede leerlo.",
+  messagesIntro: "Escríbele a otras mujeres de la comunidad, o en privado a la administradora cuando quieras hablar, preguntar o compartir algo.", msgWomenH: "Con otras mujeres", msgAdminH: "Con la administradora",
   messageAdmin: "Escribir un mensaje",
   privateAdmin: "Mensaje privado a la administradora",
   noMessages: "Todavía no has enviado mensajes.",
@@ -340,7 +340,7 @@ Object.assign(translations.en, {
   postFail: "Could not post. Please try again.",
   postDeleted: "Post deleted.",
   communityLocalNote: "Everyone in the community can see posts.",
-  messagesIntro: "Write privately to the administrator whenever you want to talk, ask something or share something. Only she can read it.",
+  messagesIntro: "Write to other women in the community, or privately to the administrator whenever you want to talk, ask something or share something.", msgWomenH: "With other women", msgAdminH: "With the administrator",
   messageAdmin: "Write a message",
   privateAdmin: "Private message to the administrator",
   noMessages: "You haven't sent any messages yet.",
@@ -1908,6 +1908,14 @@ function renderMessages() {
   const container = byId("messagesList");
   if (!container) return;
   container.replaceChildren();
+  // Conversaciones entre mujeres (chat privado de Código ML) arriba; los mensajes a la administradora quedan debajo.
+  if (session && window.CMLChat) {
+    const holder = el("div", { class: "msg-chat" });
+    const fill = () => { const e = window.CMLChat.entry(); holder.replaceChildren(); if (e) holder.append(el("h2", { text: t("msgWomenH") }), e); };
+    container.appendChild(holder); fill();
+    if (window.CMLChat.ready) window.CMLChat.ready().then(fill).catch(() => {});
+    container.appendChild(el("h2", { class: "msg-admin-h", text: t("msgAdminH") }));
+  }
   if (!myMessages.length) return session ? container.appendChild(emptyState("✉️", t("noMessages"), t("noMessagesText"))) : undefined;
   myMessages.forEach(message => {
     const card = el("div", { class: "card" },
