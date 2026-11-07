@@ -15,7 +15,7 @@ window.CMLV = {
     { codigo: "4592", pais: "co", nombre: "Asesora Colombia 1" },
     { codigo: "8037", pais: "co", nombre: "Asesora Colombia 2" },
     { codigo: "2864", pais: "es", nombre: "Asesora España" },
-    { codigo: "9150", pais: "us", nombre: "Jazz · Estados Unidos" }
+    { codigo: "9150", pais: "us", nombre: "Jazz · Estados Unidos", admin: true }
   ],
 
 

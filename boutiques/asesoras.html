@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Código ML Asesoras</title>
+<meta name="description" content="App de trabajo de las asesoras de Código ML: agenda, speeches, eventos, presupuesto y oficina.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap">
+<link rel="manifest" href="asesoras.webmanifest">
+<meta name="theme-color" content="#4A0A1E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ML Asesoras">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="ventas/icons/a-192.png">
+<link rel="icon" href="../logo-marca.webp">
+<link rel="stylesheet" href="ventas/ventas.css?v=9">
+<link rel="stylesheet" href="asesoras/app.css?v=2">
+</head>
+<body class="as">
+<section id="login" hidden>
+  <div class="lgbox">
+    <img src="../logo-marca.webp" alt="Código ML" width="84" height="84">
+    <h1>Código ML Asesoras</h1>
+    <p>Tu oficina en el celular. Escribe tu código de 4 dígitos.</p>
+    <form id="lgForm" novalidate><input id="lgCode" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="••••" aria-label="Código de asesora"><button class="bt2 w" type="submit">Entrar</button></form>
+    <p id="lgErr" class="err" role="alert"></p>
+  </div>
+</section>
+<div id="app" hidden>
+  <header class="top"><img src="../logo-marca.webp" alt="" width="34" height="34"><b>Código ML <em>Asesoras</em></b><button id="hInst" type="button" class="hb">Instalar</button><button id="hAcc" type="button" class="hb who" aria-label="Mi cuenta"><span id="who"></span> 👤</button></header>
+  <main id="main"></main>
+  <nav id="nav" aria-label="Menú principal">
+    <button type="button" data-go="inicio"><i>🏠</i>Inicio</button>
+    <button type="button" data-go="agenda"><i>📅</i>Agenda</button>
+    <button type="button" data-go="academia"><i>🌸</i>Speeches</button>
+    <button type="button" data-go="gastos"><i>🧾</i>Dinero</button>
+    <button type="button" data-go="mas"><i>☰</i>Todo</button>
+  </nav>
+</div>
+<script src="ventas/config.js?v=4"></script>
+<script src="ventas/oficina.js?v=2"></script>
+<script src="asesoras/datos.js?v=2"></script>
+<script src="asesoras/app.js?v=2"></script>
+</body>
+</html>
