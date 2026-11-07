@@ -5,22 +5,26 @@ window.CMLV = {
   whatsapp: "",                         // número con código de país y sin signos, ej. "18095551234". Vacío = "Reservar" abre el correo.
   email: "codigomujerlibre@gmail.com",
   feria: { nombre: "", fecha: "" },     // ej. { nombre: "Feria …", fecha: "sábado 7 y domingo 8 de noviembre" }
-  entrega: "1 de enero de 2027",
+  entrega: "enero de 2027",
   pago: { separa: 0.3, cuotas: 2, limite: "15 de diciembre" },   // separa con el 30 %; el resto en 2 pagos antes del límite
   paises: ["República Dominicana", "Colombia", "España", "Otro país"],
 
   /* Códigos de asesora. El código define el país (y por tanto la lista de precios). CAMBIA estos códigos de ejemplo. */
   asesoras: [
-    { codigo: "DO-ASESORA1", pais: "do", nombre: "Asesora RD 1" },
-    { codigo: "DO-ASESORA2", pais: "do", nombre: "Asesora RD 2" },
+    { codigo: "DO-ASESORA1", pais: "do", nombre: "Asesora República Dominicana" },
     { codigo: "CO-ASESORA1", pais: "co", nombre: "Asesora Colombia 1" },
-    { codigo: "CO-ASESORA2", pais: "co", nombre: "Asesora Colombia 2" }
+    { codigo: "CO-ASESORA2", pais: "co", nombre: "Asesora Colombia 2" },
+    { codigo: "ES-ASESORA1", pais: "es", nombre: "Asesora España" },
+    { codigo: "US-JAZZ", pais: "us", nombre: "Jazz · Estados Unidos" }
   ],
+
 
   /* Precios por país. normal = precio de lista desde el 1 de enero de 2027. */
   precios: {
     do: { nombre: "República Dominicana", moneda: "US$", sufijo: "", nota: "Precios en dólares (USD). Se acepta pago en pesos dominicanos a la tasa del día de pago.", equiv: { moneda: "RD$", tasa: 61 },
       p: { gold: { normal: 299, feria: 199, mensual: 25 }, platinum: { normal: 549, feria: 349, mensual: 49 }, diamond: { normal: 999, feria: 649, mensual: 99 } } },
+    us: { nombre: "Estados Unidos", moneda: "US$", sufijo: "", nota: "Precios en dólares (USD).", p: null },
+    es: { nombre: "España", moneda: "€", sufijo: "", nota: "Precios en euros (EUR).", p: null },
     co: { nombre: "Colombia", moneda: "$", sufijo: " COP", nota: "Precios en pesos colombianos (COP).",
       p: { gold: { normal: 599000, feria: 399000, mensual: 49000 }, platinum: { normal: 999000, feria: 699000, mensual: 99000 }, diamond: { normal: 1790000, feria: 1290000, mensual: 199000 } } }
   },
@@ -37,7 +41,7 @@ window.CMLV = {
     "Los precios corresponden al país de la feria y se indican en la moneda de ese país.",
     "Oferta válida solo para inscripciones realizadas durante la feria. “Precio normal” es el precio de lista desde el 1 de enero de 2027.",
     "Para separar el cupo se paga el 30 % del precio de feria. El resto se paga en dos pagos, antes del 15 de diciembre. La boutique se entrega cuando el pago está completo.",
-    "Las boutiques se entregan a partir del 1 de enero de 2027, en el orden en que se separaron los cupos.",
+    "Las boutiques se entregan durante enero de 2027, en el orden en que se separaron los cupos.",
     "La mensualidad comienza cuando la dueña recibe su boutique y empieza a usarla, no antes. Incluye alojamiento en el hotel virtual y soporte.",
     "Las sesiones con la diseñadora se agendan en fechas acordadas; las horas no usadas no se acumulan ni se reembolsan.",
     "Código ML no procesa pagos de productos ni cobra comisión por ventas: las compras se realizan en la tienda de cada emprendedora.",

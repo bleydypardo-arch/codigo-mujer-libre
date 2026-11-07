@@ -136,3 +136,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 .gf button.lt{background:transparent;color:var(--mute);border:1px solid #d8c4a0}
 #guion{width:min(380px,calc(100vw - 24px))}
 #gBody .cmp td,#gBody .cmp th{padding:6px 4px}#gBody .cmp small{color:var(--mute)}
+
+.fsec{margin-top:20px;padding-top:14px;border-top:1px solid #ecd9b8}.fsec h4{font:600 22px var(--serif);color:var(--wine-d);margin-bottom:2px}
+.opts{display:flex;flex-wrap:wrap;gap:8px 16px;margin:8px 0 4px}.opts label{display:flex;gap:7px;align-items:center;margin:0;font-weight:400;font-size:13.5px}.opts input{width:auto;margin:0}
+.md textarea{display:block;width:100%;margin-top:5px;padding:11px 13px;border-radius:12px;border:1px solid #d8c4a0;background:#fff;font:400 15px var(--sans);color:var(--ink);resize:vertical}
