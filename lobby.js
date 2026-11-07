@@ -92,7 +92,7 @@ const ROWS = {
   events: { title: "lbEvents", rows: [
     { k: "lbWellPromo", s: "lbWellPromoS", ic: "🌿", pick: p => C.eventCategory(p) === "wellness", go: () => C.showEventsCat("wellness") },
     { k: "lbSocial", s: "lbSocialS", ic: "🥂", pick: p => C.eventCategory(p) === "social", go: () => C.showEventsCat("social") },
-    { k: "lbTours", s: "lbToursS", ic: "🧭", pick: p => !!(C.sideTrip && C.sideTrip(p)), go: () => { if (window.CMLRedesign && window.CMLRedesign.paintTravel) window.CMLRedesign.paintTravel(); C.showPage("travel"); } }
+    { k: "lbTours", s: "lbToursS", ic: "🧭", pick: p => !!(C.sideTrip && C.sideTrip(p)), go: () => { if (C.showEventsCat) C.showEventsCat("events"); else C.showPage("events"); } }
   ] },
   recs: { title: "lbRecs", rows: [
     { k: "lbRest", s: "lbWeekS", ic: "🍽️", pick: p => C.eventCategory(p) === "dining", go: () => C.showEventsCat("dining") },
