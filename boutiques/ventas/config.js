@@ -24,9 +24,9 @@ window.CMLV = {
     do: { nombre: "República Dominicana", moneda: "US$", sufijo: "", nota: "Precios en dólares (USD). Se acepta pago en pesos dominicanos a la tasa del día de pago.", equiv: { moneda: "RD$", tasa: 61 },
       p: { gold: { normal: 299, feria: 199, mensual: 25 }, platinum: { normal: 549, feria: 349, mensual: 49 }, diamond: { normal: 999, feria: 649, mensual: 99 } } },
     us: { nombre: "Estados Unidos", moneda: "US$", sufijo: "", nota: "Precios en dólares (USD).",
-      p: { gold: { normal: 449, feria: 299, mensual: 29.99 }, platinum: { normal: 599, feria: 399, mensual: 39.99 }, diamond: { normal: 749, feria: 499, mensual: 49.99 } } },
+      p: { gold: { normal: 449, feria: 299, mensual: 29.99 }, platinum: { normal: 599, feria: 399, mensual: 39.99 }, diamond: { normal: 899, feria: 599, mensual: 49.99 } } },
     es: { nombre: "España", moneda: "", sufijo: " €", nota: "Precios en euros (EUR). IVA según la ley española.",
-      p: { gold: { normal: 389, feria: 259, mensual: 26.99 }, platinum: { normal: 529, feria: 349, mensual: 34.99 }, diamond: { normal: 659, feria: 439, mensual: 43.99 } } },
+      p: { gold: { normal: 389, feria: 259, mensual: 26.99 }, platinum: { normal: 529, feria: 349, mensual: 34.99 }, diamond: { normal: 789, feria: 519, mensual: 43.99 } } },
     co: { nombre: "Colombia", moneda: "$", sufijo: " COP", nota: "Precios en pesos colombianos (COP).",
       p: { gold: { normal: 599000, feria: 399000, mensual: 49000 }, platinum: { normal: 999000, feria: 699000, mensual: 99000 }, diamond: { normal: 1790000, feria: 1290000, mensual: 199000 } } }
   },
