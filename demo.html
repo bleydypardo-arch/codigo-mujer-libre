@@ -29,7 +29,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .frame .bgi{filter:none}
 .sl.on .frame .bgi{animation:kb 16s ease-out forwards}
 .txt{position:absolute;left:max(24px,7vw);bottom:max(120px,16vh);width:min(620px,86vw)}
-.sl.frame-s .txt{bottom:auto;top:50%;transform:translateY(-50%)}
+.sl.frame-s .txt{bottom:auto;top:50%;transform:translateY(-50%);width:min(560px,44vw)}
 .badge{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border:1px solid var(--gold);border-radius:99px;font:500 12.5px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .badge::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold)}
 .badge.soon{border-color:var(--rose);color:var(--rose)}.badge.soon::before{background:var(--rose)}
@@ -108,15 +108,18 @@ const S=[
 {id:"why",t:"frame",img:"lobby/mx-hero.webp",ar:"675/760",
  es:{k:"Por qué existe",h:"Porque tú también mereces <em>un lugar</em>.",p:"Cuidas de tu familia, tu trabajo, tu casa y tus sueños. Casi nunca hay un espacio hecho solo para ti. Lo construimos nosotras: un lugar seguro, bello y sin juicios."},
  en:{k:"Why it exists",h:"Because you deserve <em>a place</em> too.",p:"You take care of your family, your work, your home and your dreams. There is rarely a space made only for you. We built it: a safe, beautiful place with no judgment."}},
-{id:"hotel",t:"frame",img:"lobby/hall.webp",ar:"1086/1448",
- es:{b:"Ya puedes entrar",h:"Entra. <em>Es tu hotel.</em>",p:"Un lobby con puertas a bienestar, comunidad, experiencias y boutiques. Cada día encuentras algo nuevo y una razón para volver.",chips:["Bienestar","Comunidad","Experiencias","Boutiques","Podcast","Mensajes"]},
- en:{b:"Open now",h:"Step inside. <em>It’s your hotel.</em>",p:"A lobby with doors to wellness, community, experiences and boutiques. Every day there is something new and a reason to come back.",chips:["Wellness","Community","Experiences","Boutiques","Podcast","Messages"]}},
+{id:"hotel",t:"frame",img:{es:"demo-img/lobby-es.webp",en:"demo-img/lobby-en.webp"},ar:"1100/1430",
+ es:{b:"Ya puedes entrar",h:"Entra. <em>Es tu hotel.</em>",p:"En el lobby, las pantallas te muestran lo que pasa hoy: eventos especiales, recomendados de la semana, restaurantes, tours y experiencias en tu país. Cada día, algo nuevo y una razón para volver.",chips:["Eventos especiales","Restaurantes","Tours","Experiencias en tu país"]},
+ en:{b:"Open now",h:"Step inside. <em>It’s your hotel.</em>",p:"In the lobby, the screens show you what is happening today: special events, weekly picks, restaurants, tours and experiences in your country. Something new every day and a reason to come back.",chips:["Special events","Restaurants","Tours","Experiences in your country"]}},
 {id:"spa",t:"frame",img:"lobby/spa.webp",ar:"1086/1448",
  es:{b:"Ya puedes entrar",h:"5 minutos para <em>soltar el estrés</em>.",p:"Nuestro spa virtual está guiado por expertos. Investigamos y diseñamos cada práctica: unos minutos de calma guiada ayudan a bajar el cortisol, la hormona del estrés. Respira, cierra los ojos y vuelve a ti.",s:"Acompañamiento de bienestar; no sustituye la atención médica."},
  en:{b:"Open now",h:"5 minutes to <em>let go of stress</em>.",p:"Our virtual spa is guided by experts. We researched and designed every practice: a few minutes of guided calm help lower cortisol, the stress hormone. Breathe, close your eyes and come back to yourself.",s:"Wellness support; it does not replace medical care."}},
 {id:"com",t:"full",img:"travel-experiences.jpg",
  es:{b:"Ya puedes entrar",h:"Una comunidad que <em>te sostiene</em>.",p:"Chatea con otras mujeres en un espacio con respeto, mensaje del día, misión diaria con caja secreta, y rifas y premios cada mes. Aquí nadie camina sola.",chips:["Chat entre mujeres","Mensaje del día","Rifas y premios mensuales"]},
  en:{b:"Open now",h:"A community that <em>holds you</em>.",p:"Chat with other women in a respectful space, daily messages, a daily mission with a secret box, and raffles and prizes every month. Here no one walks alone.",chips:["Women’s chat","Daily message","Monthly raffles & prizes"]}},
+{id:"gift",t:"frame",img:"matcha-cup.jpg",ar:"1/1",
+ es:{b:"Sorpresas cada mes",h:"Un momento <em>solo para ti</em>.",p:"Aquí también te cuidamos. Cada mes hay sorpresas: destapa tu caja secreta, participa en rifas y gana premios. Es tu pausa, una desconexión del mundo real para sentirte consentida.",chips:["Caja secreta","Rifas","Premios"]},
+ en:{b:"Surprises every month",h:"A moment <em>just for you</em>.",p:"We take care of you here too. Every month brings surprises: open your secret box, join raffles and win prizes. It is your pause, a break from the real world to feel pampered.",chips:["Secret box","Raffles","Prizes"]}},
 {id:"pod",t:"full",img:{es:"podcast-es.jpg",en:"podcast-en.jpg"},
  es:{b:"Muy pronto",soon:1,h:"Podcasts <em>que importan</em>.",p:"Conversaciones dirigidas por profesionales, con información avalada y temas pensados para mujeres: salud mental, bienestar, relaciones, dinero y emprendimiento. Algunos, en vivo."},
  en:{b:"Coming soon",soon:1,h:"Podcasts <em>that matter</em>.",p:"Conversations led by professionals, with vetted information and topics made for women: mental health, wellness, relationships, money and entrepreneurship. Some of them live."}},
@@ -129,12 +132,18 @@ const S=[
 {id:"shop",t:"full",img:{es:"lobby/tienda-es.webp",en:"lobby/tienda-en.webp"},
  es:{b:"Muy pronto",soon:1,h:"Tiendas de <em>mujeres emprendedoras</em>.",p:"Un centro comercial virtual donde cada emprendedora tiene su boutique. Tú compras apoyando a otra mujer, con beneficios por ser miembro. Ellas llegan a una comunidad que sí las busca."},
  en:{b:"Coming soon",soon:1,h:"Stores by <em>women entrepreneurs</em>.",p:"A virtual mall where every entrepreneur has her own boutique. You shop supporting another woman, with member perks. They reach a community that is looking for them."}},
-{id:"mom",t:"full",img:"hero-home.jpg",
- es:{b:"Muy pronto",soon:1,h:"Sala de <em>mamás</em>.",p:"Un salón para acompañarte desde que quedas embarazada hasta que regresas a tu trabajo después del bebé: información confiable, salud mental y una comunidad que te entiende."},
- en:{b:"Coming soon",soon:1,h:"The <em>moms</em> lounge.",p:"A room to support you from the moment you are pregnant until you return to work after the baby: reliable information, mental health and a community that understands you."}},
-{id:"biz",t:"full",img:"boutiques/ventas/img/recepcion.webp",
+{id:"work",t:"full",img:"boutiques/ventas/img/mioficina.webp",
+ es:{b:"Para emprendedoras y asesoras",h:"Tu oficina, <em>con vista al mar</em>.",p:"Una sala de ventas para mostrar tu boutique y un área de trabajo con tus metas, plan semanal, lista de mujeres, biblioteca de entrenamiento y reuniones. Todo en un solo lugar."},
+ en:{b:"For entrepreneurs and advisors",h:"Your office, <em>with an ocean view</em>.",p:"A sales room to show your boutique and a work area with your goals, weekly plan, list of women, training library and meetings. Everything in one place."}},
+{id:"biz",t:"full",img:"boutiques/ventas/img/paquetes.webp",
  es:{k:"Un negocio global",h:"Aquí no solo tú ganas. <em>Ganamos todas.</em>",p:"Asesoras con comisiones por lo que venden e inscriben. Emprendedoras con su boutique y una comunidad nueva que las encuentra. Estamos abriendo Colombia y República Dominicana, y vamos por el mundo.",s:"Sin promesas de ingresos: ganas por lo que tú vendes e inscribes."},
  en:{k:"A global business",h:"Not only you win. <em>We all do.</em>",p:"Advisors earn commissions on what they sell and enroll. Entrepreneurs get their own boutique and a new community that finds them. We are opening Colombia and the Dominican Republic, and we are going worldwide.",s:"No income promises: you earn from what you sell and enroll."}},
+{id:"mom",t:"frame",img:"demo-img/mamas.jpg",ar:"2/3",
+ es:{b:"Coming soon · Muy pronto",soon:1,h:"Sala de <em>mamás</em>.",p:"Un salón para acompañarte desde que quedas embarazada, con todos los cambios que trae, hasta que regresas a tu trabajo y vuelves a ser tú. Información confiable, salud mental y una comunidad que te entiende."},
+ en:{b:"Coming soon",soon:1,h:"The <em>moms</em> lounge.",p:"A room to support you from the day you are pregnant, through every change it brings, until you go back to work and feel like yourself again. Reliable information, mental health and a community that understands you."}},
+{id:"game",t:"frame",img:"demo-img/mundo-amigo.jpg",ar:"3/2",
+ es:{b:"Coming soon · Muy pronto",soon:1,h:"Nuestro <em>Mundo Amigo</em>.",p:"El videojuego interactivo hecho para mujeres. Entras a un mundo virtual, juegas, te conectas con otras y ganas. Diversión con propósito."},
+ en:{b:"Coming soon",soon:1,h:"Our <em>Friend World</em>.",p:"The interactive video game made for women. Step into a virtual world, play, connect with others and win. Fun with purpose."}},
 {id:"fund",t:"frame",img:"bienvenida-fundadoras.jpg",ar:"1024/1536",fin:true,
  es:{b:"Esta es tu hora",h:"Sé una de las <em>50 fundadoras</em>.",p:"Estamos abriendo con las primeras 50 mujeres: tarjeta Fundadora, premios y sorteos, y un lugar en la historia de este hotel. No te quedes por fuera.",btn1:"Quiero ser fundadora",btn2:"Entrar a Código ML",wa:"Hola, vi el demo de Código Mujer Libre y quiero ser una de las 50 fundadoras."},
  en:{b:"This is your moment",h:"Be one of the <em>50 founders</em>.",p:"We are opening with the first 50 women: Founder card, prizes and raffles, and a place in the history of this hotel. Don’t stay outside.",btn1:"I want to be a founder",btn2:"Enter Código ML",wa:"Hi, I saw the Código Mujer Libre demo and I want to be one of the 50 founders."}}
