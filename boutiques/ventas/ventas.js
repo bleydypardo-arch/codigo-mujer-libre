@@ -375,8 +375,7 @@
     if (!sndOn) return;
     if (musBad) return synthPad();
     if (!mus) {
-      mus = new Audio("ventas/audio/ambiente.mp3?v=20261107b"); mus.loop = true; mus.volume = .2; mus.addEventListener("error", () => { musBad = true; mus = null; if (opened && sndOn) synthPad(); });
-      olas = new Audio("ventas/audio/olas.mp3?v=20261107b"); olas.loop = true; olas.volume = .16; olas.addEventListener("error", () => { olas = null; });
+      mus = new Audio("ventas/audio/ambiente.mp3?v=20261107b"); mus.loop = true; mus.volume = .12; mus.addEventListener("error", () => { musBad = true; mus = null; if (opened && sndOn) synthPad(); });
     }
     mus.play().catch(() => {}); olas && olas.play().catch(() => {});
   }
