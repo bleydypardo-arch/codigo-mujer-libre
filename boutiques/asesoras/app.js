@@ -296,32 +296,32 @@
   }
 
   /* ---------- INICIO ---------- */
+  const TI = n => "asesoras/img/t" + String(n).padStart(2, "0") + ".webp";
   const GRUPOS = [
-    ["Hoy", [["📅", "Mi agenda", "agenda"], ["🎪", "Eventos", "eventos"], ["🧭", "Centro de control", "control"], ["✨", "Frase del día", "of:frase"]]],
-    ["Vender", [["🌸", "Speeches", "academia"], ["🛍️", "Objeciones", "of:ventas"], ["🏢", "Empresas", "empresas"], ["🎓", "Entrenamiento", "of:entrenamiento"]]],
-    ["Crecer", [["📆", "Marketing por mes", "mkt"], ["📺", "En vivo tiendas", "vivo"], ["🤝", "Proveedores", "provs"], ["🎁", "Premios", "of:estrategia"]]],
-    ["Dinero y oficina", [["🧾", "Presupuesto", "gastos"], ["💰", "Ventas y comisión", "ventas"], ["🗂️", "Mi oficina", "oficina"], ["✦", "Incentivos", "of:incent"]]]
+    ["Gestión personal", [["Mi agenda", "agenda"], ["Eventos", "eventos"], ["Centro de control", "control"], ["Frase del día", "of:frase"]]],
+    ["Venta consultiva", [["Speeches", "academia"], ["Objeciones", "of:ventas"], ["Empresas", "empresas"], ["Entrenamiento", "of:entrenamiento"]]],
+    ["Expansión de negocio", [["Marketing por mes", "mkt"], ["En vivo tiendas", "vivo"], ["Proveedores", "provs"], ["Premios", "of:estrategia"]]],
+    ["Finanzas y operación", [["Presupuesto", "gastos"], ["Ventas y comisión", "ventas"], ["Mi oficina", "oficina"], ["Incentivos", "of:incent"]]]
   ];
-  const tileH = t => '<button type="button" class="gt" data-go="' + t[2] + '"><i>' + t[0] + "</i><span>" + t[1] + "</span></button>";
   function inicio() {
-    const h = new Date().getHours(), sal = h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches";
-    const td = get("agenda_v2", []).filter(i => i.fecha === today() && !i.hecho).sort((a, b) => (a.hora || "99").localeCompare(b.hora || "99"));
-    main.innerHTML = '<div class="hero"><small>' + sal + "</small><h2>" + esc(first()) + ' 🌸</h2><p>' + (td.length ? "Tienes " + td.length + (td.length === 1 ? " pendiente" : " pendientes") + " hoy." : "Hoy no tienes pendientes anotados.") + "</p></div>" +
-      (EMB ? "" : '<button type="button" class="door" data-go="url:ventas.html?app=1"><i>🚪</i><span><b>Entrar a la Sala de ventas</b><small>La puerta dorada, los paquetes y el demo</small></span></button>') + (td.length ? '<div class="lst">' + td.slice(0, 3).map(i => '<button type="button" class="li" data-go="agenda"><i>' + i.emoji + "</i><span><b>" + esc(i.t) + "</b><small>" + esc(i.hora || "Sin hora") + "</small></span></button>").join("") + "</div>" : "") +
-      GRUPOS.map(g => '<h4 class="sh">' + g[0] + '</h4><div class="grid">' + g[1].map(tileH).join("") + "</div>").join("") + (A.admin ? '<h4 class="sh">Administración</h4><div class="grid">' + tileH(["⚙️", "Administración", "admin"]) + tileH(["📲", "Instalar app", "cuenta"]) + "</div>" : "");
-  }
-  function mas() {
-    main.innerHTML = head("Todo", "Todos los módulos de la app.") + GRUPOS.map(g => '<h4 class="sh">' + g[0] + '</h4><div class="grid">' + g[1].map(tileH).join("") + "</div>").join("") + '<h4 class="sh">Cuenta</h4><div class="grid">' + tileH(["👤", "Mi cuenta y respaldo", "cuenta"]) + tileH(["📲", "Instalar app", "cuenta"]) + (A.admin ? tileH(["⚙️", "Administración", "admin"]) : "") + "</div>";
+    const td = get("agenda_v2", []).filter(i => i.fecha === today() && !i.hecho);
+    let n = 0;
+    main.innerHTML = '<div class="banner"><img src="asesoras/img/banner.webp" alt="Código Mujer Libre · Asesora"><b>' + esc(first()) + '</b></div>' +
+      '<p class="hoyl">' + (td.length ? "Tienes " + td.length + (td.length === 1 ? " pendiente" : " pendientes") + " hoy." : "Hoy no tienes pendientes anotados.") + "</p>" +
+      (EMB ? "" : '<button type="button" class="sala" data-go="url:ventas.html"><span class="sg"></span><i>🚪</i><b>Entrar a la sala</b></button>') +
+      GRUPOS.map(g => '<h4 class="gh">' + g[0] + '</h4><div class="tg">' + g[1].map(t => { n++; return '<button type="button" class="tl" data-go="' + t[1] + '" aria-label="' + t[0] + '"><img src="' + TI(n) + '" alt="' + t[0] + '" loading="lazy"></button>'; }).join("") + "</div>").join("") +
+      '<div class="mini">' + (A.admin ? '<button type="button" data-go="admin">⚙️ Administración</button>' : "") + '<button type="button" data-go="cuenta">👤 Mi cuenta y respaldo</button><button type="button" data-inst>📲 Instalar app</button></div>';
+    const ib = $("[data-inst]", main); if (ib) ib.onclick = installHelp;
   }
 
   /* ---------- rutas ---------- */
-  const R = { inicio, agenda, eventos, vivo, gastos, empresas, provs, ventas, horas, docs, mkt, academia, oficina, reporte, control, admin, cuenta, mas };
-  const NAV = { inicio: "inicio", agenda: "agenda", academia: "academia", gastos: "gastos", mas: "mas" };
+  const R = { inicio, mas: inicio, agenda, eventos, vivo, gastos, empresas, provs, ventas, horas, docs, mkt, academia, oficina, reporte, control, admin, cuenta };
+  const NAV = { inicio: "inicio", agenda: "agenda", academia: "academia", gastos: "gastos" };
   function route() {
     if (!A) return; const k = (location.hash || "#inicio").slice(1) || "inicio", fn = R[k] || inicio;
     const bl = (() => { try { return JSON.parse(localStorage.getItem("cml_admin_perm") || "{}")["b" + A.codigo]; } catch (e) { return false; } })();
     if (bl) { main.innerHTML = '<div class="empty"><i>⛔</i><p>Tu acceso está en pausa. Escríbele a Jazz.</p></div>'; return; }
-    fn(); scrollTo(0, 0); $$("#nav button").forEach(b => b.classList.toggle("on", NAV[k] === b.dataset.go || (!NAV[k] && b.dataset.go === "mas" && false)));
+    document.body.classList.toggle("home", k === "inicio" || k === "mas" || !R[k]); fn(); scrollTo(0, 0); $$("#nav button").forEach(b => b.classList.toggle("on", NAV[k] === b.dataset.go || (!NAV[k] && b.dataset.go === "mas" && false)));
   }
   addEventListener("hashchange", route);
   document.addEventListener("click", e => {
@@ -338,12 +338,23 @@
     if (a) { A = a; lg.hidden = true; app.hidden = false; $("#who").textContent = first(); route(); return; }
     A = null; app.hidden = true; lg.hidden = false;
   }
-  $("#lgForm").addEventListener("submit", e => {
-    e.preventDefault(); const c = $("#lgCode").value, a = find(c);
-    if (!a) { $("#lgErr").textContent = "Ese código no existe. Revísalo o pídele el tuyo a Jazz."; return; }
+  let code = "";
+  const dots = () => $$("#lgDots i").forEach((d, i) => d.classList.toggle("on", i < code.length));
+  function tryCode() {
+    const a = find(code);
+    if (!a) { $("#lgErr").textContent = "Ese código no existe. Revísalo o pídele el tuyo a Jazz."; const d = $("#lgDots"); d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake"); code = ""; setTimeout(dots, 350); return; }
     try { localStorage.setItem("cml_asesora", a.codigo); } catch (x) {}
-    $("#lgCode").value = ""; $("#lgErr").textContent = ""; location.hash = "inicio"; start();
-  });
+    $("#lgErr").textContent = ""; $("#login").classList.add("bloom"); setTimeout(() => { $("#login").classList.remove("bloom", "open"); code = ""; dots(); location.hash = "inicio"; start(); }, 1100);
+  }
+  function key(k) {
+    if ($("#login").hidden || !$("#login").classList.contains("open")) return;
+    $("#lgErr").textContent = "";
+    if (k === "b") code = code.slice(0, -1); else if (k === "e") { if (code.length === 4) tryCode(); } else if (/^\d$/.test(k) && code.length < 4) code += k;
+    dots(); if (code.length === 4 && k !== "e" && k !== "b") setTimeout(tryCode, 250);
+  }
+  $$("#lgPad .keys button").forEach(b => b.addEventListener("click", () => key(b.dataset.k)));
+  addEventListener("keydown", e => { if (/^\d$/.test(e.key)) key(e.key); else if (e.key === "Backspace") key("b"); else if (e.key === "Enter") key("e"); });
+  $("#orq").addEventListener("click", () => { $("#login").classList.add("open"); });
   $("#hInst").addEventListener("click", installHelp);
   $("#hAcc").addEventListener("click", () => { location.hash = "cuenta"; });
   if (matchMedia("(display-mode: standalone)").matches || navigator.standalone) $("#hInst").hidden = true;
