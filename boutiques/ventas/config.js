@@ -1,29 +1,45 @@
 /* Sala de reservas y ventas · CONFIGURACIÓN
-   Todo lo que cambia de una feria a otra vive aquí: precios, WhatsApp, vendedora, fecha.
-   (Más adelante estos valores se editarán desde el Admin, por país.) */
+   Todo lo que cambia de una feria a otra vive aquí: precios por país, WhatsApp, asesoras y sus códigos.
+   Sin código de asesora la sala NO muestra precios. (Más adelante los códigos se validarán en Supabase y los precios se editarán desde el Admin.) */
 window.CMLV = {
-  whatsapp: "",                        // número con código de país y sin signos, ej. "18095551234". Si está vacío, "Reservar" abre el correo.
+  whatsapp: "",                         // número con código de país y sin signos, ej. "18095551234". Vacío = "Reservar" abre el correo.
   email: "codigomujerlibre@gmail.com",
-  feria: { nombre: "", fecha: "", vendedora: "" },   // ej. { nombre: "Feria …", fecha: "sábado 7 y domingo 8 de noviembre", vendedora: "Nombre" }
-  moneda: "US$",
-  deposito: 0.5,                       // se separa el cupo con el 50 % del precio de feria
+  feria: { nombre: "", fecha: "" },     // ej. { nombre: "Feria …", fecha: "sábado 7 y domingo 8 de noviembre" }
   entrega: "1 de enero de 2027",
+  pago: { separa: 0.3, cuotas: 2, limite: "15 de diciembre" },   // separa con el 30 %; el resto en 2 pagos antes del límite
   paises: ["República Dominicana", "Colombia", "España", "Otro país"],
+
+  /* Códigos de asesora. El código define el país (y por tanto la lista de precios). CAMBIA estos códigos de ejemplo. */
+  asesoras: [
+    { codigo: "DO-ASESORA1", pais: "do", nombre: "Asesora RD 1" },
+    { codigo: "DO-ASESORA2", pais: "do", nombre: "Asesora RD 2" },
+    { codigo: "CO-ASESORA1", pais: "co", nombre: "Asesora Colombia 1" },
+    { codigo: "CO-ASESORA2", pais: "co", nombre: "Asesora Colombia 2" }
+  ],
+
+  /* Precios por país. normal = precio de lista desde el 1 de enero de 2027. */
+  precios: {
+    do: { nombre: "República Dominicana", moneda: "US$", sufijo: "", nota: "Precios en dólares (USD). Se acepta pago en pesos dominicanos a la tasa del día de pago.", equiv: { moneda: "RD$", tasa: 61 },
+      p: { gold: { normal: 299, feria: 199, mensual: 25 }, platinum: { normal: 549, feria: 349, mensual: 49 }, diamond: { normal: 999, feria: 649, mensual: 99 } } },
+    co: { nombre: "Colombia", moneda: "$", sufijo: " COP", nota: "Precios en pesos colombianos (COP).",
+      p: { gold: { normal: 599000, feria: 399000, mensual: 49000 }, platinum: { normal: 999000, feria: 699000, mensual: 99000 }, diamond: { normal: 1790000, feria: 1290000, mensual: 199000 } } }
+  },
+
   paquetes: [
-    { id: "gold", nombre: "GOLD", lema: "Tu vitrina de lujo", normal: 399, feria: 199, mensual: 25, horas: 1,
+    { id: "gold", nombre: "GOLD", lema: "Tu vitrina de lujo", horas: 1, trabajo: 8, salas: 1, productos: 15,
       incluye: ["1 sala decorada a tu estilo", "15 productos con foto, precio y descripción", "Puerta con tu logo y nombre", "Botón de compra a tu tienda", "Música de ambiente", "Inducción de 1 hora"] },
-    { id: "platinum", nombre: "PLATINUM", lema: "Tu boutique inmersiva", normal: 799, feria: 399, mensual: 49, horas: 2, destacado: "El más elegido",
+    { id: "platinum", nombre: "PLATINUM", lema: "Tu boutique inmersiva", horas: 2, trabajo: 16, salas: 3, productos: 30, destacado: "El más elegido",
       incluye: ["3 salas conectadas", "30 productos con foto, precio y descripción", "1 experiencia virtual: tus clientas crean su vela o jabón con su nombre", "Música que tú eliges", "Informe mensual de visitas y clics", "Destacada en tu categoría", "Inducción de 1,5 horas"] },
-    { id: "diamond", nombre: "DIAMOND", lema: "Tu marca de alta gama", normal: 1499, feria: 749, mensual: 99, horas: 3,
+    { id: "diamond", nombre: "DIAMOND", lema: "Tu marca de alta gama", horas: 3, trabajo: 30, salas: 5, productos: 60,
       incluye: ["5 salas conectadas", "60 productos con foto, precio y descripción", "2 experiencias virtuales a tu medida", "Música hecha para tu marca", "Evento en vivo cada mes", "Destacada en el inicio del hotel", "Inducción de 2 horas + 30 días de acompañamiento"] }
   ],
   letraPequena: [
-    "Precios en dólares estadounidenses (USD). El pago puede hacerse en moneda local a la tasa del día de pago.",
+    "Los precios corresponden al país de la feria y se indican en la moneda de ese país.",
     "Oferta válida solo para inscripciones realizadas durante la feria. “Precio normal” es el precio de lista desde el 1 de enero de 2027.",
-    "Para reservar se paga el 50 % del precio de feria. El 50 % restante se paga antes de la entrega.",
+    "Para separar el cupo se paga el 30 % del precio de feria. El resto se paga en dos pagos, antes del 15 de diciembre. La boutique se entrega cuando el pago está completo.",
     "Las boutiques se entregan a partir del 1 de enero de 2027, en el orden en que se separaron los cupos.",
     "La mensualidad comienza cuando la dueña recibe su boutique y empieza a usarla, no antes. Incluye alojamiento en el hotel virtual y soporte.",
-    "Las horas con la diseñadora se agendan en fechas acordadas; las horas no usadas no se acumulan ni se reembolsan.",
+    "Las sesiones con la diseñadora se agendan en fechas acordadas; las horas no usadas no se acumulan ni se reembolsan.",
     "Código ML no procesa pagos de productos ni cobra comisión por ventas: las compras se realizan en la tienda de cada emprendedora.",
     "La política de reembolso de la reserva se entrega por escrito al separar el cupo. Impuestos aplicables según la ley de cada país."
   ]

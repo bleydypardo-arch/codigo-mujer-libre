@@ -2,8 +2,12 @@
   const C = window.CMLV, $ = (s, r) => (r || document).querySelector(s), $$ = (s, r) => [...(r || document).querySelectorAll(s)];
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const num = n => Number.isInteger(n) ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".") : n.toFixed(2).replace(".", ",");
-  const money = n => C.moneda + num(n);
+  let pais = null, asesora = null;
+  const cp = () => pais ? C.precios[pais] : null;
+  const money = n => { const c = cp() || C.precios.do; return c.moneda + num(n) + c.sufijo; };
   const P = id => C.paquetes.find(p => p.id === id);
+  const PR = id => { const c = cp(); return c ? c.p[id] : null; };
+  const dep = id => { const r = PR(id); return r ? r.feria * C.pago.separa : null; };
   const IMG = "ventas/img/";
   const vp = $("#viewport"), world = $("#world"), img = $("#img"), layer = $("#layer"), bg = $("#bg"), fade = $("#fade");
 
@@ -111,29 +115,33 @@
   function tienda() {
     modal('<div class="kick">Boutique inaugural</div><h3>Vive la experiencia de tener tu propia boutique</h3><p>Participa en el sorteo de una boutique inaugural dentro del hotel virtual de Código ML.</p><ul class="ck"><li>Boutique con 15 productos, con foto, precio y descripción.</li><li>6 meses de alojamiento en el hotel virtual sin mensualidad.</li><li>Entrega la primera semana de enero.</li><li>2 horas de asesoría con tu diseñadora.</li><li>Tu llave de administración para cambiar precios y productos cuando quieras.</li><li>Para marcas de Colombia, República Dominicana y España.</li></ul><form id="sf" autocomplete="off"><div class="grid2"><label>Tu nombre<input name="nombre" required autocomplete="name"></label><label>WhatsApp<input name="whatsapp" required inputmode="tel" autocomplete="tel"></label><label>País<select name="pais">' + paisOpts() + '</select></label><label>Tu marca o lo que vendes<input name="marca"></label></div><label class="chk"><input type="checkbox" name="ok" required> Acepto que Código ML me contacte sobre el sorteo y mis datos de contacto se usen solo para eso.</label><div class="acts"><button class="bt2 w" type="submit">Participar en el sorteo</button></div></form><p class="note">Las condiciones del sorteo se entregan por escrito.</p>', (ov, close) => {
       $("#sf", ov).addEventListener("submit", e => {
-        e.preventDefault(); const f = e.target, d = { fecha: new Date().toLocaleString("es-CO"), nombre: f.nombre.value.trim(), whatsapp: f.whatsapp.value.trim(), pais: f.pais.value, marca: f.marca.value.trim(), representante: C.feria.vendedora || "" };
+        e.preventDefault(); const f = e.target, d = { fecha: new Date().toLocaleString("es-CO"), nombre: f.nombre.value.trim(), whatsapp: f.whatsapp.value.trim(), pais: f.pais.value, marca: f.marca.value.trim(), asesora: asesora ? asesora.codigo : "" };
         store("cml_sorteo", d); const n = store("cml_sorteo").length; close(); renderGuion();
         modal('<div class="kick">Listo</div><h3>Ya estás participando, ' + esc(d.nombre.split(" ")[0]) + '</h3><p>Registramos tu participación (n.º ' + n + '). Te escribiremos por WhatsApp con las novedades del sorteo.</p><div class="acts"><button class="bt2 g" data-m="go:2">Ver los paquetes</button></div>');
       });
     });
   }
   function packCard(id) {
-    const p = P(id), dep = p.feria * C.deposito;
-    return '<div class="flip" id="fl" aria-live="polite"><div class="in"><div class="fc fr">' + (p.destacado ? '<span class="badge">★ ' + esc(p.destacado) + "</span>" : "") + "<h4 style=\"color:" + ({ gold: "#8E6420", platinum: "#5B5F72", diamond: "#5C0A24" }[id]) + '">' + p.nombre + '</h4><div class="lm">' + esc(p.lema) + '</div><div class="nor">Precio normal <s>' + money(p.normal) + '</s></div><div class="fer">PRECIO DE FERIA</div><div class="pr">' + money(p.feria) + '</div><div class="mo">pago único de diseño · + ' + money(p.mensual) + ' al mes cuando abras</div><div class="tp">Toca para ver qué incluye ⟲</div></div><div class="fc bk"><h5>' + p.nombre + ' incluye</h5><div class="hr">' + p.horas + (p.horas === 1 ? " hora" : " horas") + " con tu diseñadora · para separar hoy " + money(dep) + '</div><ul>' + p.incluye.map(t => "<li>" + esc(t) + "</li>").join("") + "</ul></div></div></div>";
+    const p = P(id), r = PR(id), col = { gold: "#8E6420", platinum: "#5B5F72", diamond: "#5C0A24" }[id];
+    const fr = r ? '<div class="nor">Precio normal <s>' + money(r.normal) + '</s></div><div class="fer">PRECIO DE FERIA</div><div class="pr">' + money(r.feria) + '</div><div class="mo">pago único de diseño · + ' + money(r.mensual) + ' al mes cuando abras</div>'
+      : '<div class="nor"></div><div class="fer">PRECIO DE FERIA</div><div class="pr" style="font-size:34px;line-height:1.1">Pregúntalo a tu asesora</div><div class="mo">Cada país tiene su propio precio.</div>';
+    const hrs = p.horas + (p.horas === 1 ? " hora" : " horas") + " en vivo contigo · " + p.trabajo + " horas de diseño y producción de tu boutique";
+    return '<div class="flip" id="fl" aria-live="polite"><div class="in"><div class="fc fr">' + (p.destacado ? '<span class="badge">★ ' + esc(p.destacado) + "</span>" : "") + '<h4 style="color:' + col + '">' + p.nombre + '</h4><div class="lm">' + esc(p.lema) + "</div>" + fr + '<div class="tp">Toca para ver qué incluye ⟲</div></div><div class="fc bk"><h5>' + p.nombre + ' incluye</h5><div class="hr">' + esc(hrs) + (r ? " · para separar hoy " + money(dep(id)) : "") + '</div><ul><li>' + p.salas + (p.salas === 1 ? " sala" : " salas conectadas, como habitaciones de tu tienda") + "</li><li>" + p.productos + " productos publicados</li>" + p.incluye.filter(t => !/^\d+ salas?|productos con foto/.test(t)).map(t => "<li>" + esc(t) + "</li>").join("") + "</ul></div></div></div>";
   }
   function pack(id) {
-    modal('<div class="kick">Oferta de feria</div><h3>Elige el paquete que va contigo</h3><div class="tabs" role="tablist">' + C.paquetes.map(p => '<button role="tab" data-t="' + p.id + '" aria-selected="' + (p.id === id) + '">' + p.nombre + "</button>").join("") + '</div><div id="pc">' + packCard(id) + '</div><div class="acts"><button class="bt2 w" id="rs">Reservar este paquete</button><button class="bt2 g" data-m="comparar">Comparar los tres</button></div><p class="note">Precios en USD. Condiciones completas en la letra pequeña.</p>', (ov, close) => {
-      let c = id; const bind = () => { const f = $("#fl", ov); f.addEventListener("click", () => f.classList.toggle("f")); };
-      bind(); $$(".tabs button", ov).forEach(b => b.addEventListener("click", () => { c = b.dataset.t; $$(".tabs button", ov).forEach(x => x.setAttribute("aria-selected", String(x === b))); $("#pc", ov).innerHTML = packCard(c); bind(); }));
-      $("#rs", ov).addEventListener("click", () => { close(); reservar(c); });
+    const c = cp();
+    modal('<div class="kick">Oferta de feria</div><h3>Elige el paquete que va contigo</h3><div class="tabs" role="tablist">' + C.paquetes.map(p => '<button role="tab" data-t="' + p.id + '" aria-selected="' + (p.id === id) + '">' + p.nombre + "</button>").join("") + '</div><div id="pc">' + packCard(id) + '</div><div class="acts"><button class="bt2 w" id="rs">Reservar este paquete</button><button class="bt2 g" data-m="comparar">Comparar los tres</button></div><p class="note">' + (c ? esc(c.nota) + " " : "") + "Condiciones completas en la letra pequeña.</p>", (ov, close) => {
+      let k = id; const bind = () => { const f = $("#fl", ov); f.addEventListener("click", () => f.classList.toggle("f")); };
+      bind(); $$(".tabs button", ov).forEach(b => b.addEventListener("click", () => { k = b.dataset.t; $$(".tabs button", ov).forEach(x => x.setAttribute("aria-selected", String(x === b))); $("#pc", ov).innerHTML = packCard(k); bind(); }));
+      $("#rs", ov).addEventListener("click", () => { close(); reservar(k); });
     });
   }
   function comparar() {
-    const ps = C.paquetes, row = (l, f) => "<tr><td>" + l + "</td>" + ps.map(p => "<td>" + f(p) + "</td>").join("") + "</tr>";
-    const exp = p => p.id === "gold" ? "—" : p.id === "platinum" ? "1" : "2 a tu medida";
+    const ps = C.paquetes, row = (l, f) => "<tr><td>" + l + "</td>" + ps.map(p => "<td>" + f(p) + "</td>").join("") + "</tr>", has = !!cp();
+    const exp = p => p.id === "gold" ? "—" : p.id === "platinum" ? "1" : "2 a tu medida", hrs = p => p.horas + (p.horas === 1 ? " hora" : " horas");
     modal('<div class="kick">Comparar</div><h3>Los tres paquetes, lado a lado</h3><div class="cmpw"><table class="cmp"><thead><tr><th>Qué incluye</th>' + ps.map(p => "<th>" + p.nombre + "</th>").join("") + "</tr></thead><tbody>" +
-      row("Precio normal (desde 1 ene 2027)", p => "<s>" + money(p.normal) + "</s>") + row("<b>Precio de feria</b> (pago único)", p => "<b>" + money(p.feria) + "</b>") + row("Para separar hoy (50 %)", p => money(p.feria * C.deposito)) + row("Mensualidad (desde que abres)", p => money(p.mensual)) +
-      row("Tiempo con tu diseñadora", p => p.horas + (p.horas === 1 ? " hora" : " horas")) + row("Salas de tu boutique", p => ({ gold: 1, platinum: 3, diamond: 5 }[p.id])) + row("Productos publicados", p => ({ gold: 15, platinum: 30, diamond: 60 }[p.id])) +
+      (has ? row("Precio normal (desde 1 ene 2027)", p => "<s>" + money(PR(p.id).normal) + "</s>") + row("<b>Precio de feria</b> (pago único)", p => "<b>" + money(PR(p.id).feria) + "</b>") + row("Para separar hoy (" + Math.round(C.pago.separa * 100) + " %)", p => money(dep(p.id))) + row("Mensualidad (desde que abres)", p => money(PR(p.id).mensual)) : row("Precio de feria", () => "Pregunta a tu asesora")) +
+      row("Sesiones en vivo contigo", hrs) + row("Horas de diseño y producción de tu boutique", p => p.trabajo + " horas") + row("Salas de tu boutique", p => p.salas) + row("Productos publicados", p => p.productos) +
       row("Puerta con tu logo y nombre", () => "✓") + row("Botón de compra a tu tienda", () => "✓") + row("Música", p => ({ gold: "De ambiente", platinum: "La eliges tú", diamond: "Hecha para tu marca" }[p.id])) + row("Experiencia virtual", exp) +
       row("Informe mensual de visitas y clics", p => p.id === "gold" ? "—" : "✓") + row("Destacada en tu categoría", p => p.id === "gold" ? "—" : "✓") + row("Destacada en el inicio del hotel", p => p.id === "diamond" ? "✓" : "—") + row("Evento en vivo cada mes", p => p.id === "diamond" ? "✓" : "—") +
       row("Inducción para manejar tu tienda", p => ({ gold: "1 hora", platinum: "1,5 horas", diamond: "2 horas + 30 días de acompañamiento" }[p.id])) +
@@ -155,16 +163,17 @@
     modal('<div class="kick">Letra pequeña</div><h3>Léela con calma</h3><ul class="ck">' + C.letraPequena.map(t => "<li>" + esc(t) + "</li>").join("") + '</ul><p class="note">La política de reembolso de la reserva se entrega por escrito al separar el cupo.</p>');
   }
   function reservar(pre) {
-    const opts = C.paquetes.map(p => '<option value="' + p.id + '"' + (p.id === pre ? " selected" : "") + ">" + p.nombre + " · " + money(p.feria) + "</option>").join("") + '<option value="">Aún no sé, quiero asesoría</option>';
-    modal('<div class="kick">Separa tu cupo</div><h3>Tu boutique en el hotel de Código ML</h3><p>Déjanos tus datos y te escribimos para confirmar tu paquete. Para separar se paga el ' + Math.round(C.deposito * 100) + ' % del precio de feria; tu boutique se entrega a partir del ' + esc(C.entrega) + ".</p>" +
-      '<form id="rf" autocomplete="off"><div class="grid2"><label>Tu nombre<input name="nombre" required autocomplete="name"></label><label>WhatsApp<input name="whatsapp" required inputmode="tel" autocomplete="tel"></label><label>País<select name="pais">' + paisOpts() + '</select></label><label>Tu marca<input name="marca"></label><label>Paquete<select name="paq">' + opts + '</select></label><label>Código de representante (si tienes)<input name="rep" value="' + esc(C.feria.vendedora || "") + '"></label></div><div id="rsum" class="note" style="margin-top:10px"></div><div class="acts"><button class="bt2 w" type="submit">' + (C.whatsapp ? "Enviar por WhatsApp" : "Enviar mi solicitud") + '</button><button class="bt2 g" type="button" data-m="condiciones">Ver condiciones</button></div></form>', (ov, close) => {
-      const f = $("#rf", ov), sum = () => { const p = P(f.paq.value); $("#rsum", ov).textContent = p ? "Precio de feria " + money(p.feria) + " · para separar hoy " + money(p.feria * C.deposito) + " · mensualidad " + money(p.mensual) + " desde que abres." : ""; };
+    const opts = C.paquetes.map(p => { const r = PR(p.id); return '<option value="' + p.id + '"' + (p.id === pre ? " selected" : "") + ">" + p.nombre + (r ? " · " + money(r.feria) : "") + "</option>"; }).join("") + '<option value="">Aún no sé, quiero asesoría</option>';
+    const pc = Math.round(C.pago.separa * 100), nom = cp() ? cp().nombre : "";
+    modal('<div class="kick">Separa tu cupo</div><h3>Tu boutique en el hotel de Código ML</h3><p>Déjanos tus datos y te escribimos para confirmar tu paquete. Para separar se paga el ' + pc + " % del precio de feria y el resto en " + C.pago.cuotas + " pagos antes del " + esc(C.pago.limite) + "; tu boutique se entrega a partir del " + esc(C.entrega) + ".</p>" +
+      '<form id="rf" autocomplete="off"><div class="grid2"><label>Tu nombre<input name="nombre" required autocomplete="name"></label><label>WhatsApp<input name="whatsapp" required inputmode="tel" autocomplete="tel"></label><label>País<select name="pais">' + paisOpts(nom) + '</select></label><label>Tu marca<input name="marca"></label><label>Paquete<select name="paq">' + opts + '</select></label><label>Código de asesora<input name="rep" value="' + esc(asesora ? asesora.codigo : "") + '"></label></div><div id="rsum" class="note" style="margin-top:10px"></div><div class="acts"><button class="bt2 w" type="submit">' + (C.whatsapp ? "Enviar por WhatsApp" : "Enviar mi solicitud") + '</button><button class="bt2 g" type="button" data-m="condiciones">Ver condiciones</button></div></form>', (ov, close) => {
+      const f = $("#rf", ov), sum = () => { const r = PR(f.paq.value); $("#rsum", ov).textContent = r ? "Precio de feria " + money(r.feria) + " · para separar hoy " + money(r.feria * C.pago.separa) + " · mensualidad " + money(r.mensual) + " desde que abres." : ""; };
       f.paq.addEventListener("change", sum); sum();
       f.addEventListener("submit", e => {
-        e.preventDefault(); const p = P(f.paq.value);
-        const d = { fecha: new Date().toLocaleString("es-CO"), nombre: f.nombre.value.trim(), whatsapp: f.whatsapp.value.trim(), pais: f.pais.value, marca: f.marca.value.trim(), paquete: p ? p.nombre : "Asesoría", precio_feria: p ? p.feria : "", para_separar: p ? p.feria * C.deposito : "", representante: f.rep.value.trim() };
+        e.preventDefault(); const p = P(f.paq.value), r = p && PR(p.id);
+        const d = { fecha: new Date().toLocaleString("es-CO"), nombre: f.nombre.value.trim(), whatsapp: f.whatsapp.value.trim(), pais: f.pais.value, marca: f.marca.value.trim(), paquete: p ? p.nombre : "Asesoría", precio_feria: r ? money(r.feria) : "", para_separar: r ? money(r.feria * C.pago.separa) : "", asesora: f.rep.value.trim() };
         store("cml_reservas", d); renderGuion();
-        const msg = ["Hola, quiero separar mi cupo en Código ML.", "", "Nombre: " + d.nombre, "WhatsApp: " + d.whatsapp, "País: " + d.pais, "Marca: " + d.marca, "Paquete: " + d.paquete + (p ? " (precio de feria " + money(p.feria) + ", para separar " + money(p.feria * C.deposito) + ")" : ""), d.representante ? "Representante: " + d.representante : ""].filter((x, i, a) => x !== "" || i < 2).join("\n");
+        const msg = ["Hola, quiero separar mi cupo en Código ML.", "", "Nombre: " + d.nombre, "WhatsApp: " + d.whatsapp, "País: " + d.pais, "Marca: " + d.marca, "Paquete: " + d.paquete + (r ? " (precio de feria " + d.precio_feria + ", para separar " + d.para_separar + ")" : ""), d.asesora ? "Asesora: " + d.asesora : ""].filter((x, i) => x !== "" || i < 2).join("\n");
         close();
         const url = C.whatsapp ? "https://wa.me/" + C.whatsapp.replace(/\D/g, "") + "?text=" + encodeURIComponent(msg) : "mailto:" + C.email + "?subject=" + encodeURIComponent("Separar cupo · " + (d.marca || d.nombre)) + "&body=" + encodeURIComponent(msg);
         modal('<div class="kick">Gracias</div><h3>Recibimos tu solicitud, ' + esc(d.nombre.split(" ")[0]) + '</h3><p>Guardamos tus datos. ' + (C.whatsapp ? "Toca el botón para enviarnos el mensaje ya escrito por WhatsApp." : "Toca el botón para abrir tu correo con el mensaje ya escrito.") + '</p><div class="acts"><a class="bt2 w" href="' + url + '" target="_blank" rel="noopener">' + (C.whatsapp ? "Abrir WhatsApp" : "Abrir mi correo") + "</a></div>");
@@ -201,7 +210,7 @@
     function draw() {
       const s = S6[i]; $(".bgi", sl).style.backgroundImage = "url(" + IMG + s.bg + ")";
       tx.innerHTML = '<div class="kk">' + esc(s.k) + "</div><h2>" + esc(s.h) + "</h2>" + (s.p ? "<p>" + esc(s.p) + "</p>" : "") +
-        (s.cards ? '<div class="cards">' + C.paquetes.map(p => '<div class="c"><b>' + p.nombre + "</b><em>" + esc(p.lema) + "</em><s>Normal " + money(p.normal) + "</s><strong>" + money(p.feria) + "</strong><small>+ " + money(p.mensual) + " al mes · " + p.horas + " h con tu diseñadora</small></div>").join("") + "</div>" : "") +
+        (s.cards ? '<div class="cards">' + C.paquetes.map(p => { const r = PR(p.id); return '<div class="c"><b>' + p.nombre + "</b><em>" + esc(p.lema) + "</em>" + (r ? "<s>Normal " + money(r.normal) + "</s><strong>" + money(r.feria) + "</strong><small>+ " + money(r.mensual) + " al mes · " + p.trabajo + " h de diseño y producción</small>" : '<strong style="font-size:22px">Pregunta el precio</strong><small>' + p.salas + (p.salas === 1 ? " sala" : " salas") + " · " + p.productos + " productos</small>") + "</div>"; }).join("") + "</div>" : "") +
         (s.steps ? '<div class="stp">' + s.steps.map((t, k) => "<div><b>" + (k + 1) + ".</b> " + esc(t) + "</div>").join("") + "</div>" : "") +
         (s.cta ? '<div class="acts"><button class="bt2 w" id="sr">Reservar mi cupo</button></div>' : "");
       dt.innerHTML = S6.map((_, k) => "<i" + (k === i ? ' class="on"' : "") + "></i>").join("");
@@ -212,15 +221,61 @@
     draw();
   }
 
-  /* ---------- guion del representante ---------- */
-  function renderGuion() {
-    $("#gBody").innerHTML = ROOMS[cur].guion;
-    const a = store("cml_sorteo").length, b = store("cml_reservas").length;
-    $("#gLeads").innerHTML = '<div>Sorteo: <b>' + a + '</b> participantes · Reservas: <b>' + b + '</b></div><button id="dS" ' + (a ? "" : "disabled") + '>Descargar participantes del sorteo (CSV)</button><button id="dR" ' + (b ? "" : "disabled") + ">Descargar reservas (CSV)</button>";
-    $("#dS").addEventListener("click", () => csv(store("cml_sorteo"), "sorteo-codigo-ml.csv")); $("#dR").addEventListener("click", () => csv(store("cml_reservas"), "reservas-codigo-ml.csv"));
+  /* ---------- sala de asesoras: código, guion, precios, objeciones, sorteo ---------- */
+  let tab = "sala";
+  const OBJ = [
+    ["“Es caro” o “ahora no tengo”", "Se separa con el " + Math.round(C.pago.separa * 100) + " % y el resto se paga en " + C.pago.cuotas + " pagos antes del " + C.pago.limite + ". La mensualidad empieza cuando recibe su boutique. Si el presupuesto está justo, empieza por el Gold: después puede subir."],
+    ["“¿Código ML me cobra comisión por mis ventas?”", "No. El botón de compra lleva a su propia tienda: ella cobra y ella entrega. Código ML no procesa pagos de productos."],
+    ["“¿Y si no vendo?”", "No prometemos ventas. Le damos una vitrina de lujo, su puerta con su logo, visitas de una comunidad de mujeres y herramientas para compartir su boutique. Cuánto vende depende de su marca y de cómo la comparta."],
+    ["“¿Cuándo recibo mi boutique?”", "A partir del " + C.entrega + ", en el orden en que se separaron los cupos. Antes tiene una sesión con su diseñadora para elegir estilo, colores y música."],
+    ["“¿Puedo cambiar mis productos?”", "Sí: en la inducción le enseñamos a manejar su tienda. Para ti: el panel de administración se está terminando, así que no prometas fechas ni funciones exactas."],
+    ["“¿Y si me arrepiento?”", "La política de reembolso de la reserva se entrega por escrito al separar el cupo. No la improvises: léela con ella."],
+    ["“No tengo mis productos listos”", "No hace falta hoy. Hay tiempo hasta enero: le damos una guía sencilla para preparar logo, fotos y lista de productos con precios."],
+    ["“¿Qué es una sala conectada?”", "Una boutique puede tener varias salas, como habitaciones de una tienda de lujo, unidas por puertas o flechas. Gold tiene 1, Platinum 3 y Diamond 5."]
+  ];
+  const PLAN = [["0:00", "Puerta", "Bienvenida. Pídele que toque la puerta dorada."], ["1:00", "Recepción", "Presenta el hotel. Muestra la boutique inaugural y el sorteo."], ["3:00", "Sala de paquetes", "Voltea cada tarjeta. Explica lo que incluye cada paquete."], ["6:00", "Salón de demos", "Pon el demo en la pantalla: el centro comercial o una boutique por dentro."], ["8:00", "Oficina de reservas", "Las seis esferas, la letra pequeña y la tableta para separar."], ["10:00", "Cierre", "Pregunta si quiere separar hoy. Anota su código de asesora."]];
+  function tabHtml() {
+    if (tab === "precios") {
+      const c = cp(), eq = c.equiv;
+      return "<h5>Precios · " + esc(c.nombre) + '</h5><table class="cmp" style="font-size:12.5px"><thead><tr><th></th>' + C.paquetes.map(p => "<th>" + p.nombre + "</th>").join("") + "</tr></thead><tbody>" +
+        [["Feria", r => money(r.feria) + (eq ? "<br><small>≈ " + eq.moneda + num(Math.round(r.feria * eq.tasa / 100) * 100) + "</small>" : "")], ["Normal (ene 2027)", r => "<s>" + money(r.normal) + "</s>"], ["Separar hoy (" + Math.round(C.pago.separa * 100) + " %)", r => money(r.feria * C.pago.separa)], ["Mensualidad", r => money(r.mensual)]].map(([l, f]) => "<tr><td>" + l + "</td>" + C.paquetes.map(p => "<td>" + f(c.p[p.id]) + "</td>").join("") + "</tr>").join("") + "</tbody></table>" +
+        "<p style='margin-top:8px'>" + esc(c.nota) + "</p><h5>Pago</h5><ul><li>Separa con el " + Math.round(C.pago.separa * 100) + " %.</li><li>El resto en " + C.pago.cuotas + " pagos antes del " + esc(C.pago.limite) + ".</li><li>La boutique se entrega cuando el pago está completo.</li></ul><h5>Cuidado</h5><ul><li>No muestres ni menciones los precios de otro país.</li><li>No prometas ventas ni fechas anteriores al " + esc(C.entrega) + ".</li></ul>";
+    }
+    if (tab === "plan") return "<h5>Recorrido de 10 minutos</h5><ul style='list-style:none;padding:0'>" + PLAN.map(x => "<li style='margin-bottom:9px'><b>" + x[0] + " · " + x[1] + "</b><br>" + x[2] + "</li>").join("") + "</ul><h5>Al final del día</h5><ul><li>Descarga el CSV del sorteo y de las reservas (abajo).</li><li>Haz el sorteo al cierre, frente a todas.</li></ul>";
+    if (tab === "obj") return "<h5>Si te dicen…</h5>" + OBJ.map(o => "<p><b>" + esc(o[0]) + "</b><br>" + esc(o[1]) + "</p>").join("");
+    return ROOMS[cur0].guion;
   }
-  const setRep = on => { $("#guion").hidden = !on; $("#bRep").setAttribute("aria-pressed", String(on)); };
-  $("#bRep").addEventListener("click", () => setRep($("#guion").hidden)); $("#gX").addEventListener("click", () => setRep(false));
+  let cur0 = 0;
+  function renderGuion() {
+    cur0 = cur; if (!asesora) return;
+    $(".gh b").textContent = asesora.nombre + " · " + cp().nombre;
+    $("#gBody").innerHTML = '<div class="gtabs">' + [["sala", "Esta sala"], ["precios", "Precios"], ["plan", "10 min"], ["obj", "Objeciones"]].map(t => '<button data-t="' + t[0] + '" aria-selected="' + (t[0] === tab) + '">' + t[1] + "</button>").join("") + "</div>" + tabHtml();
+    $$("#gBody .gtabs button").forEach(b => b.addEventListener("click", () => { tab = b.dataset.t; renderGuion(); }));
+    const a = store("cml_sorteo").length, b = store("cml_reservas").length;
+    $("#gLeads").innerHTML = "<div>Sorteo: <b>" + a + "</b> participantes · Reservas: <b>" + b + '</b></div><button id="dW" ' + (a ? "" : "disabled") + '>Sortear 5 ganadoras</button><button id="dS" ' + (a ? "" : "disabled") + '>Descargar participantes (CSV)</button><button id="dR" ' + (b ? "" : "disabled") + '>Descargar reservas (CSV)</button><button id="dO" class="lt">Cerrar sesión de asesora</button>';
+    $("#dW").addEventListener("click", sortear); $("#dS").addEventListener("click", () => csv(store("cml_sorteo"), "sorteo-codigo-ml.csv")); $("#dR").addEventListener("click", () => csv(store("cml_reservas"), "reservas-codigo-ml.csv")); $("#dO").addEventListener("click", logout);
+  }
+  const setRep = on => { $("#guion").hidden = !on; $("#bRep").setAttribute("aria-pressed", String(on)); if (on) renderGuion(); };
+  function login(a) { asesora = a; pais = a.pais; try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(true); toast("Hola, " + a.nombre + ". Precios de " + cp().nombre + " activados."); }
+  function logout() { asesora = null; pais = null; try { sessionStorage.removeItem("cml_asesora"); } catch (e) {} setRep(false); toast("Sesión de asesora cerrada. Ya no se muestran precios."); }
+  const find = c => C.asesoras.find(a => a.codigo.toLowerCase() === String(c).trim().toLowerCase());
+  function askCode() {
+    modal('<div class="kick">Sala de asesoras</div><h3>Ingresa tu código</h3><p>Con tu código se activan los precios de tu país y tu guion de venta.</p><form id="cf" autocomplete="off"><label>Código de asesora<input name="c" autocapitalize="characters" required></label><div class="acts"><button class="bt2 w" type="submit">Entrar</button></div></form><p class="note" id="ce"></p>', (ov, close) => {
+      $("#cf", ov).addEventListener("submit", e => { e.preventDefault(); const a = find(e.target.c.value); if (!a) { $("#ce", ov).textContent = "No reconocemos ese código. Revisa que esté escrito igual."; return; } close(); login(a); });
+    });
+  }
+  $("#bRep").addEventListener("click", () => { if (!asesora) askCode(); else setRep($("#guion").hidden); }); $("#gX").addEventListener("click", () => setRep(false));
+  const rnd = m => { const a = new Uint32Array(1), lim = Math.floor(4294967296 / m) * m; do { crypto.getRandomValues(a); } while (a[0] >= lim); return a[0] % m; };
+  function sortear() {
+    const seen = {}, pool = store("cml_sorteo").filter(x => { const k = String(x.whatsapp).replace(/\D/g, ""); if (!k || seen[k]) return false; seen[k] = 1; return true; });
+    if (!pool.length) { toast("Todavía no hay participantes."); return; }
+    const n = Math.min(5, pool.length), s = Math.min(2, pool.length - n), arr = pool.slice(); for (let i = arr.length - 1; i > 0; i--) { const j = rnd(i + 1); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+    const win = arr.slice(0, n), sup = arr.slice(n, n + s), mask = w => "…" + String(w).replace(/\D/g, "").slice(-4);
+    const li = (x, i, t) => "<li><b>" + esc(x.nombre) + "</b> · " + esc(x.pais) + (x.marca ? " · " + esc(x.marca) : "") + " · WhatsApp " + mask(x.whatsapp) + "</li>";
+    const close = modal('<div class="kick">Sorteo · boutiques inaugurales</div><h3 id="sh">Sorteando…</h3><p id="sn" style="font:600 28px var(--serif);color:var(--wine);min-height:44px"></p><div id="sr2" hidden></div>', ov => {
+      const names = pool.map(x => x.nombre), el = $("#sn", ov); let k = 0; const t = setInterval(() => { el.textContent = names[rnd(names.length)]; if (++k > 28) { clearInterval(t); $("#sh", ov).textContent = "¡Felicitaciones!"; el.remove(); const r = $("#sr2", ov); r.hidden = false; r.innerHTML = '<ul class="ck">' + win.map(li).join("") + "</ul>" + (sup.length ? "<p><b>Suplentes</b> (por si alguna no responde):</p><ul class='ck'>" + sup.map(li).join("") + "</ul>" : "") + '<div class="acts"><button class="bt2 w" id="gs">Guardar resultado (CSV)</button></div><p class="note">Sorteo hecho el ' + new Date().toLocaleString("es-CO") + " entre " + pool.length + " participantes.</p>"; try { localStorage.setItem("cml_ganadoras", JSON.stringify({ fecha: new Date().toISOString(), ganadoras: win, suplentes: sup })); } catch (e) {} $("#gs", r).addEventListener("click", () => csv(win.map(x => Object.assign({ puesto: "ganadora" }, x)).concat(sup.map(x => Object.assign({ puesto: "suplente" }, x))), "ganadoras-codigo-ml.csv")); } }, 110);
+    });
+  }
 
   /* ---------- acciones ---------- */
   function act(a) {
@@ -252,7 +307,7 @@
 
   /* ---------- inicio ---------- */
   const sp = new URLSearchParams(location.search), h0 = /^#sala(\d)$/.exec(location.hash);
-  if (sp.get("rep") === "1") setRep(true);
+  try { const k = sessionStorage.getItem("cml_asesora") || sp.get("codigo"); const a = k && find(k); if (a) { asesora = a; pais = a.pais; try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(sp.get("rep") === "1"); } } catch (e) {}
   const start = sp.get("sala") != null ? +sp.get("sala") : 0;
   if (start > 0) opened = true;
   show(Math.min(Math.max(start || 0, 0), ROOMS.length - 1));
