@@ -33,7 +33,7 @@
       quads: [q("p1", [[580, 272], [764, 260], [764, 470], [580, 470]], 300, 330, pk("gold")), q("p2", [[795, 255], [993, 255], [993, 472], [795, 472]], 300, 330, pk("platinum")), q("p3", [[1025, 254], [1241, 251], [1241, 470], [1025, 472]], 300, 330, pk("diamond"))],
       hs: [hot(49.6, 62, "Comparar los tres", "comparar"), hot(2.6, 45, "← Recepción", "go:1"), hot(97.6, 49, "Salón de demos →", "go:3")],
       hint: "Toca un paquete para voltear la tarjeta",
-      guion: "<h5>Qué decir</h5><p>“Tenemos tres paquetes. Todos incluyen tu puerta con tu logo y el botón que lleva a tu tienda. Cambia cuánto espacio, cuántos productos y cuánta experiencia tiene tu boutique.”</p><h5>Qué mostrar</h5><ul><li>Toca cada panel: la tarjeta se voltea y muestra lo que incluye.</li><li>La tableta de la mesa abre la comparación.</li></ul><h5>Precio de feria</h5><ul><li>Solo durante la feria. El precio normal rige desde el 1 de enero de 2027.</li><li>Se separa con el 50 %.</li><li>La mensualidad empieza cuando la dueña recibe su boutique.</li></ul>" },
+      guion: "<h5>Qué decir</h5><p>“Tenemos tres paquetes. Todos incluyen tu puerta con tu logo y el botón que lleva a tu tienda. Cambia cuánto espacio, cuántos productos y cuánta experiencia tiene tu boutique.”</p><h5>Qué mostrar</h5><ul><li>Toca cada panel: la tarjeta se voltea y muestra lo que incluye.</li><li>La tableta de la mesa abre la comparación.</li></ul><h5>Precio de feria</h5><ul><li>Solo durante la feria. El precio normal rige desde el 1 de enero de 2027.</li><li>Se separa con el 30 %.</li><li>La mensualidad empieza cuando la dueña recibe su boutique.</li></ul>" },
     { id: "salon", name: "Salón de demos", src: "salon.webp", w: 941, h: 1671, fit: "tall", focus: 50,
       quads: [q("tv", [[343, 497], [850, 392], [850, 822], [343, 786]], 960, 540, tvHtml)],
       hs: [hot(45.7, 59, "Separar mi cupo", "reservar")], hint: "Toca la pantalla para ver el demo",
@@ -42,7 +42,7 @@
       quads: [],
       hs: [hot(13, 28, "Bienestar", "pilar:0", 1), hot(33.8, 29.8, "Comunidad", "pilar:1", 1), hot(51.5, 31.3, "Viajes", "pilar:2", 1), hot(13, 44.6, "Crece y Florece", "pilar:3", 1), hot(33.8, 44.8, "Emprende", "pilar:4", 1), hot(51.5, 44.8, "Boutiques", "pilar:5", 1), hot(40.2, 59.4, "Reservar mi cupo", "reservar"), hot(59.3, 58.1, "Condiciones", "condiciones", 1)],
       hint: "Toca las esferas para conocer cada pilar · la tableta separa tu cupo",
-      guion: "<h5>Qué decir</h5><p>“Estos seis pilares son todo lo que vive en Código ML. Tu boutique es uno de ellos. Para separar tu cupo, toca la tableta del escritorio.”</p><h5>Cierre</h5><ul><li>Confirma el paquete y el país.</li><li>Pregunta si quiere separar hoy con el 50 %.</li><li>Anota su código de representante en el formulario.</li><li>Lee con ella la letra pequeña (libro rojo).</li></ul>" }
+      guion: "<h5>Qué decir</h5><p>“Estos seis pilares son todo lo que vive en Código ML. Tu boutique es uno de ellos. Para separar tu cupo, toca la tableta del escritorio.”</p><h5>Cierre</h5><ul><li>Confirma el paquete y el país.</li><li>Pregunta si quiere separar hoy con el 30 %.</li><li>Anota su código de representante en el formulario.</li><li>Lee con ella la letra pequeña (libro rojo).</li></ul>" }
   ];
   let cur = 0, S = 1, sndOn = true, ctx = null, pad = null, opened = false;
 
@@ -213,7 +213,7 @@
       { k: "Tu puerta", h: "Tus clientas entran como a una tienda de lujo", p: "Cada producto se ve con detalle, con su descripción y su precio. El botón de compra lleva a tu propia tienda: tú cobras y tú entregas.", bg: "puerta.webp" },
       { k: "Tres paquetes", h: "Elige el que va contigo", cards: true, bg: "paquetes.webp" },
       { k: "Experiencias", h: "Un momento que tus clientas recuerdan", p: "Una clienta entra a tu boutique de velas, elige la fragancia, el color y escribe su nombre en la etiqueta. Ve su vela “armarse” en pantalla y la compra en tu tienda.", bg: "salon.webp" },
-      { k: "Así de simple", h: "Cómo creamos tu boutique", steps: ["Separas tu cupo con el 50 %.", "Nos envías logo, fotos y productos.", "Sesión con tu diseñadora.", "Construimos y te mostramos.", "Entrega durante " + C.entrega + ".", "Inducción y a vender."], bg: "oficina.webp" },
+      { k: "Así de simple", h: "Cómo creamos tu boutique", steps: ["Separas tu cupo con el 30 %.", "Nos envías logo, fotos y productos.", "Sesión con tu diseñadora.", "Construimos y te mostramos.", "Entrega durante " + C.entrega + ".", "Inducción y a vender."], bg: "oficina.webp" },
       { k: "Es tu momento", h: "Separa tu cupo hoy", p: "Precio de feria solo durante la feria. Habla con nuestra representante o toca el botón.", cta: true, bg: "recepcion.webp" }
     ];
     let i = 0; body.innerHTML = '<div class="sl"><div class="bgi"></div><button class="ar l" aria-label="Anterior">‹</button><div class="tx"></div><button class="ar r" aria-label="Siguiente">›</button><div class="dt"></div></div>';

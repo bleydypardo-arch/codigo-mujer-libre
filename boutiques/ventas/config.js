@@ -2,16 +2,16 @@
    Todo lo que cambia de una feria a otra vive aquí: precios por país, WhatsApp, asesoras y sus códigos.
    Sin código de asesora la sala NO muestra precios. (Más adelante los códigos se validarán en Supabase y los precios se editarán desde el Admin.) */
 window.CMLV = {
-  whatsapp: "",                         // número con código de país y sin signos, ej. "18095551234". Vacío = "Reservar" abre el correo.
+  whatsapp: "17864438100",                         // número con código de país y sin signos, ej. "18095551234". Vacío = "Reservar" abre el correo.
   email: "codigomujerlibre@gmail.com",
-  feria: { nombre: "", fecha: "" },     // ej. { nombre: "Feria …", fecha: "sábado 7 y domingo 8 de noviembre" }
+  feria: { nombre: "Emprende App UP 2026 · Gran Expoferia del Emprendimiento", fecha: "del 17 al 21 de noviembre de 2026", lugar: "UASD, Santo Domingo, República Dominicana", entrada: "Entrada gratis" },     // ej. { nombre: "Feria …", fecha: "sábado 7 y domingo 8 de noviembre" }
   entrega: "enero de 2027",
   pago: { separa: 0.3, cuotas: 2, limite: "15 de diciembre" },   // separa con el 30 %; el resto en 2 pagos antes del límite
   paises: ["República Dominicana", "Colombia", "España", "Otro país"],
 
   /* Códigos de asesora. El código define el país (y por tanto la lista de precios). CAMBIA estos códigos de ejemplo. */
   asesoras: [
-    { codigo: "DO-ASESORA1", pais: "do", nombre: "Asesora República Dominicana" },
+    { codigo: "DO-EMILY", pais: "do", nombre: "Emily · República Dominicana" },
     { codigo: "CO-ASESORA1", pais: "co", nombre: "Asesora Colombia 1" },
     { codigo: "CO-ASESORA2", pais: "co", nombre: "Asesora Colombia 2" },
     { codigo: "ES-ASESORA1", pais: "es", nombre: "Asesora España" },
