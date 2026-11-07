@@ -42,8 +42,15 @@
       quads: [],
       hs: [hot(13, 28, "Bienestar", "pilar:0", 1), hot(33.8, 29.8, "Comunidad", "pilar:1", 1), hot(51.5, 31.3, "Viajes", "pilar:2", 1), hot(13, 44.6, "Crece y Florece", "pilar:3", 1), hot(33.8, 44.8, "Emprende", "pilar:4", 1), hot(51.5, 44.8, "Boutiques", "pilar:5", 1), hot(40.2, 59.4, "Reservar mi cupo", "reservar"), hot(59.3, 58.1, "Condiciones", "condiciones", 1)],
       hint: "Toca las esferas para conocer cada pilar · la tableta separa tu cupo",
-      guion: "<h5>Qué decir</h5><p>“Estos seis pilares son todo lo que vive en Código ML. Tu boutique es uno de ellos. Para separar tu cupo, toca la tableta del escritorio.”</p><h5>Cierre</h5><ul><li>Confirma el paquete y el país.</li><li>Pregunta si quiere separar hoy con el 30 %.</li><li>Anota su código de representante en el formulario.</li><li>Lee con ella la letra pequeña (libro rojo).</li></ul>" }
+      guion: "<h5>Qué decir</h5><p>“Estos seis pilares son todo lo que vive en Código ML. Tu boutique es uno de ellos. Para separar tu cupo, toca la tableta del escritorio.”</p><h5>Cierre</h5><ul><li>Confirma el paquete y el país.</li><li>Pregunta si quiere separar hoy con el 30 %.</li><li>Anota su código de representante en el formulario.</li><li>Lee con ella la letra pequeña (libro rojo).</li></ul>" },
+    { id: "mioficina", name: "Mi oficina", src: "mioficina.webp", w: 1774, h: 887, fit: "wide", focus: 75,
+      quads: [q("o_metas", [[1256,318],[1398,330],[1398,390],[1256,384]], 273, 120, CMLO.panel("metas")),q("o_plan", [[1413,331],[1520,344],[1520,397],[1413,393]], 233, 120, CMLO.panel("plan")),q("o_mujeres", [[1531,347],[1609,359],[1609,403],[1531,398]], 178, 120, CMLO.panel("mujeres")),q("o_incent", [[1255,401],[1399,404],[1399,473],[1255,476]], 230, 120, CMLO.panel("incent")),q("o_saldo", [[1413,408],[1520,409],[1520,466],[1413,468]], 214, 120, CMLO.panel("saldo")),q("o_reglas", [[1531,414],[1609,415],[1609,463],[1531,465]], 189, 120, CMLO.panel("reglas"))],
+      hs: [hot(12.4,37.5,"Speech","of:speech",1),hot(19.6,39.5,"Entrenamiento","of:entrenamiento",1),hot(25.8,40.4,"Estrategia","of:estrategia",1),hot(12.4,45.9,"Liderazgo","of:liderazgo",1),hot(19.7,45.9,"Marketing","of:marketing",1),hot(25.8,46.2,"Ventas","of:ventas",1),hot(12.4,52.2,"Bienestar","of:bienestar",1),hot(19.7,52.2,"Experiencias","of:experiencias",1),hot(25.8,51.9,"Premium","of:premium",1),hot(73.3,62.6,"Mi agenda","of:agenda",1),hot(84.3,58.3,"Mi saldo","of:saldo",1),hot(90,57.5,"Reunión con Jazz","of:reunion",1),hot(68.5,69,"Reglas","of:reglas",1),hot(2.2,55,"← Recepción","go:1")],
+      hint: "Toca los tableros, los estantes y el escritorio · toca el mar",
+      guion: "<h5>Tu oficina</h5><p>Aquí tienes tus metas, tu plan semanal, tu lista de mujeres y tu biblioteca. Toca los tableros de la pared y los libros del estante.</p>",
+      live: { sea: { x: 622, y: 440, w: 436, h: 38 }, sun: [760, 428], glow: { x: 610, y: 490, w: 460, h: 62 }, fire: [[836, 514]], lamps: [[645, 534], [1043, 534]] } },
   ];
+  const PUB = 5;
   let cur = 0, S = 1, sndOn = true, ctx = null, pad = null, opened = false;
 
   /* ---------- homografía: pega contenido sobre un cuadrilátero de la foto ---------- */
@@ -76,13 +83,15 @@
     $("#roomName").textContent = R.name; $("#hintTx").textContent = R.hint;
     const hint = $("#hint"); hint.style.opacity = 1; clearTimeout(show.t); show.t = setTimeout(() => hint.style.opacity = 0, 9000);
     $$("#dots button").forEach((b, k) => b.setAttribute("aria-selected", String(k === i)));
-    $("#bPrev").disabled = i === 0; const nx = $("#bNext"); nx.disabled = i === ROOMS.length - 1; nx.querySelector("span").textContent = i === 0 ? "Entrar" : i === ROOMS.length - 2 ? "Última sala" : "Siguiente";
-    nx.style.visibility = i === ROOMS.length - 1 ? "hidden" : "visible";
-    const nxt = ROOMS[i + 1]; if (nxt) { const im = new Image(); im.src = IMG + nxt.src; }
+    window.CMLSea && (R.live ? CMLSea.start(layer, img, S, R.live) : CMLSea.stop());
+    $("#bPrev").disabled = i === 0; const nx = $("#bNext"); nx.disabled = i >= PUB - 1; nx.querySelector("span").textContent = i === 0 ? "Entrar" : i === PUB - 2 ? "Última sala" : "Siguiente";
+    nx.style.visibility = i >= PUB - 1 ? "hidden" : "visible";
+    const nxt = i + 1 < PUB && ROOMS[i + 1]; if (nxt) { const im = new Image(); im.src = IMG + nxt.src; }
     renderGuion(); try { history.replaceState(null, "", "#sala" + i); } catch (e) {}
   }
   function go(i) {
     if (i < 0 || i >= ROOMS.length) return;
+    if (i >= PUB && !asesora) { toast("Esta oficina es solo para asesoras."); return; }
     if (i > 0 && !opened) { opened = true; ac(); chime(); ambience(); }
     fade.classList.add("on"); setTimeout(() => { show(i); setTimeout(() => fade.classList.remove("on"), 60); }, 460);
   }
@@ -299,7 +308,7 @@
       }, 1500);
       setTimeout(() => g.classList.add("open"), 1650);
       entT = setTimeout(enter, 4800);
-      function enter() { if (entered) return; entered = true; clearTimeout(entT); login(a); end(); }
+      function enter() { if (entered) return; entered = true; clearTimeout(entT); login(a); end(); setTimeout(() => go(PUB), 350); }
     }
     let entT, entered = false;
     const kd = e => { if (e.key >= "0" && e.key <= "9") add(e.key); else if (e.key === "Backspace") add("del"); else if (e.key === "Escape" && !busy) end(); };
@@ -321,16 +330,22 @@
     });
   }
 
+  function openOf(key) {
+    if (!asesora || !window.CMLO) return;
+    const X = { a: asesora, C, toast, esc, cp, money, PR, OBJ, PLAN }, r = CMLO.render(key, X); if (!r) return;
+    modal(r.html, r.mount, true);
+  }
   /* ---------- acciones ---------- */
   function act(a) {
     const [k, v] = String(a).split(":"); tick();
-    ({ go: () => go(+v), bienvenida, tienda, charla, comparar, condiciones, reservar: () => reservar(), pack: () => pack(v), pilar: () => pilar(+v), demo: () => demo(v) }[k] || (() => {}))();
+    ({ go: () => go(+v), bienvenida, tienda, charla, comparar, condiciones, reservar: () => reservar(), pack: () => pack(v), pilar: () => pilar(+v), demo: () => demo(v), of: () => openOf(v) }[k] || (() => {}))();
   }
   layer.addEventListener("click", e => { if (moved) return; const t = e.target.closest("[data-a]"); if (t) act(t.dataset.a); });
   layer.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.dataset && e.target.dataset.a) { e.preventDefault(); act(e.target.dataset.a); } });
   $("#bRes").addEventListener("click", () => reservar());
   $("#bPrev").addEventListener("click", () => go(cur - 1)); $("#bNext").addEventListener("click", () => go(cur + 1));
   const dots = $("#dots"); ROOMS.forEach((R, i) => { const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("aria-label", R.name); b.addEventListener("click", () => go(i)); dots.appendChild(b); });
+  [...dots.children].forEach((b, i) => { if (i >= PUB) b.remove(); });
   $("#pL").addEventListener("click", () => vp.scrollBy({ left: -vp.clientWidth * .6, behavior: "smooth" })); $("#pR").addEventListener("click", () => vp.scrollBy({ left: vp.clientWidth * .6, behavior: "smooth" }));
   /* arrastrar con el mouse */
   let down = false, moved = false, sx = 0, sl0 = 0;
@@ -344,8 +359,19 @@
   const ac = () => { if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (ctx && ctx.state === "suspended") ctx.resume(); return ctx; };
   function tone(f, t0, dur, vol) { const c = ac(); if (!c || !sndOn) return; const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; o.frequency.value = f; const t = c.currentTime + t0; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .05); g.gain.exponentialRampToValueAtTime(.0001, t + dur); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + dur + .05); }
   const chime = () => [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, i * .28, 2.6, .035)), tick = () => { if (ctx) { tone(880, 0, .6, .025); tone(1318.5, .08, .7, .018); } };
-  function ambience() { const c = ac(); if (!c || !sndOn || pad) return; const g = c.createGain(); g.gain.value = 0; g.connect(c.destination); g.gain.linearRampToValueAtTime(.018, c.currentTime + 4); pad = [261.63, 329.63, 392, 523.25].map(f => { const o = c.createOscillator(); o.type = "sine"; o.frequency.value = f; const og = c.createGain(); og.gain.value = .5; o.connect(og); og.connect(g); o.start(); return o; }); pad.g = g; }
-  function stopAmb() { if (pad) { pad.g.gain.linearRampToValueAtTime(0, ctx.currentTime + .8); const p = pad; pad = null; setTimeout(() => p.forEach(o => { try { o.stop(); } catch (e) {} }), 1000); } }
+  function synthPad() { const c = ac(); if (!c || !sndOn || pad) return; const g = c.createGain(); g.gain.value = 0; g.connect(c.destination); g.gain.linearRampToValueAtTime(.018, c.currentTime + 4); pad = [261.63, 329.63, 392, 523.25].map(f => { const o = c.createOscillator(); o.type = "sine"; o.frequency.value = f; const og = c.createGain(); og.gain.value = .5; o.connect(og); og.connect(g); o.start(); return o; }); pad.g = g; }
+  /* Música real: pon ventas/audio/ambiente.mp3 (música) y ventas/audio/olas.mp3 (mar). Si no están, suena el pad suave de siempre. */
+  let mus = null, olas = null, musBad = false;
+  function ambience() {
+    if (!sndOn) return;
+    if (musBad) return synthPad();
+    if (!mus) {
+      mus = new Audio("ventas/audio/ambiente.mp3"); mus.loop = true; mus.volume = .4; mus.addEventListener("error", () => { musBad = true; mus = null; if (opened && sndOn) synthPad(); });
+      olas = new Audio("ventas/audio/olas.mp3"); olas.loop = true; olas.volume = .22; olas.addEventListener("error", () => { olas = null; });
+    }
+    mus.play().catch(() => {}); olas && olas.play().catch(() => {});
+  }
+  function stopAmb() { if (mus) mus.pause(); if (olas) olas.pause(); if (pad) { pad.g.gain.linearRampToValueAtTime(0, ctx.currentTime + .8); const p = pad; pad = null; setTimeout(() => p.forEach(o => { try { o.stop(); } catch (e) {} }), 1000); } }
   $("#bSnd").addEventListener("click", e => { sndOn = !sndOn; e.currentTarget.setAttribute("aria-pressed", String(sndOn)); if (sndOn) { if (opened) ambience(); } else stopAmb(); });
   document.addEventListener("visibilitychange", () => { if (document.hidden) stopAmb(); else if (opened && sndOn) ambience(); });
 

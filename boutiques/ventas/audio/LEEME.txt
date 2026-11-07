@@ -1,0 +1,4 @@
+Pon aquí dos archivos con estos nombres exactos:
+  ambiente.mp3  -> música de fondo (spa / lounge / piano suave)
+  olas.mp3      -> sonido del mar
+Si no están, la sala usa una música suave generada.
