@@ -1,8 +1,8 @@
 (function () {
   const D = window.CMLB, $ = (s, r) => (r || document).querySelector(s), esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const scene = $("#scene"), doors = $("#doors"), tour = $("#tour"), room = $("#room");
-  $("#pr").textContent = "USD " + D.price.intro;
-  $("#pr2").textContent = "el primer mes · luego USD " + D.price.monthly + " al mes";
+  $("#pr").textContent = "Separa tu cupo";
+  $("#pr2").textContent = "Elige Gold, Platinum o Diamond y pregunta por el precio de feria";
 
   /* ---------- sonido muy suave (WebAudio), con botón para quitarlo ---------- */
   let ctx = null, on = true;

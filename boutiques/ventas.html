@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sala de reservas y ventas · Código ML</title>
+<meta name="description" content="Recorre la Sala de reservas y ventas de Código ML: conoce los paquetes de boutiques virtuales, mira el demo y separa tu cupo.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="ventas/ventas.css?v=1">
+</head>
+<body class="vt">
+<div id="stage">
+  <div id="bg"></div>
+  <div id="viewport" tabindex="0" aria-label="Sala. Desliza para mirar alrededor.">
+    <div id="world"><img id="img" alt="" draggable="false"><div id="layer"></div></div>
+  </div>
+  <button class="pan l" id="pL" aria-label="Mirar a la izquierda" hidden>‹</button>
+  <button class="pan r" id="pR" aria-label="Mirar a la derecha" hidden>›</button>
+</div>
+
+<header id="top">
+  <div class="brand"><span class="ml">ML</span><span class="bt"><b>Código ML</b><small id="roomName">Sala de reservas y ventas</small></span></div>
+  <div class="tools">
+    <button id="bRep" class="tbtn" type="button" aria-pressed="false" title="Modo representante">Guion</button>
+    <button id="bSnd" class="tbtn ic" type="button" aria-pressed="true" aria-label="Sonido" title="Sonido">♪</button>
+    <button id="bRes" class="cta" type="button">Reservar mi cupo</button>
+  </div>
+</header>
+
+<div id="hint"><span>↔</span><i id="hintTx">Desliza para mirar alrededor · toca los puntos dorados</i></div>
+
+<nav id="bottom" aria-label="Recorrido">
+  <button id="bPrev" class="nb" type="button">← <span>Anterior</span></button>
+  <div id="dots" role="tablist" aria-label="Salas"></div>
+  <button id="bNext" class="nb go" type="button"><span>Siguiente sala</span> →</button>
+</nav>
+
+<aside id="guion" hidden aria-label="Guion del representante">
+  <div class="gh"><b>Guion del representante</b><button id="gX" aria-label="Cerrar">×</button></div>
+  <div id="gBody"></div>
+  <div class="gf" id="gLeads"></div>
+</aside>
+
+<div id="fade"></div>
+<noscript><p style="padding:24px">Esta sala necesita JavaScript.</p></noscript>
+<script src="ventas/config.js?v=1"></script>
+<script src="ventas/ventas.js?v=1"></script>
+</body>
+</html>

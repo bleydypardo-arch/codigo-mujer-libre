@@ -3,7 +3,7 @@
 window.CMLB = {
   hotelUrl: "https://bleydypardo-arch.github.io/codigo-mujer-libre/",
   email: "codigomujerlibre@gmail.com",
-  price: { intro: 9, monthly: 29, introMonths: 1 },       // editable: precio piloto fundador (USD)
+  price: { intro: null, monthly: null, introMonths: 0 },   // ya no se muestran precios en el demo: los precios viven en la Sala de ventas
   cities: [
     { name: "Orlando", country: "Estados Unidos", slots: 2 },
     { name: "Bogotá", country: "Colombia", slots: 2 },
