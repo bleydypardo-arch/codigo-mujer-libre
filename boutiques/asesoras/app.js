@@ -201,10 +201,56 @@
     line: h => ({ e: "⏱️", t: h.t, s: fdate(h.fecha), r: h.h + " h" }),
     sum: l => { const d = new Date(), mon = new Date(d); mon.setDate(d.getDate() - ((d.getDay() + 6) % 7)); const ms = ymd(mon), mm = today().slice(0, 7); return "<div><b>" + l.filter(x => x.fecha >= ms).reduce((s, x) => s + (+x.h || 0), 0) + "</b><small>esta semana</small></div><div><b>" + l.filter(x => (x.fecha || "").startsWith(mm)).reduce((s, x) => s + (+x.h || 0), 0) + "</b><small>este mes</small></div>"; } });
 
-  /* ---------- DOCUMENTOS ---------- */
-  const docs = () => lista({ name: "docs", title: "Mis documentos", sub: "Enlaces a contratos, cotizaciones, catálogos y presentaciones.", ico: "📎", add: "Guardar documento", empty: "Pega aquí el enlace de un documento (Drive, Dropbox…) para tenerlo a la mano.",
-    fields: [{ k: "t", l: "Nombre", req: 1 }, { k: "url", l: "Enlace", type: "url", ph: "https://…" }, { k: "nota", l: "Notas", type: "textarea" }], def: {}, sort: (a, b) => a.t.localeCompare(b.t),
-    line: d => ({ e: "📎", t: d.t, s: d.url || "Sin enlace" }), open: (id, redo) => { const d = get("docs", []).find(x => x.id === id); modal("<h3>" + esc(d.t) + "</h3>" + (d.nota ? "<p>" + esc(d.nota) + "</p>" : "") + (d.url && /^https?:\/\//i.test(d.url) ? '<a class="bt2 w" target="_blank" rel="noopener" href="' + esc(d.url) + '">Abrir documento</a>' : "") + '<div class="row2"><button class="bt2" type="button" data-b>Cerrar</button><button class="bt2 del" type="button" data-x>Borrar</button></div>', (ov, cl) => { $("[data-b]", ov).onclick = cl; $("[data-x]", ov).onclick = () => { cl(); confirmBox("¿Borrar este documento?", () => { set("docs", get("docs", []).filter(x => x.id !== id)); redo(); }); }; }); } });
+  /* ---------- DOCUMENTOS IMPORTANTES: cartas, propuestas, informes; se envían a Jazz por correo o WhatsApp ---------- */
+  const firma = o => esc0(A.nombre.split("·")[0].trim()) + "\nAsesora · Código Mujer Libre" + (o.ciudad ? "\n" + o.ciudad : "") + "\n" + fdate(today());
+  const esc0 = s => String(s);
+  const CIU = { k: "ciudad", l: "Ciudad", ph: "Bogotá, Santo Domingo…" };
+  const PAQ = ["Gold", "Platinum", "Diamond"];
+  const PLANT = [
+    { id: "carta_emp", e: "🏢", n: "Carta de presentación a una empresa", f: [CIU, { k: "empresa", l: "Empresa", req: 1 }, { k: "contacto", l: "Nombre de la persona", req: 1 }, { k: "cargo", l: "Cargo" }],
+      b: o => "Asunto: Bienestar para las mujeres de " + o.empresa + "\n\nEstimada " + o.contacto + (o.cargo ? " (" + o.cargo + ")" : "") + ":\n\nReciba un cordial saludo. Le escribo de parte de Código Mujer Libre, una plataforma de bienestar y comunidad hecha para mujeres: pausas de 5 minutos, eventos, beneficios y una sala de maternidad que acompaña el regreso al trabajo.\n\nMe gustaría presentarle una demostración de 15 minutos y conversar sobre un piloto para las colaboradoras de " + o.empresa + ". Los precios, el contrato y las condiciones los envía directamente Código Mujer Libre.\n\n¿Qué día de esta semana le queda bien?\n\nAtentamente,\n" + firma(o) },
+    { id: "propuesta", e: "💼", n: "Propuesta o cotización", f: [CIU, { k: "cliente", l: "Clienta o empresa", req: 1 }, { k: "serv", l: "Qué se ofrece", type: "select", opts: ["Boutique Gold", "Boutique Platinum", "Boutique Diamond", "Bienestar corporativo", "Otro"] }, { k: "valor", l: "Valor", type: "number" }, { k: "vig", l: "Válida hasta", type: "date" }, { k: "nota", l: "Condiciones o detalles", type: "textarea" }],
+      b: o => "PROPUESTA · " + o.serv + "\nPara: " + o.cliente + "\n\nValor: " + money(o.valor) + "\n" + (o.vig ? "Vigencia: hasta el " + fdate(o.vig) + "\n" : "") + (o.nota ? "\nDetalles:\n" + o.nota + "\n" : "") + "\nEsta propuesta es un borrador sujeto a la confirmación oficial de Código Mujer Libre. El pago se realiza únicamente a Código Mujer Libre por los canales oficiales.\n\n" + firma(o) },
+    { id: "reserva", e: "🌸", n: "Confirmación de reserva de boutique", f: [CIU, { k: "clienta", l: "Clienta o marca", req: 1 }, { k: "paq", l: "Paquete", type: "select", opts: PAQ }, { k: "valor", l: "Valor total", type: "number" }, { k: "sep", l: "Valor separado", type: "number" }, { k: "lim", l: "Fecha límite del saldo", type: "date" }],
+      b: o => "CONFIRMACIÓN DE RESERVA\n\nClienta: " + o.clienta + "\nPaquete: " + o.paq + "\nValor total: " + money(o.valor) + "\nSeparado: " + money(o.sep) + "\nSaldo: " + money(Math.max(0, (+o.valor || 0) - (+o.sep || 0))) + (o.lim ? "\nFecha límite del saldo: " + fdate(o.lim) : "") + "\nEntrega estimada: " + C.entrega + "\n\nLa política de reembolso se entrega por escrito con el pago de la reserva. Los pagos se hacen solo por los canales oficiales de Código Mujer Libre.\n\n" + firma(o) },
+    { id: "gasto", e: "🧾", n: "Solicitud de aprobación de gasto", f: [CIU, { k: "concepto", l: "Concepto", req: 1 }, { k: "monto", l: "Monto", type: "number" }, { k: "prov", l: "Proveedor" }, { k: "just", l: "¿Por qué es necesario?", type: "textarea" }],
+      b: o => "SOLICITUD DE APROBACIÓN DE GASTO\n\nConcepto: " + o.concepto + "\nMonto: " + money(o.monto) + (o.prov ? "\nProveedor: " + o.prov : "") + "\n\nJustificación:\n" + (o.just || "—") + "\n\nQuedo atenta a su aprobación antes de realizar cualquier pago.\n\n" + firma(o) },
+    { id: "informe", e: "📋", n: "Informe de evento", f: [CIU, { k: "evento", l: "Evento", req: 1 }, { k: "fecha", l: "Fecha", type: "date" }, { k: "asist", l: "Asistentes", type: "number" }, { k: "nuevas", l: "Mujeres nuevas inscritas", type: "number" }, { k: "ventas", l: "Ventas generadas", type: "number" }, { k: "nota", l: "Qué salió bien y qué mejorar", type: "textarea" }],
+      b: o => "INFORME DE EVENTO\n\nEvento: " + o.evento + (o.fecha ? "\nFecha: " + fdate(o.fecha) : "") + "\nAsistentes: " + (o.asist || 0) + "\nMujeres nuevas inscritas: " + (o.nuevas || 0) + "\nVentas generadas: " + money(o.ventas) + "\n\nObservaciones:\n" + (o.nota || "—") + "\n\n" + firma(o) },
+    { id: "carta_prov", e: "🤝", n: "Carta a proveedor o aliado", f: [CIU, { k: "prov", l: "Proveedor o aliado", req: 1 }, { k: "contacto", l: "Persona de contacto" }, { k: "prop", l: "Qué le propones", type: "textarea" }],
+      b: o => "Asunto: Alianza con Código Mujer Libre\n\nEstimado equipo de " + o.prov + (o.contacto ? ", " + o.contacto : "") + ":\n\nLe escribo de parte de Código Mujer Libre, una comunidad internacional de mujeres. " + (o.prop || "Nos gustaría conversar sobre una posible alianza.") + "\n\nQuedo atenta para coordinar una conversación.\n\nAtentamente,\n" + firma(o) },
+    { id: "libre", e: "✉️", n: "Carta o nota libre", f: [CIU, { k: "asunto", l: "Asunto", req: 1 }, { k: "texto", l: "Escribe tu carta", type: "textarea" }],
+      b: o => "Asunto: " + o.asunto + "\n\n" + (o.texto || "") + "\n\n" + firma(o) },
+    { id: "enlace", e: "📎", n: "Guardar enlace a un documento", f: [{ k: "nombre", l: "Nombre", req: 1 }, { k: "url", l: "Enlace", type: "url", ph: "https://…" }, { k: "nota", l: "Notas", type: "textarea" }],
+      b: o => o.nombre + (o.url ? "\n" + o.url : "") + (o.nota ? "\n\n" + o.nota : "") }
+  ];
+  function docs() {
+    const L = get("documentos", []).concat(get("docs", []).map(d => ({ id: d.id, tipo: "enlace", e: "📎", t: d.t, texto: d.t + (d.url ? "\n" + d.url : "") + (d.nota ? "\n\n" + d.nota : ""), fecha: today(), viejo: 1 })));
+    main.innerHTML = head("Documentos importantes", "Crea cartas, propuestas e informes y envíalos a Jazz con un toque.", "inicio") +
+      '<h4 class="sh">Crear un documento</h4><div class="lst">' + PLANT.map(t => '<button type="button" class="li" data-t="' + t.id + '"><i>' + t.e + "</i><span><b>" + t.n + "</b></span></button>").join("") + "</div>" +
+      '<h4 class="sh">Mis documentos (' + L.length + ')</h4><div class="lst">' + (L.length ? L.slice().sort((a, b) => (b.fecha || "").localeCompare(a.fecha || "")).map(d => '<button type="button" class="li" data-d="' + d.id + '"><i>' + (d.e || "📄") + "</i><span><b>" + esc(d.t) + "</b><small>" + fdate(d.fecha) + (d.enviado ? " · enviado a Jazz" : "") + "</small></span></button>").join("") : '<div class="empty s"><p>Aquí aparecerán los documentos que crees.</p></div>') + "</div>" +
+      '<p class="fine">“Enviar a Jazz” abre tu correo con el documento listo; tú solo tocas enviar. Los documentos se guardan en este teléfono: descarga un respaldo en Mi cuenta.</p>';
+    $$("[data-t]", main).forEach(b => b.onclick = () => {
+      const t = PLANT.find(x => x.id === b.dataset.t), last = get("ciudad", "");
+      formModal(t.n, t.f, { ciudad: last }, o => {
+        if (o.ciudad) set("ciudad", o.ciudad);
+        const d = { id: uid(), tipo: t.id, e: t.e, t: (o.empresa || o.cliente || o.clienta || o.concepto || o.evento || o.prov || o.asunto || o.nombre || t.n) + " · " + t.n.split(" ").slice(0, 3).join(" "), texto: t.b(o), url: o.url || "", fecha: today() };
+        const all = get("documentos", []); all.push(d); set("documentos", all); docs(); docView(d.id);
+      });
+    });
+    $$("[data-d]", main).forEach(b => b.onclick = () => docView(b.dataset.d));
+  }
+  function docView(id) {
+    const d = get("documentos", []).find(x => x.id === id) || get("docs", []).map(x => ({ id: x.id, t: x.t, texto: x.t + (x.url ? "\n" + x.url : ""), url: x.url, viejo: 1 })).find(x => x.id === id); if (!d) return;
+    modal('<div class="kick">Documento</div><h3>' + esc(d.t) + '</h3><label>Texto (puedes editarlo)<textarea id="dtx" rows="12">' + esc(d.texto) + '</textarea></label><div class="row2"><a class="bt2 w" data-mail>✉️ Enviar a Jazz</a></div><div class="row2"><a class="bt2" target="_blank" rel="noopener" data-wa>WhatsApp</a><button class="bt2" type="button" data-cp>Copiar</button></div><div class="row2"><button class="bt2" type="button" data-dl>Descargar</button><button class="bt2 del" type="button" data-x>Borrar</button></div><p class="note">Si el correo no abre, usa “Copiar” y pégalo en tu email.</p>', (ov, cl) => {
+      const t = $("#dtx", ov), up = () => { const m = $("[data-mail]", ov); m.href = "mailto:" + C.email + "?subject=" + encodeURIComponent(d.t + " · " + first()) + "&body=" + encodeURIComponent(t.value); $("[data-wa]", ov).href = waLink(t.value); };
+      up(); t.oninput = () => { up(); if (!d.viejo) { const all = get("documentos", []), x = all.find(z => z.id === id); if (x) { x.texto = t.value; set("documentos", all); } } };
+      $("[data-mail]", ov).addEventListener("click", () => { if (!d.viejo) { const all = get("documentos", []), x = all.find(z => z.id === id); if (x) { x.enviado = true; set("documentos", all); } } });
+      $("[data-cp]", ov).onclick = () => copy(t.value);
+      $("[data-dl]", ov).onclick = () => save(t.value, d.t.replace(/[^\wáéíóúñ ]+/gi, "").trim().replace(/ +/g, "-") + ".txt", "text/plain");
+      $("[data-x]", ov).onclick = () => { cl(); confirmBox("¿Borrar este documento?", () => { set("documentos", get("documentos", []).filter(z => z.id !== id)); set("docs", get("docs", []).filter(z => z.id !== id)); docs(); }); };
+    });
+  }
 
   /* ---------- MARKETING POR MES ---------- */
   function mkt() {
@@ -308,7 +354,7 @@
     let n = 0;
     main.innerHTML = '<div class="banner"><img src="asesoras/img/bienvenida.webp" alt="Bienvenida al área comercial">' + (EMB ? "" : '<button type="button" class="bgo" data-go="url:ventas.html" aria-label="Entrar a la sala"></button>') + '</div>' +
       '<p class="hoyl">' + (td.length ? "Tienes " + td.length + (td.length === 1 ? " pendiente" : " pendientes") + " hoy." : "Hoy no tienes pendientes anotados.").replace(/^/, esc(first()) + " · ") + "</p>" +
-      (EMB ? "" : '<button type="button" class="sala" data-go="url:ventas.html"><span class="sg"></span><i>🚪</i><b>Entrar a la sala</b></button>') +
+      (EMB ? "" : '<button type="button" class="sala" data-go="url:ventas.html"><span class="sg"></span><i>🚪</i><b>Entrar a la sala</b></button>') + '<button type="button" class="docb" data-go="docs"><i>📄</i><span><b>Documentos importantes</b><small>Cartas, propuestas e informes · envío a Jazz</small></span></button>' +
       GRUPOS.map(g => '<h4 class="gh">' + g[0] + '</h4><div class="tg">' + g[1].map(t => { n++; return '<button type="button" class="tl" data-go="' + t[1] + '" aria-label="' + t[0] + '"><img src="' + TI(n) + '" alt="' + t[0] + '" loading="lazy"></button>'; }).join("") + "</div>").join("") +
       '<div class="mini">' + (A.admin ? '<button type="button" data-go="admin">⚙️ Administración</button>' : "") + '<button type="button" data-go="cuenta">👤 Mi cuenta y respaldo</button><button type="button" data-inst>📲 Instalar app</button></div>';
     const ib = $("[data-inst]", main); if (ib) ib.onclick = installHelp;

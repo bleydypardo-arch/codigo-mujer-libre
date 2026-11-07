@@ -120,3 +120,6 @@ body.as.home #main{padding-top:0;padding-left:0;padding-right:0;max-width:720px}
 @media(min-width:600px){.tg{grid-template-columns:repeat(4,1fr)}}
 @media(prefers-reduced-motion:reduce){.orq .p{transition-duration:.01s!important}}
 #app[hidden]{display:none}
+.docb{display:flex;align-items:center;gap:12px;width:calc(100% - 32px);margin:10px 16px 0;padding:13px 16px;border-radius:18px;background:#fffaf2;border:1.5px solid var(--gold);color:var(--wine-d);text-align:left;box-shadow:0 8px 18px -12px rgba(74,10,30,.6)}.docb i{font-style:normal;font-size:28px}.docb b{display:block;font:600 20px var(--serif)}.docb small{display:block;color:var(--mute);font-size:12.5px}
+.note{font-size:12.5px;color:var(--mute);margin-top:8px}
+a.bt2{text-decoration:none;color:var(--wine-d)}a.bt2.w{color:#fff}
