@@ -10,13 +10,7 @@ window.CMLV = {
   paises: ["República Dominicana", "Colombia", "España", "Otro país"],
 
   /* Códigos de asesora: 4 dígitos. El código define el país (y por tanto la lista de precios). CAMBIA estos códigos de ejemplo. */
-  asesoras: [
-    { codigo: "7316", pais: "do", nombre: "Emily · República Dominicana" },
-    { codigo: "4592", pais: "co", nombre: "Asesora Colombia 1" },
-    { codigo: "8037", pais: "co", nombre: "Asesora Colombia 2" },
-    { codigo: "2864", pais: "es", nombre: "Asesora España" },
-    { codigo: "1915", pais: "us", nombre: "Jazz · Estados Unidos", admin: true }
-  ],
+  asesoras: [],   // los códigos viven en Supabase (Administración); aquí no se guarda ninguno
 
 
   /* Precios por país. normal = precio de lista desde el 1 de enero de 2027. */
