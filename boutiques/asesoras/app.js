@@ -17,7 +17,8 @@
   const KEY = n => "cml_of_" + A.codigo + "_" + n;
   const get = (n, d) => { try { const v = localStorage.getItem(KEY(n)); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
   const set = (n, v) => { try { localStorage.setItem(KEY(n), JSON.stringify(v)); } catch (e) { toast("No pude guardar en este teléfono. Revisa el espacio o el modo privado."); } };
-  const cp = () => C.precios[A.pais] || C.precios.do;
+  const vista = () => { try { return (A.admin && sessionStorage.getItem("cml_vista")) || A.pais; } catch (e) { return A.pais; } };
+  const cp = () => C.precios[vista()] || C.precios.do;
   const money = n => { const c = cp(); return c.moneda + num(n) + c.sufijo; };
   const PR = id => cp().p ? cp().p[id] : null;
   const first = () => A.nombre.split("·")[0].trim().split(" ")[0];
@@ -319,9 +320,10 @@
     const P = (() => { try { return JSON.parse(localStorage.getItem("cml_admin_perm") || "{}"); } catch (e) { return {}; } })();
     main.innerHTML = head("Administración", "Usuarias, permisos y bloqueos.") +
       '<div class="warn"><b>Cómo se bloquea a alguien hoy:</b> el ingreso dura solo mientras la app está abierta y se vuelve a pedir el código después de 5 minutos fuera. Para sacar a una persona definitivamente, su código se agrega a la lista de bloqueados (archivo acceso.json) y deja de entrar en todos sus dispositivos. Pídeme que lo haga y queda en 2 minutos. La versión con usuarios y claves propios (Supabase) es el paso siguiente.</div>' +
-      '<h4 class="sh">Asesoras</h4><div class="lst">' + C.asesoras.map(a => '<div class="li"><i>' + (P["b" + a.codigo] ? "⛔" : "👩") + '</i><span><b>' + esc(a.nombre) + "</b><small>Código " + a.codigo + " · " + (C.precios[a.pais] || {}).nombre + (a.admin ? " · administradora" : "") + '</small></span>' + (a.admin ? "" : '<button type="button" class="bt2 sm" data-b="' + a.codigo + '">' + (P["b" + a.codigo] ? "Desbloquear" : "Bloquear") + "</button>") + "</div>").join("") + "</div>" +
+      '<h4 class="sh">Ver todo como país</h4><select id="vsel" class="srch">' + Object.keys(C.precios).map(k => '<option value="' + k + '"' + (vista() === k ? ' selected' : '') + '>' + C.precios[k].nombre + '</option>').join('') + '</select><p class="note">Cambia los precios y la moneda que ves en la app y en la Sala. Tu código entra a todos los países.</p><h4 class="sh">Asesoras</h4><div class="lst">' + C.asesoras.map(a => '<div class="li"><i>' + (P["b" + a.codigo] ? "⛔" : "👩") + '</i><span><b>' + esc(a.nombre) + "</b><small>Código " + a.codigo + " · " + (C.precios[a.pais] || {}).nombre + (a.admin ? " · administradora" : "") + '</small></span>' + (a.admin ? "" : '<button type="button" class="bt2 sm" data-b="' + a.codigo + '">' + (P["b" + a.codigo] ? "Desbloquear" : "Bloquear") + "</button>") + "</div>").join("") + "</div>" +
       '<h4 class="sh">Permisos por módulo (planeación)</h4><div class="perm"><table class="cmp"><thead><tr><th></th>' + C.asesoras.map(a => "<th>" + a.codigo + "</th>").join("") + "</tr></thead><tbody>" + MODS.map(m => "<tr><td>" + m[1] + "</td>" + C.asesoras.map(a => '<td><input type="checkbox" data-p="' + m[0] + a.codigo + '" ' + (P["p" + m[0] + a.codigo] === false ? "" : "checked") + ' aria-label="' + m[1] + " " + a.codigo + '"></td>').join("") + "</tr>").join("") + "</tbody></table></div>" +
       '<h4 class="sh">Qué falta para que sea real</h4><ul class="ck"><li>Base de datos central (Supabase) para ver las mujeres, ventas y gastos de todas las asesoras.</li><li>Ingreso con correo y clave en vez de códigos de 4 dígitos.</li><li>Campo “código de asesora” en el registro de mujeres para atribuir cada una.</li><li>Pasarela de pago para cobrar las reservas y calcular comisiones solas.</li></ul>';
+    $("#vsel", main).onchange = e => { try { sessionStorage.setItem("cml_vista", e.target.value); } catch (x) {} toast("Ahora ves los precios de " + C.precios[e.target.value].nombre + "."); };
     $$("[data-b]", main).forEach(b => b.onclick = () => { P["b" + b.dataset.b] = !P["b" + b.dataset.b]; localStorage.setItem("cml_admin_perm", JSON.stringify(P)); admin(); });
     $$("[data-p]", main).forEach(i => i.onchange = () => { P["p" + i.dataset.p] = i.checked; localStorage.setItem("cml_admin_perm", JSON.stringify(P)); });
   }
