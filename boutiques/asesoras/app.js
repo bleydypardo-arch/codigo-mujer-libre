@@ -253,6 +253,32 @@
     });
   }
 
+  /* ---------- CONVERTIDOR DE MONEDA (tasa en vivo) ---------- */
+  const MON = [["USD", "Dólar (US$)"], ["COP", "Peso colombiano"], ["DOP", "Peso dominicano"], ["EUR", "Euro"]];
+  function moneda() {
+    const saved = (() => { try { return JSON.parse(localStorage.getItem("cml_tasas") || "null"); } catch (e) { return null; } })();
+    let T = saved && saved.r ? saved : null;
+    const draw = () => {
+      const st = get("mon", { m: 100, de: "USD", a: "COP" });
+      main.innerHTML = head("Convertidor de moneda", "Cuánto vale el dólar hoy en pesos. Se actualiza solo cuando hay internet.", "inicio") +
+        '<div class="calc"><label>Monto<input id="mm" inputmode="decimal" value="' + esc(st.m) + '"></label><div class="adr"><select id="md">' + MON.map(x => '<option value="' + x[0] + '"' + (st.de === x[0] ? " selected" : "") + ">" + x[1] + '</option>').join("") + '</select><button type="button" class="bt2 sm" id="msw" aria-label="Cambiar">⇄</button><select id="ma">' + MON.map(x => '<option value="' + x[0] + '"' + (st.a === x[0] ? " selected" : "") + ">" + x[1] + "</option>").join("") + '</select></div><div class="res" id="mr"></div><p class="note" id="mt"></p></div>' +
+        '<h4 class="sh">Tabla rápida · desde dólares</h4><table class="cmp"><thead><tr><th>US$</th><th>COP</th><th>DOP</th><th>EUR</th></tr></thead><tbody id="mtb"></tbody></table>' +
+        '<h4 class="sh">Si no hay internet</h4><label>Escribe tú la tasa: 1 US$ = ? <input id="mman" inputmode="decimal" placeholder="Ej. COP"></label><select id="mmc" class="srch"><option>COP</option><option>DOP</option><option>EUR</option></select><button type="button" class="bt2 wide" id="mset">Usar esta tasa</button>';
+      const rate = (de, a) => T && T.r[de] && T.r[a] ? T.r[a] / T.r[de] : null, fm = n => n.toLocaleString("es-CO", { maximumFractionDigits: n < 10 ? 4 : 2 });
+      const upd = () => {
+        const m = +String($("#mm").value).replace(",", ".") || 0, de = $("#md").value, a = $("#ma").value; set("mon", { m: $("#mm").value, de, a });
+        const r = rate(de, a); $("#mr").textContent = r ? fm(m * r) + " " + a : "Sin tasa todavía";
+        $("#mt").textContent = T ? "1 " + de + " = " + (r ? fm(r) : "—") + " " + a + " · tasa del " + T.f + (T.manual ? " (escrita por ti)" : "") : "Conéctate a internet o escribe la tasa abajo.";
+        $("#mtb").innerHTML = [1, 5, 10, 50, 100, 500].map(u => "<tr><td>" + u + "</td>" + ["COP", "DOP", "EUR"].map(c => "<td>" + (rate("USD", c) ? fm(u * rate("USD", c)) : "—") + "</td>").join("") + "</tr>").join("");
+      };
+      ["mm", "md", "ma"].forEach(i => $("#" + i).oninput = upd); $("#msw").onclick = () => { const d = $("#md").value; $("#md").value = $("#ma").value; $("#ma").value = d; upd(); };
+      $("#mset").onclick = () => { const v = +String($("#mman").value).replace(",", "."), c = $("#mmc").value; if (!v) { toast("Escribe un número."); return; } T = { r: Object.assign({ USD: 1 }, T ? T.r : {}, { [c]: v }), f: fdate(today()), manual: true }; try { localStorage.setItem("cml_tasas", JSON.stringify(T)); } catch (e) {} upd(); toast("Tasa guardada."); };
+      upd();
+    };
+    draw();
+    fetch("https://open.er-api.com/v6/latest/USD").then(r => r.json()).then(j => { if (j && j.rates) { T = { r: j.rates, f: fdate(today()) }; try { localStorage.setItem("cml_tasas", JSON.stringify(T)); } catch (e) {} if (location.hash === "#moneda") draw(); } }).catch(() => {});
+  }
+
   /* ---------- MARKETING POR MES ---------- */
   function mkt() {
     const ck = get("mkt", {}), now = today().slice(0, 7);
@@ -359,12 +385,12 @@
       '<p class="hoyl">' + (td.length ? "Tienes " + td.length + (td.length === 1 ? " pendiente" : " pendientes") + " hoy." : "Hoy no tienes pendientes anotados.").replace(/^/, esc(first()) + " · ") + "</p>" +
       (EMB ? "" : '<button type="button" class="sala" data-go="url:ventas.html"><span class="sg"></span><i>🚪</i><b>Entrar a la sala</b></button>') + '<button type="button" class="docb" data-go="docs"><i>📄</i><span><b>Documentos importantes</b><small>Cartas, propuestas e informes · envío a Jazz</small></span></button>' +
       GRUPOS.map(g => '<h4 class="gh">' + g[0] + '</h4><div class="tg">' + g[1].map(t => { n++; return '<button type="button" class="tl" data-go="' + t[1] + '" aria-label="' + t[0] + '"><img src="' + TI(n) + '" alt="' + t[0] + '" loading="lazy"></button>'; }).join("") + "</div>").join("") +
-      '<div class="mini">' + (A.admin ? '<button type="button" data-go="admin">⚙️ Administración</button>' : "") + '<button type="button" data-go="cuenta">👤 Mi cuenta y respaldo</button><button type="button" data-inst>📲 Instalar app</button></div>';
+      '<div class="mini">' + (A.admin ? '<button type="button" data-go="admin">⚙️ Administración</button>' : "") + '<button type="button" data-go="moneda">💱 Dólar y monedas</button><button type="button" data-go="cuenta">👤 Mi cuenta y respaldo</button><button type="button" data-inst>📲 Instalar app</button></div>';
     const ib = $("[data-inst]", main); if (ib) ib.onclick = installHelp;
   }
 
   /* ---------- rutas ---------- */
-  const R = { inicio, mas: inicio, agenda, eventos, vivo, gastos, empresas, provs, ventas, horas, docs, mkt, academia, oficina, reporte, control, admin, cuenta };
+  const R = { inicio, moneda, mas: inicio, agenda, eventos, vivo, gastos, empresas, provs, ventas, horas, docs, mkt, academia, oficina, reporte, control, admin, cuenta };
   const NAV = { inicio: "inicio", agenda: "agenda", academia: "academia", gastos: "gastos" };
   function route() {
     if (!A) return; const k = (location.hash || "#inicio").slice(1) || "inicio", fn = R[k] || inicio;

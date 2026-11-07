@@ -125,3 +125,4 @@ body.as.home #main{padding-top:0;padding-left:0;padding-right:0;max-width:720px}
 a.bt2{text-decoration:none;color:var(--wine-d)}a.bt2.w{color:#fff}
 .lginst{margin-top:14px;padding:9px 16px;border-radius:999px;border:1px solid var(--gold);color:var(--gold-l);font:600 13px var(--sans);background:rgba(255,255,255,.06)}
 #login:not(.open) .lginst{display:none}
+.calc{background:#fff;border:1px solid #ecd9b8;border-radius:18px;padding:14px}.calc input,.calc select{width:100%;padding:11px 12px;border:1px solid #d9c29a;border-radius:12px;font:inherit;background:#fff}.calc .adr select{flex:1;min-width:0}.calc .res{font:600 34px var(--serif);color:var(--wine-d);margin-top:12px;overflow-wrap:anywhere}
