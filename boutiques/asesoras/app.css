@@ -104,7 +104,7 @@ html{background:var(--ivory)}
 /* ---- inicio: tarjetas de lujo ---- */
 body.as.home{background:#f4e5d9}body.as.home .top,body.as.home #nav{display:none}
 body.as.home #main{padding-top:0;padding-left:0;padding-right:0;max-width:720px}
-.banner{position:relative}.banner img{display:block;width:100%;height:clamp(110px,28vw,170px);object-fit:cover;object-position:60% 50%}
+.banner{position:relative}.banner img{display:block;width:100%;height:auto}.bgo{position:absolute;right:2%;top:30%;width:22%;height:42%;border-radius:50%}
 .banner b{position:absolute;left:0;right:0;bottom:6px;text-align:center;font:italic 600 13px var(--serif);color:transparent}
 .hoyl{text-align:center;color:#7a3a4a;font-size:13.5px;margin:10px 16px 0}
 .sala{position:relative;display:flex;align-items:center;justify-content:center;gap:12px;width:calc(100% - 32px);margin:12px 16px 4px;padding:17px 18px;border-radius:999px;overflow:hidden;background:linear-gradient(180deg,#f8e4ab 0,#d9b56a 48%,#b8893a 100%);border:1.5px solid #fff1c9;color:#4a0a1e;box-shadow:0 14px 28px -12px rgba(74,10,30,.7),inset 0 2px 0 rgba(255,255,255,.7),inset 0 -4px 8px rgba(120,80,20,.35)}

@@ -306,8 +306,8 @@
   function inicio() {
     const td = get("agenda_v2", []).filter(i => i.fecha === today() && !i.hecho);
     let n = 0;
-    main.innerHTML = '<div class="banner"><img src="asesoras/img/banner.webp" alt="Código Mujer Libre · Asesora"><b>' + esc(first()) + '</b></div>' +
-      '<p class="hoyl">' + (td.length ? "Tienes " + td.length + (td.length === 1 ? " pendiente" : " pendientes") + " hoy." : "Hoy no tienes pendientes anotados.") + "</p>" +
+    main.innerHTML = '<div class="banner"><img src="asesoras/img/bienvenida.webp" alt="Bienvenida al área comercial">' + (EMB ? "" : '<button type="button" class="bgo" data-go="url:ventas.html" aria-label="Entrar a la sala"></button>') + '</div>' +
+      '<p class="hoyl">' + (td.length ? "Tienes " + td.length + (td.length === 1 ? " pendiente" : " pendientes") + " hoy." : "Hoy no tienes pendientes anotados.").replace(/^/, esc(first()) + " · ") + "</p>" +
       (EMB ? "" : '<button type="button" class="sala" data-go="url:ventas.html"><span class="sg"></span><i>🚪</i><b>Entrar a la sala</b></button>') +
       GRUPOS.map(g => '<h4 class="gh">' + g[0] + '</h4><div class="tg">' + g[1].map(t => { n++; return '<button type="button" class="tl" data-go="' + t[1] + '" aria-label="' + t[0] + '"><img src="' + TI(n) + '" alt="' + t[0] + '" loading="lazy"></button>'; }).join("") + "</div>").join("") +
       '<div class="mini">' + (A.admin ? '<button type="button" data-go="admin">⚙️ Administración</button>' : "") + '<button type="button" data-go="cuenta">👤 Mi cuenta y respaldo</button><button type="button" data-inst>📲 Instalar app</button></div>';
