@@ -1,10 +1,10 @@
 // Código Mujer Libre — "Hoy en Código ML": misión diaria + caja secreta (campaña Primeras 50 fundadoras, Bogotá).
 // Necesita supabase/migration_campana_fundadoras.sql. Sin esa migración, el botón simplemente no aparece.
-// La campaña solo se muestra a mujeres de Bogotá del 9 de noviembre al 15 de diciembre de 2026 (hora de Bogotá).
+// La campaña solo se muestra a mujeres de Bogotá del 7 de noviembre al 15 de diciembre de 2026 (hora de Bogotá).
 // Para ver una vista previa antes: añade ?mision=1 al enlace de la app.
 (function () {
   "use strict";
-  const START = "2026-11-09", END = "2026-12-15";
+  const START = "2026-11-07", END = "2026-12-15";
   const EL = {
     orquidea: { e: "🌸", es: "Orquídea", en: "Orchid" }, bienestar: { e: "🌿", es: "Bienestar", en: "Wellness" },
     viajes: { e: "✈️", es: "Viajes", en: "Travel" }, comunidad: { e: "💗", es: "Comunidad", en: "Community" }, matcha: { e: "🍵", es: "Matcha", en: "Matcha" }

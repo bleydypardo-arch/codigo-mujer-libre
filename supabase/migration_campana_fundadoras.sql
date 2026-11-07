@@ -67,7 +67,7 @@ revoke all on function public.campaign_step(text, text) from public, anon;
 grant execute on function public.campaign_step(text, text) to authenticated;
 
 -- Solo administradoras: tabla de boletos de las inscritas en Bogotá (inscripción hasta el 12 de diciembre).
-create or replace function public.campaign_standings(p_from date default '2026-11-09', p_to date default '2026-12-14')
+create or replace function public.campaign_standings(p_from date default '2026-11-07', p_to date default '2026-12-14')
 returns table (user_id uuid, nombre text, ciudad text, dias_completos int, boletos int, elementos int)
 language plpgsql security definer set search_path = public as $$
 begin
