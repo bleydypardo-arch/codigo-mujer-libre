@@ -83,6 +83,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offse
 </head>
 <body>
 <div id="stage" aria-live="polite"></div>
+<audio id="air" src="demo-audio/aire.mp3" loop preload="auto"></audio>
 <audio id="mus" src="demo-audio/musica-demo.mp3" loop preload="auto"></audio>
 <div id="start"><div><img src="logo.png" alt=""><h1 id="sh"></h1><p id="sp"></p><div class="lg"><button class="pill" data-l="es">Español</button><button class="pill" data-l="en">English</button></div><button class="btn w" id="go"></button></div></div>
 <div id="top"><div id="bars"></div>
@@ -194,10 +195,11 @@ let tx=0;addEventListener("touchstart",e=>{tx=e.touches[0].clientX},{passive:tru
 const mus=document.getElementById("mus"),st=document.getElementById("start"),T2={es:{h:"Conoce <em>Código Mujer Libre</em>",p:"Un recorrido de 2 minutos por el hotel virtual hecho para mujeres. Mejor con sonido.",b:"▶ Ver el demo"},en:{h:"Discover <em>Código Mujer Libre</em>",p:"A 2-minute tour of the virtual hotel made for women. Best with sound.",b:"▶ Watch the demo"}};
 function paintStart(){const c=T2[lang];document.getElementById("sh").innerHTML=c.h;document.getElementById("sp").textContent=c.p;document.getElementById("go").textContent=c.b;st.querySelectorAll("[data-l]").forEach(b=>b.classList.toggle("on",b.dataset.l===lang));document.documentElement.lang=lang}
 st.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{lang=b.dataset.l;try{localStorage.setItem("cml_demo_lang",lang)}catch(e){}paintStart();build()});
-let snd=true;function fadeIn(){mus.volume=0;mus.play().then(()=>{let v=0;const iv=setInterval(()=>{v=Math.min(.55,v+.03);mus.volume=v;if(v>=.55)clearInterval(iv)},120)}).catch(()=>{})}
+let snd=true;function ramp(a,max,step){a.volume=0;a.play().then(()=>{let v=0;const iv=setInterval(()=>{v=Math.min(max,v+step);a.volume=v;if(v>=max)clearInterval(iv)},200)}).catch(()=>{})}
+function fadeIn(){ramp(mus,.32,.008);setTimeout(()=>ramp(document.getElementById("air"),.12,.004),2500)}
 function begin(){if(started)return;started=true;st.classList.add("out");if(snd&&!film)fadeIn();show(0)}
 document.getElementById("go").onclick=begin;
-document.getElementById("snd").onclick=e=>{snd=!snd;e.currentTarget.setAttribute("aria-pressed",snd);e.currentTarget.style.opacity=snd?1:.5;if(snd)mus.play().catch(()=>{});else mus.pause()};
+document.getElementById("snd").onclick=e=>{snd=!snd;e.currentTarget.setAttribute("aria-pressed",snd);e.currentTarget.style.opacity=snd?1:.5;const ar=document.getElementById("air");if(snd){mus.play().catch(()=>{});ar.play().catch(()=>{})}else{mus.pause();ar.pause()}};
 paintStart();build();
 if(film){st.remove();started=true;show(0)}
 })();
