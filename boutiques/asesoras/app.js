@@ -467,7 +467,34 @@
       bad(MSG[(r && r.error) || "invalido"] || MSG.invalido);
     });
   }
+  /* Música de entrada: arpa suave con eco, generada en el aparato (sin archivos) */
+  let AC = null;
+  function nota(f, t, dur, vol) {
+    const o = AC.createOscillator(), o2 = AC.createOscillator(), g = AC.createGain();
+    o.type = "sine"; o2.type = "triangle"; o.frequency.value = f; o2.frequency.value = f * 2; o2.detune.value = 6;
+    const g2 = AC.createGain(); g2.gain.value = .12; o2.connect(g2); g2.connect(g); o.connect(g);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .02); g.gain.exponentialRampToValueAtTime(.0008, t + dur);
+    g.connect(AC.eco); o.start(t); o2.start(t); o.stop(t + dur + .05); o2.stop(t + dur + .05);
+  }
+  function musica(tipo) {
+    try {
+      AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+      if (AC.state === "suspended") AC.resume();
+      if (!AC.eco) {
+        const m = AC.createGain(); m.gain.value = .5; m.connect(AC.destination);
+        const d = AC.createDelay(); d.delayTime.value = .32; const fb = AC.createGain(); fb.gain.value = .38;
+        const fl = AC.createBiquadFilter(); fl.type = "lowpass"; fl.frequency.value = 2600;
+        d.connect(fl); fl.connect(fb); fb.connect(d); fl.connect(m);
+        const ent = AC.createGain(); ent.connect(m); ent.connect(d); AC.eco = ent;
+      }
+      const t0 = AC.currentTime + .05;
+      const E = [293.66, 369.99, 440, 587.33, 739.99, 880, 1108.73, 1174.66]; // Re mayor, ascendente
+      if (tipo === "abrir") E.forEach((f, i) => nota(f, t0 + i * .22, 2.6, .16));
+      else { [587.33, 739.99, 880, 1174.66].forEach((f, i) => nota(f, t0 + i * .09, 3.2, .18)); nota(293.66, t0, 3.4, .2); }
+    } catch (e) {}
+  }
   function enter() {
+    musica("entrar");
     $("#lgErr").textContent = ""; $("#login").classList.add("bloom"); setTimeout(() => { $("#login").classList.remove("bloom", "open"); code = ""; dots(); location.hash = "inicio"; start(); }, 1100);
   }
   function key(k) {
@@ -478,7 +505,7 @@
   }
   $$("#lgPad .keys button").forEach(b => b.addEventListener("click", () => key(b.dataset.k)));
   addEventListener("keydown", e => { if (/^\d$/.test(e.key)) key(e.key); else if (e.key === "Backspace") key("b"); else if (e.key === "Enter") key("e"); });
-  $("#orq").addEventListener("click", () => { $("#login").classList.add("open"); });
+  $("#orq").addEventListener("click", () => { if (!$("#login").classList.contains("open")) musica("abrir"); $("#login").classList.add("open"); });
   $("#hInst").addEventListener("click", installHelp); $("#lgInst").addEventListener("click", installHelp); if (matchMedia("(display-mode: standalone)").matches || navigator.standalone) $("#lgInst").hidden = true;
   $("#hAcc").addEventListener("click", () => { location.hash = "cuenta"; });
   if (matchMedia("(display-mode: standalone)").matches || navigator.standalone) $("#hInst").hidden = true;
