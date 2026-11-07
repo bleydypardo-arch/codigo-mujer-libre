@@ -48,7 +48,7 @@
       guion: "<h5>Qué decir</h5><p>“Estos seis pilares son todo lo que vive en Código ML. Tu boutique es uno de ellos. Para separar tu cupo, toca la tableta del escritorio.”</p><h5>Cierre</h5><ul><li>Confirma el paquete y el país.</li><li>Pregunta si quiere separar hoy con el 30 %.</li><li>Anota su código de representante en el formulario.</li><li>Lee con ella la letra pequeña (libro rojo).</li></ul>" },
     { id: "mioficina", name: "Mi oficina", src: "mioficina.webp", w: 1774, h: 887, fit: "wide", focus: 75,
       quads: [q("o_metas", [[1256,318],[1398,330],[1398,390],[1256,384]], 273, 120, CMLO.panel("metas")),q("o_plan", [[1413,331],[1520,344],[1520,397],[1413,393]], 233, 120, CMLO.panel("plan")),q("o_mujeres", [[1531,347],[1609,359],[1609,403],[1531,398]], 178, 120, CMLO.panel("mujeres")),q("o_incent", [[1255,401],[1399,404],[1399,473],[1255,476]], 230, 120, CMLO.panel("incent")),q("o_saldo", [[1413,408],[1520,409],[1520,466],[1413,468]], 214, 120, CMLO.panel("saldo")),q("o_reglas", [[1531,414],[1609,415],[1609,463],[1531,465]], 189, 120, CMLO.panel("reglas"))],
-      hs: [hot(12.4,37.5,"Speech","of:speech",1),hot(19.6,39.5,"Entrenamiento","of:entrenamiento",1),hot(25.8,40.4,"Estrategia","of:estrategia",1),hot(12.4,45.9,"Liderazgo","of:liderazgo",1),hot(19.7,45.9,"Marketing","of:marketing",1),hot(25.8,46.2,"Ventas","of:ventas",1),hot(12.4,52.2,"Bienestar","of:bienestar",1),hot(19.7,52.2,"Experiencias","of:experiencias",1),hot(25.8,51.9,"Premium","of:premium",1),hot(73.3,62.6,"Mi agenda","of:agenda",1),hot(84.3,58.3,"Mi saldo","of:saldo",1),hot(90,57.5,"Reunión con Jazz","of:reunion",1),hot(68.5,69,"Reglas","of:reglas",1),hot(2.2,55,"← Recepción","go:1")],
+      hs: [hot(12.4,37.5,"Speech","of:speech",1),hot(19.6,39.5,"Entrenamiento","of:entrenamiento",1),hot(25.8,40.4,"Estrategia","of:estrategia",1),hot(12.4,45.9,"Liderazgo","of:liderazgo",1),hot(19.7,45.9,"Marketing","of:marketing",1),hot(25.8,46.2,"Ventas","of:ventas",1),hot(12.4,52.2,"Bienestar","of:bienestar",1),hot(19.7,52.2,"Experiencias","of:experiencias",1),hot(25.8,51.9,"Premium","of:premium",1),hot(73.3,62.6,"Mi agenda","of:agenda",1),hot(84.3,58.3,"Mi saldo","of:saldo",1),hot(90,57.5,"Reunión con Jazz","of:reunion",1),hot(68.5,69,"Reglas","of:reglas",1),hot(2.2,55,"← Recepción","go:1"),hot(22.3,71,"Tu frase de hoy","of:frase")],
       hint: "Toca los tableros, los estantes y el escritorio · toca el mar",
       guion: "<h5>Tu oficina</h5><p>Aquí tienes tus metas, tu plan semanal, tu lista de mujeres y tu biblioteca. Toca los tableros de la pared y los libros del estante.</p>",
       live: { sea: { x: 622, y: 440, w: 436, h: 38 }, sun: [760, 428], glow: { x: 610, y: 490, w: 460, h: 62 }, fire: [[836, 514]], lamps: [[645, 534], [1043, 534]] } },
@@ -207,12 +207,14 @@
   /* ---------- demo en pantalla completa ---------- */
   function demo(which) {
     const dv = document.createElement("div"); dv.className = "dv";
-    dv.innerHTML = '<div class="bar"><b>Código ML · Demo</b><div class="sw"><button data-w="centro">Centro comercial</button><button data-w="luz">Una boutique</button><button data-w="pasos">Los paquetes</button></div><button class="cl" id="dx">Cerrar</button></div><div id="dbody" style="flex:1;display:flex;flex-direction:column;min-height:0"></div>';
+    dv.innerHTML = '<div class="bar"><b>Código ML · Demo</b><div class="sw"><button data-w="centro">Centro comercial</button><button data-w="luz">Una boutique</button><button data-w="pasos">Los paquetes</button></div><button id="dh" type="button">↺ Inicio del demo</button><button class="cl" id="dx">← Volver a la sala</button></div><div id="dbody" style="flex:1;display:flex;flex-direction:column;min-height:0"></div>';
     document.body.appendChild(dv);
     const close = () => { dv.remove(); document.removeEventListener("keydown", ek); }, ek = e => { if (e.key === "Escape") close(); };
-    document.addEventListener("keydown", ek); $("#dx", dv).addEventListener("click", close);
+    document.addEventListener("keydown", ek); $("#dx", dv).addEventListener("click", close); $("#dh", dv).addEventListener("click", () => set(curW));
     const body = $("#dbody", dv);
+    let curW = which;
     function set(w) {
+      curW = w;
       $$(".sw button", dv).forEach(b => b.classList.toggle("on", b.dataset.w === w));
       if (w === "pasos") return slides(body, close);
       body.innerHTML = '<iframe title="Demo" src="' + (w === "luz" ? "tienda.html?b=luz-de-casa" : "centro.html") + '" allow="autoplay"></iframe>';
@@ -280,7 +282,7 @@
     $("#dW").addEventListener("click", sortear); $("#dS").addEventListener("click", () => csv(store("cml_sorteo"), "sorteo-codigo-ml.csv")); $("#dR").addEventListener("click", () => csv(store("cml_reservas"), "reservas-codigo-ml.csv")); $("#dO").addEventListener("click", logout); $("#dP").addEventListener("click", () => window.open("ventas/formulario.html", "_blank"));
   }
   const setRep = on => { $("#guion").hidden = !on; $("#bRep").setAttribute("aria-pressed", String(on)); if (on) renderGuion(); };
-  function login(a) { asesora = a; pais = a.pais; try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(true); toast("Hola, " + a.nombre + ". Precios de " + cp().nombre + " activados."); }
+  function login(a) { asesora = a; pais = a.pais; try { sessionStorage.setItem("cml_asesora", a.codigo); localStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(true); toast("Hola, " + a.nombre + ". Precios de " + cp().nombre + " activados."); }
   function logout() { asesora = null; pais = null; try { sessionStorage.removeItem("cml_asesora"); } catch (e) {} setRep(false); toast("Sesión de asesora cerrada. Ya no se muestran precios."); }
   const find = c => C.asesoras.find(a => a.codigo.toLowerCase() === String(c).trim().toLowerCase());
   function askCode() {
@@ -341,7 +343,7 @@
   }
   function openOf(key) {
     if (!asesora || !window.CMLO) return;
-    const X = { a: asesora, C, toast, esc, cp, money, PR, OBJ, PLAN }, r = CMLO.render(key, X); if (!r) return;
+    const X = { a: asesora, C, toast, esc, cp, money, PR, OBJ, PLAN, tone: tick }, r = CMLO.render(key, X); if (!r) return;
     modal(r.html, r.mount, true);
   }
   /* ---------- acciones ---------- */
@@ -383,10 +385,21 @@
   $("#bSnd").addEventListener("click", e => { sndOn = !sndOn; e.currentTarget.setAttribute("aria-pressed", String(sndOn)); if (sndOn) { if (opened) ambience(); } else stopAmb(); });
   document.addEventListener("visibilitychange", () => { if (document.hidden) stopAmb(); else if (opened && sndOn) ambience(); });
 
+  /* ---------- instalar como app ---------- */
+  let ip = null; const bI = $("#bInst"), standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+  try { navigator.serviceWorker && navigator.serviceWorker.register("../sw.js").catch(() => {}); } catch (e) {}
+  if (!standalone && bI) {
+    bI.hidden = false;
+    addEventListener("beforeinstallprompt", e => { e.preventDefault(); ip = e; });
+    bI.addEventListener("click", async () => {
+      if (ip) { ip.prompt(); try { await ip.userChoice; } catch (e) {} ip = null; return; }
+      modal('<div class="kick">Instalar</div><h3>Ponla en tu celular como una app</h3><p><b>iPhone (Safari):</b> toca el botón Compartir y elige “Agregar a pantalla de inicio”.</p><p><b>Android (Chrome):</b> toca los tres puntos ⋮ y elige “Instalar app” o “Agregar a pantalla de inicio”.</p><p class="note">Queda un icono de Código ML Asesoras. Entras con tu código y listo.</p>');
+    });
+  }
   /* ---------- inicio ---------- */
   const sp = new URLSearchParams(location.search), h0 = /^#sala(\d)$/.exec(location.hash);
-  try { const k = sessionStorage.getItem("cml_asesora") || sp.get("codigo"); const a = k && find(k); if (a) { asesora = a; pais = a.pais; try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(sp.get("rep") === "1"); } } catch (e) {}
-  const start = sp.get("sala") != null ? +sp.get("sala") : 0;
+  try { const k = sessionStorage.getItem("cml_asesora") || localStorage.getItem("cml_asesora") || sp.get("codigo"); const a = k && find(k); if (a) { asesora = a; pais = a.pais; try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(sp.get("rep") === "1"); } } catch (e) {}
+  const start = sp.get("sala") != null ? +sp.get("sala") : (sp.get("app") === "1" && asesora ? PUB : 0);
   if (start > 0) opened = true;
   show(Math.min(Math.max(start || 0, 0), ROOMS.length - 1));
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
