@@ -251,3 +251,4 @@ canvas.live{z-index:1}
 .o3-nogl{display:none;position:absolute;inset:0;margin:0;place-content:center;text-align:center;color:#F6E7C2;padding:30px}.o3.nogl .o3-nogl{display:grid}
 .b360{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--bot) + 64px);z-index:5;padding:13px 22px;border-radius:999px;background:var(--wine);color:#fff;font:600 15px/1 var(--sans);box-shadow:0 10px 28px -8px rgba(0,0,0,.6);border:1.5px solid var(--gold)}
 .o3-walk{position:absolute;right:max(14px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);display:grid;gap:10px;z-index:3}.o3-walk button{width:46px;height:46px;border-radius:50%;background:rgba(255,248,239,.9);color:var(--wine);font-size:18px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+.o3-hot.go{background:rgba(255,248,239,.92);color:var(--wine);display:grid;place-items:center;font-size:22px}.o3-hot.go i{font-style:normal;transform:rotate(90deg);line-height:1}

@@ -4,8 +4,8 @@
   const IMG = "ventas/img/";
   const en = () => !!(window.CMLI && CMLI.lang === "en");
   const T = {
-    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver adentro", close2: "Cerrar las puertas", close: "Cerrar", title: "Mi oficina · 360°", fwd: "Avanzar", bwd: "Retroceder", titleR: "Recepción · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
-    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back inside", close2: "Close the doors", close: "Close", title: "My office · 360°", fwd: "Move forward", bwd: "Move back", titleR: "Reception · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
+    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver adentro", close2: "Cerrar las puertas", close: "Cerrar", title: "Mi oficina · 360°", toSofa: "Ir a los sofás", toDesk: "Ir al mostrador", fwd: "Avanzar", bwd: "Retroceder", titleR: "Recepción · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
+    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back inside", close2: "Close the doors", close: "Close", title: "My office · 360°", toSofa: "Go to the sofas", toDesk: "Go to the reception desk", fwd: "Move forward", bwd: "Move back", titleR: "Reception · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
   };
   const tx = k => T[en() ? "en" : "es"][k];
   /* escenas: x,y = punto en la imagen (%) */
@@ -14,8 +14,9 @@
     cerrada: { k: "closed", src: IMG + "oficina360-cerrada.webp", yaw: 0, hots: [{ x: 48.5, y: 47, l: "door", a: "open" }], wave: 0, water: WO, peek: 0 },
     abierta: { k: "open", src: IMG + "oficina360-abierta.webp", yaw: 0, hots: [{ x: 48.5, y: 47, l: "sea", a: "out" }], wave: 0.06, water: WO, peek: 0 },
     balcon: { k: "out", src: IMG + "oficina360-balcon.webp", yaw: 0, hots: [{ x: 7, y: 50, l: "back", a: "in" }, { x: 92, y: 50, l: "back", a: "in" }], wave: 0.15, water: { u0: .17, u1: .83, v0: .488, v1: .512, b0: .54, b1: .565, amp: .0009 } },
-    lobby: { k: "closed", src: IMG + "recepcion360.webp", yaw: -42, hots: [{ x: 36, y: 47, l: "door", a: "open" }], wave: 0, water: WL, peek: -50 },
-    lobbyA: { k: "open", src: IMG + "recepcion360-abierta.webp", yaw: -42, hots: [{ x: 36, y: 47, l: "sea", a: "out" }], wave: 0.06, water: WL, peek: -50 },
+    lobby: { k: "closed", src: IMG + "recepcion360.webp", yaw: -42, hots: [{ x: 36, y: 47, l: "door", a: "open" }, { x: 20, y: 72, l: "toSofa", to: "lobby2", yaw: 0 }], wave: 0, water: WL, peek: -50 },
+    lobbyA: { k: "open", src: IMG + "recepcion360-abierta.webp", yaw: -42, hots: [{ x: 36, y: 47, l: "sea", a: "out" }, { x: 20, y: 72, l: "toSofa", to: "lobby2", yaw: 0 }], wave: 0.06, water: WL, peek: -50 },
+    lobby2: { k: "pt", src: IMG + "recepcion360-sofas.webp", yaw: 0, hots: [{ x: 50, y: 56, l: "sea", a: "out" }, { x: 79, y: 70, l: "toDesk", to: "lobby", yaw: 55 }], wave: 0, water: { u0: .31, u1: .69, v0: .498, v1: .512, b0: .522, b1: .54, amp: .0009 }, peek: 0 },
     terraza: { k: "out", src: IMG + "recepcion360-terraza.webp", yaw: 0, hots: [{ x: 10.5, y: 52, l: "back", a: "in" }, { x: 89, y: 52, l: "back", a: "in" }], wave: 0.15, water: { u0: .14, u1: .86, v0: .482, v1: .512, b0: .53, b1: .55, amp: .0009 } }
   };
   const SET = { mioficina: { closed: "cerrada", open: "abierta", out: "balcon" }, recepcion: { closed: "lobby", open: "lobbyA", out: "terraza" } };
@@ -44,10 +45,10 @@
     if (!P) return; P.S.fov = Math.max(34, Math.min(Math.min(base() + 14, 105), fov)); P.draw();
     [...hotsEl.children].forEach(b => { const q = P.project(+b.dataset.x, +b.dataset.y); if (!q) { b.style.visibility = "hidden"; return; } b.style.visibility = "visible"; b.style.left = q.x + "px"; b.style.top = q.y + "px"; });
   }
-  function load(name, keepView) {
+  function load(name, keepView, yawOv) {
     if (busy) return; busy = true; const S = SCENES[name], im = new Image();
     im.onload = () => {
-      const keep = keepView && P ? { yaw: P.S.yaw, pitch: P.S.pitch } : { yaw: S.yaw, pitch: 0 };
+      const keep = keepView && P ? { yaw: P.S.yaw, pitch: P.S.pitch } : { yaw: yawOv != null ? yawOv : S.yaw, pitch: 0 };
       cv.style.opacity = 0;
       setTimeout(() => {
         P = CMLPano(cv, im, { span: 360, yaw: keep.yaw, pitch: keep.pitch, fov: base(), pitchMin: -75, pitchMax: 75, water: S.water });
@@ -63,13 +64,13 @@
   let raf2 = 0;
   function setHots() {
     hotsEl.innerHTML = "";
-    SCENES[sc].hots.forEach(h => { const b = el("button", "o3-hot", "<span>" + esc(tx(h.l)) + "</span>"); b.type = "button"; b.dataset.x = h.x; b.dataset.y = h.y; b.addEventListener("click", () => { if (!moved) act(h.a); }); hotsEl.appendChild(b); });
+    SCENES[sc].hots.forEach(h => { const b = el("button", "o3-hot" + (h.to ? " go" : ""), (h.to ? "<i>➜</i>" : "") + "<span>" + esc(tx(h.l)) + "</span>"); b.type = "button"; b.dataset.x = h.x; b.dataset.y = h.y; b.addEventListener("click", () => { if (moved) return; if (h.to) { waves(); load(h.to, false, h.yaw); } else act(h.a); }); hotsEl.appendChild(b); });
   }
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   function setBar() {
     bar.innerHTML = "";
     const add = (t, a, cls) => { const b = el("button", cls || "", esc(t)); b.type = "button"; b.addEventListener("click", () => act(a)); bar.appendChild(b); };
-    const k = SCENES[sc].k;
+    const k = SCENES[sc].k; if (k === "pt") return;
     if (k === "closed") add(tx("open"), "open", "pri");
     else if (k === "open") { add(tx("out"), "out", "pri"); add(tx("close2"), "close-door"); }
     else add(tx("back"), "in", "pri");
