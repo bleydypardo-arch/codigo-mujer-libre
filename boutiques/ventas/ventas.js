@@ -263,6 +263,7 @@
     ["“¿Qué es una sala conectada?”", "Una boutique puede tener varias salas, como habitaciones de una tienda de lujo, unidas por puertas o flechas. Gold tiene 1, Platinum 3 y Diamond 5."]
   ];
   const PLAN = [["0:00", "Puerta", "Bienvenida. Pídele que toque la puerta dorada."], ["1:00", "Recepción", "Presenta el hotel. Muestra la boutique inaugural y el sorteo."], ["3:00", "Sala de paquetes", "Voltea cada tarjeta. Explica lo que incluye cada paquete."], ["6:00", "Salón de demos", "Pon el demo en la pantalla: el centro comercial o una boutique por dentro."], ["8:00", "Oficina de reservas", "Las seis esferas, la letra pequeña y la tableta para separar."], ["10:00", "Cierre", "Pregunta si quiere separar hoy. Anota su código de asesora."]];
+  if (window.CMLI && CMLI.lang === "en" && window.CMLD) { CMLD.OBJ.forEach(function (o, k) { if (OBJ[k]) OBJ[k] = o; }); CMLD.PLAN.forEach(function (o, k) { if (PLAN[k]) PLAN[k] = o; }); }
   function tabHtml() {
     if (tab === "precios") {
       const c = cp(), eq = c.equiv;

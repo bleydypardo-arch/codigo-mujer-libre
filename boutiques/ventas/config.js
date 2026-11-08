@@ -5,8 +5,8 @@ window.CMLV = {
   whatsapp: "17864438100",                         // número con código de país y sin signos, ej. "18095551234". Vacío = "Reservar" abre el correo.
   email: "codigomujerlibre@gmail.com",
   feria: { nombre: "Emprende App UP 2026 · Gran Expoferia del Emprendimiento", fecha: "del 17 al 21 de noviembre de 2026", lugar: "UASD, Santo Domingo, República Dominicana", entrada: "Entrada gratis" },     // ej. { nombre: "Feria …", fecha: "sábado 7 y domingo 8 de noviembre" }
-  entrega: "enero de 2027",
-  pago: { separa: 0.3, cuotas: 2, limite: "15 de diciembre" },   // separa con el 30 %; el resto en 2 pagos antes del límite
+  entrega: "enero de 2027", entregaEn: "January 2027",
+  pago: { separa: 0.3, cuotas: 2, limite: "15 de diciembre", limiteEn: "December 15" },   // separa con el 30 %; el resto en 2 pagos antes del límite
   paises: ["República Dominicana", "Colombia", "España", "Otro país"],
 
   /* Códigos de asesora: 4 dígitos. El código define el país (y por tanto la lista de precios). CAMBIA estos códigos de ejemplo. */

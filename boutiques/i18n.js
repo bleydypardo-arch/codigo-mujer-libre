@@ -161,13 +161,14 @@
     "Qué falta para que sea real": "What's missing to make it real", "Qué salió bien y qué mejorar": "What went well and what to improve",
     "Los códigos viven en la base de datos, no en los archivos de la app. Al bloquear a alguien, deja de entrar en todos sus dispositivos.": "Codes live in the database, not in the app files. When you block someone, they can no longer sign in on any device.",
     "Personas con acceso": "People with access",
-    "Venta consultiva": "Consultative selling", "Hoy no tienes pendientes anotados.": "You have nothing scheduled today.", "Hoy no tienes pendientes": "You have nothing scheduled today", "Hola": "Hello", "Eventos": "Events", "Bienvenida al Área Comercial": "Welcome to the Commercial Area", "Mi cuenta": "My account", "Toca la flor para abrirla": "Tap the flower to open it"
+    "Venta consultiva": "Consultative selling", "Todos": "All", "Mujeres": "Women", "Seguimiento": "Follow-up", "Hoy no tienes pendientes anotados.": "You have nothing scheduled today.", "Hoy no tienes pendientes": "You have nothing scheduled today", "Hola": "Hello", "Eventos": "Events", "Bienvenida al Área Comercial": "Welcome to the Commercial Area", "Mi cuenta": "My account", "Toca la flor para abrirla": "Tap the flower to open it"
   };
+  var X = window.CMLI_EXTRA || {}; for (var k in X) if (EN[k] == null) EN[k] = X[k];
   window.CMLI.en = EN;
   function bind() { var bs = document.querySelectorAll("[data-lang]"); for (var i = 0; i < bs.length; i++) { (function (b) { b.textContent = lang === "es" ? "EN" : "ES"; b.setAttribute("aria-label", lang === "es" ? "Switch to English" : "Cambiar a español"); b.setAttribute("title", lang === "es" ? "English" : "Español"); b.onclick = function (e) { e.stopPropagation(); window.CMLI.set(lang === "es" ? "en" : "es"); }; })(bs[i]); } }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind); else bind();
   if (lang !== "en") { window.CMLI.t = function (s) { return s; }; return; }
-  var keys = Object.keys(EN).filter(function (k) { return k.length >= 14; }).sort(function (a, b) { return b.length - a.length; });
+  var keys = Object.keys(EN).filter(function (k) { return k.length >= 8; }).sort(function (a, b) { return b.length - a.length; });
   function tr(s) {
     if (!s || !/[A-Za-zÁ-ú]/.test(s)) return s;
     var t = s.trim(); if (EN[t] != null) return s.replace(t, EN[t]);
