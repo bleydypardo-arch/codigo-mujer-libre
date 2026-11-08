@@ -7,7 +7,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 /* escenario */
 #stage{position:fixed;inset:0;overflow:hidden;background:#1c0d10}
 #bg{position:absolute;inset:-6%;background-size:cover;background-position:center;filter:blur(26px) brightness(.8) saturate(1.1);transition:background-image .4s}
-#viewport{position:absolute;inset:0;display:flex;overflow:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab;touch-action:none}
+#viewport{position:absolute;inset:0;display:flex;overflow:auto hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab;touch-action:pan-x pan-y}
 #viewport::-webkit-scrollbar{display:none}
 #viewport.drag{cursor:grabbing}
 #world{position:relative;flex:none;margin:auto;overflow:hidden;box-shadow:0 0 90px rgba(0,0,0,.35);user-select:none}
@@ -253,3 +253,5 @@ canvas.live{z-index:1}
 .o3-walk{position:absolute;right:max(14px,env(safe-area-inset-right));top:50%;transform:translateY(-50%);display:grid;gap:10px;z-index:3}.o3-walk button{width:46px;height:46px;border-radius:50%;background:rgba(255,248,239,.9);color:var(--wine);font-size:18px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
 .o3-hot.go{background:rgba(255,248,239,.92);color:var(--wine);display:grid;place-items:center;font-size:22px}.o3-hot.go i{font-style:normal;transform:rotate(90deg);line-height:1}
 .o3-toast{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);background:rgba(74,10,30,.95);color:#F6E7C2;padding:11px 18px;border-radius:999px;font:500 14px/1.2 var(--sans);opacity:0;transition:opacity .3s;pointer-events:none;max-width:92vw;text-align:center}.o3-toast.on{opacity:1}
+
+.zm{display:none!important}

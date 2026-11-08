@@ -103,7 +103,7 @@
   let raf2 = 0;
   function goRoom(id, flat) {
     if (window.CMLCanGo && !CMLCanGo(id)) { let t = root.querySelector(".o3-toast"); if (!t) { t = el("p", "o3-toast"); root.appendChild(t); } t.textContent = tx("only"); t.classList.add("on"); clearTimeout(goRoom.t); goRoom.t = setTimeout(() => t.classList.remove("on"), 3200); return; }
-    close(); if (window.CMLGoRoom) CMLGoRoom(id, flat);
+    close(); if (window.CMLGoRoom) CMLGoRoom(id, true);
   }
   function setHots() {
     hotsEl.innerHTML = "";

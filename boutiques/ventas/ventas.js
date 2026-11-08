@@ -84,8 +84,8 @@
     R.hs.forEach(h => { const b = document.createElement("button"); b.type = "button"; b.className = "hot" + (h.notag ? " notag" : "") + (h.x > 88 ? " rt" : h.x < 12 ? " lt" : ""); b.style.left = h.x + "%"; b.style.top = h.y + "%"; b.dataset.a = h.a; b.setAttribute("aria-label", h.l); b.innerHTML = '<span class="tag">' + esc(h.l) + "</span>"; layer.appendChild(b); });
     layout();
     vp.scrollLeft = Math.max(0, world.offsetWidth * R.focus / 100 - vp.clientWidth / 2); vp.scrollTop = 0;
-    if (show.skip3) { show.skip3 = false; } else if (!silent && /^(recepcion|paquetes|mioficina|salon|oficina)$/.test(R.id)) { clearTimeout(show.t3); show.t3 = setTimeout(() => { if (ROOMS[cur].id === R.id && window.CMLOf360) CMLOf360.open(R.id); }, 700); }
-    { const b = $("#b360"); if (b) { b.hidden = !/^(recepcion|paquetes|mioficina|salon|oficina)$/.test(R.id); b.textContent = (window.CMLI && CMLI.lang === "en") ? "Explore in 360°" : "Recorrer en 360°"; } }
+    if (show.skip3) { show.skip3 = false; } else if (!silent && /^(recepcion|mioficina)$/.test(R.id)) { clearTimeout(show.t3); show.t3 = setTimeout(() => { if (ROOMS[cur].id === R.id && window.CMLOf360) CMLOf360.open(R.id); }, 700); }
+    { const b = $("#b360"); if (b) { b.hidden = !/^(recepcion|mioficina)$/.test(R.id); b.textContent = (window.CMLI && CMLI.lang === "en") ? "Explore in 360°" : "Recorrer en 360°"; } }
     $("#roomName").textContent = R.name; $("#hintTx").textContent = R.hint;
     const hint = $("#hint"); hint.style.opacity = 1; clearTimeout(show.t); show.t = setTimeout(() => hint.style.opacity = 0, 9000);
     $$("#dots button").forEach((b, k) => b.setAttribute("aria-selected", String(k === i)));
@@ -382,43 +382,14 @@
   const dots = $("#dots"); ROOMS.forEach((R, i) => { const b = document.createElement("button"); b.type = "button"; b.setAttribute("role", "tab"); b.setAttribute("aria-label", R.name); b.addEventListener("click", () => go(i)); dots.appendChild(b); });
   [...dots.children].forEach((b, i) => { if (i >= PUB) b.remove(); });
   $("#pL").addEventListener("click", () => vp.scrollBy({ left: -vp.clientWidth * .6, behavior: "smooth" })); $("#pR").addEventListener("click", () => vp.scrollBy({ left: vp.clientWidth * .6, behavior: "smooth" }));
-  /* mover con el dedo en todas las direcciones + acercar/alejar (pellizco, doble toque, rueda, botones) */
-  let moved = false, zt = 0;
-  const ZMAX = 3.5;
-  function setZoom(nz, cx, cy) {
-    nz = Math.max(1, Math.min(ZMAX, nz)); if (Math.abs(nz - Z) < 0.001) return;
-    const r = vp.getBoundingClientRect(); if (cx == null) { cx = r.width / 2; cy = r.height / 2; } else { cx -= r.left; cy -= r.top; }
-    const fx = (vp.scrollLeft + cx - world.offsetLeft) / world.offsetWidth, fy = (vp.scrollTop + cy - world.offsetTop) / world.offsetHeight;
-    Z = nz; layout();
-    vp.scrollLeft = fx * world.offsetWidth + world.offsetLeft - cx; vp.scrollTop = fy * world.offsetHeight + world.offsetTop - cy;
-    $("#hint").style.opacity = 0;
-    const R = ROOMS[cur]; if (R.live && window.CMLSea) { clearTimeout(zt); zt = setTimeout(() => CMLSea.start(layer, img, S, R.live), 150); }
-  }
-  const ptr = new Map(); let g = null;
-  const mid = () => { const a = [...ptr.values()]; return a.length > 1 ? { x: (a[0].x + a[1].x) / 2, y: (a[0].y + a[1].y) / 2, d: Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) } : null; };
-  vp.addEventListener("pointerdown", e => {
-    if (e.pointerType === "mouse" && e.button !== 0) return;
-    ptr.set(e.pointerId, { x: e.clientX, y: e.clientY }); moved = false;
-    const m = mid(); g = m ? { z0: Z, d0: m.d || 1 } : { sx: e.clientX, sy: e.clientY, sl: vp.scrollLeft, st: vp.scrollTop };
-  });
-  window.addEventListener("pointermove", e => {
-    if (!ptr.has(e.pointerId) || !g) return; ptr.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    const m = mid();
-    if (m && g.z0 != null) { moved = true; setZoom(g.z0 * m.d / g.d0, m.x, m.y); return; }
-    if (g.sx == null) return;
-    const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
-    if (!moved && Math.hypot(dx, dy) > 6) { moved = true; vp.classList.add("drag"); }
-    if (moved) { vp.scrollLeft = g.sl - dx; vp.scrollTop = g.st - dy; $("#hint").style.opacity = 0; }
-  });
-  const upP = e => { ptr.delete(e.pointerId); vp.classList.remove("drag"); const a = [...ptr.values()]; g = a.length === 1 ? { sx: a[0].x, sy: a[0].y, sl: vp.scrollLeft, st: vp.scrollTop } : null; if (!ptr.size) setTimeout(() => moved = false, 0); };
-  window.addEventListener("pointerup", upP); window.addEventListener("pointercancel", upP);
-  vp.addEventListener("wheel", e => { e.preventDefault(); setZoom(Z * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX, e.clientY); }, { passive: false });
-  vp.addEventListener("dblclick", e => { if (e.target.closest("[data-a]")) return; setZoom(Z > 1.2 ? 1 : 2.2, e.clientX, e.clientY); });
-  let lastTap = 0; vp.addEventListener("pointerup", e => { if (e.pointerType === "mouse" || moved) return; const n = Date.now(); if (n - lastTap < 320 && !e.target.closest("[data-a]")) { setZoom(Z > 1.2 ? 1 : 2.2, e.clientX, e.clientY); lastTap = 0; } else lastTap = n; });
+  /* arrastrar con el mouse */
+  let down = false, moved = false, sx = 0, sl0 = 0;
+  vp.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") return; down = true; moved = false; sx = e.clientX; sl0 = vp.scrollLeft; });
+  window.addEventListener("pointermove", e => { if (!down) return; if (Math.abs(e.clientX - sx) > 5) { moved = true; vp.classList.add("drag"); } if (moved) vp.scrollLeft = sl0 - (e.clientX - sx); });
+  window.addEventListener("pointerup", () => { down = false; vp.classList.remove("drag"); setTimeout(() => moved = false, 0); });
   window.CMLCanGo = id => { const i = ROOMS.findIndex(r => r.id === id); return i >= 0 && (i < PUB || !!asesora); };
   window.CMLGoRoom = (id, flat) => { const i = ROOMS.findIndex(r => r.id === id); if (i >= 0) { if (flat) show.skip3 = true; go(i); } };
   $("#b360").addEventListener("click", () => window.CMLOf360 && CMLOf360.open(ROOMS[cur].id));
-  $("#zIn").addEventListener("click", () => setZoom(Z * 1.4)); $("#zOut").addEventListener("click", () => setZoom(Z / 1.4));
   vp.addEventListener("scroll", () => { $("#hint").style.opacity = 0; }, { passive: true });
   window.addEventListener("resize", layout);
 
