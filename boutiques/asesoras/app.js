@@ -401,7 +401,7 @@
   }
 
   /* ---------- INICIO ---------- */
-  const TI = n => "asesoras/img/t" + String(n).padStart(2, "0") + ".webp";
+  const TI = n => "asesoras/img/t" + String(n).padStart(2, "0") + (window.CMLI && CMLI.lang === "en" ? "-en" : "") + ".webp";
   const GRUPOS = [
     ["Gestión personal", [["Mi agenda", "agenda"], ["Eventos", "eventos"], ["Centro de control", "control"], ["Frase del día", "of:frase"]]],
     ["Venta consultiva", [["Speeches", "academia"], ["Objeciones", "of:ventas"], ["Empresas", "empresas"], ["Entrenamiento", "of:entrenamiento"]]],
@@ -411,7 +411,7 @@
   function inicio() {
     const td = get("agenda_v2", []).filter(i => i.fecha === today() && !i.hecho);
     let n = 0;
-    main.innerHTML = '<div class="banner"><img src="asesoras/img/bienvenida.webp" alt="Bienvenida al área comercial">' + (EMB ? "" : '<button type="button" class="bgo" data-go="url:ventas.html" aria-label="Entrar a la sala"></button>') + '</div>' +
+    main.innerHTML = '<div class="banner"><img src="asesoras/img/bienvenida' + (window.CMLI && CMLI.lang === "en" ? "-en" : "") + '.webp" alt="Bienvenida al área comercial">' + (EMB ? "" : '<button type="button" class="bgo" data-go="url:ventas.html" aria-label="Entrar a la sala"></button>') + '</div>' +
       '<p class="hoyl">' + (td.length ? "Tienes " + td.length + (td.length === 1 ? " pendiente" : " pendientes") + " hoy." : "Hoy no tienes pendientes anotados.").replace(/^/, esc(first()) + " · ") + "</p>" +
       (EMB ? "" : '<button type="button" class="sala" data-go="url:ventas.html"><span class="sg"></span><i>🚪</i><b>Entrar a la sala</b></button>') + '<button type="button" class="docb" data-go="docs"><i>📄</i><span><b>Documentos importantes</b><small>Cartas, propuestas e informes · envío a Jazz</small></span></button>' +
       GRUPOS.map(g => '<h4 class="gh">' + g[0] + '</h4><div class="tg">' + g[1].map(t => { n++; return '<button type="button" class="tl" data-go="' + t[1] + '" aria-label="' + t[0] + '"><img src="' + TI(n) + '" alt="' + t[0] + '" loading="lazy"></button>'; }).join("") + "</div>").join("") +

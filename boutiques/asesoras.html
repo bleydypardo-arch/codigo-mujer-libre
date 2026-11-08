@@ -17,11 +17,13 @@
 <link rel="apple-touch-icon" href="asesoras/img/apple-180.png">
 <link rel="icon" href="asesoras/img/ico-192.png">
 <link rel="stylesheet" href="ventas/ventas.css?v=10">
-<link rel="stylesheet" href="asesoras/app.css?v=11">
+<link rel="stylesheet" href="asesoras/app.css?v=12">
+<script src="i18n.js?v=2"></script>
 </head>
 <body class="as">
 <section id="login" hidden>
   <div class="lgsilk" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <button type="button" class="lgl lang" data-lang>EN</button>
   <div class="lgbox">
     <p class="lgk">Código Mujer Libre</p>
     <h1>Asesoras</h1>
@@ -60,7 +62,7 @@
   </div>
 </section>
 <div id="app" hidden>
-  <header class="top"><img src="../logo-marca.webp" alt="" width="34" height="34"><b>Código ML <em>Asesoras</em></b><button id="hInst" type="button" class="hb">Instalar</button><button id="hAcc" type="button" class="hb who" aria-label="Mi cuenta"><span id="who"></span> 👤</button></header>
+  <header class="top"><img src="../logo-marca.webp" alt="" width="34" height="34"><b>Código ML <em>Asesoras</em></b><button type="button" class="hb lang" data-lang>EN</button><button id="hInst" type="button" class="hb">Instalar</button><button id="hAcc" type="button" class="hb who" aria-label="Mi cuenta"><span id="who"></span> 👤</button></header>
   <main id="main"></main>
   <nav id="nav" aria-label="Menú principal">
     <button type="button" data-go="inicio"><i>🏠</i>Inicio</button>
@@ -74,6 +76,6 @@
 <script src="ventas/oficina.js?v=2"></script>
 <script src="asesoras/acceso.js?v=1"></script>
 <script src="asesoras/datos.js?v=2"></script>
-<script src="asesoras/app.js?v=14"></script>
+<script src="asesoras/app.js?v=16"></script>
 </body>
 </html>

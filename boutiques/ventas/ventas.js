@@ -351,7 +351,7 @@
   }
 
   function openCml() {
-    const ov = document.createElement("div"); ov.className = "dv"; ovOpen(); ov.innerHTML = '<button class="dvb2" type="button">← Volver a la sala</button><iframe src="../demo.html?lang=' + (/^en/i.test(navigator.language) ? "en" : "es") + '" title="Demo de Código Mujer Libre" allow="fullscreen"></iframe><button class="dvx" aria-label="Cerrar demo">×</button><a class="dvo" href="../demo.html" target="_blank" rel="noopener">Abrir en pantalla completa ↗</a>';
+    const ov = document.createElement("div"); ov.className = "dv"; ovOpen(); ov.innerHTML = '<button class="dvb2" type="button">← Volver a la sala</button><iframe src="../demo.html?lang=' + (window.CMLI ? CMLI.lang : "es") + '" title="Demo de Código Mujer Libre" allow="fullscreen"></iframe><button class="dvx" aria-label="Cerrar demo">×</button><a class="dvo" href="../demo.html" target="_blank" rel="noopener">Abrir en pantalla completa ↗</a>';
     document.body.appendChild(ov);
     let done = false; const close = () => { if (done) return; done = true; ov.remove(); document.removeEventListener("keydown", k); ovClose(); }, k = e => { if (e.key === "Escape") close(); };
     document.addEventListener("keydown", k); ov.querySelector(".dvx").onclick = close; ov.querySelector(".dvb2").onclick = close;

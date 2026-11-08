@@ -232,3 +232,5 @@ canvas.live{z-index:1}
  .dv .bar b{display:none}.dv .bar .sw{gap:4px}.dv .bar button{height:32px;padding:0 10px;font-size:12px}.dv .bar #dh{display:none}.dv .bar .cl{white-space:nowrap}
  .sl .tx{padding-bottom:70px}
 }
+
+.tbtn.lang{font-weight:600;letter-spacing:.04em}
