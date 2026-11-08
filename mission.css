@@ -32,3 +32,16 @@
 @media (prefers-reduced-motion: reduce) { .ms-rise { animation: none !important; } }
 .ms-mean { margin: 4px 0 2px; font-size: 13.5px; color: #4a3a40; line-height: 1.35; } .ms-verse { color: #8a6a2a; font-style: italic; } .ms-fb { display: inline-grid; place-items: center; font-size: 40px; width: 84px; height: 84px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #f3c6e6 60%, #c77bb0); }
 .ms-c i .ms-fb { width: 100%; height: 100%; font-size: 24px; }
+.ms-rv { position: relative; width: min(520px, 100%); margin: auto; text-align: center; color: #fff; padding: 26px 18px calc(26px + env(safe-area-inset-bottom, 0px)); }
+.ms-rv h2 { margin: 0 0 4px; font-size: 26px; color: #FFE9B0; text-shadow: 0 2px 12px rgba(0,0,0,.4); }
+.ms-rvx { color: #fff; background: rgba(255,255,255,.18); } .ms-rv .ms-x { position: absolute; top: 12px; right: 12px; }
+.ms-rvs { position: relative; width: min(330px, 80vw); height: min(330px, 80vw); margin: 10px auto 6px; cursor: pointer; }
+.ms-rvbox { position: absolute; left: 50%; bottom: 0; width: 78%; transform: translateX(-50%); animation: msBob 3.6s ease-in-out infinite; filter: drop-shadow(0 14px 18px rgba(0,0,0,.45)); }
+.ms-rv.opened .ms-rvbox { animation: none; width: 84%; }
+.ms-rvglow { position: absolute; left: 50%; top: 52%; width: 130%; aspect-ratio: 1; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle, rgba(255,226,140,.55), rgba(255,226,140,0) 65%); } .ms-rvglow.on { animation: msFloat 3s ease-in-out infinite; }
+.ms-rvsph { position: absolute; left: 50%; top: 4%; width: 46%; transform: translateX(-50%); animation: msRise 1.4s cubic-bezier(.2,.9,.3,1.2) both, msFloat 3s 1.4s ease-in-out infinite; filter: drop-shadow(0 0 18px rgba(255,205,110,.95)); }
+.ms-rvh { margin: 6px 0 0; font-size: 16px; color: #FFE9B0; animation: msPulse 2s ease-in-out infinite; cursor: pointer; }
+.ms-rvi { background: #FFF8F3; color: #3a2a24; border: 1.5px solid #C9A25A; border-radius: 20px; padding: 14px 16px 16px; margin-top: 6px; display: grid; gap: 4px; } .ms-rvi small { color: #6f5a5e; } .ms-rvi b { font-size: 24px; color: #7A2238; } .ms-rvi p { margin: 0; font-size: 14.5px; line-height: 1.4; } .ms-rvi em { color: #8a6a2a; } .ms-rvi .primary { margin-top: 8px; }
+.ms-rv .ms-fb, .ms-rvsph.ms-fb { font-size: 70px; }
+@keyframes msBob { 50% { transform: translateX(-50%) translateY(-8px); } } @keyframes msPulse { 50% { opacity: .55; } }
+.ms-ov:has(.ms-rv) { background: rgba(30,8,22,.9); align-items: center; }

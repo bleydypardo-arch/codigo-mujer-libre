@@ -20,7 +20,7 @@
   document.addEventListener("error", ev => { const i = ev.target; if (i && i.tagName === "IMG" && i.dataset && i.dataset.fb) { const sp = document.createElement("span"); sp.className = i.className + " ms-fb"; sp.textContent = i.dataset.fb; i.replaceWith(sp); } }, true);
   const ES = {
     msFab: "Misión de hoy", msTitle: "Hoy en Código ML", msSub: "Completa tu misión de hoy: unos 5 minutos que te hacen bien.",
-    msBox: "Tu caja secreta", msOpen: "Abrir mi caja", msGot: "Hoy te tocó", msCode: "Tu código de hoy", msRead: "Lo leí", msMsg: "Mensaje del día",
+    msBox: "Tu caja secreta", msTapBox: "Toca la caja para abrirla", msContinue: "Seguir con mi misión", msOpen: "Abrir mi caja", msGot: "Hoy te tocó", msCode: "Tu código de hoy", msRead: "Lo leí", msMsg: "Mensaje del día",
     msQ: "La pregunta de hoy", msAct: "Tu plan de hoy", msGo: "Ir ahora", msDone: "¡Día completo!", msDoneT: "Ganaste 1 boleto para los premios del 15 de diciembre.",
     msDays: "Días completos", msTickets: "Boletos", msColl: "Tu colección", msClose: "Cerrar", msErr: "No se pudo guardar. Revisa tu conexión e intenta de nuevo.",
     msRules: "Campaña Primeras 50 fundadoras · Bogotá. Inscripción hasta el 12 de diciembre; los premios se entregan el 15 de diciembre. Cada día completo es un boleto.",
@@ -28,7 +28,7 @@
   };
   const EN = {
     msFab: "Today's mission", msTitle: "Today in Código ML", msSub: "Complete today's mission: about 5 minutes that do you good.",
-    msBox: "Your secret box", msOpen: "Open my box", msGot: "Today you got", msCode: "Your code for today", msRead: "I read it", msMsg: "Message of the day",
+    msBox: "Your secret box", msTapBox: "Tap the box to open it", msContinue: "Continue my mission", msOpen: "Open my box", msGot: "Today you got", msCode: "Your code for today", msRead: "I read it", msMsg: "Message of the day",
     msQ: "Today's question", msAct: "Your plan for today", msGo: "Go now", msDone: "Day complete!", msDoneT: "You earned 1 ticket for the December 15 prizes.",
     msDays: "Days completed", msTickets: "Tickets", msColl: "Your collection", msClose: "Close", msErr: "Could not save. Check your connection and try again.",
     msRules: "First 50 founders campaign · Bogotá. Sign-up until December 12; prizes are given on December 15. Each completed day is one ticket.",
@@ -87,11 +87,35 @@
   const h = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
+  function reveal() {
+    const L = lang(), w = h("div", "ms-rv");
+    const x = h("button", "ms-x ms-rvx", "×"); x.type = "button"; x.setAttribute("aria-label", t("msClose")); x.addEventListener("click", close);
+    const stage = h("div", "ms-rvs", "<i class='ms-rvglow'></i><img class='ms-rvbox' src='lobby/caja-sorpresa.webp?v=1' alt=''>");
+    const hint = h("p", "ms-rvh", esc(t("msTapBox")));
+    w.append(x, h("h2", "", esc(t("msBox"))), stage, hint);
+    let busyR = false;
+    const go = async () => {
+      if (busyR) return; busyR = true; hint.textContent = "…";
+      try {
+        const r = await C.db.rpc("campaign_open_box"); if (r.error) throw r.error;
+        row = r.data; const i = hist.findIndex(z => z.day === row.day); if (i >= 0) hist[i] = row; else hist.push(row);
+        const e = EL[row.element] || EL.fe;
+        stage.innerHTML = "<i class='ms-rvglow on'></i><img class='ms-rvbox' src='lobby/caja-abierta.webp?v=1' alt=''>" + sphImg(row.element, "ms-rvsph");
+        burst(stage); w.classList.add("opened");
+        hint.remove();
+        const info = h("div", "ms-rvi", "<small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b><p>" + esc(L === "en" ? e.men : e.mes) + "</p><em>" + esc(L === "en" ? e.ve : e.v) + "</em>");
+        const go2 = h("button", "primary", esc(t("msContinue"))); go2.type = "button"; go2.addEventListener("click", paint); info.appendChild(go2);
+        w.appendChild(info); paintFab();
+      } catch (er) { busyR = false; hint.textContent = t("msErr"); }
+    };
+    stage.addEventListener("click", go); hint.addEventListener("click", go);
+    ov.replaceChildren(w);
+  }
   function open() {
     if (ov) ov.remove();
     ov = h("div", "ms-ov"); ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", t("msTitle"));
     ov.addEventListener("click", e => { if (e.target === ov) close(); });
-    document.body.appendChild(ov); paint(); try { localStorage.setItem("cml_ms_seen_" + me() + "_" + bogota(), "1"); } catch (e) {}
+    document.body.appendChild(ov); if (!row && ok) reveal(); else paint(); try { localStorage.setItem("cml_ms_seen_" + me() + "_" + bogota(), "1"); } catch (e) {}
   }
   function close() { if (ov) { ov.remove(); ov = null; } paintFab(); }
   async function act(fn) { if (busy) return; busy = true; try { await fn(); } catch (e) { toast(t("msErr")); } busy = false; }
