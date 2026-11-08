@@ -82,6 +82,7 @@
     R.quads.forEach(k => { const d = document.createElement("div"); d.className = "quad"; d.id = "q-" + k.id; d.style.width = k.w + "px"; d.style.height = k.h + "px"; d.innerHTML = k.html; layer.appendChild(d); });
     R.hs.forEach(h => { const b = document.createElement("button"); b.type = "button"; b.className = "hot" + (h.notag ? " notag" : "") + (h.x > 88 ? " rt" : h.x < 12 ? " lt" : ""); b.style.left = h.x + "%"; b.style.top = h.y + "%"; b.dataset.a = h.a; b.setAttribute("aria-label", h.l); b.innerHTML = '<span class="tag">' + esc(h.l) + "</span>"; layer.appendChild(b); });
     layout();
+    { const o = $("#bOfi"); if (o) { o.hidden = !asesora || i >= PUB; o.textContent = (window.CMLI && CMLI.lang === "en") ? "🚪 My office" : "🚪 Mi oficina"; } }
     { const b = $("#b360"); if (b) { b.hidden = R.id !== "mioficina"; b.textContent = (window.CMLI && CMLI.lang === "en") ? "Open the balcony" : "Abrir el balcón"; } }
     vp.scrollLeft = Math.max(0, world.offsetWidth * R.focus / 100 - vp.clientWidth / 2);
     $("#roomName").textContent = R.name; $("#hintTx").textContent = R.hint;
@@ -385,6 +386,7 @@
   vp.addEventListener("pointerdown", e => { if (e.pointerType !== "mouse") return; down = true; moved = false; sx = e.clientX; sl0 = vp.scrollLeft; });
   window.addEventListener("pointermove", e => { if (!down) return; if (Math.abs(e.clientX - sx) > 5) { moved = true; vp.classList.add("drag"); } if (moved) vp.scrollLeft = sl0 - (e.clientX - sx); });
   window.addEventListener("pointerup", () => { down = false; vp.classList.remove("drag"); setTimeout(() => moved = false, 0); });
+  $("#bOfi").addEventListener("click", () => go(PUB));
   window.CMLCanGo = id => { const i = ROOMS.findIndex(r => r.id === id); return i >= 0 && (i < PUB || !!asesora); };
   window.CMLGoRoom = id => { const i = ROOMS.findIndex(r => r.id === id); if (i >= 0) go(i); };
   $("#b360").addEventListener("click", () => window.CMLOf360 && CMLOf360.open("mioficina"));
