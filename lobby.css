@@ -144,7 +144,7 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 .lb-sb.sb-open .sb-img { animation: sbShake .85s ease; }
 .lb-sb.sb-open .sb-aura { animation: sbBurst .85s ease-out; }
 .lb-sb.sb-open .sb-sp { animation: sbBurstSp .85s ease-out; }
-.lb-sb .sb-tag { position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%); white-space: nowrap; font: 700 14px/1 Inter, Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #F6E1A8; background: linear-gradient(180deg, #9a1c44, #6b0f2e); border: 1.5px solid #E6C275; border-radius: 99px; padding: 8px 15px; box-shadow: 0 6px 16px rgba(60,10,25,.45); }
+.lb-sb .sb-tag { position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%); white-space: nowrap; font: 800 20px/1 Inter, Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #F6E1A8; background: linear-gradient(180deg, #9a1c44, #6b0f2e); border: 1.5px solid #E6C275; border-radius: 99px; padding: 8px 15px; box-shadow: 0 6px 16px rgba(60,10,25,.45); }
 .lb-sb .sb-n { position: absolute; right: 6px; top: 2px; min-width: 30px; height: 30px; border-radius: 99px; background: #E6C275; color: #5b0b27; font: 800 15px/30px Inter, Arial, sans-serif; text-align: center; box-shadow: 0 0 0 3px rgba(255,240,200,.75); animation: sbPulse 2s ease-in-out infinite; }
 .lb-sb.sb-done .sb-n { background: #7fcfa6; color: #0d2a1d; animation: none; }
 @keyframes sbAura { 0%, 100% { opacity: .55; transform: translate(-50%, -50%) scale(.92); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); } }
@@ -155,3 +155,4 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 @keyframes sbBurst { 0% { opacity: .6; transform: translate(-50%, -50%) scale(.9); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.7); } }
 @keyframes sbBurstSp { 0% { opacity: 0; transform: scale(.3); } 40% { opacity: 1; transform: scale(1.6); } 100% { opacity: 0; transform: scale(2.2); } }
 @media (prefers-reduced-motion: reduce) { .lb-sb *, .lb-sb { animation: none !important; } }
+.lb-sb .sb-tag{padding:10px 22px!important;bottom:-10px!important}

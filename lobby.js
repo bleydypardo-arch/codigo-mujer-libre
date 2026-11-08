@@ -255,7 +255,7 @@ function build() {
 
   // Caja sorpresa: vive en el lobby, sobre un pedestal. Se muestra solo si la campaña está activa para esta mujer.
   const SB_HTML = '<i class="sb-aura"></i><i class="sb-sh"></i><img class="sb-img" src="lobby/caja-sorpresa.webp?v=1" alt="" decoding="async"><span class="sb-sp">✦</span><span class="sb-sp">✦</span><span class="sb-sp">✦</span><span class="sb-sp">✦</span><span class="sb-tag"></span><span class="sb-n"></span>';
-  const sb = place(mk("lb-abs lb-sb", SB_HTML, "button"), 425, 1140, 250, 262); sb.type = "button";
+  const sb = place(mk("lb-abs lb-sb", SB_HTML, "button"), 365, 1060, 370, 388); sb.type = "button";
   const sbPaint = st => {
     const on = !!(st && st.on); sb.classList.toggle("on", on); if (!on) return;
     sb.classList.toggle("sb-done", !!st.done); sb.setAttribute("aria-label", t("lbSurprise"));

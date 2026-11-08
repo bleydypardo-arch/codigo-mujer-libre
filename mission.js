@@ -119,7 +119,7 @@
     if (ov) ov.remove();
     ov = h("div", "ms-ov"); ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", t("msTitle"));
     ov.addEventListener("click", e => { if (e.target === ov) close(); });
-    document.body.appendChild(ov); if (!row) reveal(); else paint(); try { localStorage.setItem("cml_ms_seen_" + me() + "_" + bogota(), "1"); } catch (e) {}
+    document.body.appendChild(ov); reveal(); try { localStorage.setItem("cml_ms_seen_" + me() + "_" + bogota(), "1"); } catch (e) {}
   }
   function close() { if (ov) { ov.remove(); ov = null; } paintFab(); }
   async function act(fn) { if (busy) return; busy = true; try { await fn(); } catch (e) { toast(t("msErr")); } busy = false; }
