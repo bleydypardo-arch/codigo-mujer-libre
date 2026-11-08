@@ -15,17 +15,5 @@ window.CMLACC = (function () {
     return rpc("advisor_check", { p_token: s.token }).catch(e => (e && e.missing ? { ok: true, legacy: true } : { ok: null }));
   }
   const admin = (fn, args) => { const s = sesion(); return rpc(fn, Object.assign({ p_token: s && s.token }, args || {})); };
-  /* Si Jazz (administradora) ya entró a la app principal, entra aquí sin código: ve todo. */
-  (function puente() {
-    try {
-      if (sesion() || sessionStorage.getItem("cml_puente")) return; sessionStorage.setItem("cml_puente", "1");
-      let tk = null; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (/^sb-.*-auth-token$/.test(k)) { try { tk = JSON.parse(localStorage.getItem(k)); } catch (e) {} } }
-      const at = tk && (tk.access_token || (tk.currentSession && tk.currentSession.access_token)), uid = tk && ((tk.user && tk.user.id) || (tk.currentSession && tk.currentSession.user && tk.currentSession.user.id));
-      if (!at || !uid) return;
-      fetch(U + "/rest/v1/profiles?select=role,first_name&id=eq." + uid, { headers: { apikey: K, Authorization: "Bearer " + at } }).then(r => r.ok ? r.json() : []).then(j => {
-        const p = j && j[0]; if (p && (p.role === "admin" || p.role === "super_admin")) { guardar({ ok: true, id: "ADMIN", nombre: p.first_name || "Jazz", pais: "co", rol: "admin", preview: true }); location.reload(); }
-      }).catch(() => {});
-    } catch (e) {}
-  })();
   return { rpc, sesion, guardar, salir, login, check, admin };
 })();
