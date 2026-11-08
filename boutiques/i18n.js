@@ -98,7 +98,7 @@
     /* — App de asesoras — */
     "Código Mujer Libre": "Código Mujer Libre", "Asesoras": "Advisors", "Toca la flor": "Tap the flower", "Escribe tu código de asesora": "Enter your advisor code",
     "📲 Instalar app": "📲 Install app", "Instalar": "Install", "Inicio": "Home", "Agenda": "Agenda", "Dinero": "Money", "Sala": "Room",
-    "Entrar a la sala": "Enter the room", "Bienvenida al área comercial": "Welcome to the Commercial Area",
+    "Entrar a la sala": "Enter the room", "Entrar a mi oficina": "Enter my office", "Bienvenida al área comercial": "Welcome to the Commercial Area",
     "Administración": "Administration", "⚙️ Administración": "⚙️ Administration", "💱 Dólar y monedas": "💱 Dollar & currencies", "Mi cuenta": "My account", "Instalar en mi celular": "Install on my phone",
     "Documentos importantes": "Important documents", "Documentos": "Documents", "Cartas, propuestas e informes · envío a Jazz": "Letters, proposals and reports · send to Jazz",
     "Crea cartas, propuestas e informes y envíalos a Jazz con un toque.": "Create letters, proposals and reports and send them to Jazz with one tap.",

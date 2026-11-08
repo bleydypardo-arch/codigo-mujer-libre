@@ -313,7 +313,7 @@ function build() {
   // Spa & Wellness
   const sp = place(mk("lb-abs lb-sp", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg><b></b>', "button"), 290, 1368, 520, 54); sp.type = "button";
   sp.querySelector("b").textContent = t("lbSpaBtn"); sp.addEventListener("click", () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); });
-  root.appendChild(stage); root.appendChild(strip); root.appendChild(ofi); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) {
+  root.appendChild(stage); root.appendChild(strip); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) {
     root.__minFoot = 60; window.CMLScene.fill(root, "home");
     const SPA_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg>';
     const dock = mk("lb-dock lb-home", '<div class="lb-drow"><button type="button" class="lb-dh"><span class="lb-dht"><small></small><b></b></span><span class="lb-dha">›</span></button><button type="button" class="lb-ds">' + SPA_SVG + '<b></b></button></div>' +
