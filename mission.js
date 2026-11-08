@@ -86,7 +86,7 @@
   const steps = () => (row ? [row.step_code, row.step_question, row.step_activity].filter(Boolean).length : 0) + (row ? 1 : 0);
 
   /* La caja ya no flota en la pantalla: vive en el lobby (lobby.js). Aquí solo avisamos su estado. */
-  function state() { return { on: !!(enabled() && loaded), done: !!(row && row.completed), steps: steps() }; }
+  function state() { return { on: !!(enabled() && loaded), done: !!(row && row.completed), opened: !!row, steps: steps() }; }
   function paintFab() { try { document.dispatchEvent(new CustomEvent("cml:mission-state", { detail: state() })); } catch (e) {} }
   const h = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -115,11 +115,11 @@
     stage.addEventListener("click", go); hint.addEventListener("click", go);
     ov.replaceChildren(w); setTimeout(go, 700);
   }
-  function open() {
+  function open(direct) {
     if (ov) ov.remove();
     ov = h("div", "ms-ov"); ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", t("msTitle"));
     ov.addEventListener("click", e => { if (e.target === ov) close(); });
-    document.body.appendChild(ov); reveal(); try { localStorage.setItem("cml_ms_seen_" + me() + "_" + bogota(), "1"); } catch (e) {}
+    document.body.appendChild(ov); if (row && direct === true) paint(); else reveal(); try { localStorage.setItem("cml_ms_seen_" + me() + "_" + bogota(), "1"); } catch (e) {}
   }
   function close() { if (ov) { ov.remove(); ov = null; } paintFab(); }
   async function act(fn) { if (busy) return; busy = true; try { await fn(); } catch (e) { toast(t("msErr")); } busy = false; }

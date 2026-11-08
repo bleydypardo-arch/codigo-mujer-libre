@@ -255,16 +255,16 @@ function build() {
 
   // Caja sorpresa: vive en el lobby, sobre un pedestal. Se muestra solo si la campaña está activa para esta mujer.
   const SB_HTML = '<i class="sb-aura"></i><i class="sb-sh"></i><img class="sb-img" src="lobby/caja-sorpresa.webp?v=1" alt="" decoding="async"><span class="sb-sp">✦</span><span class="sb-sp">✦</span><span class="sb-sp">✦</span><span class="sb-sp">✦</span><span class="sb-tag"></span><span class="sb-n"></span>';
-  const sb = place(mk("lb-abs lb-sb", SB_HTML, "button"), 365, 1060, 370, 388); sb.type = "button";
+  const sb = place(mk("lb-abs lb-sb", SB_HTML, "button"), 395, 1020, 310, 325); sb.type = "button";
   const sbPaint = st => {
     const on = !!(st && st.on); sb.classList.toggle("on", on); if (!on) return;
-    sb.classList.toggle("sb-done", !!st.done); sb.setAttribute("aria-label", t("lbSurprise"));
-    sb.querySelector(".sb-tag").textContent = st.done ? t("lbSurpriseDone") : t("lbSurprise");
+    sb.classList.toggle("sb-done", !!st.done); sb.classList.toggle("sb-got", !!st.opened); sb.setAttribute("aria-label", t("lbSurprise"));
+    sb.querySelector(".sb-tag").textContent = st.done ? t("lbSurpriseDone") : st.opened ? t("lbMyMission") : t("lbSurprise");
     sb.querySelector(".sb-n").textContent = st.done ? "✓" : (st.steps + "/4");
   };
   sb.addEventListener("click", () => {
     if (!window.CMLMission) return;
-    if (sb.classList.contains("sb-done")) { window.CMLMission.open(); return; }
+    if (sb.classList.contains("sb-got")) { window.CMLMission.open(true); return; }
     sb.classList.add("sb-open"); setTimeout(() => { window.CMLMission.open(); setTimeout(() => sb.classList.remove("sb-open"), 400); }, 850);
   });
   stage.appendChild(sb);
@@ -330,7 +330,7 @@ function start() {
 }
 function init() {
   C = window.CML; if (!C) return;
-  C.addStrings({ lbSurprise: "Caja sorpresa", lbSurpriseDone: "Vuelve mañana" }, { lbSurprise: "Surprise box", lbSurpriseDone: "Come back tomorrow" }); C.addStrings(ES, EN); C.addStrings({ lbQa: "Accesos rápidos", lbQMatcha: "Matcha & Café", lbQRest: "Restaurantes", lbQWell: "Bienestar", lbQTrip: "Viajes & Retiros", lbGxK: "Nuestra próxima", lbGxT: "Gran experiencia", lbGxS: "Dos veces al año nos reunimos para vivir algo inolvidable.", lbGxB: "Ver próximos viajes", lbAdH: "Aliadas y promociones", lbAd1: "Tu negocio aquí", lbAd2: "Pauta con nosotras y llega a todas las mujeres del Club", lbTag: "Tu vida cambia cuando descubres tu propósito.", lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Bienvenida", lbTvSpa: "Spa y bienestar", lbTvExp: "Experiencia", lbTvPromo: "Promoción", lbTvHappy: "Happy hour", lbTvRest: "Restaurante", lbTvAll: "Ver todos" }, { lbQa: "Quick access", lbQMatcha: "Matcha & Café", lbQRest: "Restaurants", lbQWell: "Wellness", lbQTrip: "Trips & Retreats", lbGxK: "Our next", lbGxT: "Great experience", lbGxS: "Twice a year we gather to live something unforgettable.", lbGxB: "See upcoming trips", lbAdH: "Partners & promotions", lbAd1: "Your business here", lbAd2: "Advertise with us and reach every woman in the Club", lbTag: "Your life changes when you discover your purpose.", lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Welcome", lbTvSpa: "Spa & wellness", lbTvExp: "Experience", lbTvPromo: "Promotion", lbTvHappy: "Happy hour", lbTvRest: "Restaurant", lbTvAll: "See all" });
+  C.addStrings({ lbSurprise: "Caja sorpresa", lbSurpriseDone: "Vuelve mañana", lbMyMission: "Mi misión" }, { lbSurprise: "Surprise box", lbSurpriseDone: "Come back tomorrow", lbMyMission: "My mission" }); C.addStrings(ES, EN); C.addStrings({ lbQa: "Accesos rápidos", lbQMatcha: "Matcha & Café", lbQRest: "Restaurantes", lbQWell: "Bienestar", lbQTrip: "Viajes & Retiros", lbGxK: "Nuestra próxima", lbGxT: "Gran experiencia", lbGxS: "Dos veces al año nos reunimos para vivir algo inolvidable.", lbGxB: "Ver próximos viajes", lbAdH: "Aliadas y promociones", lbAd1: "Tu negocio aquí", lbAd2: "Pauta con nosotras y llega a todas las mujeres del Club", lbTag: "Tu vida cambia cuando descubres tu propósito.", lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Bienvenida", lbTvSpa: "Spa y bienestar", lbTvExp: "Experiencia", lbTvPromo: "Promoción", lbTvHappy: "Happy hour", lbTvRest: "Restaurante", lbTvAll: "Ver todos" }, { lbQa: "Quick access", lbQMatcha: "Matcha & Café", lbQRest: "Restaurants", lbQWell: "Wellness", lbQTrip: "Trips & Retreats", lbGxK: "Our next", lbGxT: "Great experience", lbGxS: "Twice a year we gather to live something unforgettable.", lbGxB: "See upcoming trips", lbAdH: "Partners & promotions", lbAd1: "Your business here", lbAd2: "Advertise with us and reach every woman in the Club", lbTag: "Your life changes when you discover your purpose.", lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Welcome", lbTvSpa: "Spa & wellness", lbTvExp: "Experience", lbTvPromo: "Promotion", lbTvHappy: "Happy hour", lbTvRest: "Restaurant", lbTvAll: "See all" });
   if (!document.documentElement.classList.contains("lobby-on")) return;
   build(); paint(); start();
   document.addEventListener("cml:session", () => setTimeout(paint, 60));

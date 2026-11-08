@@ -156,3 +156,9 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 @keyframes sbBurstSp { 0% { opacity: 0; transform: scale(.3); } 40% { opacity: 1; transform: scale(1.6); } 100% { opacity: 0; transform: scale(2.2); } }
 @media (prefers-reduced-motion: reduce) { .lb-sb *, .lb-sb { animation: none !important; } }
 .lb-sb .sb-tag{padding:10px 22px!important;bottom:-10px!important}
+
+.lb-sb .sb-tag{bottom:16px!important}
+.lb-sb.sb-got{width:230px!important;height:70px!important;left:435px!important;top:1300px!important}
+.lb-sb.sb-got .sb-img,.lb-sb.sb-got .sb-aura,.lb-sb.sb-got .sb-sh,.lb-sb.sb-got .sb-sp{display:none}
+.lb-sb.sb-got .sb-tag{position:relative;left:auto;bottom:auto;transform:none;display:block;width:100%;text-align:center;font-size:20px;padding:14px 10px!important}
+.lb-sb.sb-got .sb-n{right:-6px;top:-10px}
