@@ -4,8 +4,8 @@
   const IMG = "ventas/img/";
   const en = () => !!(window.CMLI && CMLI.lang === "en");
   const T = {
-    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver adentro", close2: "Cerrar las puertas", close: "Cerrar", title: "Mi oficina · 360°", toSofa: "Ir a los sofás", backHall: "Volver al pasillo", toHall: "Ir a las oficinas", toLobby: "Volver al lobby", rMio: "Mi oficina", rRes: "Oficina de reservas", rDemo: "Salón de demos", rPack: "Sala de paquetes", only: "Esta oficina es solo para asesoras.", toDesk: "Ir al mostrador", fwd: "Avanzar", bwd: "Retroceder", titleR: "Recepción · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
-    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back inside", close2: "Close the doors", close: "Close", title: "My office · 360°", toSofa: "Go to the sofas", backHall: "Back to the hallway", toHall: "Go to the offices", toLobby: "Back to the lobby", rMio: "My office", rRes: "Reservations office", rDemo: "Demo lounge", rPack: "Packages room", only: "This office is for advisors only.", toDesk: "Go to the reception desk", fwd: "Move forward", bwd: "Move back", titleR: "Reception · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
+    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver adentro", close2: "Cerrar las puertas", close: "Cerrar", title: "Mi oficina · 360°", toSofa: "Ir a los sofás", backHall: "Volver al pasillo", toHall: "Ir a las oficinas", toLobby: "Volver al lobby", rMio: "Mi oficina", rRes: "Oficina de reservas", rDemo: "Salón de demos", rPack: "Sala de paquetes", only: "Esta oficina es solo para asesoras.", toDesk: "Ir al mostrador", fwd: "Avanzar", bwd: "Retroceder", titleR: "Recepción · 360°", titleP: "Sala de paquetes · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
+    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back inside", close2: "Close the doors", close: "Close", title: "My office · 360°", toSofa: "Go to the sofas", backHall: "Back to the hallway", toHall: "Go to the offices", toLobby: "Back to the lobby", rMio: "My office", rRes: "Reservations office", rDemo: "Demo lounge", rPack: "Packages room", only: "This office is for advisors only.", toDesk: "Go to the reception desk", fwd: "Move forward", bwd: "Move back", titleR: "Reception · 360°", titleP: "Packages room · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
   };
   const tx = k => T[en() ? "en" : "es"][k];
   /* escenas: x,y = punto en la imagen (%) */
@@ -35,7 +35,7 @@
     terraza: { k: "out", src: IMG + "recepcion360-terraza.webp", yaw: 0, hots: [{ x: 10.5, y: 52, l: "back", a: "in" }, { x: 89, y: 52, l: "back", a: "in" }], wave: 0.15, water: { u0: .14, u1: .86, v0: .482, v1: .512, b0: .53, b1: .55, amp: .0009 } }
   };
   const SET = { mioficina: { closed: "cerrada", open: "abierta", out: "balcon" }, recepcion: { closed: "lobby", open: "lobbyA", out: "terraza" } };
-  let room = "mioficina", outOK = {};
+  let room = "mioficina", outOK = {}, title = "title";
   let root, cv, hotsEl, bar, P = null, sc = "cerrada", fov = 78, ptrs = new Map(), g = null, moved = false, raf = 0, busy = false, balconOK = null;
   /* ---- sonido de olas (sintetizado: ruido que sube y baja como el mar) ---- */
   let ac = null, master = null;
@@ -133,7 +133,7 @@
   }
   function inertia(vx, vy) { cancelAnimationFrame(raf); const step = () => { vx *= .94; vy *= .94; if (Math.abs(vx) + Math.abs(vy) < .02 || !P || !root.classList.contains("on")) return; P.S.yaw -= vx; P.S.pitch += vy; paint(); raf = requestAnimationFrame(step); }; raf = requestAnimationFrame(step); }
   function open(r) {
-    if (!root) build(); root.classList.add("on"); room = r === "recepcion" ? "recepcion" : "mioficina"; sc = SET[room].closed; root.querySelector(".o3-top b").textContent = tx(room === "recepcion" ? "titleR" : "title"); const h = document.getElementById("o3hint"); h.textContent = tx("hint"); h.style.opacity = 1; setTimeout(() => { h.style.opacity = 0; }, 7000);
+    if (!root) build(); root.classList.add("on"); room = r === "mioficina" ? "mioficina" : "recepcion"; sc = r === "paquetes" ? "paq360" : SET[room].closed; title = r === "paquetes" ? "titleP" : (room === "recepcion" ? "titleR" : "title"); root.querySelector(".o3-top b").textContent = tx(title); const h = document.getElementById("o3hint"); h.textContent = tx("hint"); h.style.opacity = 1; setTimeout(() => { h.style.opacity = 0; }, 7000);
     root.querySelector(".o3-nogl").textContent = tx("noGL");
     waves(); level(SCENES[sc].wave); load(sc, false);
   }
