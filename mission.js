@@ -6,13 +6,41 @@
   "use strict";
   const START = "2026-11-07", END = "2026-12-15";
   const EL = {
-    fe: { e: "🙏", es: "Fe", en: "Faith", mes: "Confiar en Dios y caminar bajo su dirección.", men: "Trusting God and walking under His guidance.", v: "Hebreos 11:1", ve: "Hebrews 11:1" },
-    sabiduria: { e: "💎", es: "Sabiduría", en: "Wisdom", mes: "Tomar decisiones con discernimiento y prudencia.", men: "Making decisions with discernment and prudence.", v: "Proverbios 14:1", ve: "Proverbs 14:1" },
-    amor: { e: "❤️", es: "Amor", en: "Love", mes: "Amar a Dios, a la familia y al prójimo.", men: "Loving God, family and neighbor.", v: "1 Corintios 13:4-7", ve: "1 Corinthians 13:4-7" },
-    fortaleza: { e: "🦋", es: "Fortaleza", en: "Strength", mes: "Enfrentar las dificultades con valentía y perseverancia.", men: "Facing difficulties with courage and perseverance.", v: "Proverbios 31:25", ve: "Proverbs 31:25" },
-    proposito: { e: "✨", es: "Propósito", en: "Purpose", mes: "Reconocer los dones que Dios nos ha dado y utilizarlos para hacer el bien.", men: "Recognizing the gifts God has given us and using them to do good.", v: "Efesios 2:10", ve: "Ephesians 2:10" },
-    diligencia: { e: "🌸", es: "Diligencia", en: "Diligence", mes: "Trabajar con responsabilidad, excelencia y perseverancia.", men: "Working with responsibility, excellence and perseverance.", v: "Proverbios 31:13-18", ve: "Proverbs 31:13-18" },
-    gratitud: { e: "👑", es: "Gratitud", en: "Gratitude", mes: "Reconocer las bendiciones de Dios y vivir con un corazón agradecido.", men: "Recognizing God's blessings and living with a grateful heart.", v: "1 Tesalonicenses 5:18", ve: "1 Thessalonians 5:18" }
+    fe: { e: "🙏", es: "Fe", en: "Faith",
+      mes: "Hay puertas que solo se abren cuando caminas antes de ver el camino. Hoy no necesitas entenderlo todo: necesitas dar el siguiente paso confiando. Lo que Dios empezó en ti no lo va a dejar a medias.",
+      men: "Some doors only open when you walk before you can see the path. Today you don't need to understand everything: you need to take the next step in trust. What God started in you, He won't leave half done.",
+      w: "La fe no elimina el miedo: lo acompaña mientras avanzas.", we: "Faith doesn't remove fear: it walks beside you while you move forward.",
+      v: "«La fe es la certeza de lo que se espera, la convicción de lo que no se ve.» — Hebreos 11:1", ve: "“Now faith is confidence in what we hope for and assurance about what we do not see.” — Hebrews 11:1" },
+    sabiduria: { e: "💎", es: "Sabiduría", en: "Wisdom",
+      mes: "Tu paz vale más que tener la razón. Hoy elige con calma, pregunta, escucha tu intuición y rodéate de quien suma. Cada decisión sabia que tomas construye la vida que mereces.",
+      men: "Your peace is worth more than being right. Today choose calmly, ask questions, listen to your intuition and surround yourself with people who add. Every wise decision you make builds the life you deserve.",
+      w: "Una mujer sabia no corre: elige.", we: "A wise woman doesn't rush: she chooses.",
+      v: "«La mujer sabia edifica su casa.» — Proverbios 14:1", ve: "“The wise woman builds her house.” — Proverbs 14:1" },
+    amor: { e: "❤️", es: "Amor", en: "Love",
+      mes: "Empieza por ti: tratarte con la ternura que le das a los demás no es egoísmo, es el comienzo. Ama con verdad, con límites y con un corazón que no se cansa de ser bondadoso.",
+      men: "Start with yourself: treating yourself with the tenderness you give others isn't selfish, it's the beginning. Love with truth, with boundaries, and with a heart that never tires of being kind.",
+      w: "Quien se ama bien, ama mejor.", we: "She who loves herself well, loves others better.",
+      v: "«El amor es paciente, es bondadoso.» — 1 Corintios 13:4", ve: "“Love is patient, love is kind.” — 1 Corinthians 13:4" },
+    fortaleza: { e: "🦋", es: "Fortaleza", en: "Strength",
+      mes: "Ya superaste días que creías imposibles. Eso no fue suerte: eres más fuerte de lo que te dijeron. Si hoy tiemblas, avanza temblando; la valentía no es no tener miedo, es seguir de pie.",
+      men: "You've already survived days you thought were impossible. That wasn't luck: you're stronger than they told you. If you tremble today, move forward trembling; courage isn't having no fear, it's staying on your feet.",
+      w: "Caer no te define; levantarte con dignidad, sí.", we: "Falling doesn't define you; rising with dignity does.",
+      v: "«Se reviste de fuerza y dignidad, y afronta segura el porvenir.» — Proverbios 31:25", ve: "“She is clothed with strength and dignity; she can laugh at the days to come.” — Proverbs 31:25" },
+    proposito: { e: "✨", es: "Propósito", en: "Purpose",
+      mes: "No llegaste aquí por casualidad. Lo que sabes hacer, lo que te duele del mundo y lo que te enciende el corazón apuntan al mismo lugar. Da hoy un paso, aunque sea pequeño, hacia eso para lo que naciste.",
+      men: "You didn't get here by chance. What you're good at, what breaks your heart about the world and what lights your soul all point to the same place. Take one step today, however small, toward what you were born for.",
+      w: "Tu propósito no se busca: se descubre sirviendo.", we: "Your purpose isn't found by searching: it's found by serving.",
+      v: "«Somos hechura de Dios, creados en Cristo Jesús para buenas obras.» — Efesios 2:10", ve: "“We are God's handiwork, created in Christ Jesus to do good works.” — Ephesians 2:10" },
+    diligencia: { e: "🌸", es: "Diligencia", en: "Diligence",
+      mes: "Los sueños se construyen con días normales hechos con excelencia. Hoy haz esa cosa difícil que has estado postergando. La constancia de una mujer decidida abre caminos que el talento solo no abre.",
+      men: "Dreams are built from ordinary days done with excellence. Today do that hard thing you've been putting off. The consistency of a determined woman opens paths that talent alone cannot.",
+      w: "Pequeñas acciones de hoy valen más que grandes promesas de algún día.", we: "Small actions today are worth more than big promises of someday.",
+      v: "«Con voluntad trabaja con sus manos.» — Proverbios 31:13", ve: "“She works with eager hands.” — Proverbs 31:13" },
+    gratitud: { e: "👑", es: "Gratitud", en: "Gratitude",
+      mes: "Mira lo que ya tienes: tu aliento, tu historia, las personas que te sostienen. La gratitud no niega lo difícil; te recuerda que aun ahí hay luz. Agradece hoy tres cosas y siente cómo cambia tu corazón.",
+      men: "Look at what you already have: your breath, your story, the people who hold you up. Gratitude doesn't deny what's hard; it reminds you there's light even there. Thank life for three things today and feel your heart shift.",
+      w: "Un corazón agradecido encuentra flores donde otros solo ven espinas.", we: "A grateful heart finds flowers where others see only thorns.",
+      v: "«Den gracias a Dios en toda situación.» — 1 Tesalonicenses 5:18", ve: "“Give thanks in all circumstances.” — 1 Thessalonians 5:18" }
   };
   const ORDER = ["fe", "sabiduria", "amor", "fortaleza", "proposito", "diligencia", "gratitud"];
   const sph = k => "lobby/esferas/" + k + ".webp?v=4";
@@ -124,7 +152,7 @@
       const e = EL[row.element] || EL.fe;
       stage.innerHTML = "<i class='ms-rvglow on'></i><img class='ms-rvbox' src='lobby/caja-abierta.webp?v=1' alt=''>" + sphImg(row.element, "ms-rvsph");
       burst(stage); hint.remove(); extra.innerHTML = "";
-      const info = h("div", "ms-rvi", "<small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b><p>" + esc(L === "en" ? e.men : e.mes) + "</p><em>" + esc(L === "en" ? e.ve : e.v) + "</em>");
+      const info = h("div", "ms-rvi", "<small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b><p>" + esc(L === "en" ? e.men : e.mes) + "</p><q class='ms-w'>" + esc(L === "en" ? e.we : e.w) + "</q><em>" + esc(L === "en" ? e.ve : e.v) + "</em>");
       const go2 = h("button", "primary", esc(t("msContinue"))); go2.type = "button"; go2.addEventListener("click", paint); info.appendChild(go2);
       if (res.local) info.appendChild(h("small", "", "Modo prueba: no se guardó en el servidor.")); w.appendChild(info); paintFab();
     };
@@ -178,7 +206,7 @@
     const s1 = h("section", "ms-s" + (row ? " ok" : ""));
     s1.appendChild(h("h3", "", "1 · " + esc(t("msBox"))));
     if (!row) { const b = h("button", "ms-gift", "<span>🎁</span><em>" + esc(t("msOpen")) + "</em>"); b.type = "button"; b.addEventListener("click", () => act(() => openBox(b))); s1.appendChild(b); }
-    else { const e = EL[row.element] || EL.fe; s1.appendChild(h("div", "ms-open", "<img class='ms-ob' src='lobby/caja-abierta.webp?v=1' alt=''>" + sphImg(row.element, "ms-rise"))); s1.appendChild(h("div", "ms-got", "<div style='text-align:center;width:100%'><small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b><p class='ms-mean'>" + esc(L === "en" ? e.men : e.mes) + "</p><small class='ms-verse'>" + esc(L === "en" ? e.ve : e.v) + "</small></div>")); }
+    else { const e = EL[row.element] || EL.fe; s1.appendChild(h("div", "ms-open", "<img class='ms-ob' src='lobby/caja-abierta.webp?v=1' alt=''>" + sphImg(row.element, "ms-rise"))); s1.appendChild(h("div", "ms-got", "<div style='text-align:center;width:100%'><small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b><p class='ms-mean'>" + esc(L === "en" ? e.men : e.mes) + "</p><q class='ms-w'>" + esc(L === "en" ? e.we : e.w) + "</q><small class='ms-verse'>" + esc(L === "en" ? e.ve : e.v) + "</small></div>")); }
     box.appendChild(s1);
     // colección
     const coll = h("div", "ms-coll"); ORDER.forEach(k => { const own = got().includes(k); coll.appendChild(h("span", "ms-c" + (own ? " own" : ""), "<i>" + (own ? sphImg(k, "ms-ci") : "·") + "</i><small>" + esc(EL[k][L]) + "</small>")); }); box.appendChild(coll);

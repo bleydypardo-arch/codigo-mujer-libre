@@ -78,3 +78,4 @@
 .ms-rvx2{margin-top:6px;display:grid;gap:10px;justify-items:center}.ms-rvn{margin:0;color:#FFE9B0;font:14px/1.4 Inter,Arial,sans-serif;opacity:.9}
 @media (prefers-reduced-motion: reduce){.ms-orb{transition:none;animation:none}}
 .ms-rvx2 .primary{padding:13px 26px;border:0;border-radius:999px;background:linear-gradient(180deg,#f8e4ab,#d9b56a);color:#5b0b27;font:800 16px Inter,Arial,sans-serif;cursor:pointer}
+.ms-w{display:block;margin:8px 0 6px;font:italic 600 17px/1.35 Georgia,serif;color:#7a1234;quotes:none}.ms-rvi p{font-size:15.5px;line-height:1.5}.ms-rvi em{display:block;font-size:13.5px;line-height:1.4}
