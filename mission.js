@@ -6,14 +6,14 @@
   "use strict";
   const START = "2026-11-07", END = "2026-12-15";
   const EL = {
-    emprende: { es: "Emprende", en: "Entrepreneurship" }, bienestar: { es: "Bienestar", en: "Wellness" },
-    viajes: { es: "Viaja & Descubre", en: "Travel & Discover" }, boutiques: { es: "Boutiques", en: "Boutiques" },
-    comunidad: { es: "Comunidad", en: "Community" }, eventos: { es: "Eventos & Experiencias", en: "Events & Experiences" },
-    premios: { es: "Premios & Incentivos", en: "Awards & Incentives" },
-    orquidea: { es: "Orquídea", en: "Orchid" }, matcha: { es: "Matcha", en: "Matcha" }
+    emprendimiento: { es: "Emprendimiento", en: "Entrepreneurship" }, bienestar: { es: "Bienestar", en: "Wellness" },
+    libertad: { es: "Libertad", en: "Freedom" }, amor: { es: "Amor", en: "Love" },
+    crecimiento: { es: "Crecimiento", en: "Growth" }, proposito: { es: "Propósito", en: "Purpose" }, liderazgo: { es: "Liderazgo", en: "Leadership" },
+    orquidea: { es: "Orquídea", en: "Orchid" }, matcha: { es: "Matcha", en: "Matcha" }, viajes: { es: "Viajes", en: "Travel" }, comunidad: { es: "Comunidad", en: "Community" },
+    emprende: { es: "Emprende", en: "Entrepreneurship" }, boutiques: { es: "Boutiques", en: "Boutiques" }, eventos: { es: "Eventos", en: "Events" }, premios: { es: "Premios", en: "Awards" }
   };
-  const ORDER = ["emprende", "bienestar", "viajes", "boutiques", "comunidad", "eventos", "premios"];
-  const sph = k => "lobby/esferas/" + k + ".webp?v=1";
+  const ORDER = ["emprendimiento", "bienestar", "libertad", "amor", "crecimiento", "proposito", "liderazgo"];
+  const sph = k => "lobby/esferas/" + k + ".webp?v=2";
   const sphImg = (k, cls) => EL[k] && ORDER.includes(k) ? "<img class='" + cls + "' src='" + sph(k) + "' alt=''>" : "<span class='" + cls + "'>🌸</span>";
   const ES = {
     msFab: "Misión de hoy", msTitle: "Hoy en Código ML", msSub: "Completa tu misión de hoy: unos 5 minutos que te hacen bien.",

@@ -1,16 +1,16 @@
 -- Código Mujer Libre — Campaña: las 7 esferas que salen de la caja sorpresa.
 -- Se pega UNA vez en Supabase → SQL Editor → Run. Es seguro repetirlo y NO borra nada.
--- Qué hace: permite las 7 esferas (Emprende, Bienestar, Viaja & Descubre, Boutiques, Comunidad, Eventos & Experiencias, Premios & Incentivos)
+-- Qué hace: permite las 7 esferas (Emprendimiento, Bienestar, Libertad, Amor, Crecimiento, Propósito, Liderazgo)
 -- y hace que la caja le dé primero una esfera que aún no tiene, para que pueda completar su colección.
 
 alter table public.campaign_days drop constraint if exists campaign_days_element_check;
 alter table public.campaign_days add constraint campaign_days_element_check
-  check (element in ('emprende','bienestar','viajes','boutiques','comunidad','eventos','premios','orquidea','matcha'));
+  check (element in ('emprendimiento','bienestar','libertad','amor','crecimiento','proposito','liderazgo','emprende','viajes','boutiques','comunidad','eventos','premios','orquidea','matcha'));
 
 create or replace function public.campaign_open_box() returns public.campaign_days
 language plpgsql security definer set search_path = public as $$
 declare d date := public.campaign_today(); r public.campaign_days;
-        els text[] := array['emprende','bienestar','viajes','boutiques','comunidad','eventos','premios'];
+        els text[] := array['emprendimiento','bienestar','libertad','amor','crecimiento','proposito','liderazgo'];
         pend text[]; pick text;
 begin
   if auth.uid() is null or not public.is_approved() then raise exception 'not allowed'; end if;
