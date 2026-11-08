@@ -84,6 +84,7 @@
     R.hs.forEach(h => { const b = document.createElement("button"); b.type = "button"; b.className = "hot" + (h.notag ? " notag" : "") + (h.x > 88 ? " rt" : h.x < 12 ? " lt" : ""); b.style.left = h.x + "%"; b.style.top = h.y + "%"; b.dataset.a = h.a; b.setAttribute("aria-label", h.l); b.innerHTML = '<span class="tag">' + esc(h.l) + "</span>"; layer.appendChild(b); });
     layout();
     vp.scrollLeft = Math.max(0, world.offsetWidth * R.focus / 100 - vp.clientWidth / 2); vp.scrollTop = 0;
+    { const b = $("#b360"); if (b) { b.hidden = R.id !== "mioficina"; b.textContent = (window.CMLI && CMLI.lang === "en") ? "Explore in 360°" : "Recorrer en 360°"; } }
     $("#roomName").textContent = R.name; $("#hintTx").textContent = R.hint;
     const hint = $("#hint"); hint.style.opacity = 1; clearTimeout(show.t); show.t = setTimeout(() => hint.style.opacity = 0, 9000);
     $$("#dots button").forEach((b, k) => b.setAttribute("aria-selected", String(k === i)));
@@ -413,6 +414,7 @@
   vp.addEventListener("wheel", e => { e.preventDefault(); setZoom(Z * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX, e.clientY); }, { passive: false });
   vp.addEventListener("dblclick", e => { if (e.target.closest("[data-a]")) return; setZoom(Z > 1.2 ? 1 : 2.2, e.clientX, e.clientY); });
   let lastTap = 0; vp.addEventListener("pointerup", e => { if (e.pointerType === "mouse" || moved) return; const n = Date.now(); if (n - lastTap < 320 && !e.target.closest("[data-a]")) { setZoom(Z > 1.2 ? 1 : 2.2, e.clientX, e.clientY); lastTap = 0; } else lastTap = n; });
+  $("#b360").addEventListener("click", () => window.CMLOf360 && CMLOf360.open());
   $("#zIn").addEventListener("click", () => setZoom(Z * 1.4)); $("#zOut").addEventListener("click", () => setZoom(Z / 1.4));
   vp.addEventListener("scroll", () => { $("#hint").style.opacity = 0; }, { passive: true });
   window.addEventListener("resize", layout);
