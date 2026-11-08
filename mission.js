@@ -63,7 +63,11 @@
   const bogota = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(new Date());
   const dayNum = () => { const p = bogota().split("-").map(Number); return Math.floor(Date.UTC(p[0], p[1] - 1, p[2]) / 86400000); };
   const me = () => (C && C.session() && C.session().user.id) || "";
-  const demo = () => /[?&]mision=1/.test(location.search);
+  const demo = () => {
+    try { if (/[?&]mision=1/.test(location.search)) localStorage.setItem("cml_mision_preview", "1"); if (/[?&]mision=0/.test(location.search)) localStorage.removeItem("cml_mision_preview"); } catch (e) {}
+    let on = false; try { on = localStorage.getItem("cml_mision_preview") === "1"; } catch (e) {}
+    const p = C && C.profile && C.profile(); return on || /[?&]mision=1/.test(location.search) || !!(p && (p.role === "admin" || p.role === "super_admin"));
+  };
   function enabled() {
     if (!init() || !C.session()) return false;
     const city = String((C.profile() && C.profile().city) || "");
@@ -74,7 +78,7 @@
   async function load() {
     if (!enabled()) return false;
     const r = await C.db.from("campaign_days").select("day,element,completed,step_code,step_question,step_activity,answer").eq("user_id", me()).order("day", { ascending: true });
-    if (r.error) { ok = false; return false; }
+    if (r.error) { ok = false; loaded = true; return false; }
     ok = true; hist = r.data || []; row = hist.find(x => x.day === bogota()) || null; loaded = true; return true;
   }
   const done = () => hist.filter(x => x.completed).length;
@@ -82,7 +86,7 @@
   const steps = () => (row ? [row.step_code, row.step_question, row.step_activity].filter(Boolean).length : 0) + (row ? 1 : 0);
 
   /* La caja ya no flota en la pantalla: vive en el lobby (lobby.js). Aquí solo avisamos su estado. */
-  function state() { return { on: !!(enabled() && ok && loaded), done: !!(row && row.completed), steps: steps() }; }
+  function state() { return { on: !!(enabled() && loaded), done: !!(row && row.completed), steps: steps() }; }
   function paintFab() { try { document.dispatchEvent(new CustomEvent("cml:mission-state", { detail: state() })); } catch (e) {} }
   const h = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -115,7 +119,7 @@
     if (ov) ov.remove();
     ov = h("div", "ms-ov"); ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", t("msTitle"));
     ov.addEventListener("click", e => { if (e.target === ov) close(); });
-    document.body.appendChild(ov); if (!row && ok) reveal(); else paint(); try { localStorage.setItem("cml_ms_seen_" + me() + "_" + bogota(), "1"); } catch (e) {}
+    document.body.appendChild(ov); if (!row) reveal(); else paint(); try { localStorage.setItem("cml_ms_seen_" + me() + "_" + bogota(), "1"); } catch (e) {}
   }
   function close() { if (ov) { ov.remove(); ov = null; } paintFab(); }
   async function act(fn) { if (busy) return; busy = true; try { await fn(); } catch (e) { toast(t("msErr")); } busy = false; }
@@ -172,7 +176,7 @@
   }
   async function start() {
     if (!init() || !C.session() || !enabled()) { paintFab(); return; }
-    if (await load()) paintFab();
+    await load(); paintFab();
   }
   document.addEventListener("cml:session", () => { row = null; hist = []; loaded = false; if (ov) close(); paintFab(); setTimeout(() => start().catch(() => {}), 2500); });
   document.addEventListener("cml:lang", () => { if (ov) paint(); paintFab(); });
