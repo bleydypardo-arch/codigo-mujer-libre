@@ -73,13 +73,9 @@
   const got = () => ORDER.filter(k => hist.some(x => x.element === k));
   const steps = () => (row ? [row.step_code, row.step_question, row.step_activity].filter(Boolean).length : 0) + (row ? 1 : 0);
 
-  function paintFab() {
-    if (fab) { fab.remove(); fab = null; }
-    if (!enabled() || !ok || !loaded) return;
-    fab = document.createElement("button"); fab.type = "button"; fab.className = "ms-fab" + (row && row.completed ? " ms-done" : "");
-    fab.innerHTML = '<span class="ms-fi" aria-hidden="true">' + (row && row.completed ? "✓" : "🎁") + '</span><span class="ms-ft">' + t("msFab") + '</span><b>' + steps() + "/4</b>";
-    fab.addEventListener("click", open); document.body.appendChild(fab);
-  }
+  /* La caja ya no flota en la pantalla: vive en el lobby (lobby.js). Aquí solo avisamos su estado. */
+  function state() { return { on: !!(enabled() && ok && loaded), done: !!(row && row.completed), steps: steps() }; }
+  function paintFab() { try { document.dispatchEvent(new CustomEvent("cml:mission-state", { detail: state() })); } catch (e) {} }
   const h = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
@@ -143,11 +139,11 @@
     ov.replaceChildren(box);
   }
   async function start() {
-    if (!init() || !C.session() || !enabled()) { if (fab) { fab.remove(); fab = null; } return; }
-    if (await load()) { paintFab(); let seen = false; try { seen = localStorage.getItem("cml_ms_seen_" + me() + "_" + bogota()) === "1"; } catch (e) {} if (!seen && !(row && row.completed)) setTimeout(() => { if (!ov && enabled()) open(); }, 1800); }
+    if (!init() || !C.session() || !enabled()) { paintFab(); return; }
+    if (await load()) paintFab();
   }
-  document.addEventListener("cml:session", () => { row = null; hist = []; loaded = false; if (ov) close(); if (fab) { fab.remove(); fab = null; } setTimeout(() => start().catch(() => {}), 2500); });
-  document.addEventListener("cml:lang", () => { if (ov) paint(); if (fab) paintFab(); });
+  document.addEventListener("cml:session", () => { row = null; hist = []; loaded = false; if (ov) close(); paintFab(); setTimeout(() => start().catch(() => {}), 2500); });
+  document.addEventListener("cml:lang", () => { if (ov) paint(); paintFab(); });
   window.addEventListener("load", () => setTimeout(() => start().catch(() => {}), 3000));
-  window.CMLMission = { open, enabled };
+  window.CMLMission = { open, enabled, state };
 })();

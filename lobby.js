@@ -252,6 +252,26 @@ function build() {
   const ex = place(mk("lb-abs lb-ex", MEDAL.replace(/lb(Gold|Rose|Wine|Amber|Shine|Clip)/g, "lbx$1") + '<span class="tx"><small></small><b></b></span><span class="lb-go"><svg viewBox="0 0 40 16" aria-hidden="true"><path d="M2 8h34M29 2l7 6-7 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>', "button"), 245, 1248, 610, 112); ex.type = "button";
   ex.addEventListener("click", () => { document.dispatchEvent(new CustomEvent("cml:hall")); if (window.CMLHall && window.CMLHall.open) window.CMLHall.open(); else seeAll("events"); }); /* el botón vive ahora en el dock inferior */
 
+
+  // Caja sorpresa: vive en el lobby, sobre un pedestal. Se muestra solo si la campaña está activa para esta mujer.
+  const SB_HTML = '<i class="sb-aura"></i><i class="sb-sh"></i><img class="sb-img" src="lobby/caja-sorpresa.webp?v=1" alt="" decoding="async"><span class="sb-sp">✦</span><span class="sb-sp">✦</span><span class="sb-sp">✦</span><span class="sb-sp">✦</span><span class="sb-tag"></span><span class="sb-n"></span>';
+  const sb = place(mk("lb-abs lb-sb", SB_HTML, "button"), 462, 1236, 176, 188); sb.type = "button";
+  const sbPaint = st => {
+    const on = !!(st && st.on); sb.classList.toggle("on", on); if (!on) return;
+    sb.classList.toggle("sb-done", !!st.done); sb.setAttribute("aria-label", t("lbSurprise"));
+    sb.querySelector(".sb-tag").textContent = st.done ? t("lbSurpriseDone") : t("lbSurprise");
+    sb.querySelector(".sb-n").textContent = st.done ? "✓" : (st.steps + "/4");
+  };
+  sb.addEventListener("click", () => {
+    if (!window.CMLMission) return;
+    if (sb.classList.contains("sb-done")) { window.CMLMission.open(); return; }
+    sb.classList.add("sb-open"); setTimeout(() => { window.CMLMission.open(); setTimeout(() => sb.classList.remove("sb-open"), 400); }, 850);
+  });
+  stage.appendChild(sb);
+  document.addEventListener("cml:mission-state", e => sbPaint(e.detail));
+  document.addEventListener("cml:lang", () => setTimeout(() => window.CMLMission && sbPaint(window.CMLMission.state()), 80));
+  setTimeout(() => window.CMLMission && sbPaint(window.CMLMission.state()), 0);
+
   // Spa & Wellness
   const sp = place(mk("lb-abs lb-sp", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg><b></b>', "button"), 290, 1368, 520, 54); sp.type = "button";
   sp.querySelector("b").textContent = t("lbSpaBtn"); sp.addEventListener("click", () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); });
@@ -310,7 +330,7 @@ function start() {
 }
 function init() {
   C = window.CML; if (!C) return;
-  C.addStrings(ES, EN); C.addStrings({ lbQa: "Accesos rápidos", lbQMatcha: "Matcha & Café", lbQRest: "Restaurantes", lbQWell: "Bienestar", lbQTrip: "Viajes & Retiros", lbGxK: "Nuestra próxima", lbGxT: "Gran experiencia", lbGxS: "Dos veces al año nos reunimos para vivir algo inolvidable.", lbGxB: "Ver próximos viajes", lbAdH: "Aliadas y promociones", lbAd1: "Tu negocio aquí", lbAd2: "Pauta con nosotras y llega a todas las mujeres del Club", lbTag: "Tu vida cambia cuando descubres tu propósito.", lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Bienvenida", lbTvSpa: "Spa y bienestar", lbTvExp: "Experiencia", lbTvPromo: "Promoción", lbTvHappy: "Happy hour", lbTvRest: "Restaurante", lbTvAll: "Ver todos" }, { lbQa: "Quick access", lbQMatcha: "Matcha & Café", lbQRest: "Restaurants", lbQWell: "Wellness", lbQTrip: "Trips & Retreats", lbGxK: "Our next", lbGxT: "Great experience", lbGxS: "Twice a year we gather to live something unforgettable.", lbGxB: "See upcoming trips", lbAdH: "Partners & promotions", lbAd1: "Your business here", lbAd2: "Advertise with us and reach every woman in the Club", lbTag: "Your life changes when you discover your purpose.", lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Welcome", lbTvSpa: "Spa & wellness", lbTvExp: "Experience", lbTvPromo: "Promotion", lbTvHappy: "Happy hour", lbTvRest: "Restaurant", lbTvAll: "See all" });
+  C.addStrings({ lbSurprise: "Caja sorpresa", lbSurpriseDone: "Vuelve mañana" }, { lbSurprise: "Surprise box", lbSurpriseDone: "Come back tomorrow" }); C.addStrings(ES, EN); C.addStrings({ lbQa: "Accesos rápidos", lbQMatcha: "Matcha & Café", lbQRest: "Restaurantes", lbQWell: "Bienestar", lbQTrip: "Viajes & Retiros", lbGxK: "Nuestra próxima", lbGxT: "Gran experiencia", lbGxS: "Dos veces al año nos reunimos para vivir algo inolvidable.", lbGxB: "Ver próximos viajes", lbAdH: "Aliadas y promociones", lbAd1: "Tu negocio aquí", lbAd2: "Pauta con nosotras y llega a todas las mujeres del Club", lbTag: "Tu vida cambia cuando descubres tu propósito.", lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Bienvenida", lbTvSpa: "Spa y bienestar", lbTvExp: "Experiencia", lbTvPromo: "Promoción", lbTvHappy: "Happy hour", lbTvRest: "Restaurante", lbTvAll: "Ver todos" }, { lbQa: "Quick access", lbQMatcha: "Matcha & Café", lbQRest: "Restaurants", lbQWell: "Wellness", lbQTrip: "Trips & Retreats", lbGxK: "Our next", lbGxT: "Great experience", lbGxS: "Twice a year we gather to live something unforgettable.", lbGxB: "See upcoming trips", lbAdH: "Partners & promotions", lbAd1: "Your business here", lbAd2: "Advertise with us and reach every woman in the Club", lbTag: "Your life changes when you discover your purpose.", lbSpaBtn: "Spa & Wellness", lbWelcomeK: "Welcome", lbTvSpa: "Spa & wellness", lbTvExp: "Experience", lbTvPromo: "Promotion", lbTvHappy: "Happy hour", lbTvRest: "Restaurant", lbTvAll: "See all" });
   if (!document.documentElement.classList.contains("lobby-on")) return;
   build(); paint(); start();
   document.addEventListener("cml:session", () => setTimeout(paint, 60));

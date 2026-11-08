@@ -132,3 +132,26 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 #lobby .lb-sub { font-weight: 700; letter-spacing: .03em; color: #6b5a52; }
 #lobby .lb-pc span { letter-spacing: -.005em; -webkit-text-stroke: .6px var(--color-wine); text-shadow: 0 0 4px rgba(255,248,239,1), 0 0 9px rgba(255,248,239,.95), 0 0 14px rgba(255,248,239,.8); }
 .lb-brow .lb-cat, .lb-big h2 { letter-spacing: -.01em; -webkit-text-stroke: .4px var(--color-wine); }
+
+/* ===== Caja sorpresa (campaña): objeto del lobby, sin botón flotante ===== */
+.lb-sb { position: absolute; background: none; border: 0; padding: 0; cursor: pointer; display: none; -webkit-tap-highlight-color: transparent; }
+.lb-sb.on { display: block; }
+.lb-sb .sb-aura { position: absolute; left: 50%; top: 46%; width: 150%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255,236,170,.9), rgba(255,236,170,.35) 40%, rgba(255,236,170,0) 68%); animation: sbAura 3.2s ease-in-out infinite; pointer-events: none; }
+.lb-sb .sb-sh { position: absolute; left: 50%; bottom: 20px; width: 84%; height: 16px; transform: translateX(-50%); border-radius: 50%; background: rgba(60,30,10,.35); filter: blur(7px); pointer-events: none; }
+.lb-sb .sb-img { position: absolute; left: 6%; top: 0; width: 88%; height: auto; transform-origin: 50% 90%; animation: sbBob 3.6s ease-in-out infinite; filter: drop-shadow(0 8px 10px rgba(60,20,10,.35)); pointer-events: none; }
+.lb-sb .sb-sp { position: absolute; font-size: 24px; line-height: 1; color: #FFF3C4; text-shadow: 0 0 8px #F2C766, 0 0 16px #F2C766; opacity: 0; animation: sbTw 2.8s ease-in-out infinite; pointer-events: none; }
+.lb-sb .sb-sp:nth-of-type(1) { left: -2%; top: 20%; } .lb-sb .sb-sp:nth-of-type(2) { right: -2%; top: 6%; animation-delay: .8s; font-size: 30px; } .lb-sb .sb-sp:nth-of-type(3) { right: 2%; top: 58%; animation-delay: 1.6s; } .lb-sb .sb-sp:nth-of-type(4) { left: 4%; top: 64%; animation-delay: 2.2s; font-size: 20px; }
+.lb-sb.sb-open .sb-img { animation: sbShake .85s ease; }
+.lb-sb.sb-open .sb-aura { animation: sbBurst .85s ease-out; }
+.lb-sb.sb-open .sb-sp { animation: sbBurstSp .85s ease-out; }
+.lb-sb .sb-tag { position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%); white-space: nowrap; font: 700 14px/1 Inter, Arial, sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #F6E1A8; background: linear-gradient(180deg, #9a1c44, #6b0f2e); border: 1.5px solid #E6C275; border-radius: 99px; padding: 8px 15px; box-shadow: 0 6px 16px rgba(60,10,25,.45); }
+.lb-sb .sb-n { position: absolute; right: 6px; top: 2px; min-width: 30px; height: 30px; border-radius: 99px; background: #E6C275; color: #5b0b27; font: 800 15px/30px Inter, Arial, sans-serif; text-align: center; box-shadow: 0 0 0 3px rgba(255,240,200,.75); animation: sbPulse 2s ease-in-out infinite; }
+.lb-sb.sb-done .sb-n { background: #7fcfa6; color: #0d2a1d; animation: none; }
+@keyframes sbAura { 0%, 100% { opacity: .55; transform: translate(-50%, -50%) scale(.92); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); } }
+@keyframes sbBob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-6px) rotate(.8deg); } }
+@keyframes sbTw { 0%, 100% { opacity: 0; transform: scale(.4); } 50% { opacity: 1; transform: scale(1.1); } }
+@keyframes sbPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+@keyframes sbShake { 0%, 100% { transform: rotate(0) scale(1); } 15% { transform: rotate(-5deg) scale(1.04); } 30% { transform: rotate(5deg) scale(1.06); } 45% { transform: rotate(-4deg) scale(1.08); } 60% { transform: rotate(3deg) scale(1.1); } 80% { transform: rotate(0) scale(1.14) translateY(-8px); } }
+@keyframes sbBurst { 0% { opacity: .6; transform: translate(-50%, -50%) scale(.9); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.7); } }
+@keyframes sbBurstSp { 0% { opacity: 0; transform: scale(.3); } 40% { opacity: 1; transform: scale(1.6); } 100% { opacity: 0; transform: scale(2.2); } }
+@media (prefers-reduced-motion: reduce) { .lb-sb *, .lb-sb { animation: none !important; } }
