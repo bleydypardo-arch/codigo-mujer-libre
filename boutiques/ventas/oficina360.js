@@ -4,8 +4,8 @@
   const IMG = "ventas/img/";
   const en = () => !!(window.CMLI && CMLI.lang === "en");
   const T = {
-    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver adentro", close2: "Cerrar las puertas", close: "Cerrar", title: "Mi oficina · 360°", titleR: "Recepción · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
-    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back inside", close2: "Close the doors", close: "Close", title: "My office · 360°", titleR: "Reception · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
+    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver adentro", close2: "Cerrar las puertas", close: "Cerrar", title: "Mi oficina · 360°", fwd: "Avanzar", bwd: "Retroceder", titleR: "Recepción · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
+    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back inside", close2: "Close the doors", close: "Close", title: "My office · 360°", fwd: "Move forward", bwd: "Move back", titleR: "Reception · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
   };
   const tx = k => T[en() ? "en" : "es"][k];
   /* escenas: x,y = punto en la imagen (%) */
@@ -58,6 +58,7 @@
     im.onerror = () => { busy = false; if (SCENES[name].k === "out") { outOK[name] = false; peek(); } };
     im.src = S.src;
   }
+  function zoomTo(t) { t = Math.max(34, Math.min(Math.min(base() + 14, 105), t)); const f0 = fov, t0 = performance.now(); (function f(now) { const k = Math.min(1, (now - t0) / 900), e = 1 - Math.pow(1 - k, 3); fov = f0 + (t - f0) * e; paint(); if (k < 1) requestAnimationFrame(f); })(t0); }
   function loop() { cancelAnimationFrame(raf2); const f = () => { if (!root.classList.contains("on") || !P) return; if (!document.hidden && !g) paint(); raf2 = requestAnimationFrame(f); }; raf2 = requestAnimationFrame(f); }
   let raf2 = 0;
   function setHots() {
@@ -90,7 +91,9 @@
     cv = el("canvas", "o3-cv"); hotsEl = el("div", "o3-hots"); bar = el("div", "o3-bar");
     const top = el("div", "o3-top", "<b></b>"); const x = el("button", "o3-x", "×"); x.type = "button"; x.addEventListener("click", close); top.appendChild(x);
     const hint = el("div", "o3-hint"); hint.id = "o3hint";
-    root.append(cv, hotsEl, top, hint, bar, el("p", "o3-nogl", ""));
+    const walk = el("div", "o3-walk"); const wf = el("button", "", "▲"), wb = el("button", "", "▼"); wf.type = wb.type = "button"; wf.setAttribute("aria-label", tx("fwd")); wb.setAttribute("aria-label", tx("bwd")); wf.title = tx("fwd"); wb.title = tx("bwd");
+    wf.addEventListener("click", () => zoomTo(fov * 0.62)); wb.addEventListener("click", () => zoomTo(fov * 1.6)); walk.append(wf, wb);
+    root.append(cv, hotsEl, top, hint, walk, bar, el("p", "o3-nogl", ""));
     document.body.appendChild(root);
     root.addEventListener("pointerdown", e => { if (e.target.closest("button")) return; ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY }); moved = false; const a = [...ptrs.values()]; g = a.length > 1 ? { d0: Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) || 1, f0: fov } : { x: e.clientX, y: e.clientY, yaw: P ? P.S.yaw : 0, pit: P ? P.S.pitch : 0, vx: 0, vy: 0 }; });
     window.addEventListener("pointermove", e => {
