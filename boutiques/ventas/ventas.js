@@ -204,12 +204,16 @@
     });
   }
 
+  /* música de la sala: se calla mientras hay un demo o herramienta abierta y vuelve al cerrar */
+  let ovN = 0;
+  const ovOpen = () => { ovN++; stopAmb(); };
+  const ovClose = () => { ovN = Math.max(0, ovN - 1); if (!ovN && opened && sndOn) ambience(); };
   /* ---------- demo en pantalla completa ---------- */
   function demo(which) {
-    const dv = document.createElement("div"); dv.className = "dv";
+    const dv = document.createElement("div"); dv.className = "dv dvb"; ovOpen();
     dv.innerHTML = '<div class="bar"><b>Código ML · Demo</b><div class="sw"><button data-w="centro">Centro comercial</button><button data-w="luz">Una boutique</button><button data-w="pasos">Los paquetes</button></div><button id="dh" type="button">↺ Inicio del demo</button><button class="cl" id="dx">← Volver a la sala</button></div><div id="dbody" style="flex:1;display:flex;flex-direction:column;min-height:0"></div>';
     document.body.appendChild(dv);
-    const close = () => { dv.remove(); document.removeEventListener("keydown", ek); }, ek = e => { if (e.key === "Escape") close(); };
+    let done = false; const close = () => { if (done) return; done = true; dv.remove(); document.removeEventListener("keydown", ek); ovClose(); }, ek = e => { if (e.key === "Escape") close(); };
     document.addEventListener("keydown", ek); $("#dx", dv).addEventListener("click", close); $("#dh", dv).addEventListener("click", () => set(curW));
     const body = $("#dbody", dv);
     let curW = which;
@@ -347,15 +351,15 @@
   }
 
   function openCml() {
-    const ov = document.createElement("div"); ov.className = "dv"; ov.innerHTML = '<iframe src="../demo.html?lang=' + (/^en/i.test(navigator.language) ? "en" : "es") + '" title="Demo de Código Mujer Libre" allow="fullscreen"></iframe><button class="dvx" aria-label="Cerrar demo">×</button><a class="dvo" href="../demo.html" target="_blank" rel="noopener">Abrir en pantalla completa ↗</a>';
+    const ov = document.createElement("div"); ov.className = "dv"; ovOpen(); ov.innerHTML = '<button class="dvb2" type="button">← Volver a la sala</button><iframe src="../demo.html?lang=' + (/^en/i.test(navigator.language) ? "en" : "es") + '" title="Demo de Código Mujer Libre" allow="fullscreen"></iframe><button class="dvx" aria-label="Cerrar demo">×</button><a class="dvo" href="../demo.html" target="_blank" rel="noopener">Abrir en pantalla completa ↗</a>';
     document.body.appendChild(ov);
-    const close = () => { ov.remove(); document.removeEventListener("keydown", k); }, k = e => { if (e.key === "Escape") close(); };
-    document.addEventListener("keydown", k); ov.querySelector(".dvx").onclick = close;
+    let done = false; const close = () => { if (done) return; done = true; ov.remove(); document.removeEventListener("keydown", k); ovClose(); }, k = e => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", k); ov.querySelector(".dvx").onclick = close; ov.querySelector(".dvb2").onclick = close;
   }
   function openTools(h) {
-    const ov = document.createElement("div"); ov.className = "dv"; ov.innerHTML = '<iframe src="asesoras.html?emb=1#' + (h || "inicio") + '" title="Mis herramientas"></iframe><button class="dvx" aria-label="Volver a la oficina">×</button>';
-    document.body.appendChild(ov); const close = () => { ov.remove(); document.removeEventListener("keydown", k); }, k = e => { if (e.key === "Escape") close(); };
-    document.addEventListener("keydown", k); ov.querySelector(".dvx").onclick = close;
+    const ov = document.createElement("div"); ov.className = "dv"; ovOpen(); ov.innerHTML = '<button class="dvb2" type="button">← Volver a la sala</button><iframe src="asesoras.html?emb=1#' + (h || "inicio") + '" title="Mis herramientas"></iframe><button class="dvx" aria-label="Volver a la oficina">×</button>';
+    document.body.appendChild(ov); let done = false; const close = () => { if (done) return; done = true; ov.remove(); document.removeEventListener("keydown", k); ovClose(); }, k = e => { if (e.key === "Escape") close(); };
+    document.addEventListener("keydown", k); ov.querySelector(".dvx").onclick = close; ov.querySelector(".dvb2").onclick = close;
   }
   function openOf(key) {
     if (!asesora || !window.CMLO) return;
@@ -399,7 +403,7 @@
   }
   function stopAmb() { if (mus) mus.pause(); if (olas) olas.pause(); if (pad) { pad.g.gain.linearRampToValueAtTime(0, ctx.currentTime + .8); const p = pad; pad = null; setTimeout(() => p.forEach(o => { try { o.stop(); } catch (e) {} }), 1000); } }
   $("#bSnd").addEventListener("click", e => { sndOn = !sndOn; e.currentTarget.setAttribute("aria-pressed", String(sndOn)); if (sndOn) { if (opened) ambience(); } else stopAmb(); });
-  document.addEventListener("visibilitychange", () => { if (document.hidden) stopAmb(); else if (opened && sndOn) ambience(); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) stopAmb(); else if (opened && sndOn && !ovN) ambience(); });
 
   /* ---------- instalar como app ---------- */
   let ip = null; const bI = $("#bInst"), standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
