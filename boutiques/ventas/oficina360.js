@@ -4,11 +4,23 @@
   const IMG = "ventas/img/";
   const en = () => !!(window.CMLI && CMLI.lang === "en");
   const T = {
-    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver adentro", close2: "Cerrar las puertas", close: "Cerrar", title: "Mi oficina · 360°", toSofa: "Ir a los sofás", toHall: "Ir a las oficinas", toLobby: "Volver al lobby", rMio: "Mi oficina", rRes: "Oficina de reservas", rDemo: "Salón de demos", rPack: "Sala de paquetes", only: "Esta oficina es solo para asesoras.", toDesk: "Ir al mostrador", fwd: "Avanzar", bwd: "Retroceder", titleR: "Recepción · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
-    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back inside", close2: "Close the doors", close: "Close", title: "My office · 360°", toSofa: "Go to the sofas", toHall: "Go to the offices", toLobby: "Back to the lobby", rMio: "My office", rRes: "Reservations office", rDemo: "Demo lounge", rPack: "Packages room", only: "This office is for advisors only.", toDesk: "Go to the reception desk", fwd: "Move forward", bwd: "Move back", titleR: "Reception · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
+    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver adentro", close2: "Cerrar las puertas", close: "Cerrar", title: "Mi oficina · 360°", toSofa: "Ir a los sofás", backHall: "Volver al pasillo", toHall: "Ir a las oficinas", toLobby: "Volver al lobby", rMio: "Mi oficina", rRes: "Oficina de reservas", rDemo: "Salón de demos", rPack: "Sala de paquetes", only: "Esta oficina es solo para asesoras.", toDesk: "Ir al mostrador", fwd: "Avanzar", bwd: "Retroceder", titleR: "Recepción · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
+    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back inside", close2: "Close the doors", close: "Close", title: "My office · 360°", toSofa: "Go to the sofas", backHall: "Back to the hallway", toHall: "Go to the offices", toLobby: "Back to the lobby", rMio: "My office", rRes: "Reservations office", rDemo: "Demo lounge", rPack: "Packages room", only: "This office is for advisors only.", toDesk: "Go to the reception desk", fwd: "Move forward", bwd: "Move back", titleR: "Reception · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
   };
   const tx = k => T[en() ? "en" : "es"][k];
   /* escenas: x,y = punto en la imagen (%) */
+  /* escribe los paquetes dentro de los tres cuadros de la pared */
+  function paintPk(ctx, w, h) {
+    const k = w / 1774, F = [[580, 764, 262, 470, "GOLD", "#8E6E32", "Tu vitrina de lujo", "Your luxury showcase"], [795, 993, 255, 472, "PLATINUM", "#56627A", "Tu boutique inmersiva", "Your immersive boutique"], [1025, 1241, 252, 471, "DIAMOND", "#2A6F8F", "Tu marca de alta gama", "Your high-end brand"]];
+    F.forEach(f => {
+      const cx = (f[0] + f[1]) / 2 * k, cy = (f[2] + f[3]) / 2 * k, fw = (f[1] - f[0]) * k, text = en() ? f[7] : f[6];
+      ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = f[5];
+      ctx.font = "700 " + Math.round(34 * k) + "px 'Cormorant Garamond', Georgia, serif"; ctx.fillText(f[4], cx, cy - 22 * k);
+      ctx.fillStyle = "rgba(43,24,16,.85)"; ctx.font = "italic 500 " + Math.round(20 * k) + "px 'Cormorant Garamond', Georgia, serif";
+      const words = text.split(" "), lines = []; let ln = ""; words.forEach(wd => { const t = ln ? ln + " " + wd : wd; if (ctx.measureText(t).width > fw * 0.82 && ln) { lines.push(ln); ln = wd; } else ln = t; }); lines.push(ln);
+      lines.forEach((l, i) => ctx.fillText(l, cx, cy + (14 + i * 22) * k));
+    });
+  }
   const WO = { u0: .3, u1: .67, v0: .488, v1: .512, amp: .0008 }, WL = { u0: .26, u1: .47, v0: .495, v1: .506, b0: .516, b1: .55, amp: .0009 };
   const SCENES = {
     cerrada: { k: "closed", src: IMG + "oficina360-cerrada.webp", yaw: 0, hots: [{ x: 48.5, y: 47, l: "door", a: "open" }], wave: 0, water: WO, peek: 0 },
@@ -17,7 +29,9 @@
     lobby: { k: "closed", src: IMG + "recepcion360.webp", yaw: -42, hots: [{ x: 36, y: 47, l: "door", a: "open" }, { x: 20, y: 72, l: "toSofa", to: "lobby2", yaw: 0 }, { x: 96, y: 60, l: "toHall", to: "pasillo", yaw: 0 }], wave: 0, water: WL, peek: -50 },
     lobbyA: { k: "open", src: IMG + "recepcion360-abierta.webp", yaw: -42, hots: [{ x: 36, y: 47, l: "sea", a: "out" }, { x: 20, y: 72, l: "toSofa", to: "lobby2", yaw: 0 }, { x: 96, y: 60, l: "toHall", to: "pasillo", yaw: 0 }], wave: 0.06, water: WL, peek: -50 },
     lobby2: { k: "pt", src: IMG + "recepcion360-sofas.webp", yaw: 0, hots: [{ x: 50, y: 56, l: "sea", a: "out" }, { x: 79, y: 70, l: "toDesk", to: "lobby", yaw: 55 }, { x: 96, y: 60, l: "toHall", to: "pasillo", yaw: 0 }], wave: 0, water: { u0: .31, u1: .69, v0: .498, v1: .512, b0: .522, b1: .54, amp: .0009 }, peek: 0 },
-    pasillo: { k: "pt", src: IMG + "recepcion360-pasillo.webp", yaw: 0, peek: 0, wave: 0, hots: [{ x: 7, y: 62, l: "toLobby", to: "lobby", yaw: 60 }, { x: 32, y: 55, l: "rMio", room: "mioficina" }, { x: 68, y: 55, l: "rRes", room: "oficina" }, { x: 44, y: 52, l: "rDemo", room: "salon" }, { x: 90, y: 52, l: "rPack", room: "paquetes" }] },
+    pasillo: { k: "pt", src: IMG + "recepcion360-pasillo.webp", yaw: 0, peek: 0, wave: 0, hots: [{ x: 7, y: 62, l: "toLobby", to: "lobby", yaw: 60 }, { x: 32, y: 55, l: "rMio", room: "mioficina" }, { x: 68, y: 55, l: "rRes", room: "oficina" }, { x: 44, y: 52, l: "rDemo", room: "salon" }, { x: 90, y: 52, l: "rPack", to: "paq360", yaw: 0 }] },
+    paq360: { k: "pt", src: IMG + "paquetes360.webp", yaw: 0, peek: 0, wave: 0, paint: paintPk, water: { u0: .09, u1: .3, v0: .495, v1: .51, b0: .525, b1: .56, amp: .0008 },
+      hots: [{ x: 37.9, y: 50, l: "GOLD", room: "paquetes", raw: 1 }, { x: 50.4, y: 50, l: "PLATINUM", room: "paquetes", raw: 1 }, { x: 63.9, y: 50, l: "DIAMOND", room: "paquetes", raw: 1 }, { x: 3, y: 60, l: "backHall", to: "pasillo", yaw: 0 }] },
     terraza: { k: "out", src: IMG + "recepcion360-terraza.webp", yaw: 0, hots: [{ x: 10.5, y: 52, l: "back", a: "in" }, { x: 89, y: 52, l: "back", a: "in" }], wave: 0.15, water: { u0: .14, u1: .86, v0: .482, v1: .512, b0: .53, b1: .55, amp: .0009 } }
   };
   const SET = { mioficina: { closed: "cerrada", open: "abierta", out: "balcon" }, recepcion: { closed: "lobby", open: "lobbyA", out: "terraza" } };
@@ -49,10 +63,11 @@
   function load(name, keepView, yawOv) {
     if (busy) return; busy = true; const S = SCENES[name], im = new Image();
     im.onload = () => {
+      let src = im; if (S.paint) { const c2 = document.createElement("canvas"); c2.width = im.naturalWidth; c2.height = im.naturalHeight; const x2 = c2.getContext("2d"); x2.drawImage(im, 0, 0); try { S.paint(x2, c2.width, c2.height); src = c2; } catch (e) {} }
       const keep = keepView && P ? { yaw: P.S.yaw, pitch: P.S.pitch } : { yaw: yawOv != null ? yawOv : S.yaw, pitch: 0 };
       cv.style.opacity = 0;
       setTimeout(() => {
-        P = CMLPano(cv, im, { span: 360, yaw: keep.yaw, pitch: keep.pitch, fov: base(), pitchMin: -75, pitchMax: 75, water: S.water });
+        P = CMLPano(cv, src, { span: 360, yaw: keep.yaw, pitch: keep.pitch, fov: base(), pitchMin: -75, pitchMax: 75, water: S.water });
         if (!P) { root.classList.add("nogl"); busy = false; return; }
         sc = name; fov = base(); setHots(); paint(); cv.style.opacity = 1; level(S.wave); loop(); busy = false; setBar();
       }, P ? 380 : 0);
@@ -69,7 +84,7 @@
   }
   function setHots() {
     hotsEl.innerHTML = "";
-    SCENES[sc].hots.forEach(h => { const b = el("button", "o3-hot" + (h.to ? " go" : ""), (h.to ? "<i>➜</i>" : "") + "<span>" + esc(tx(h.l)) + "</span>"); b.type = "button"; b.dataset.x = h.x; b.dataset.y = h.y; b.addEventListener("click", () => { if (moved) return; if (h.room) { goRoom(h.room); return; } if (h.to) { waves(); load(h.to, false, h.yaw); } else act(h.a); }); hotsEl.appendChild(b); });
+    SCENES[sc].hots.forEach(h => { const b = el("button", "o3-hot" + (h.to ? " go" : ""), (h.to ? "<i>➜</i>" : "") + "<span>" + esc(h.raw ? h.l : tx(h.l)) + "</span>"); b.type = "button"; b.dataset.x = h.x; b.dataset.y = h.y; b.addEventListener("click", () => { if (moved) return; if (h.room) { goRoom(h.room); return; } if (h.to) { waves(); load(h.to, false, h.yaw); } else act(h.a); }); hotsEl.appendChild(b); });
   }
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   function setBar() {
