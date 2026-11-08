@@ -84,8 +84,8 @@
     R.hs.forEach(h => { const b = document.createElement("button"); b.type = "button"; b.className = "hot" + (h.notag ? " notag" : "") + (h.x > 88 ? " rt" : h.x < 12 ? " lt" : ""); b.style.left = h.x + "%"; b.style.top = h.y + "%"; b.dataset.a = h.a; b.setAttribute("aria-label", h.l); b.innerHTML = '<span class="tag">' + esc(h.l) + "</span>"; layer.appendChild(b); });
     layout();
     vp.scrollLeft = Math.max(0, world.offsetWidth * R.focus / 100 - vp.clientWidth / 2); vp.scrollTop = 0;
-    if (!silent && /^(recepcion|paquetes|mioficina)$/.test(R.id)) { clearTimeout(show.t3); show.t3 = setTimeout(() => { if (ROOMS[cur].id === R.id && window.CMLOf360) CMLOf360.open(R.id); }, 700); }
-    { const b = $("#b360"); if (b) { b.hidden = !/^(recepcion|paquetes|mioficina)$/.test(R.id); b.textContent = (window.CMLI && CMLI.lang === "en") ? "Explore in 360°" : "Recorrer en 360°"; } }
+    if (show.skip3) { show.skip3 = false; } else if (!silent && /^(recepcion|paquetes|mioficina|salon)$/.test(R.id)) { clearTimeout(show.t3); show.t3 = setTimeout(() => { if (ROOMS[cur].id === R.id && window.CMLOf360) CMLOf360.open(R.id); }, 700); }
+    { const b = $("#b360"); if (b) { b.hidden = !/^(recepcion|paquetes|mioficina|salon)$/.test(R.id); b.textContent = (window.CMLI && CMLI.lang === "en") ? "Explore in 360°" : "Recorrer en 360°"; } }
     $("#roomName").textContent = R.name; $("#hintTx").textContent = R.hint;
     const hint = $("#hint"); hint.style.opacity = 1; clearTimeout(show.t); show.t = setTimeout(() => hint.style.opacity = 0, 9000);
     $$("#dots button").forEach((b, k) => b.setAttribute("aria-selected", String(k === i)));
@@ -416,7 +416,7 @@
   vp.addEventListener("dblclick", e => { if (e.target.closest("[data-a]")) return; setZoom(Z > 1.2 ? 1 : 2.2, e.clientX, e.clientY); });
   let lastTap = 0; vp.addEventListener("pointerup", e => { if (e.pointerType === "mouse" || moved) return; const n = Date.now(); if (n - lastTap < 320 && !e.target.closest("[data-a]")) { setZoom(Z > 1.2 ? 1 : 2.2, e.clientX, e.clientY); lastTap = 0; } else lastTap = n; });
   window.CMLCanGo = id => { const i = ROOMS.findIndex(r => r.id === id); return i >= 0 && (i < PUB || !!asesora); };
-  window.CMLGoRoom = id => { const i = ROOMS.findIndex(r => r.id === id); if (i >= 0) go(i); };
+  window.CMLGoRoom = (id, flat) => { const i = ROOMS.findIndex(r => r.id === id); if (i >= 0) { if (flat) show.skip3 = true; go(i); } };
   $("#b360").addEventListener("click", () => window.CMLOf360 && CMLOf360.open(ROOMS[cur].id));
   $("#zIn").addEventListener("click", () => setZoom(Z * 1.4)); $("#zOut").addEventListener("click", () => setZoom(Z / 1.4));
   vp.addEventListener("scroll", () => { $("#hint").style.opacity = 0; }, { passive: true });
