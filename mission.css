@@ -45,3 +45,15 @@
 .ms-rv .ms-fb, .ms-rvsph.ms-fb { font-size: 70px; }
 @keyframes msBob { 50% { transform: translateX(-50%) translateY(-8px); } } @keyframes msPulse { 50% { opacity: .55; } }
 .ms-ov:has(.ms-rv) { background: rgba(30,8,22,.9); align-items: center; }
+/* la esfera sale disparada de la caja, vuela hacia afuera y se acomoda */
+.ms-rvsph { z-index: 3; top: 4%; animation: msShoot 2.2s cubic-bezier(.22,.8,.3,1) both, msFloat 3s 2.2s ease-in-out infinite !important; }
+@keyframes msShoot {
+  0%   { opacity: 0; transform: translate(-50%, 150%) scale(.2); }
+  12%  { opacity: 1; transform: translate(-50%, 110%) scale(.35); }
+  45%  { opacity: 1; transform: translate(-50%, -120%) scale(2.1); filter: drop-shadow(0 0 40px rgba(255,215,120,1)); }
+  70%  { transform: translate(-50%, -30%) scale(1.25); }
+  85%  { transform: translate(-50%, 6%) scale(.94); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+.ms-rvs { overflow: visible; }
+@media (prefers-reduced-motion: reduce) { .ms-rvsph { animation: none !important; } }
