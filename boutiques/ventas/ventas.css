@@ -234,3 +234,9 @@ canvas.live{z-index:1}
 }
 
 .tbtn.lang{font-weight:600;letter-spacing:.04em}
+
+/* Mi oficina: botones pequeños y discretos (la etiqueta sale solo al tocar/pasar) */
+#layer.ofi .hot{width:24px;height:24px;margin:-12px 0 0 -12px}
+#layer.ofi .hot::before{inset:8px;box-shadow:0 0 0 1px rgba(255,255,255,.8),0 2px 6px rgba(0,0,0,.3)}
+#layer.ofi .hot::after{border-width:1px;opacity:.7;animation-duration:3.2s}
+#layer.ofi .hot .tag{opacity:0;transition:opacity .2s}#layer.ofi .hot:hover .tag,#layer.ofi .hot:focus-visible .tag,#layer.ofi .hot:active .tag{opacity:1}

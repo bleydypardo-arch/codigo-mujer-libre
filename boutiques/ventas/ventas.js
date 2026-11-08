@@ -81,6 +81,7 @@
     layer.innerHTML = "";
     R.quads.forEach(k => { const d = document.createElement("div"); d.className = "quad"; d.id = "q-" + k.id; d.style.width = k.w + "px"; d.style.height = k.h + "px"; d.innerHTML = k.html; layer.appendChild(d); });
     R.hs.forEach(h => { const b = document.createElement("button"); b.type = "button"; b.className = "hot" + (h.notag ? " notag" : "") + (h.x > 88 ? " rt" : h.x < 12 ? " lt" : ""); b.style.left = h.x + "%"; b.style.top = h.y + "%"; b.dataset.a = h.a; b.setAttribute("aria-label", h.l); b.innerHTML = '<span class="tag">' + esc(h.l) + "</span>"; layer.appendChild(b); });
+    layer.classList.toggle("ofi", R.id === "mioficina");
     layout();
     vp.scrollLeft = Math.max(0, world.offsetWidth * R.focus / 100 - vp.clientWidth / 2);
     $("#roomName").textContent = R.name; $("#hintTx").textContent = R.hint;
