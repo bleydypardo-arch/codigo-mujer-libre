@@ -16,7 +16,7 @@ window.CMLPano = function (canvas, img, o) {
   const sh = (t, s) => { const x = gl.createShader(t); gl.shaderSource(x, s); gl.compileShader(x); return x; };
   const pr = gl.createProgram();
   gl.attachShader(pr, sh(gl.VERTEX_SHADER, "attribute vec3 p;attribute vec2 t;uniform mat4 m;varying vec2 v;void main(){v=t;gl_Position=m*vec4(p,1.);}"));
-  gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, "precision mediump float;varying vec2 v;uniform sampler2D s;void main(){gl_FragColor=texture2D(s,v);}"));
+  gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, "precision mediump float;varying vec2 v;uniform sampler2D s;uniform float tm;uniform vec4 wr;uniform vec2 wb;uniform float wa;float ed(float y,float a,float b){return smoothstep(a,a+.004,y)*(1.-smoothstep(b-.004,b,y));}void main(){vec3 c=texture2D(s,v).rgb;float e=max(ed(v.y,wr.z,wr.w),ed(v.y,wb.x,wb.y))*step(wr.x,v.x)*step(v.x,wr.y);if(wa>0.&&e>0.){vec2 d=vec2(wa*.25*sin(v.y*500.+tm*.7),wa*(sin(v.x*260.+tm*.9)+.6*sin(v.x*610.-tm*.6)))*e;c=texture2D(s,v+d).rgb;}gl_FragColor=vec4(c,1.);}"));
   gl.linkProgram(pr); gl.useProgram(pr);
   const buf = (d, t) => { const b = gl.createBuffer(); gl.bindBuffer(t, b); gl.bufferData(t, d, gl.STATIC_DRAW); return b; };
   buf(new Float32Array(pos), gl.ARRAY_BUFFER); const lp = gl.getAttribLocation(pr, "p"); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 3, gl.FLOAT, false, 0, 0);
@@ -26,7 +26,7 @@ window.CMLPano = function (canvas, img, o) {
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  const lm = gl.getUniformLocation(pr, "m");
+  const lm = gl.getUniformLocation(pr, "m"), ltm = gl.getUniformLocation(pr, "tm"), lwr = gl.getUniformLocation(pr, "wr"), lwb = gl.getUniformLocation(pr, "wb"), lwa = gl.getUniformLocation(pr, "wa"); let water = o.water || null;
   const S = { yaw: o.yaw || 0, pitch: o.pitch || 0, fov: o.fov || 80, w: 1, h: 1 }, pMin = o.pitchMin == null ? -90 : o.pitchMin, pMax = o.pitchMax == null ? 90 : o.pitchMax;
   const vlim = () => { const vf = rad(S.fov), asp = S.w / S.h, hf = 2 * Math.atan(Math.tan(vf / 2) * asp); return { vf, hf }; };
   function clamp() {
@@ -42,7 +42,7 @@ window.CMLPano = function (canvas, img, o) {
     out[14] = 2 * fa * n / (n - fa); out[15] = 0; return out;
   }
   function size() { const r = canvas.getBoundingClientRect(), d = Math.min(window.devicePixelRatio || 1, 2); S.w = Math.max(1, r.width); S.h = Math.max(1, r.height); canvas.width = S.w * d; canvas.height = S.h * d; gl.viewport(0, 0, canvas.width, canvas.height); }
-  function draw() { clamp(); gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); gl.uniformMatrix4fv(lm, false, matrix()); gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_SHORT, 0); }
+  function draw() { clamp(); gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); gl.uniformMatrix4fv(lm, false, matrix()); gl.uniform1f(ltm, (performance.now() / 1000) % 600); if (water) { gl.uniform4f(lwr, water.u0, water.u1, water.v0, water.v1); gl.uniform2f(lwb, water.b0 == null ? water.v0 : water.b0, water.b1 == null ? water.v1 : water.b1); gl.uniform1f(lwa, water.amp || 0.0012); } else gl.uniform1f(lwa, 0); gl.drawElements(gl.TRIANGLES, idx.length, gl.UNSIGNED_SHORT, 0); }
   /* punto (x%, y%) de la imagen -> pantalla (null si está detrás) */
   function project(xp, yp) {
     const lon = rad((xp / 100 - .5) * spanH), lat = rad((.5 - yp / 100) * spanV);
@@ -53,5 +53,5 @@ window.CMLPano = function (canvas, img, o) {
     return { x: (X * f / a / -Z * .5 + .5) * S.w, y: (.5 - Y * f / -Z * .5) * S.h };
   }
   size(); window.addEventListener("resize", () => { size(); draw(); });
-  return { S, draw, project, size, rad };
+  return { S, draw, project, size, rad, setWater: w => { water = w; } };
 };

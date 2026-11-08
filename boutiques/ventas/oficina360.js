@@ -4,15 +4,16 @@
   const IMG = "ventas/img/";
   const en = () => !!(window.CMLI && CMLI.lang === "en");
   const T = {
-    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver a la oficina", close: "Cerrar", title: "Mi oficina · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
-    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back to the office", close: "Close", title: "My office · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
+    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver a la oficina", close: "Cerrar", title: "Mi oficina · 360°", titleR: "Recepción · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
+    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back to the office", close: "Close", title: "My office · 360°", titleR: "Reception · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
   };
   const tx = k => T[en() ? "en" : "es"][k];
   /* escenas: x,y = punto en la imagen (%) */
   const SCENES = {
-    cerrada: { src: IMG + "oficina360-cerrada.webp", yaw: 0, hots: [{ x: 48.5, y: 47, l: "door", a: "open" }], wave: 0.04 },
-    abierta: { src: IMG + "oficina360-abierta.webp", yaw: 0, hots: [{ x: 48.5, y: 47, l: "sea", a: "out" }], wave: 0.2 },
-    balcon: { src: IMG + "oficina360-balcon.webp", yaw: 0, hots: [{ x: 7, y: 50, l: "back", a: "in" }, { x: 92, y: 50, l: "back", a: "in" }], wave: 0.34 }
+    cerrada: { src: IMG + "oficina360-cerrada.webp", yaw: 0, hots: [{ x: 48.5, y: 47, l: "door", a: "open" }], wave: 0, water: { u0: .3, u1: .67, v0: .488, v1: .512, amp: .0008 } },
+    abierta: { src: IMG + "oficina360-abierta.webp", yaw: 0, hots: [{ x: 48.5, y: 47, l: "sea", a: "out" }], wave: 0.06, water: { u0: .3, u1: .67, v0: .488, v1: .512, amp: .0008 } },
+    lobby: { src: IMG + "recepcion360.webp", yaw: -42, hots: [], wave: 0, water: { u0: .26, u1: .47, v0: .495, v1: .506, b0: .516, b1: .55, amp: .0009 } },
+    balcon: { src: IMG + "oficina360-balcon.webp", yaw: 0, hots: [{ x: 7, y: 50, l: "back", a: "in" }, { x: 92, y: 50, l: "back", a: "in" }], wave: 0.15, water: { u0: .17, u1: .83, v0: .488, v1: .512, b0: .54, b1: .565, amp: .0009 } }
   };
   let root, cv, hotsEl, bar, P = null, sc = "cerrada", fov = 78, ptrs = new Map(), g = null, moved = false, raf = 0, busy = false, balconOK = null;
   /* ---- sonido de olas (sintetizado: ruido que sube y baja como el mar) ---- */
@@ -27,7 +28,7 @@
         const gn = ac.createGain(); gn.gain.value = gain; const lfo = ac.createOscillator(), ld = ac.createGain(); lfo.frequency.value = rate; ld.gain.value = depth; lfo.connect(ld); ld.connect(gn.gain);
         s.connect(f); f.connect(gn); gn.connect(master); s.start(0, ph); lfo.start();
       };
-      layer("lowpass", 520, 0.55, 0.09, 0.3, 0.6); layer("lowpass", 900, 0.4, 0.13, 2.1, 0.45); layer("bandpass", 2400, 0.12, 0.11, 4.0, 0.12);
+      layer("lowpass", 480, 0.5, 0.08, 0.3, 0.55); layer("lowpass", 800, 0.35, 0.11, 2.1, 0.35); layer("bandpass", 2200, 0.08, 0.1, 4.0, 0.06);
     } catch (e) { ac = null; }
   }
   const level = v => { if (ac && master) { try { master.gain.cancelScheduledValues(ac.currentTime); master.gain.linearRampToValueAtTime(v, ac.currentTime + 1.6); } catch (e) {} } };
@@ -44,14 +45,16 @@
       const keep = keepView && P ? { yaw: P.S.yaw, pitch: P.S.pitch } : { yaw: S.yaw, pitch: 0 };
       cv.style.opacity = 0;
       setTimeout(() => {
-        P = CMLPano(cv, im, { span: 360, yaw: keep.yaw, pitch: keep.pitch, fov: base(), pitchMin: -75, pitchMax: 75 });
+        P = CMLPano(cv, im, { span: 360, yaw: keep.yaw, pitch: keep.pitch, fov: base(), pitchMin: -75, pitchMax: 75, water: S.water });
         if (!P) { root.classList.add("nogl"); busy = false; return; }
-        sc = name; fov = base(); setHots(); paint(); cv.style.opacity = 1; level(S.wave); busy = false; setBar();
+        sc = name; fov = base(); setHots(); paint(); cv.style.opacity = 1; level(S.wave); loop(); busy = false; setBar();
       }, P ? 380 : 0);
     };
     im.onerror = () => { busy = false; if (name === "balcon") { balconOK = false; peek(); } };
     im.src = S.src;
   }
+  function loop() { cancelAnimationFrame(raf2); const f = () => { if (!root.classList.contains("on") || !P) return; if (!document.hidden && !g) paint(); raf2 = requestAnimationFrame(f); }; raf2 = requestAnimationFrame(f); }
+  let raf2 = 0;
   function setHots() {
     hotsEl.innerHTML = "";
     SCENES[sc].hots.forEach(h => { const b = el("button", "o3-hot", "<span>" + esc(tx(h.l)) + "</span>"); b.type = "button"; b.dataset.x = h.x; b.dataset.y = h.y; b.addEventListener("click", () => { if (!moved) act(h.a); }); hotsEl.appendChild(b); });
@@ -60,13 +63,14 @@
   function setBar() {
     bar.innerHTML = "";
     const add = (t, a, cls) => { const b = el("button", cls || "", esc(t)); b.type = "button"; b.addEventListener("click", () => act(a)); bar.appendChild(b); };
+    if (sc === "lobby") return;
     if (sc === "cerrada") add(tx("open"), "open", "pri");
     else if (sc === "abierta") { add(tx("out"), "out", "pri"); add(tx("back"), "close-door"); }
     else add(tx("back"), "in", "pri");
   }
   /* si no existe la foto del balcón todavía: la cámara se acerca al mar y suben las olas */
   function peek() {
-    if (!P) return; const y0 = P.S.yaw, p0 = P.S.pitch, f0 = fov, t0 = performance.now(); level(0.34);
+    if (!P) return; const y0 = P.S.yaw, p0 = P.S.pitch, f0 = fov, t0 = performance.now(); level(0.15);
     (function f(t) { const k = Math.min(1, (t - t0) / 1800), e = 1 - Math.pow(1 - k, 3); let dy = ((0 - y0 + 540) % 360) - 180; P.S.yaw = y0 + dy * e; P.S.pitch = p0 + (4 - p0) * e; fov = f0 + (46 - f0) * e; paint(); if (k < 1) requestAnimationFrame(f); })(t0);
   }
   function act(a) {
@@ -99,8 +103,8 @@
     document.addEventListener("keydown", e => { if (e.key === "Escape" && root.classList.contains("on")) close(); });
   }
   function inertia(vx, vy) { cancelAnimationFrame(raf); const step = () => { vx *= .94; vy *= .94; if (Math.abs(vx) + Math.abs(vy) < .02 || !P || !root.classList.contains("on")) return; P.S.yaw -= vx; P.S.pitch += vy; paint(); raf = requestAnimationFrame(step); }; raf = requestAnimationFrame(step); }
-  function open() {
-    if (!root) build(); root.classList.add("on"); root.querySelector(".o3-top b").textContent = tx("title"); const h = document.getElementById("o3hint"); h.textContent = tx("hint"); h.style.opacity = 1; setTimeout(() => { h.style.opacity = 0; }, 7000);
+  function open(room) {
+    if (!root) build(); root.classList.add("on"); sc = room === "recepcion" ? "lobby" : (sc === "lobby" ? "cerrada" : sc); root.querySelector(".o3-top b").textContent = tx(room === "recepcion" ? "titleR" : "title"); const h = document.getElementById("o3hint"); h.textContent = tx("hint"); h.style.opacity = 1; setTimeout(() => { h.style.opacity = 0; }, 7000);
     root.querySelector(".o3-nogl").textContent = tx("noGL");
     waves(); level(SCENES[sc].wave); load(sc === "balcon" ? "abierta" : sc, false);
   }
