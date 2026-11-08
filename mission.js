@@ -101,7 +101,7 @@
     const go = async () => {
       if (busyR) return; busyR = true; hint.textContent = "…";
       try {
-        let r; try { r = await C.db.rpc("campaign_open_box"); } catch (e0) { r = { error: e0 }; }
+        let r; try { r = await Promise.race([C.db.rpc("campaign_open_box"), new Promise((_, rj) => setTimeout(() => rj(new Error("el servidor no respondió")), 4500))]); } catch (e0) { r = { error: e0 }; }
         let local = false;
         if (r.error || !r.data) { if (!demo()) throw (r.error || new Error("sin datos")); local = true; const have = ORDER.filter(k => hist.some(z => z.element === k)), pend = ORDER.filter(k => !have.includes(k)), pool = pend.length ? pend : ORDER; r = { data: { day: bogota(), element: pool[Math.floor(Math.random() * pool.length)], completed: false, step_code: false, step_question: false, step_activity: false, answer: null } }; }
         row = r.data; const i = hist.findIndex(z => z.day === row.day); if (i >= 0) hist[i] = row; else hist.push(row);
