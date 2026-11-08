@@ -116,7 +116,7 @@
     const s1 = h("section", "ms-s" + (row ? " ok" : ""));
     s1.appendChild(h("h3", "", "1 · " + esc(t("msBox"))));
     if (!row) { const b = h("button", "ms-gift", "<span>🎁</span><em>" + esc(t("msOpen")) + "</em>"); b.type = "button"; b.addEventListener("click", () => act(() => openBox(b))); s1.appendChild(b); }
-    else { const e = EL[row.element]; s1.appendChild(h("div", "ms-got", sphImg(row.element, "ms-big") + "<div><small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b></div>")); }
+    else { const e = EL[row.element]; s1.appendChild(h("div", "ms-open", "<img class='ms-ob' src='lobby/caja-abierta.webp?v=1' alt=''>" + sphImg(row.element, "ms-rise"))); s1.appendChild(h("div", "ms-got", "<div style='text-align:center;width:100%'><small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b></div>")); }
     box.appendChild(s1);
     // colección
     const coll = h("div", "ms-coll"); ORDER.forEach(k => { const own = got().includes(k); coll.appendChild(h("span", "ms-c" + (own ? " own" : ""), "<i>" + (own ? sphImg(k, "ms-ci") : "·") + "</i><small>" + esc(EL[k][L]) + "</small>")); }); box.appendChild(coll);
