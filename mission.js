@@ -101,7 +101,9 @@
     const go = async () => {
       if (busyR) return; busyR = true; hint.textContent = "…";
       try {
-        const r = await C.db.rpc("campaign_open_box"); if (r.error) throw r.error;
+        let r; try { r = await C.db.rpc("campaign_open_box"); } catch (e0) { r = { error: e0 }; }
+        let local = false;
+        if (r.error || !r.data) { if (!demo()) throw (r.error || new Error("sin datos")); local = true; const have = ORDER.filter(k => hist.some(z => z.element === k)), pend = ORDER.filter(k => !have.includes(k)), pool = pend.length ? pend : ORDER; r = { data: { day: bogota(), element: pool[Math.floor(Math.random() * pool.length)], completed: false, step_code: false, step_question: false, step_activity: false, answer: null } }; }
         row = r.data; const i = hist.findIndex(z => z.day === row.day); if (i >= 0) hist[i] = row; else hist.push(row);
         const e = EL[row.element] || EL.fe;
         stage.innerHTML = "<i class='ms-rvglow on'></i><img class='ms-rvbox' src='lobby/caja-abierta.webp?v=1' alt=''>" + sphImg(row.element, "ms-rvsph");
@@ -109,7 +111,7 @@
         hint.remove();
         const info = h("div", "ms-rvi", "<small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b><p>" + esc(L === "en" ? e.men : e.mes) + "</p><em>" + esc(L === "en" ? e.ve : e.v) + "</em>");
         const go2 = h("button", "primary", esc(t("msContinue"))); go2.type = "button"; go2.addEventListener("click", paint); info.appendChild(go2);
-        w.appendChild(info); paintFab();
+        if (local) info.appendChild(h("small", "", "Modo prueba: no se guardó en el servidor.")); w.appendChild(info); paintFab();
       } catch (er) { busyR = false; const d = er && (er.message || er.details || er.code) ? " (" + String(er.message || er.details || er.code).slice(0, 90) + ")" : ""; hint.textContent = t("msErr") + d; hint.style.animation = "none"; hint.style.fontSize = "13px"; }
     };
     stage.addEventListener("click", go); hint.addEventListener("click", go);
