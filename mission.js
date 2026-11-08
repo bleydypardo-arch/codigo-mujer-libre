@@ -6,10 +6,15 @@
   "use strict";
   const START = "2026-11-07", END = "2026-12-15";
   const EL = {
-    orquidea: { e: "🌸", es: "Orquídea", en: "Orchid" }, bienestar: { e: "🌿", es: "Bienestar", en: "Wellness" },
-    viajes: { e: "✈️", es: "Viajes", en: "Travel" }, comunidad: { e: "💗", es: "Comunidad", en: "Community" }, matcha: { e: "🍵", es: "Matcha", en: "Matcha" }
+    emprende: { es: "Emprende", en: "Entrepreneurship" }, bienestar: { es: "Bienestar", en: "Wellness" },
+    viajes: { es: "Viaja & Descubre", en: "Travel & Discover" }, boutiques: { es: "Boutiques", en: "Boutiques" },
+    comunidad: { es: "Comunidad", en: "Community" }, eventos: { es: "Eventos & Experiencias", en: "Events & Experiences" },
+    premios: { es: "Premios & Incentivos", en: "Awards & Incentives" },
+    orquidea: { es: "Orquídea", en: "Orchid" }, matcha: { es: "Matcha", en: "Matcha" }
   };
-  const ORDER = ["orquidea", "bienestar", "viajes", "comunidad", "matcha"];
+  const ORDER = ["emprende", "bienestar", "viajes", "boutiques", "comunidad", "eventos", "premios"];
+  const sph = k => "lobby/esferas/" + k + ".webp?v=1";
+  const sphImg = (k, cls) => EL[k] && ORDER.includes(k) ? "<img class='" + cls + "' src='" + sph(k) + "' alt=''>" : "<span class='" + cls + "'>🌸</span>";
   const ES = {
     msFab: "Misión de hoy", msTitle: "Hoy en Código ML", msSub: "Completa tu misión de hoy: unos 5 minutos que te hacen bien.",
     msBox: "Tu caja secreta", msOpen: "Abrir mi caja", msGot: "Hoy te tocó", msCode: "Tu código de hoy", msRead: "Lo leí", msMsg: "Mensaje del día",
@@ -106,16 +111,16 @@
     const box = h("div", "ms-box");
     const x = h("button", "ms-x", "×"); x.type = "button"; x.setAttribute("aria-label", t("msClose")); x.addEventListener("click", close); box.appendChild(x);
     box.appendChild(h("h2", "", esc(t("msTitle")))); box.appendChild(h("p", "ms-sub", esc(t("msSub"))));
-    box.appendChild(h("div", "ms-stats", "<span><b>" + done() + "</b>" + esc(t("msDays")) + "</span><span><b>" + done() + "</b>" + esc(t("msTickets")) + "</span><span><b>" + got().length + "/5</b>" + esc(t("msColl")) + "</span>"));
+    box.appendChild(h("div", "ms-stats", "<span><b>" + done() + "</b>" + esc(t("msDays")) + "</span><span><b>" + done() + "</b>" + esc(t("msTickets")) + "</span><span><b>" + got().length + "/7</b>" + esc(t("msColl")) + "</span>"));
     // 1. caja
     const s1 = h("section", "ms-s" + (row ? " ok" : ""));
     s1.appendChild(h("h3", "", "1 · " + esc(t("msBox"))));
     if (!row) { const b = h("button", "ms-gift", "<span>🎁</span><em>" + esc(t("msOpen")) + "</em>"); b.type = "button"; b.addEventListener("click", () => act(() => openBox(b))); s1.appendChild(b); }
-    else { const e = EL[row.element]; s1.appendChild(h("div", "ms-got", "<span class='ms-big'>" + e.e + "</span><div><small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b></div>")); }
+    else { const e = EL[row.element]; s1.appendChild(h("div", "ms-got", sphImg(row.element, "ms-big") + "<div><small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b></div>")); }
     box.appendChild(s1);
     // colección
-    const coll = h("div", "ms-coll"); ORDER.forEach(k => { const own = got().includes(k); coll.appendChild(h("span", "ms-c" + (own ? " own" : ""), "<i>" + (own ? EL[k].e : "·") + "</i><small>" + esc(EL[k][L]) + "</small>")); }); box.appendChild(coll);
-    if (got().length === 5) box.appendChild(h("p", "ms-win", "🎉 " + esc(t("msCollDone"))));
+    const coll = h("div", "ms-coll"); ORDER.forEach(k => { const own = got().includes(k); coll.appendChild(h("span", "ms-c" + (own ? " own" : ""), "<i>" + (own ? sphImg(k, "ms-ci") : "·") + "</i><small>" + esc(EL[k][L]) + "</small>")); }); box.appendChild(coll);
+    if (got().length === ORDER.length) box.appendChild(h("p", "ms-win", "🎉 " + esc(t("msCollDone"))));
     // 2. código de hoy
     const dly = window.CMLDaily && window.CMLDaily.today && window.CMLDaily.today(), tx = dly ? dly.text(L) : null, msg = dly && dly.msg ? dly.msg(L) : "";
     const s2 = h("section", "ms-s" + (row && row.step_code ? " ok" : "") + (!row ? " lock" : ""));
