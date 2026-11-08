@@ -16,7 +16,7 @@ window.CMLPano = function (canvas, img, o) {
   const sh = (t, s) => { const x = gl.createShader(t); gl.shaderSource(x, s); gl.compileShader(x); return x; };
   const pr = gl.createProgram();
   gl.attachShader(pr, sh(gl.VERTEX_SHADER, "attribute vec3 p;attribute vec2 t;uniform mat4 m;varying vec2 v;void main(){v=t;gl_Position=m*vec4(p,1.);}"));
-  gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, "precision mediump float;varying vec2 v;uniform sampler2D s;uniform float tm;uniform vec4 wr;uniform vec2 wb;uniform float wa;float ed(float y,float a,float b){return smoothstep(a,a+.004,y)*(1.-smoothstep(b-.004,b,y));}void main(){vec3 c=texture2D(s,v).rgb;float e=max(ed(v.y,wr.z,wr.w),ed(v.y,wb.x,wb.y))*step(wr.x,v.x)*step(v.x,wr.y);if(wa>0.&&e>0.){vec2 d=vec2(wa*.25*sin(v.y*500.+tm*.7),wa*(sin(v.x*260.+tm*.9)+.6*sin(v.x*610.-tm*.6)))*e;c=texture2D(s,v+d).rgb;}gl_FragColor=vec4(c,1.);}"));
+  gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, "precision mediump float;varying vec2 v;uniform sampler2D s;uniform float tm;uniform vec4 wr;uniform vec2 wb;uniform float wa;float ed(float y,float a,float b){return smoothstep(a,a+.004,y)*(1.-smoothstep(b-.004,b,y));}void main(){vec3 c=texture2D(s,v).rgb;float e=max(ed(v.y,wr.z,wr.w),ed(v.y,wb.x,wb.y))*step(wr.x,v.x)*step(v.x,wr.y);if(wa>0.&&e>0.){vec2 d=vec2(wa*.03*sin(v.y*500.+tm*.7),wa*(sin(v.x*260.+tm*.9)+.6*sin(v.x*610.-tm*.6)))*e;c=texture2D(s,v+d).rgb;}gl_FragColor=vec4(c,1.);}"));
   gl.linkProgram(pr); gl.useProgram(pr);
   const buf = (d, t) => { const b = gl.createBuffer(); gl.bindBuffer(t, b); gl.bufferData(t, d, gl.STATIC_DRAW); return b; };
   buf(new Float32Array(pos), gl.ARRAY_BUFFER); const lp = gl.getAttribLocation(pr, "p"); gl.enableVertexAttribArray(lp); gl.vertexAttribPointer(lp, 3, gl.FLOAT, false, 0, 0);
