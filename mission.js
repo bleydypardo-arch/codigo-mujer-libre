@@ -15,7 +15,7 @@
     gratitud: { e: "👑", es: "Gratitud", en: "Gratitude", mes: "Reconocer las bendiciones de Dios y vivir con un corazón agradecido.", men: "Recognizing God's blessings and living with a grateful heart.", v: "1 Tesalonicenses 5:18", ve: "1 Thessalonians 5:18" }
   };
   const ORDER = ["fe", "sabiduria", "amor", "fortaleza", "proposito", "diligencia", "gratitud"];
-  const sph = k => "lobby/esferas/" + k + ".webp?v=3";
+  const sph = k => "lobby/esferas/" + k + ".webp?v=4";
   const sphImg = (k, cls) => EL[k] ? "<img class='" + cls + "' data-fb='" + EL[k].e + "' src='" + sph(k) + "' alt=''>" : "<span class='" + cls + "'>🌸</span>";
   document.addEventListener("error", ev => { const i = ev.target; if (i && i.tagName === "IMG" && i.dataset && i.dataset.fb) { const sp = document.createElement("span"); sp.className = i.className + " ms-fb"; sp.textContent = i.dataset.fb; i.replaceWith(sp); } }, true);
   const ES = {
