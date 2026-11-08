@@ -77,7 +77,7 @@
   }
   async function load() {
     if (!enabled()) return false;
-    const r = await C.db.from("campaign_days").select("day,element,completed,step_code,step_question,step_activity,answer").eq("user_id", me()).order("day", { ascending: true });
+    let r; try { r = await C.db.from("campaign_days").select("day,element,completed,step_code,step_question,step_activity,answer").eq("user_id", me()).order("day", { ascending: true }); } catch (e) { r = { error: e }; }
     if (r.error) { ok = false; loaded = true; return false; }
     ok = true; hist = r.data || []; row = hist.find(x => x.day === bogota()) || null; loaded = true; return true;
   }
@@ -86,7 +86,7 @@
   const steps = () => (row ? [row.step_code, row.step_question, row.step_activity].filter(Boolean).length : 0) + (row ? 1 : 0);
 
   /* La caja ya no flota en la pantalla: vive en el lobby (lobby.js). Aquí solo avisamos su estado. */
-  function state() { return { on: !!(enabled() && loaded), done: !!(row && row.completed), opened: !!row, steps: steps(), got: got() }; }
+  function state() { return { on: !!enabled(), done: !!(row && row.completed), opened: !!row, steps: steps(), got: got() }; }
   function paintFab() { try { document.dispatchEvent(new CustomEvent("cml:mission-state", { detail: state() })); } catch (e) {} }
   const h = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
