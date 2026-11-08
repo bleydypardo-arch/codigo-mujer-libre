@@ -132,3 +132,4 @@ a.bt2{text-decoration:none;color:var(--wine-d)}a.bt2.w{color:#fff}
 .lgl{position:absolute;top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));z-index:6;font:600 13px var(--sans);color:#f6e7c2;border:1px solid rgba(235,214,164,.7);border-radius:999px;padding:8px 14px;background:rgba(40,12,20,.45)}
 .hb.lang{padding:7px 10px}
 .sala.ofi{background:linear-gradient(180deg,#2a6b4f,#123226);color:#F6E1A8;border:2px solid #E6C275;box-shadow:0 12px 28px -10px rgba(0,0,0,.6)}.sala.ofi b{color:#F6E1A8}
+.sala.cli{margin-top:10px;background:linear-gradient(180deg,#a3254f,#5f0d29);color:#F6E1A8;border:2px solid #E6C275;box-shadow:0 12px 28px -10px rgba(0,0,0,.6)}.sala.cli b{color:#F6E1A8}
