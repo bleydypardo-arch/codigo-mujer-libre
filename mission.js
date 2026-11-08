@@ -86,7 +86,7 @@
   const steps = () => (row ? [row.step_code, row.step_question, row.step_activity].filter(Boolean).length : 0) + (row ? 1 : 0);
 
   /* La caja ya no flota en la pantalla: vive en el lobby (lobby.js). Aquí solo avisamos su estado. */
-  function state() { return { on: !!(enabled() && loaded), done: !!(row && row.completed), opened: !!row, steps: steps() }; }
+  function state() { return { on: !!(enabled() && loaded), done: !!(row && row.completed), opened: !!row, steps: steps(), got: got() }; }
   function paintFab() { try { document.dispatchEvent(new CustomEvent("cml:mission-state", { detail: state() })); } catch (e) {} }
   const h = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));

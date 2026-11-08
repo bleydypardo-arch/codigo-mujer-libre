@@ -285,10 +285,25 @@ function build() {
   document.addEventListener("cml:lang", () => setTimeout(() => window.CMLMission && sbPaint(window.CMLMission.state()), 80));
   setTimeout(() => window.CMLMission && sbPaint(window.CMLMission.state()), 0);
 
+  /* Tira "Mis esferas": siempre visible debajo del lobby, con las 7 esferas y un botón para sacar la de hoy. */
+  const SK = ["fe", "sabiduria", "amor", "fortaleza", "proposito", "diligencia", "gratitud"];
+  const strip = mk("lb-sph"); strip.style.display = "none";
+  strip.innerHTML = '<div class="lb-sph-h"><b></b><span></span></div><div class="lb-sph-r">' + SK.map(k => '<i data-k="' + k + '"><img src="lobby/esferas/' + k + '.webp?v=4" alt="" loading="lazy"></i>').join("") + '</div><button type="button" class="lb-sph-b"></button>';
+  const openSph = () => { if (sb.classList.contains("on")) sb.click(); else if (window.CMLMission) window.CMLMission.open(); };
+  strip.querySelector("button").addEventListener("click", openSph); strip.querySelector(".lb-sph-r").addEventListener("click", openSph);
+  const stripPaint = st => {
+    const on = !!(st && st.on); strip.style.display = on ? "" : "none"; if (!on) return;
+    const g = st.got || [], es = (window.CML && window.CML.lang && window.CML.lang() === "en");
+    strip.querySelector("b").textContent = es ? "My spheres" : "Mis esferas"; strip.querySelector("span").textContent = g.length + "/7";
+    strip.querySelectorAll("i").forEach(i => i.classList.toggle("own", g.includes(i.dataset.k)));
+    strip.querySelector("button").textContent = st.opened ? (es ? "See my mission" : "Ver mi misión") : (es ? "Get today's sphere" : "Sacar mi esfera de hoy");
+  };
+  document.addEventListener("cml:mission-state", e => stripPaint(e.detail)); setTimeout(() => window.CMLMission && stripPaint(window.CMLMission.state()), 0);
+
   // Spa & Wellness
   const sp = place(mk("lb-abs lb-sp", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg><b></b>', "button"), 290, 1368, 520, 54); sp.type = "button";
   sp.querySelector("b").textContent = t("lbSpaBtn"); sp.addEventListener("click", () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); });
-  root.appendChild(stage); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) {
+  root.appendChild(stage); root.appendChild(strip); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) {
     root.__minFoot = 60; window.CMLScene.fill(root, "home");
     const SPA_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg>';
     const dock = mk("lb-dock lb-home", '<div class="lb-drow"><button type="button" class="lb-dh"><span class="lb-dht"><small></small><b></b></span><span class="lb-dha">›</span></button><button type="button" class="lb-ds">' + SPA_SVG + '<b></b></button></div>' +
