@@ -262,10 +262,23 @@ function build() {
     sb.querySelector(".sb-tag").textContent = st.done ? t("lbSurpriseDone") : st.opened ? t("lbMyMission") : t("lbSurprise");
     sb.querySelector(".sb-n").textContent = st.done ? "✓" : (st.steps + "/4");
   };
+  /* Plan B: si por cualquier motivo la pantalla de la caja no abre, igual sale la esfera. */
+  function sbEmergency(err) {
+    const K = ["fe", "sabiduria", "amor", "fortaleza", "proposito", "diligencia", "gratitud"], N = { fe: "Fe", sabiduria: "Sabiduría", amor: "Amor", fortaleza: "Fortaleza", proposito: "Propósito", diligencia: "Diligencia", gratitud: "Gratitud" };
+    const k = K[Math.floor(Math.random() * K.length)];
+    const o = document.createElement("div"); o.className = "ms-ov"; o.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(30,8,22,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;text-align:center;padding:20px";
+    o.innerHTML = '<div style="position:relative;width:min(330px,80vw);height:min(330px,80vw)"><img src="lobby/caja-abierta.webp?v=1" style="position:absolute;left:8%;bottom:0;width:84%"><img src="lobby/esferas/' + k + '.webp?v=4" style="position:absolute;left:27%;top:2%;width:46%;filter:drop-shadow(0 0 18px #F2C766)"></div><h2 style="font:600 30px Georgia,serif;margin:0;color:#F6E1A8">' + N[k] + '</h2><small style="opacity:.8">Modo prueba' + (err ? " (" + String(err.message || err).slice(0, 80) + ")" : "") + '</small><button type="button" style="padding:14px 28px;border-radius:99px;border:0;background:#9a1c44;color:#fff;font:700 16px Inter,Arial">Cerrar</button>';
+    o.querySelector("button").onclick = () => o.remove(); document.body.appendChild(o);
+  }
   sb.addEventListener("click", () => {
     if (!window.CMLMission) return;
     if (sb.classList.contains("sb-got")) { window.CMLMission.open(true); return; }
-    sb.classList.add("sb-open"); setTimeout(() => { window.CMLMission.open(); setTimeout(() => sb.classList.remove("sb-open"), 400); }, 850);
+    sb.classList.add("sb-open");
+    setTimeout(() => {
+      let err = null; try { window.CMLMission.open(); } catch (e) { err = e; }
+      setTimeout(() => sb.classList.remove("sb-open"), 400);
+      setTimeout(() => { if (err || !document.querySelector(".ms-ov")) sbEmergency(err); }, 700);
+    }, 850);
   });
   stage.appendChild(sb);
   document.addEventListener("cml:mission-state", e => sbPaint(e.detail));
