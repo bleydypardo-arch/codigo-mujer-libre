@@ -30,3 +30,5 @@
 @keyframes msRise { from { top: 90px; opacity: 0; transform: translateX(-50%) scale(.3); } to { top: -6px; opacity: 1; transform: translateX(-50%) scale(1); } }
 @keyframes msFloat { 50% { transform: translateX(-50%) translateY(-6px); } }
 @media (prefers-reduced-motion: reduce) { .ms-rise { animation: none !important; } }
+.ms-mean { margin: 4px 0 2px; font-size: 13.5px; color: #4a3a40; line-height: 1.35; } .ms-verse { color: #8a6a2a; font-style: italic; } .ms-fb { display: inline-grid; place-items: center; font-size: 40px; width: 84px; height: 84px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, #f3c6e6 60%, #c77bb0); }
+.ms-c i .ms-fb { width: 100%; height: 100%; font-size: 24px; }

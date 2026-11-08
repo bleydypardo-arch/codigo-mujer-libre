@@ -6,15 +6,18 @@
   "use strict";
   const START = "2026-11-07", END = "2026-12-15";
   const EL = {
-    emprendimiento: { es: "Emprendimiento", en: "Entrepreneurship" }, bienestar: { es: "Bienestar", en: "Wellness" },
-    libertad: { es: "Libertad", en: "Freedom" }, amor: { es: "Amor", en: "Love" },
-    crecimiento: { es: "Crecimiento", en: "Growth" }, proposito: { es: "Propósito", en: "Purpose" }, liderazgo: { es: "Liderazgo", en: "Leadership" },
-    orquidea: { es: "Orquídea", en: "Orchid" }, matcha: { es: "Matcha", en: "Matcha" }, viajes: { es: "Viajes", en: "Travel" }, comunidad: { es: "Comunidad", en: "Community" },
-    emprende: { es: "Emprende", en: "Entrepreneurship" }, boutiques: { es: "Boutiques", en: "Boutiques" }, eventos: { es: "Eventos", en: "Events" }, premios: { es: "Premios", en: "Awards" }
+    fe: { e: "🙏", es: "Fe", en: "Faith", mes: "Confiar en Dios y caminar bajo su dirección.", men: "Trusting God and walking under His guidance.", v: "Hebreos 11:1", ve: "Hebrews 11:1" },
+    sabiduria: { e: "💎", es: "Sabiduría", en: "Wisdom", mes: "Tomar decisiones con discernimiento y prudencia.", men: "Making decisions with discernment and prudence.", v: "Proverbios 14:1", ve: "Proverbs 14:1" },
+    amor: { e: "❤️", es: "Amor", en: "Love", mes: "Amar a Dios, a la familia y al prójimo.", men: "Loving God, family and neighbor.", v: "1 Corintios 13:4-7", ve: "1 Corinthians 13:4-7" },
+    fortaleza: { e: "🦋", es: "Fortaleza", en: "Strength", mes: "Enfrentar las dificultades con valentía y perseverancia.", men: "Facing difficulties with courage and perseverance.", v: "Proverbios 31:25", ve: "Proverbs 31:25" },
+    proposito: { e: "✨", es: "Propósito", en: "Purpose", mes: "Reconocer los dones que Dios nos ha dado y utilizarlos para hacer el bien.", men: "Recognizing the gifts God has given us and using them to do good.", v: "Efesios 2:10", ve: "Ephesians 2:10" },
+    diligencia: { e: "🌸", es: "Diligencia", en: "Diligence", mes: "Trabajar con responsabilidad, excelencia y perseverancia.", men: "Working with responsibility, excellence and perseverance.", v: "Proverbios 31:13-18", ve: "Proverbs 31:13-18" },
+    gratitud: { e: "👑", es: "Gratitud", en: "Gratitude", mes: "Reconocer las bendiciones de Dios y vivir con un corazón agradecido.", men: "Recognizing God's blessings and living with a grateful heart.", v: "1 Tesalonicenses 5:18", ve: "1 Thessalonians 5:18" }
   };
-  const ORDER = ["emprendimiento", "bienestar", "libertad", "amor", "crecimiento", "proposito", "liderazgo"];
-  const sph = k => "lobby/esferas/" + k + ".webp?v=2";
-  const sphImg = (k, cls) => EL[k] && ORDER.includes(k) ? "<img class='" + cls + "' src='" + sph(k) + "' alt=''>" : "<span class='" + cls + "'>🌸</span>";
+  const ORDER = ["fe", "sabiduria", "amor", "fortaleza", "proposito", "diligencia", "gratitud"];
+  const sph = k => "lobby/esferas/" + k + ".webp?v=3";
+  const sphImg = (k, cls) => EL[k] ? "<img class='" + cls + "' data-fb='" + EL[k].e + "' src='" + sph(k) + "' alt=''>" : "<span class='" + cls + "'>🌸</span>";
+  document.addEventListener("error", ev => { const i = ev.target; if (i && i.tagName === "IMG" && i.dataset && i.dataset.fb) { const sp = document.createElement("span"); sp.className = i.className + " ms-fb"; sp.textContent = i.dataset.fb; i.replaceWith(sp); } }, true);
   const ES = {
     msFab: "Misión de hoy", msTitle: "Hoy en Código ML", msSub: "Completa tu misión de hoy: unos 5 minutos que te hacen bien.",
     msBox: "Tu caja secreta", msOpen: "Abrir mi caja", msGot: "Hoy te tocó", msCode: "Tu código de hoy", msRead: "Lo leí", msMsg: "Mensaje del día",
@@ -116,7 +119,7 @@
     const s1 = h("section", "ms-s" + (row ? " ok" : ""));
     s1.appendChild(h("h3", "", "1 · " + esc(t("msBox"))));
     if (!row) { const b = h("button", "ms-gift", "<span>🎁</span><em>" + esc(t("msOpen")) + "</em>"); b.type = "button"; b.addEventListener("click", () => act(() => openBox(b))); s1.appendChild(b); }
-    else { const e = EL[row.element]; s1.appendChild(h("div", "ms-open", "<img class='ms-ob' src='lobby/caja-abierta.webp?v=1' alt=''>" + sphImg(row.element, "ms-rise"))); s1.appendChild(h("div", "ms-got", "<div style='text-align:center;width:100%'><small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b></div>")); }
+    else { const e = EL[row.element] || EL.fe; s1.appendChild(h("div", "ms-open", "<img class='ms-ob' src='lobby/caja-abierta.webp?v=1' alt=''>" + sphImg(row.element, "ms-rise"))); s1.appendChild(h("div", "ms-got", "<div style='text-align:center;width:100%'><small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b><p class='ms-mean'>" + esc(L === "en" ? e.men : e.mes) + "</p><small class='ms-verse'>" + esc(L === "en" ? e.ve : e.v) + "</small></div>")); }
     box.appendChild(s1);
     // colección
     const coll = h("div", "ms-coll"); ORDER.forEach(k => { const own = got().includes(k); coll.appendChild(h("span", "ms-c" + (own ? " own" : ""), "<i>" + (own ? sphImg(k, "ms-ci") : "·") + "</i><small>" + esc(EL[k][L]) + "</small>")); }); box.appendChild(coll);
