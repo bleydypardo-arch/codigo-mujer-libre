@@ -288,14 +288,16 @@ function build() {
   /* Tira "Mis esferas": siempre visible debajo del lobby, con las 7 esferas y un botón para sacar la de hoy. */
   const SK = ["fe", "sabiduria", "amor", "fortaleza", "proposito", "diligencia", "gratitud"];
   const strip = mk("lb-sph"); strip.style.display = "none";
-  strip.innerHTML = '<div class="lb-sph-h"><b></b><span></span></div><div class="lb-sph-r">' + SK.map(k => '<i data-k="' + k + '"><img src="lobby/esferas/' + k + '.webp?v=4" alt="" loading="lazy"></i>').join("") + '</div><button type="button" class="lb-sph-b"></button><small style="display:block;text-align:center;opacity:.5;margin-top:6px;font:11px Inter,Arial">versión k</small>';
+  strip.innerHTML = '<div class="lb-sph-h"><b></b><span></span></div><div class="lb-sph-r">' + SK.map(k => '<i data-k="' + k + '"><img src="lobby/esferas/' + k + '.webp?v=4" alt="" loading="lazy"></i>').join("") + '</div><button type="button" class="lb-sph-b"></button><button type="button" class="lb-sph-t"></button><small style="display:block;text-align:center;opacity:.5;margin-top:6px;font:11px Inter,Arial">versión m</small>';
   const openSph = () => { if (sb.classList.contains("on")) sb.click(); else if (window.CMLMission) window.CMLMission.open(); };
   strip.querySelector("button").addEventListener("click", openSph); strip.querySelector(".lb-sph-r").addEventListener("click", openSph);
+  strip.querySelector(".lb-sph-t").addEventListener("click", () => window.CMLMission && window.CMLMission.ticket && window.CMLMission.ticket());
   const stripPaint = st => {
     const on = !!(st && st.on); strip.style.display = on ? "" : "none"; if (!on) return;
     const g = st.got || [], es = (window.CML && window.CML.lang && window.CML.lang() === "en");
     strip.querySelector("b").textContent = es ? "My spheres" : "Mis esferas"; strip.querySelector("span").textContent = g.length + "/7";
     strip.querySelectorAll("i").forEach(i => i.classList.toggle("own", g.includes(i.dataset.k)));
+    strip.querySelector(".lb-sph-t").textContent = es ? "🎟️ My ticket & how to win" : "🎟️ Mi boleto y cómo ganar";
     strip.querySelector("button").textContent = st.opened ? (es ? "See my mission" : "Ver mi misión") : (es ? "Get today's sphere" : "Sacar mi esfera de hoy");
   };
   document.addEventListener("cml:mission-state", e => stripPaint(e.detail)); setTimeout(() => window.CMLMission && stripPaint(window.CMLMission.state()), 0);

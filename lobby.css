@@ -171,3 +171,4 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 .lb-ofi{display:flex;align-items:center;gap:12px;width:calc(100% - 28px);margin:10px 14px 0;padding:14px 16px;border:1.5px solid #E6C275;border-radius:20px;background:linear-gradient(180deg,#1f4a37,#10291f);color:#F6E1A8;text-align:left;box-shadow:0 10px 26px -12px rgba(0,0,0,.6)}
 .lb-ofi-i{font-size:30px}.lb-ofi-t{flex:1;display:grid;gap:3px}.lb-ofi-t b{font:600 20px Georgia,serif}.lb-ofi-t small{font:500 13px Inter,Arial,sans-serif;opacity:.85}.lb-ofi-a{font-size:30px;color:#E6C275}
 .lb-sb.sb-got{display:none!important}
+.lb-sph-t{display:block;width:100%;margin-top:8px;padding:12px;border-radius:999px;background:#fff;border:1.5px solid #C9A25A;color:#5b0b27;font:700 15px Inter,Arial,sans-serif}

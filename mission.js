@@ -186,5 +186,34 @@
   document.addEventListener("cml:session", () => { row = null; hist = []; loaded = false; if (ov) close(); paintFab(); setTimeout(() => start().catch(() => {}), 2500); });
   document.addEventListener("cml:lang", () => { if (ov) paint(); paintFab(); });
   window.addEventListener("load", () => setTimeout(() => start().catch(() => {}), 3000));
-  window.CMLMission = { open, enabled, state };
+
+  /* Mi boleto: números de la mujer y reglas de la rifa (se calcula con sus propios días; el servidor aplica lo mismo al sortear). */
+  function ticket() {
+    if (!init()) return; row = hist.find(x => x.day === bogota()) || null;
+    const es = lang() === "es", comp = hist.filter(x => x.completed).length, opened = hist.length, sets = Math.floor(opened / 7), tickets = comp + 3 * sets;
+    const cyc = hist.slice().sort((a, b) => a.day < b.day ? -1 : 1).slice(sets * 7).map(x => x.element), left = 7 - (opened % 7);
+    const code = "CML-" + String(me()).replace(/-/g, "").slice(0, 6).toUpperCase(), eligible = sets >= 1;
+    const L = es ? {
+      t: "Mi boleto", n: "Boletos acumulados", cod: "Tu número", d: "Días completos", dl: "1 boleto por día", c: "Colecciones completas", cl: "3 boletos extra cada una",
+      sp: "Mi colección de esta semana", need: eligible ? "¡Ya estás participando en la rifa!" : "Te falta 1 colección completa (7 esferas) para entrar a la rifa.",
+      next: left === 7 ? "Empieza tu siguiente colección hoy." : "Te faltan " + left + " " + (left === 1 ? "día" : "días") + " para completar tu colección.",
+      h: "Cómo ganar", r: ["Entra cada día, abre tu caja sorpresa y consigue tu esfera. Cada día es una esfera distinta, hasta juntar las 7.", "Completa tu misión del día (código del día, una pregunta y una actividad): eso vale 1 boleto.", "Cuando juntas las 7 esferas completas una colección y ganas 3 boletos extra. Puedes completar una cada semana.", "Para entrar a la rifa necesitas mínimo 1 colección completa.", "Entre más boletos tengas, más probabilidades de ganar.", "La rifa es el 15 de diciembre y es solo para mujeres de Bogotá. Los premios se anunciarán aquí."], x: "Cerrar"
+    } : {
+      t: "My ticket", n: "Tickets so far", cod: "Your number", d: "Completed days", dl: "1 ticket per day", c: "Completed collections", cl: "3 bonus tickets each",
+      sp: "My collection this week", need: eligible ? "You're already in the raffle!" : "You need 1 complete collection (7 spheres) to enter the raffle.",
+      next: left === 7 ? "Start your next collection today." : left + " more " + (left === 1 ? "day" : "days") + " to complete your collection.",
+      h: "How to win", r: ["Visit every day, open your surprise box and get your sphere. Each day brings a different one until you have all 7.", "Complete your daily mission (code of the day, a question and an activity): that earns 1 ticket.", "When you gather all 7 spheres you complete a collection and earn 3 bonus tickets. You can complete one every week.", "To enter the raffle you need at least 1 complete collection.", "The more tickets you have, the better your chances.", "The raffle is on December 15 and is only for women in Bogotá. Prizes will be announced here."], x: "Close"
+    };
+    const old = document.querySelector(".tk-ov"); if (old) old.remove();
+    const o = h("div", "ms-ov tk-ov"), b = h("div", "ms-box tk-box");
+    b.innerHTML = '<button class="ms-x" type="button" aria-label="' + L.x + '">×</button><h2 class="tk-h">🎟️ ' + L.t + '</h2>' +
+      '<div class="tk-card"><small>' + L.cod + '</small><b class="tk-code">' + code + '</b><div class="tk-big"><span>' + tickets + '</span><small>' + L.n + '</small></div></div>' +
+      '<div class="tk-rows"><div><b>' + comp + '</b><span>' + L.d + '</span><small>' + L.dl + '</small></div><div><b>' + sets + '</b><span>' + L.c + '</span><small>' + L.cl + '</small></div></div>' +
+      '<h3>' + L.sp + ' <em>' + Math.min(cyc.length, 7) + '/7</em></h3><div class="tk-sph">' + ORDER.map(k => '<i class="' + (cyc.includes(k) ? "own" : "") + '">' + sphImg(k, "") + '</i>').join("") + '</div>' +
+      '<p class="tk-st ' + (eligible ? "ok" : "") + '">' + L.need + '</p><p class="tk-nx">' + L.next + '</p>' +
+      '<h3>' + L.h + '</h3><ol class="tk-ol">' + L.r.map(x => "<li>" + x + "</li>").join("") + '</ol><button class="tk-close" type="button">' + L.x + '</button>';
+    o.appendChild(b); document.body.appendChild(o);
+    const z = () => o.remove(); b.querySelector(".ms-x").onclick = z; b.querySelector(".tk-close").onclick = z; o.addEventListener("click", e => { if (e.target === o) z(); });
+  }
+  window.CMLMission = { open, enabled, state, ticket };
 })();

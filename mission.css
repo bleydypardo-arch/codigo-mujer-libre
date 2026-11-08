@@ -57,3 +57,15 @@
 }
 .ms-rvs { overflow: visible; }
 @media (prefers-reduced-motion: reduce) { .ms-rvsph { animation: none !important; } }
+/* Mi boleto */
+.tk-box{padding:56px 18px 20px;color:#4a0a1e}.tk-h{font:600 26px Georgia,serif;margin:0 0 12px;text-align:center}
+.tk-card{text-align:center;padding:16px;border-radius:20px;background:linear-gradient(180deg,#7a1234,#4a0a1e);color:#F6E1A8;border:2px dashed #E6C275}
+.tk-card small{display:block;opacity:.85;font:600 12px Inter,Arial,sans-serif;letter-spacing:.06em}.tk-code{display:block;font:700 26px/1.2 'Courier New',monospace;letter-spacing:.12em;margin:4px 0 10px}
+.tk-big span{display:block;font:700 54px/1 Georgia,serif}.tk-big small{font-size:13px}
+.tk-rows{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.tk-rows div{background:#fff;border:1.5px solid #D9B66E;border-radius:16px;padding:10px;text-align:center}
+.tk-rows b{display:block;font:700 30px Georgia,serif}.tk-rows span{display:block;font:600 13px Inter,Arial,sans-serif}.tk-rows small{display:block;font:12px Inter,Arial,sans-serif;opacity:.7}
+.tk-box h3{font:600 18px Georgia,serif;margin:16px 0 8px}.tk-box h3 em{font:700 14px Inter,Arial,sans-serif;font-style:normal;color:#8E6E32;margin-left:6px}
+.tk-sph{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.tk-sph i{aspect-ratio:1;display:block}.tk-sph img{width:100%;height:100%;object-fit:contain;opacity:.3;filter:grayscale(1)}.tk-sph i.own img{opacity:1;filter:drop-shadow(0 0 6px rgba(242,199,102,.9))}
+.tk-st{margin:10px 0 2px;padding:10px 12px;border-radius:12px;background:#f7e3d6;font:600 14px/1.35 Inter,Arial,sans-serif}.tk-st.ok{background:#dff1e4;color:#14472f}.tk-nx{margin:4px 0;font:14px Inter,Arial,sans-serif;opacity:.85}
+.tk-ol{margin:0;padding-left:20px;display:grid;gap:8px;font:14px/1.45 Inter,Arial,sans-serif}
+.tk-close{display:block;width:100%;margin-top:16px;padding:14px;border:0;border-radius:999px;background:linear-gradient(180deg,#9a1c44,#6b0f2e);color:#F6E1A8;font:800 16px Inter,Arial,sans-serif}
