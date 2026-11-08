@@ -70,3 +70,11 @@
 .tk-ol{margin:0;padding-left:20px;display:grid;gap:8px;font:14px/1.45 Inter,Arial,sans-serif}
 .tk-close{display:block;width:100%;margin-top:16px;padding:14px;border:0;border-radius:999px;background:linear-gradient(180deg,#9a1c44,#6b0f2e);color:#F6E1A8;font:800 16px Inter,Arial,sans-serif}
 .tk-pz{list-style:none;margin:0;padding:0;display:grid;gap:8px}.tk-pz li{padding:12px 14px;border-radius:14px;background:linear-gradient(180deg,#fff6dc,#f6e1a8);border:1.5px solid #D9B66E;font:600 15px/1.35 Inter,Arial,sans-serif;color:#5b0b27}
+
+/* esfera brillante que hay que atrapar */
+.ms-orb{position:fixed;left:50%;top:40%;z-index:430;width:74px;height:74px;margin:-37px 0 0 -37px;border:0;border-radius:50%;cursor:pointer;background:radial-gradient(circle at 35% 30%,#fff,#ffe9a8 35%,#f2c766 65%,#c98f1f);box-shadow:0 0 28px 10px rgba(255,214,120,.8),0 0 60px 24px rgba(255,214,120,.35);transition:left .7s cubic-bezier(.4,0,.2,1),top .7s cubic-bezier(.4,0,.2,1),transform .25s,opacity .5s;animation:msPulse 1.1s ease-in-out infinite}
+.ms-orb::after{content:"";position:absolute;inset:-14px}
+.ms-orb.hit{transform:scale(1.5)}.ms-orb.gone{opacity:0;top:-10%!important;pointer-events:none}
+.ms-rvx2{margin-top:6px;display:grid;gap:10px;justify-items:center}.ms-rvn{margin:0;color:#FFE9B0;font:14px/1.4 Inter,Arial,sans-serif;opacity:.9}
+@media (prefers-reduced-motion: reduce){.ms-orb{transition:none;animation:none}}
+.ms-rvx2 .primary{padding:13px 26px;border:0;border-radius:999px;background:linear-gradient(180deg,#f8e4ab,#d9b56a);color:#5b0b27;font:800 16px Inter,Arial,sans-serif;cursor:pointer}

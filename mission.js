@@ -92,31 +92,58 @@
   const h = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
+  /* Un intento de atrapar la esfera: el servidor decide si hoy ya cae (más intentos = más cerca; a partir de las 5 p. m. siempre cae). */
+  async function attempt() {
+    let r; try { r = await Promise.race([C.db.rpc("campaign_try"), new Promise((_, rj) => setTimeout(() => rj(new Error("el servidor no respondió")), 4500))]); } catch (e0) { r = { error: e0 }; }
+    if (!r.error && r.data && typeof r.data === "object" && "caught" in r.data) return r.data;
+    const msg = r.error ? String(r.error.message || r.error.code || "") : "";
+    if (/campaign_try|PGRST202|42883|could not find/i.test(msg)) { /* aún no se pegó la migración: se usa la caja de siempre */
+      let o; try { o = await C.db.rpc("campaign_open_box"); } catch (e1) { o = { error: e1 }; }
+      if (!o.error && o.data) return { caught: true, row: o.data };
+      r = o;
+    }
+    if (!demo()) throw (r.error || new Error("sin datos"));
+    const k = "cml_ms_try_" + bogota(); let st = {}; try { st = JSON.parse(localStorage.getItem(k) || "{}"); } catch (e2) {}
+    st.n = (st.n || 0) + 1; st.t = st.t || 1 + Math.floor(Math.random() * 4); try { localStorage.setItem(k, JSON.stringify(st)); } catch (e3) {}
+    if (st.n >= st.t) { const have = ORDER.filter(q => hist.some(z => z.element === q)), pend = ORDER.filter(q => !have.includes(q)), pool = pend.length ? pend : ORDER; return { caught: true, local: true, row: { day: bogota(), element: pool[Math.floor(Math.random() * pool.length)], completed: false, step_code: false, step_question: false, step_activity: false, answer: null } }; }
+    return { caught: false, tries: st.n, wait: 0, local: true };
+  }
   function reveal() {
-    const L = lang(), w = h("div", "ms-rv");
-    const x = h("button", "ms-x ms-rvx", "×"); x.type = "button"; x.setAttribute("aria-label", t("msClose")); x.addEventListener("click", close);
+    const L = lang(), es = L !== "en", w = h("div", "ms-rv");
+    const x = h("button", "ms-x ms-rvx", "×"); x.type = "button"; x.setAttribute("aria-label", t("msClose")); x.addEventListener("click", () => { clearInterval(flit); close(); });
     const stage = h("div", "ms-rvs", "<i class='ms-rvglow'></i><img class='ms-rvbox' src='lobby/caja-sorpresa.webp?v=1' alt=''>");
-    const hint = h("p", "ms-rvh", esc(t("msTapBox")));
-    w.append(x, h("h2", "", esc(t("msBox"))), stage, hint);
-    let busyR = false;
-    const go = async () => {
-      if (busyR) return; busyR = true; hint.textContent = "…";
-      try {
-        let r; try { r = await Promise.race([C.db.rpc("campaign_open_box"), new Promise((_, rj) => setTimeout(() => rj(new Error("el servidor no respondió")), 4500))]); } catch (e0) { r = { error: e0 }; }
-        let local = false;
-        if (r.error || !r.data) { if (!demo()) throw (r.error || new Error("sin datos")); local = true; const have = ORDER.filter(k => hist.some(z => z.element === k)), pend = ORDER.filter(k => !have.includes(k)), pool = pend.length ? pend : ORDER; r = { data: { day: bogota(), element: pool[Math.floor(Math.random() * pool.length)], completed: false, step_code: false, step_question: false, step_activity: false, answer: null } }; }
-        row = r.data; const i = hist.findIndex(z => z.day === row.day); if (i >= 0) hist[i] = row; else hist.push(row);
-        const e = EL[row.element] || EL.fe;
-        stage.innerHTML = "<i class='ms-rvglow on'></i><img class='ms-rvbox' src='lobby/caja-abierta.webp?v=1' alt=''>" + sphImg(row.element, "ms-rvsph");
-        burst(stage); w.classList.add("opened");
-        hint.remove();
-        const info = h("div", "ms-rvi", "<small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b><p>" + esc(L === "en" ? e.men : e.mes) + "</p><em>" + esc(L === "en" ? e.ve : e.v) + "</em>");
-        const go2 = h("button", "primary", esc(t("msContinue"))); go2.type = "button"; go2.addEventListener("click", paint); info.appendChild(go2);
-        if (local) info.appendChild(h("small", "", "Modo prueba: no se guardó en el servidor.")); w.appendChild(info); paintFab();
-      } catch (er) { busyR = false; const d = er && (er.message || er.details || er.code) ? " (" + String(er.message || er.details || er.code).slice(0, 90) + ")" : ""; hint.textContent = t("msErr") + d; hint.style.animation = "none"; hint.style.fontSize = "13px"; }
+    const hint = h("p", "ms-rvh", esc(t("msTapBox"))), extra = h("div", "ms-rvx2");
+    w.append(x, h("h2", "", esc(t("msBox"))), stage, hint, extra);
+    const orb = h("button", "ms-orb"); orb.type = "button"; orb.setAttribute("aria-label", es ? "Atrapar la esfera" : "Catch the sphere");
+    let phase = 0, flit = null, busyR = false;
+    const move = () => { orb.style.left = (12 + Math.random() * 68) + "%"; orb.style.top = (24 + Math.random() * 44) + "%"; };
+    const hunt = () => { phase = 1; extra.innerHTML = ""; orb.classList.remove("gone"); if (!orb.isConnected) ov.appendChild(orb); move(); clearInterval(flit); flit = setInterval(move, 750); hint.style.animation = ""; hint.style.fontSize = ""; hint.textContent = es ? "¡Atrapa tu esfera! Toca la esfera brillante." : "Catch your sphere! Tap the glowing orb."; };
+    const openIt = () => { if (phase) return; stage.innerHTML = "<i class='ms-rvglow on'></i><img class='ms-rvbox' src='lobby/caja-abierta.webp?v=1' alt=''>"; burst(stage); w.classList.add("opened"); hunt(); };
+    const finish = (res) => {
+      clearInterval(flit); orb.remove(); phase = 2; row = res.row; const i = hist.findIndex(z => z.day === row.day); if (i >= 0) hist[i] = row; else hist.push(row);
+      const e = EL[row.element] || EL.fe;
+      stage.innerHTML = "<i class='ms-rvglow on'></i><img class='ms-rvbox' src='lobby/caja-abierta.webp?v=1' alt=''>" + sphImg(row.element, "ms-rvsph");
+      burst(stage); hint.remove(); extra.innerHTML = "";
+      const info = h("div", "ms-rvi", "<small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b><p>" + esc(L === "en" ? e.men : e.mes) + "</p><em>" + esc(L === "en" ? e.ve : e.v) + "</em>");
+      const go2 = h("button", "primary", esc(t("msContinue"))); go2.type = "button"; go2.addEventListener("click", paint); info.appendChild(go2);
+      if (res.local) info.appendChild(h("small", "", "Modo prueba: no se guardó en el servidor.")); w.appendChild(info); paintFab();
     };
-    stage.addEventListener("click", go); hint.addEventListener("click", go);
-    ov.replaceChildren(w); setTimeout(go, 700);
+    const tryIt = async () => {
+      if (busyR || phase !== 1) return; busyR = true; clearInterval(flit); orb.classList.add("hit"); hint.textContent = "…";
+      try {
+        const res = await attempt();
+        if (res.caught) { finish(res); return; }
+        orb.classList.remove("hit"); orb.classList.add("gone"); phase = 3;
+        const wt = Math.ceil((res.wait || 0) / 60);
+        hint.textContent = res.wait ? (es ? "¡Casi! Se escapó. Puedes volver a intentarlo en " + wt + " min." : "So close! It slipped away. Try again in " + wt + " min.") : (es ? "¡Casi! Se escapó. ¡Inténtalo otra vez!" : "So close! It slipped away. Try again!");
+        extra.innerHTML = "<p class='ms-rvn'>" + esc(es ? "Hoy tendrás tu esfera sin falta antes de las 5 p. m." : "You'll have today's sphere for sure before 5 p.m.") + "</p>";
+        if (!res.wait) { const again = h("button", "primary", esc(es ? "Intentar otra vez" : "Try again")); again.type = "button"; again.addEventListener("click", () => { hunt(); }); extra.appendChild(again); }
+        else { const cl = h("button", "primary", esc(t("msClose"))); cl.type = "button"; cl.addEventListener("click", () => { clearInterval(flit); close(); }); extra.appendChild(cl); }
+      } catch (er) { phase = 3; const d = er && (er.message || er.details || er.code) ? " (" + String(er.message || er.details || er.code).slice(0, 90) + ")" : ""; hint.textContent = t("msErr") + d; hint.style.animation = "none"; hint.style.fontSize = "13px"; const again = h("button", "primary", esc(es ? "Intentar otra vez" : "Try again")); again.type = "button"; again.addEventListener("click", () => { hunt(); }); extra.appendChild(again); }
+      busyR = false;
+    };
+    orb.addEventListener("click", tryIt); stage.addEventListener("click", openIt); hint.addEventListener("click", openIt);
+    ov.replaceChildren(w); setTimeout(openIt, 900);
   }
   function open(direct) {
     row = hist.find(x => x.day === bogota()) || null;
