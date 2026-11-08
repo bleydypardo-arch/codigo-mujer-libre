@@ -167,3 +167,6 @@ html.lobby-on .lb-sheet .code-card { display: block; }
 .lb-sph-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}.lb-sph-h b{font:600 20px Georgia,serif}.lb-sph-h span{font:800 15px Inter,Arial,sans-serif;color:#8E6E32}
 .lb-sph-r{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;cursor:pointer}.lb-sph-r i{aspect-ratio:1;display:block}.lb-sph-r img{width:100%;height:100%;object-fit:contain;opacity:.3;filter:grayscale(1)}.lb-sph-r i.own img{opacity:1;filter:drop-shadow(0 0 6px rgba(242,199,102,.9))}
 .lb-sph-b{display:block;width:100%;margin-top:10px;padding:14px;border:0;border-radius:999px;background:linear-gradient(180deg,#9a1c44,#6b0f2e);color:#F6E1A8;font:800 16px Inter,Arial,sans-serif;letter-spacing:.04em}
+
+.lb-ofi{display:flex;align-items:center;gap:12px;width:calc(100% - 28px);margin:10px 14px 0;padding:14px 16px;border:1.5px solid #E6C275;border-radius:20px;background:linear-gradient(180deg,#1f4a37,#10291f);color:#F6E1A8;text-align:left;box-shadow:0 10px 26px -12px rgba(0,0,0,.6)}
+.lb-ofi-i{font-size:30px}.lb-ofi-t{flex:1;display:grid;gap:3px}.lb-ofi-t b{font:600 20px Georgia,serif}.lb-ofi-t small{font:500 13px Inter,Arial,sans-serif;opacity:.85}.lb-ofi-a{font-size:30px;color:#E6C275}

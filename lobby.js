@@ -300,10 +300,20 @@ function build() {
   };
   document.addEventListener("cml:mission-state", e => stripPaint(e.detail)); setTimeout(() => window.CMLMission && stripPaint(window.CMLMission.state()), 0);
 
+  /* Entrada a la oficina de asesoras (administradoras): tarjeta verde y dorada, siempre visible. */
+  const ofi = mk("lb-ofi", '<span class="lb-ofi-i">🚪</span><span class="lb-ofi-t"><b></b><small></small></span><span class="lb-ofi-a">›</span>', "button"); ofi.type = "button"; ofi.style.display = "none";
+  const ofiPaint = () => {
+    const p = window.CML && window.CML.profile && window.CML.profile(), on = !!(p && /admin/.test(String(p.role))), en = window.CML && window.CML.lang && window.CML.lang() === "en";
+    ofi.style.display = on ? "" : "none"; ofi.querySelector("b").textContent = en ? "Advisors' office" : "Oficina de asesoras"; ofi.querySelector("small").textContent = en ? "Enter with your advisor code" : "Entra con tu código de asesora";
+  };
+  ofi.addEventListener("click", () => { location.href = "boutiques/ventas.html?app=1"; });
+  document.addEventListener("cml:mission-state", ofiPaint); document.addEventListener("cml:session", () => setTimeout(ofiPaint, 600)); document.addEventListener("cml:lang", () => setTimeout(ofiPaint, 80));
+  [0, 1500, 4000, 8000].forEach(ms => setTimeout(ofiPaint, ms));
+
   // Spa & Wellness
   const sp = place(mk("lb-abs lb-sp", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg><b></b>', "button"), 290, 1368, 520, 54); sp.type = "button";
   sp.querySelector("b").textContent = t("lbSpaBtn"); sp.addEventListener("click", () => { if (window.CMLSpaHall) window.CMLSpaHall.open(); });
-  root.appendChild(stage); root.appendChild(strip); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) {
+  root.appendChild(stage); root.appendChild(strip); root.appendChild(ofi); host.insertBefore(root, host.firstChild); built = true; if (window.CMLScene) {
     root.__minFoot = 60; window.CMLScene.fill(root, "home");
     const SPA_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c2 2.5 2 6 0 9-2-3-2-6.5 0-9zM12 14c-1-4-5-6-8-5 0 4 3 7 8 5zM12 14c1-4 5-6 8-5 0 4-3 7-8 5z"/></svg>';
     const dock = mk("lb-dock lb-home", '<div class="lb-drow"><button type="button" class="lb-dh"><span class="lb-dht"><small></small><b></b></span><span class="lb-dha">›</span></button><button type="button" class="lb-ds">' + SPA_SVG + '<b></b></button></div>' +

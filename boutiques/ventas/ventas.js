@@ -423,6 +423,7 @@
   try { try { localStorage.removeItem("cml_asesora"); } catch (e) {} let ss = null; try { ss = JSON.parse(sessionStorage.getItem("cml_sesion") || "null"); } catch (e) {} const k = sessionStorage.getItem("cml_asesora") || sp.get("codigo"); const a = ss ? { codigo: ss.id, nombre: ss.nombre, pais: ss.pais, admin: ss.rol === "admin" } : (k && find(k)); if (a) { asesora = a; pais = vpais(a); try { sessionStorage.setItem("cml_asesora", a.codigo); } catch (e) {} setRep(sp.get("rep") === "1"); } } catch (e) {}
   const start = sp.get("sala") != null ? +sp.get("sala") : (sp.get("app") === "1" && asesora ? PUB : 0);
   if (start > 0) opened = true;
+  if (sp.get("app") === "1" && !asesora) setTimeout(() => { try { askCode(); } catch (e) {} }, 900);
   show(Math.min(Math.max(start || 0, 0), ROOMS.length - 1));
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
 })();
