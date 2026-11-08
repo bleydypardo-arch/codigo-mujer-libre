@@ -4,8 +4,8 @@
   const IMG = "ventas/img/";
   const en = () => !!(window.CMLI && CMLI.lang === "en");
   const T = {
-    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver adentro", close2: "Cerrar las puertas", close: "Cerrar", title: "Mi oficina · 360°", toSofa: "Ir a los sofás", toDesk: "Ir al mostrador", fwd: "Avanzar", bwd: "Retroceder", titleR: "Recepción · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
-    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back inside", close2: "Close the doors", close: "Close", title: "My office · 360°", toSofa: "Go to the sofas", toDesk: "Go to the reception desk", fwd: "Move forward", bwd: "Move back", titleR: "Reception · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
+    es: { open: "Abrir el balcón", out: "Salir al balcón", back: "Volver adentro", close2: "Cerrar las puertas", close: "Cerrar", title: "Mi oficina · 360°", toSofa: "Ir a los sofás", toHall: "Ir a las oficinas", toLobby: "Volver al lobby", rMio: "Mi oficina", rRes: "Oficina de reservas", rDemo: "Salón de demos", rPack: "Sala de paquetes", only: "Esta oficina es solo para asesoras.", toDesk: "Ir al mostrador", fwd: "Avanzar", bwd: "Retroceder", titleR: "Recepción · 360°", hint: "Arrastra para mirar alrededor · pellizca para acercar", door: "Abrir puertas", sea: "Mirar el mar", noGL: "Tu teléfono no puede mostrar el recorrido 360°." },
+    en: { open: "Open the balcony", out: "Step onto the balcony", back: "Back inside", close2: "Close the doors", close: "Close", title: "My office · 360°", toSofa: "Go to the sofas", toHall: "Go to the offices", toLobby: "Back to the lobby", rMio: "My office", rRes: "Reservations office", rDemo: "Demo lounge", rPack: "Packages room", only: "This office is for advisors only.", toDesk: "Go to the reception desk", fwd: "Move forward", bwd: "Move back", titleR: "Reception · 360°", hint: "Drag to look around · pinch to zoom", door: "Open doors", sea: "Look at the sea", noGL: "Your phone can't show the 360° tour." }
   };
   const tx = k => T[en() ? "en" : "es"][k];
   /* escenas: x,y = punto en la imagen (%) */
@@ -14,9 +14,10 @@
     cerrada: { k: "closed", src: IMG + "oficina360-cerrada.webp", yaw: 0, hots: [{ x: 48.5, y: 47, l: "door", a: "open" }], wave: 0, water: WO, peek: 0 },
     abierta: { k: "open", src: IMG + "oficina360-abierta.webp", yaw: 0, hots: [{ x: 48.5, y: 47, l: "sea", a: "out" }], wave: 0.06, water: WO, peek: 0 },
     balcon: { k: "out", src: IMG + "oficina360-balcon.webp", yaw: 0, hots: [{ x: 7, y: 50, l: "back", a: "in" }, { x: 92, y: 50, l: "back", a: "in" }], wave: 0.15, water: { u0: .17, u1: .83, v0: .488, v1: .512, b0: .54, b1: .565, amp: .0009 } },
-    lobby: { k: "closed", src: IMG + "recepcion360.webp", yaw: -42, hots: [{ x: 36, y: 47, l: "door", a: "open" }, { x: 20, y: 72, l: "toSofa", to: "lobby2", yaw: 0 }], wave: 0, water: WL, peek: -50 },
-    lobbyA: { k: "open", src: IMG + "recepcion360-abierta.webp", yaw: -42, hots: [{ x: 36, y: 47, l: "sea", a: "out" }, { x: 20, y: 72, l: "toSofa", to: "lobby2", yaw: 0 }], wave: 0.06, water: WL, peek: -50 },
-    lobby2: { k: "pt", src: IMG + "recepcion360-sofas.webp", yaw: 0, hots: [{ x: 50, y: 56, l: "sea", a: "out" }, { x: 79, y: 70, l: "toDesk", to: "lobby", yaw: 55 }], wave: 0, water: { u0: .31, u1: .69, v0: .498, v1: .512, b0: .522, b1: .54, amp: .0009 }, peek: 0 },
+    lobby: { k: "closed", src: IMG + "recepcion360.webp", yaw: -42, hots: [{ x: 36, y: 47, l: "door", a: "open" }, { x: 20, y: 72, l: "toSofa", to: "lobby2", yaw: 0 }, { x: 96, y: 60, l: "toHall", to: "pasillo", yaw: 0 }], wave: 0, water: WL, peek: -50 },
+    lobbyA: { k: "open", src: IMG + "recepcion360-abierta.webp", yaw: -42, hots: [{ x: 36, y: 47, l: "sea", a: "out" }, { x: 20, y: 72, l: "toSofa", to: "lobby2", yaw: 0 }, { x: 96, y: 60, l: "toHall", to: "pasillo", yaw: 0 }], wave: 0.06, water: WL, peek: -50 },
+    lobby2: { k: "pt", src: IMG + "recepcion360-sofas.webp", yaw: 0, hots: [{ x: 50, y: 56, l: "sea", a: "out" }, { x: 79, y: 70, l: "toDesk", to: "lobby", yaw: 55 }, { x: 96, y: 60, l: "toHall", to: "pasillo", yaw: 0 }], wave: 0, water: { u0: .31, u1: .69, v0: .498, v1: .512, b0: .522, b1: .54, amp: .0009 }, peek: 0 },
+    pasillo: { k: "pt", src: IMG + "recepcion360-pasillo.webp", yaw: 0, peek: 0, wave: 0, hots: [{ x: 7, y: 62, l: "toLobby", to: "lobby", yaw: 60 }, { x: 32, y: 55, l: "rMio", room: "mioficina" }, { x: 68, y: 55, l: "rRes", room: "oficina" }, { x: 44, y: 52, l: "rDemo", room: "salon" }, { x: 90, y: 52, l: "rPack", room: "paquetes" }] },
     terraza: { k: "out", src: IMG + "recepcion360-terraza.webp", yaw: 0, hots: [{ x: 10.5, y: 52, l: "back", a: "in" }, { x: 89, y: 52, l: "back", a: "in" }], wave: 0.15, water: { u0: .14, u1: .86, v0: .482, v1: .512, b0: .53, b1: .55, amp: .0009 } }
   };
   const SET = { mioficina: { closed: "cerrada", open: "abierta", out: "balcon" }, recepcion: { closed: "lobby", open: "lobbyA", out: "terraza" } };
@@ -62,9 +63,13 @@
   function zoomTo(t) { t = Math.max(34, Math.min(Math.min(base() + 14, 105), t)); const f0 = fov, t0 = performance.now(); (function f(now) { const k = Math.min(1, (now - t0) / 900), e = 1 - Math.pow(1 - k, 3); fov = f0 + (t - f0) * e; paint(); if (k < 1) requestAnimationFrame(f); })(t0); }
   function loop() { cancelAnimationFrame(raf2); const f = () => { if (!root.classList.contains("on") || !P) return; if (!document.hidden && !g) paint(); raf2 = requestAnimationFrame(f); }; raf2 = requestAnimationFrame(f); }
   let raf2 = 0;
+  function goRoom(id) {
+    if (window.CMLCanGo && !CMLCanGo(id)) { let t = root.querySelector(".o3-toast"); if (!t) { t = el("p", "o3-toast"); root.appendChild(t); } t.textContent = tx("only"); t.classList.add("on"); clearTimeout(goRoom.t); goRoom.t = setTimeout(() => t.classList.remove("on"), 3200); return; }
+    close(); if (window.CMLGoRoom) CMLGoRoom(id);
+  }
   function setHots() {
     hotsEl.innerHTML = "";
-    SCENES[sc].hots.forEach(h => { const b = el("button", "o3-hot" + (h.to ? " go" : ""), (h.to ? "<i>➜</i>" : "") + "<span>" + esc(tx(h.l)) + "</span>"); b.type = "button"; b.dataset.x = h.x; b.dataset.y = h.y; b.addEventListener("click", () => { if (moved) return; if (h.to) { waves(); load(h.to, false, h.yaw); } else act(h.a); }); hotsEl.appendChild(b); });
+    SCENES[sc].hots.forEach(h => { const b = el("button", "o3-hot" + (h.to ? " go" : ""), (h.to ? "<i>➜</i>" : "") + "<span>" + esc(tx(h.l)) + "</span>"); b.type = "button"; b.dataset.x = h.x; b.dataset.y = h.y; b.addEventListener("click", () => { if (moved) return; if (h.room) { goRoom(h.room); return; } if (h.to) { waves(); load(h.to, false, h.yaw); } else act(h.a); }); hotsEl.appendChild(b); });
   }
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   function setBar() {

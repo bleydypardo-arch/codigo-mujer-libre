@@ -414,6 +414,8 @@
   vp.addEventListener("wheel", e => { e.preventDefault(); setZoom(Z * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX, e.clientY); }, { passive: false });
   vp.addEventListener("dblclick", e => { if (e.target.closest("[data-a]")) return; setZoom(Z > 1.2 ? 1 : 2.2, e.clientX, e.clientY); });
   let lastTap = 0; vp.addEventListener("pointerup", e => { if (e.pointerType === "mouse" || moved) return; const n = Date.now(); if (n - lastTap < 320 && !e.target.closest("[data-a]")) { setZoom(Z > 1.2 ? 1 : 2.2, e.clientX, e.clientY); lastTap = 0; } else lastTap = n; });
+  window.CMLCanGo = id => { const i = ROOMS.findIndex(r => r.id === id); return i >= 0 && (i < PUB || !!asesora); };
+  window.CMLGoRoom = id => { const i = ROOMS.findIndex(r => r.id === id); if (i >= 0) go(i); };
   $("#b360").addEventListener("click", () => window.CMLOf360 && CMLOf360.open(ROOMS[cur].id));
   $("#zIn").addEventListener("click", () => setZoom(Z * 1.4)); $("#zOut").addEventListener("click", () => setZoom(Z / 1.4));
   vp.addEventListener("scroll", () => { $("#hint").style.opacity = 0; }, { passive: true });
