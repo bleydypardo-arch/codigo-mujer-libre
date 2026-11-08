@@ -86,7 +86,8 @@
   const steps = () => (row ? [row.step_code, row.step_question, row.step_activity].filter(Boolean).length : 0) + (row ? 1 : 0);
 
   /* La caja ya no flota en la pantalla: vive en el lobby (lobby.js). Aquí solo avisamos su estado. */
-  function state() { return { on: !!enabled(), done: !!(row && row.completed), opened: !!row, steps: steps(), got: got() }; }
+  function state() {
+    row = hist.find(x => x.day === bogota()) || null; return { on: !!enabled(), done: !!(row && row.completed), opened: !!row, steps: steps(), got: got() }; }
   function paintFab() { try { document.dispatchEvent(new CustomEvent("cml:mission-state", { detail: state() })); } catch (e) {} }
   const h = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -118,6 +119,7 @@
     ov.replaceChildren(w); setTimeout(go, 700);
   }
   function open(direct) {
+    row = hist.find(x => x.day === bogota()) || null;
     if (ov) ov.remove();
     ov = h("div", "ms-ov"); ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", t("msTitle"));
     ov.addEventListener("click", e => { if (e.target === ov) close(); });
@@ -180,6 +182,7 @@
     if (!init() || !C.session() || !enabled()) { paintFab(); return; }
     await load(); paintFab();
   }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && loaded) { load().then(() => paintFab()).catch(() => {}); } });
   document.addEventListener("cml:session", () => { row = null; hist = []; loaded = false; if (ov) close(); paintFab(); setTimeout(() => start().catch(() => {}), 2500); });
   document.addEventListener("cml:lang", () => { if (ov) paint(); paintFab(); });
   window.addEventListener("load", () => setTimeout(() => start().catch(() => {}), 3000));
