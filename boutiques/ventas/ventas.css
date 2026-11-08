@@ -235,7 +235,6 @@ canvas.live{z-index:1}
 
 .tbtn.lang{font-weight:600;letter-spacing:.04em}
 
-.zm{position:absolute;right:max(14px,env(safe-area-inset-right));top:calc(var(--top) + 12px);display:grid;gap:8px;z-index:5}.zm button{width:40px;height:40px;border-radius:50%;background:rgba(255,248,239,.88);color:var(--wine);font:600 22px/1 var(--sans);box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
 /* Oficina 360° */
 .o3{position:fixed;inset:0;z-index:450;background:#1c0d10;display:none;touch-action:none;user-select:none}.o3.on{display:block}
 .o3-cv{position:absolute;inset:0;width:100%;height:100%;transition:opacity .38s;cursor:grab}
