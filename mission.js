@@ -136,7 +136,7 @@
         orb.classList.remove("hit"); orb.classList.add("gone"); phase = 3;
         const wt = Math.ceil((res.wait || 0) / 60);
         hint.textContent = res.wait ? (es ? "¡Casi! Se escapó. Puedes volver a intentarlo en " + wt + " min." : "So close! It slipped away. Try again in " + wt + " min.") : (es ? "¡Casi! Se escapó. ¡Inténtalo otra vez!" : "So close! It slipped away. Try again!");
-        extra.innerHTML = "<p class='ms-rvn'>" + esc(es ? "Hoy tendrás tu esfera sin falta antes de las 5 p. m." : "You'll have today's sphere for sure before 5 p.m.") + "</p>";
+        extra.innerHTML = "<p class='ms-rvn'>" + esc(es ? "Vuelve más tarde: tu esfera de hoy te está esperando." : "Come back later: today's sphere is waiting for you.") + "</p>";
         if (!res.wait) { const again = h("button", "primary", esc(es ? "Intentar otra vez" : "Try again")); again.type = "button"; again.addEventListener("click", () => { hunt(); }); extra.appendChild(again); }
         else { const cl = h("button", "primary", esc(t("msClose"))); cl.type = "button"; cl.addEventListener("click", () => { clearInterval(flit); close(); }); extra.appendChild(cl); }
       } catch (er) { phase = 3; const d = er && (er.message || er.details || er.code) ? " (" + String(er.message || er.details || er.code).slice(0, 90) + ")" : ""; hint.textContent = t("msErr") + d; hint.style.animation = "none"; hint.style.fontSize = "13px"; const again = h("button", "primary", esc(es ? "Intentar otra vez" : "Try again")); again.type = "button"; again.addEventListener("click", () => { hunt(); }); extra.appendChild(again); }
