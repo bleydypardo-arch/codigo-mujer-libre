@@ -7,7 +7,7 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 /* escenario */
 #stage{position:fixed;inset:0;overflow:hidden;background:#1c0d10}
 #bg{position:absolute;inset:-6%;background-size:cover;background-position:center;filter:blur(26px) brightness(.8) saturate(1.1);transition:background-image .4s}
-#viewport{position:absolute;inset:0;display:flex;overflow:auto hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab;touch-action:pan-x pan-y}
+#viewport{position:absolute;inset:0;display:flex;overflow:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab;touch-action:none}
 #viewport::-webkit-scrollbar{display:none}
 #viewport.drag{cursor:grabbing}
 #world{position:relative;flex:none;margin:auto;overflow:hidden;box-shadow:0 0 90px rgba(0,0,0,.35);user-select:none}
@@ -234,3 +234,5 @@ canvas.live{z-index:1}
 }
 
 .tbtn.lang{font-weight:600;letter-spacing:.04em}
+
+.zm{position:absolute;right:max(14px,env(safe-area-inset-right));top:calc(var(--top) + 12px);display:grid;gap:8px;z-index:5}.zm button{width:40px;height:40px;border-radius:50%;background:rgba(255,248,239,.88);color:var(--wine);font:600 22px/1 var(--sans);box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
