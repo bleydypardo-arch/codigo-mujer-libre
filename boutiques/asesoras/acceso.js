@@ -11,7 +11,7 @@ window.CMLACC = (function () {
     return rpc("advisor_login", { p_code: code }).then(j => { if (j && j.ok) guardar(j); return j; }).catch(e => ({ ok: false, error: e && e.missing ? "sin_backend" : "sin_conexion" }));
   }
   function check() {
-    const s = sesion(); if (s && s.preview) return Promise.resolve({ ok: true }); if (!s || !s.token) return Promise.resolve({ ok: false });
+    const s = sesion(); if (!s || !s.token) return Promise.resolve({ ok: false });
     return rpc("advisor_check", { p_token: s.token }).catch(e => (e && e.missing ? { ok: true, legacy: true } : { ok: null }));
   }
   const admin = (fn, args) => { const s = sesion(); return rpc(fn, Object.assign({ p_token: s && s.token }, args || {})); };
