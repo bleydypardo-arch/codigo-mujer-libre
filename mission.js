@@ -110,10 +110,10 @@
         const info = h("div", "ms-rvi", "<small>" + esc(t("msGot")) + "</small><b>" + esc(e[L]) + "</b><p>" + esc(L === "en" ? e.men : e.mes) + "</p><em>" + esc(L === "en" ? e.ve : e.v) + "</em>");
         const go2 = h("button", "primary", esc(t("msContinue"))); go2.type = "button"; go2.addEventListener("click", paint); info.appendChild(go2);
         w.appendChild(info); paintFab();
-      } catch (er) { busyR = false; hint.textContent = t("msErr"); }
+      } catch (er) { busyR = false; const d = er && (er.message || er.details || er.code) ? " (" + String(er.message || er.details || er.code).slice(0, 90) + ")" : ""; hint.textContent = t("msErr") + d; hint.style.animation = "none"; hint.style.fontSize = "13px"; }
     };
     stage.addEventListener("click", go); hint.addEventListener("click", go);
-    ov.replaceChildren(w);
+    ov.replaceChildren(w); setTimeout(go, 700);
   }
   function open() {
     if (ov) ov.remove();
