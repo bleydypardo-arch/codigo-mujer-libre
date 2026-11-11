@@ -7,7 +7,7 @@ let C = null, shownThisSession = false;
 const KEY = "daily_notes", SEEN = "cml_dn_seen", BDAY = "cml_bday_seen";
 const ES = {
   dnTitle: "Mensaje de hoy", dnFrom: "De Código ML, con cariño", dnThanks: "Gracias 🌸", dnSee: "Ver el plan", dnBell: n => "💌 Mensaje de hoy: " + n,
-  bdTitle2: "¡Feliz cumpleaños!", bdSave: "Guardar mi tarjeta", bdPreview: "Ver cómo se ve el ramo de cumpleaños", bdFirst: "🌸✨ ¡Feliz cumpleaños, mujer extraordinaria! 🎂💖", bdBody: () => "Hoy celebramos mucho más que tu cumpleaños: celebramos tu vida, tu esencia y el valor inmenso que tienes.\nNunca olvides que eres única, que tu historia importa y que dentro de ti hay sueños, talentos y una fuerza maravillosa que merecen florecer.\nQue este nuevo año de vida te recuerde que eres valiosa, mereces ser feliz y nunca es tarde para descubrir todo lo extraordinario que puedes llegar a ser.\n¡Que Dios bendiga tus pasos y llene tu vida de amor, alegría y nuevos comienzos! 💕\nCon cariño,\nCódigo Mujer Libre 🌸\nConecta · Vive · Crece\n✨ Tu vida cambia cuando descubres tu propósito.", bdBell: "💐 Hoy es tu cumpleaños: abre tu ramo.",
+  bdTitle2: "¡Feliz cumpleaños!", bdSave: "Guardar mi tarjeta", bdMakeCard: "Crear su tarjeta", bdCopy: "Copiar el mensaje", bdCopied: "Mensaje copiado.", bdPreview: "Ver cómo se ve el ramo de cumpleaños", bdFirst: "🌸✨ ¡Feliz cumpleaños, mujer extraordinaria! 🎂💖", bdBody: () => "Hoy celebramos mucho más que tu cumpleaños: celebramos tu vida, tu esencia y el valor inmenso que tienes.\nNunca olvides que eres única, que tu historia importa y que dentro de ti hay sueños, talentos y una fuerza maravillosa que merecen florecer.\nQue este nuevo año de vida te recuerde que eres valiosa, mereces ser feliz y nunca es tarde para descubrir todo lo extraordinario que puedes llegar a ser.\n¡Que Dios bendiga tus pasos y llene tu vida de amor, alegría y nuevos comienzos! 💕\nCon cariño,\nCódigo Mujer Libre 🌸\nConecta · Vive · Crece\n✨ Tu vida cambia cuando descubres tu propósito.", bdBell: "💐 Hoy es tu cumpleaños: abre tu ramo.",
   dnTab: "Mensajes diarios", dnIntro: "Un mensaje al día para todas las mujeres (o para una ciudad). Aparece al entrar a la app y en la campanita. Escríbelo corto, cálido y con una acción.",
   dnNewH: "Nuevo mensaje", dnDate: "Día en que se muestra", dnCity: "Para", dnAll: "Todas las ciudades", dnEs: "Mensaje en español", dnEn: "Mensaje en inglés (opcional)", dnFromLbl: "Firma (ej. Karen, líder de Bogotá)",
   dnPlan: "Recomendar un plan o lugar (opcional)", dnNoPlan: "Ninguno", dnSave: "Guardar mensaje", dnSaved: "Mensaje guardado.", dnFail: "No se pudo guardar.", dnEmpty: "Escribe el mensaje en español.",
@@ -17,7 +17,7 @@ const ES = {
 };
 const EN = {
   dnTitle: "Today's message", dnFrom: "From Código ML, with love", dnThanks: "Thank you 🌸", dnSee: "See the plan", dnBell: n => "💌 Today's message: " + n,
-  bdTitle2: "Happy birthday!", bdSave: "Save my card", bdPreview: "Preview the birthday bouquet", bdFirst: "🌸✨ Happy birthday, extraordinary woman! 🎂💖", bdBody: () => "Today we celebrate so much more than your birthday: we celebrate your life, your essence and the immense value you carry.\nNever forget that you are unique, that your story matters, and that inside you there are dreams, talents and a wonderful strength that deserve to bloom.\nMay this new year of life remind you that you are valuable, that you deserve to be happy, and that it is never too late to discover all the extraordinary things you can become.\nMay God bless your steps and fill your life with love, joy and new beginnings! 💕\nWith love,\nCódigo Mujer Libre 🌸\nConnect · Live · Grow\n✨ Your life changes when you discover your purpose.", bdBell: "💐 Today is your birthday: open your bouquet.",
+  bdTitle2: "Happy birthday!", bdSave: "Save my card", bdMakeCard: "Make her card", bdCopy: "Copy the message", bdCopied: "Message copied.", bdPreview: "Preview the birthday bouquet", bdFirst: "🌸✨ Happy birthday, extraordinary woman! 🎂💖", bdBody: () => "Today we celebrate so much more than your birthday: we celebrate your life, your essence and the immense value you carry.\nNever forget that you are unique, that your story matters, and that inside you there are dreams, talents and a wonderful strength that deserve to bloom.\nMay this new year of life remind you that you are valuable, that you deserve to be happy, and that it is never too late to discover all the extraordinary things you can become.\nMay God bless your steps and fill your life with love, joy and new beginnings! 💕\nWith love,\nCódigo Mujer Libre 🌸\nConnect · Live · Grow\n✨ Your life changes when you discover your purpose.", bdBell: "💐 Today is your birthday: open your bouquet.",
   dnTab: "Daily messages", dnIntro: "One message a day for every woman (or for one city). It shows when they open the app and in the bell.",
   dnNewH: "New message", dnDate: "Day it shows", dnCity: "For", dnAll: "All cities", dnEs: "Message in Spanish", dnEn: "Message in English (optional)", dnFromLbl: "Signature (e.g. Karen, Bogotá leader)",
   dnPlan: "Recommend a plan or place (optional)", dnNoPlan: "None", dnSave: "Save message", dnSaved: "Message saved.", dnFail: "Could not save.", dnEmpty: "Write the message in Spanish.",
@@ -239,7 +239,17 @@ async function build() {
     bl.replaceChildren(...(rows.length ? rows.map(p => {
       const num = String(p.whatsapp || p.phone || "").replace(/\D/g, "");
       const a = el("a", { class: "secondary dn-wa", target: "_blank", rel: "noopener", text: t("dnBdWa"), href: num ? "https://wa.me/" + num + "?text=" + encodeURIComponent((p.pref_lang === "en" ? EN : ES).dnBdDraft(p.first_name || "")) : "#" });
-      return el("div", { class: "sa-row" }, el("b", { text: (p.first_name || "—") + " · " + (p.days === 0 ? t("dnBdToday") : p.d.toLocaleDateString(C.loc(), { month: "short", day: "numeric" })) }), num ? a : el("small", { text: "—" }));
+      const card = el("button", { type: "button", class: "primary", text: t("bdMakeCard") });
+      card.addEventListener("click", async () => {
+        card.disabled = true;
+        try { const blob = await makeCard(p.first_name || ""), file = new File([blob], "feliz-cumpleanos-" + (p.first_name || "") + ".png", { type: "image/png" });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file] });
+          else { const x = document.createElement("a"); x.href = URL.createObjectURL(blob); x.download = file.name; document.body.appendChild(x); x.click(); x.remove(); } } catch { /* cancelled */ }
+        card.disabled = false;
+      });
+      const cp = el("button", { type: "button", class: "secondary", text: t("bdCopy") });
+      cp.addEventListener("click", async () => { try { await navigator.clipboard.writeText(t("bdFirst") + "\n\n" + t("bdBody")); K.toast(t("bdCopied")); } catch { K.toast(t("dnFail")); } });
+      return el("div", { class: "sa-row" }, el("b", { text: (p.first_name || "—") + " · " + (p.days === 0 ? t("dnBdToday") : p.d.toLocaleDateString(C.loc(), { month: "short", day: "numeric" })) }), card, cp, num ? a : el("small", { text: "" }));
     }) : [el("p", { class: "small-note", text: t("dnBdNone") })]));
   }).catch(() => {});
   return wrap;
