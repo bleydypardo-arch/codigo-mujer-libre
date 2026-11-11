@@ -89,7 +89,7 @@ function runEntrance() {
   shownThisSession = true;
   const seen = store(SEEN), queue = [];
   if (isBirthday() && !store(BDAY).includes(C.todayStr())) queue.push(next => showBirthday(next));
-  today().filter(n => !seen.includes(n.id)).slice(0, 1).forEach(n => queue.push(next => showNote(n, next)));
+  today().filter(n => !seen.includes(n.id)).slice(0, 2).forEach(n => queue.push(next => showNote(n, next)));
   const go = () => { const f = queue.shift(); if (f) f(go); };
   go();
 }
