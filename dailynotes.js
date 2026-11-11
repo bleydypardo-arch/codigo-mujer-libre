@@ -217,12 +217,15 @@ async function build() {
   const pv = el("button", { type: "button", class: "secondary", text: t("bdPreview") }); pv.addEventListener("click", () => showBirthday(null, (C.profile() && C.profile().first_name) || "Jazz")); wrap.appendChild(pv);
   // birthdays
   const bd = sec(t("dnBdH")), bl = el("div", { class: "sa-list" }); bd.appendChild(bl);
-  C.db.from("profiles").select("first_name,phone,whatsapp,birth_month,birth_day,pref_lang").not("birth_month", "is", null).then(r => {
+  C.db.from("profiles").select("first_name,phone,whatsapp,birth_month,birth_day,pref_lang,avatar_path").not("birth_month", "is", null).then(r => {
     const now = new Date(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     const rows = (r.data || []).map(p => {
       let d = new Date(now.getFullYear(), p.birth_month - 1, p.birth_day); if (d.getTime() < t0) d = new Date(now.getFullYear() + 1, p.birth_month - 1, p.birth_day);
       return Object.assign({ days: Math.round((d.getTime() - t0) / 86400000), d }, p);
     }).filter(p => p.days <= 7).sort((a, b) => a.days - b.days);
+    const keep = new Map();
+    rows.forEach(p => { const k = String(p.first_name || "").trim().toLowerCase() + "|" + p.birth_month + "|" + p.birth_day, o = keep.get(k); if (!o || (!o.avatar_path && p.avatar_path)) keep.set(k, p); });
+    rows.splice(0, rows.length, ...keep.values());
     bl.replaceChildren(...(rows.length ? rows.map(p => {
       const num = String(p.whatsapp || p.phone || "").replace(/\D/g, "");
       const a = el("a", { class: "secondary dn-wa", target: "_blank", rel: "noopener", text: t("dnBdWa"), href: num ? "https://wa.me/" + num + "?text=" + encodeURIComponent((p.pref_lang === "en" ? EN : ES).dnBdDraft(p.first_name || "")) : "#" });

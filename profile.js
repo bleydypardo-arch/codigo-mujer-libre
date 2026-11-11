@@ -211,6 +211,10 @@ async function renderBirthdays() {
   if (!C || !C.session() || !C.profile() || (C.profile().approved === false && !C.isAdmin())) { bdRows = []; homeRender(); return; }
   const r = await C.db.rpc("upcoming_birthdays", { within_days: 13 });
   bdRows = r.error ? [] : (r.data || []);
+  // the same woman must show once: repeat accounts (same name + same birthday) collapse into one, keeping the one that has a photo
+  const seenB = new Map();
+  bdRows.forEach(x => { const k = String(x.first_name || "").trim().toLowerCase() + "|" + x.birth_month + "|" + x.birth_day, o = seenB.get(k); if (!o || (!o.avatar_path && x.avatar_path)) seenB.set(k, x); });
+  bdRows = Array.from(seenB.values());
   if (bdRows.length) await signed(bdRows.map(x => x.avatar_path));
   homeRender();
 }
