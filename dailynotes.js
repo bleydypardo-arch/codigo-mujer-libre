@@ -11,8 +11,8 @@ const ES = {
   dnTab: "Mensajes diarios", dnIntro: "Un mensaje al día para todas las mujeres (o para una ciudad). Aparece al entrar a la app y en la campanita. Escríbelo corto, cálido y con una acción.",
   dnNewH: "Nuevo mensaje", dnDate: "Día en que se muestra", dnCity: "Para", dnAll: "Todas las ciudades", dnEs: "Mensaje en español", dnEn: "Mensaje en inglés (opcional)", dnFromLbl: "Firma (ej. Karen, líder de Bogotá)",
   dnPlan: "Recomendar un plan o lugar (opcional)", dnNoPlan: "Ninguno", dnSave: "Guardar mensaje", dnSaved: "Mensaje guardado.", dnFail: "No se pudo guardar.", dnEmpty: "Escribe el mensaje en español.",
-  dnBulkH: "Cargar varios de una vez", dnBulkHelp: "Una línea por día: 2026-11-12 | mensaje en español | mensaje en inglés (opcional) | firma (opcional). Sirve para cargar toda la semana de Karen.", dnBulkBtn: "Cargar las líneas", dnBulkOk: n => n + " mensajes cargados.",
-  dnListH: "Mensajes programados", dnNone: "Todavía no hay mensajes.", dnDel: "Quitar", dnDelAsk: "¿Quitar este mensaje?",
+  dnBulkH: "Cargar varios de una vez", dnBulkHelp: "Una línea por día: 2026-11-12 | mensaje en español | mensaje en inglés (opcional) | firma (opcional) | ciudad (opcional, si la dejas vacía usa la de arriba). Sirve para cargar toda la semana de Karen.", dnBulkBtn: "Cargar las líneas", dnBulkOk: n => n + " mensajes cargados.",
+  dnListH: "Mensajes programados", dnNone: "Todavía no hay mensajes.", dnDel: "Quitar", dnDelCity: "Quitar todos los de esta ciudad", dnDelCityAsk: n => "¿Quitar " + n + " mensajes de esa ciudad?", dnDelAsk: "¿Quitar este mensaje?",
   dnBdH: "Cumpleaños de los próximos 7 días", dnBdNone: "Nadie cumple años esta semana.", dnBdToday: "hoy", dnBdWa: "Felicitar por WhatsApp", dnBdDraft: n => "Hola " + n + " 🌸 Hoy es tu día y toda la comunidad Código ML se alegra contigo. ¡Feliz cumpleaños! 💐 Con cariño, Código ML"
 };
 const EN = {
@@ -22,7 +22,7 @@ const EN = {
   dnNewH: "New message", dnDate: "Day it shows", dnCity: "For", dnAll: "All cities", dnEs: "Message in Spanish", dnEn: "Message in English (optional)", dnFromLbl: "Signature (e.g. Karen, Bogotá leader)",
   dnPlan: "Recommend a plan or place (optional)", dnNoPlan: "None", dnSave: "Save message", dnSaved: "Message saved.", dnFail: "Could not save.", dnEmpty: "Write the message in Spanish.",
   dnBulkH: "Load several at once", dnBulkHelp: "One line per day: 2026-11-12 | Spanish message | English message (optional).", dnBulkBtn: "Load lines", dnBulkOk: n => n + " messages loaded.",
-  dnListH: "Scheduled messages", dnNone: "No messages yet.", dnDel: "Remove", dnDelAsk: "Remove this message?",
+  dnListH: "Scheduled messages", dnNone: "No messages yet.", dnDel: "Remove", dnDelCity: "Remove all for this city", dnDelCityAsk: n => "Remove " + n + " messages for that city?", dnDelAsk: "Remove this message?",
   dnBdH: "Birthdays in the next 7 days", dnBdNone: "No birthdays this week.", dnBdToday: "today", dnBdWa: "Wish her on WhatsApp", dnBdDraft: n => "Hi " + n + " 🌸 Today is your day and the whole Código ML community celebrates with you. Happy birthday! 💐 With love, Código ML"
 };
 const t = (k, ...a) => { const v = C ? C.t(k) : ""; return typeof v === "function" ? v(...a) : (v || k); };
@@ -129,20 +129,32 @@ async function build() {
   });
   // bulk
   const bs = sec(t("dnBulkH"), t("dnBulkHelp"));
+  const bcity = el("select", { "aria-label": t("dnCity") }, el("option", { value: "", text: t("dnAll") }), ...C.cities().map(c => el("option", { value: C.cityKey(c.name), text: c.name })));
   const bulk = el("textarea", { rows: 6, class: "ta", "aria-label": t("dnBulkH") }), bb = el("button", { type: "button", class: "secondary", text: t("dnBulkBtn") });
-  bs.append(bulk, bb);
+  bs.append(lbl(t("dnCity"), bcity), bulk, bb);
   bb.addEventListener("click", async () => {
     const rows = bulk.value.split(/\n+/).map(l => l.split("|").map(s => s.trim())).filter(r => /^\d{4}-\d{2}-\d{2}$/.test(r[0]) && r[1]);
     if (!rows.length) return K.toast(t("dnEmpty"));
     bb.disabled = true;
     try {
-      for (const r of rows) await A.setMapEntry(KEY, ID(), { day: r[0], city: city.value, es: r[1], en: r[2] || "", plan: "", from: r[3] || "" });
+      for (const r of rows) await A.setMapEntry(KEY, ID(), { day: r[0], city: r[4] ? C.cityKey(r[4]) : bcity.value, es: r[1], en: r[2] || "", plan: "", from: r[3] || "" });
       bulk.value = ""; K.toast(t("dnBulkOk", rows.length)); if (C.refreshPublic) await C.refreshPublic(); paintList();
     } catch { K.toast(t("dnFail")); }
     bb.disabled = false;
   });
   // list
-  const ls = sec(t("dnListH")), list = el("div", { class: "sa-list" }); ls.appendChild(list);
+  const ls = sec(t("dnListH")), list = el("div", { class: "sa-list" });
+  const dcity = el("select", { "aria-label": t("dnDelCity") }, ...C.cities().map(c => el("option", { value: C.cityKey(c.name), text: c.name })));
+  const dall = el("button", { type: "button", class: "danger", text: t("dnDelCity") });
+  dall.addEventListener("click", async () => {
+    const ids = Object.keys(all()).filter(id => all()[id].city && C.cityKey(all()[id].city) === dcity.value);
+    if (!ids.length) return K.toast(t("dnNone"));
+    if (!await window.cmlConfirm(t("dnDelCityAsk", ids.length))) return;
+    dall.disabled = true;
+    try { for (const id of ids) await A.setMapEntry(KEY, id, null); if (C.refreshPublic) await C.refreshPublic(); paintList(); } catch { K.toast(t("dnFail")); }
+    dall.disabled = false;
+  });
+  ls.append(el("div", { class: "sa-row" }, dcity, dall), list);
   function paintList() {
     const items = Object.keys(all()).map(id => Object.assign({ id }, all()[id])).filter(n => n.day >= C.todayStr()).sort((a, b) => (a.day < b.day ? -1 : 1));
     list.replaceChildren(...(items.length ? items.map(n => {
