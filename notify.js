@@ -91,6 +91,11 @@ async function collect() {
     const rows = r.data || [];
     if (rows.length) out.push({ at: new Date(rows[0].created_at).getTime(), text: t("ntPhotos", rows.length), page: "events", memories: true, pri: 5 });
   }));
+  if (window.CMLDailyNotes) {
+    const D = window.CMLDailyNotes;
+    if (D.isBirthday()) out.push({ at: now, text: t("bdBell"), fn: () => D.birthday(), pri: 0 });
+    D.today().forEach(n => out.push({ at: now, text: t("dnBell", String(D.text(n)).slice(0, 70)), fn: () => D.show(n.id), pri: 1 }));
+  }
   if (window.CMLConnect) window.CMLConnect.pending().forEach(g => out.push({ at: g.at, text: t("ntGreet", g.name), page: "community", pri: 2 }));
   await Promise.all(queries.map(q => q.catch(() => {})));
   out.sort((a, b) => a.pri - b.pri || b.at - a.at);
@@ -136,7 +141,7 @@ function paintPanel() {
   close.addEventListener("click", closePanel);
   const rows = items.map(i => {
     const b = el("button", { type: "button", class: "notif-item" + (i.at > seen ? " new" : ""), text: i.text });
-    b.addEventListener("click", () => { closePanel(); C.showPage(i.page); if (i.memories) { const m = document.getElementById("segMemories"); if (m) m.click(); } });
+    b.addEventListener("click", () => { closePanel(); if (i.fn) return i.fn(); C.showPage(i.page); if (i.memories) { const m = document.getElementById("segMemories"); if (m) m.click(); } });
     return b;
   });
   host.replaceChildren(el("div", { class: "notif-head" }, el("b", { text: "🔔 " + t("ntTitle") }), close),

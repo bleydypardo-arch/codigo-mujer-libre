@@ -1,0 +1,19 @@
+/* "Mensaje de hoy" + birthday bouquet. Scoped to .dn-* */
+.dn-back { position: fixed; inset: 0; z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 18px; background: rgba(46, 18, 26, .55); animation: dnFade .35s ease both; }
+.dn-card { position: relative; width: min(420px, 100%); max-height: 92vh; overflow-y: auto; text-align: center; padding: 26px 22px 22px; border-radius: 24px; background: #FFF8EF; border: 1px solid #E6D2A8; box-shadow: 0 24px 60px rgba(60, 10, 25, .35); animation: dnRise .45s cubic-bezier(.2, .8, .2, 1) both; }
+.dn-h { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-size: 30px; line-height: 1.15; color: #800F32; margin: 6px 0 10px; text-wrap: balance; }
+.dn-p { font-family: Inter, system-ui, sans-serif; font-size: 16px; line-height: 1.55; color: #3B2A2E; margin: 0 0 14px; white-space: pre-line; }
+.dn-from { display: block; margin: 0 0 14px; color: #8A6D3B; font-family: "Cormorant Garamond", Georgia, serif; font-size: 16px; font-style: italic; }
+.dn-ic { font-size: 40px; }
+.dn-ok, .dn-see { width: 100%; min-height: 46px; margin-top: 6px; }
+.dn-bouquet { width: min(250px, 70%); height: auto; display: block; margin: 0 auto; transform-origin: 50% 90%; animation: dnSway 5s ease-in-out infinite; }
+.dn-conf { color: #C5A46A; letter-spacing: .5em; font-size: 14px; animation: dnTwinkle 2.4s ease-in-out infinite; }
+.dn-fl { transform-box: fill-box; transform-origin: center; animation: dnBloom .9s cubic-bezier(.2, .9, .3, 1.2) both; }
+.dn-fl:nth-of-type(2n) { animation-delay: .15s; } .dn-fl:nth-of-type(3n) { animation-delay: .3s; }
+.dn-wa { display: inline-block; padding: 8px 12px; text-decoration: none; }
+@keyframes dnFade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes dnRise { from { opacity: 0; transform: translateY(18px) scale(.97) } to { opacity: 1; transform: none } }
+@keyframes dnSway { 0%, 100% { transform: rotate(-1.5deg) } 50% { transform: rotate(1.5deg) } }
+@keyframes dnTwinkle { 0%, 100% { opacity: .45 } 50% { opacity: 1 } }
+@keyframes dnBloom { from { transform: scale(.2); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .dn-back, .dn-card, .dn-bouquet, .dn-conf, .dn-fl { animation: none !important } }
