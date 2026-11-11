@@ -85,9 +85,13 @@ async function makeCard(name) {
   try { await document.fonts.load('90px "Great Vibes"'); await document.fonts.load('600 44px "Cormorant Garamond"'); } catch { /* fonts optional */ }
   g.textAlign = "center"; g.fillStyle = "#800F32"; g.font = '120px "Great Vibes", cursive'; g.fillText(name || "", W / 2, 200);
   g.font = '600 46px "Cormorant Garamond", Georgia, serif'; g.fillText(t("bdFirst").replace(/[^\p{L}\p{N}\s,¡!¿?.]/gu, "").trim(), W / 2, 290, W - 160);
-  const svg = bouquet(); svg.setAttribute("xmlns", "http://www.w3.org/2000/svg"); svg.setAttribute("width", "700"); svg.setAttribute("height", "700");
-  const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml" }));
-  await new Promise(res => { const im = new Image(); im.onload = () => { g.drawImage(im, 300, 330, 480, 480); res(); }; im.onerror = res; im.src = url; });
+  await new Promise(res => {
+    const im = new Image();
+    im.onload = () => { const h = 500, w = Math.round(im.width * h / im.height), x = Math.round((W - w) / 2); g.save(); g.beginPath(); g.roundRect(x, 330, w, h, 26); g.clip(); g.drawImage(im, x, 330, w, h); g.restore(); g.strokeStyle = "#C5A46A"; g.lineWidth = 4; g.beginPath(); g.roundRect(x, 330, w, h, 26); g.stroke(); res(); };
+    im.onerror = () => { const svg = bouquet(); svg.setAttribute("xmlns", "http://www.w3.org/2000/svg"); svg.setAttribute("width", "480"); svg.setAttribute("height", "480");
+      const u = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml" })), i2 = new Image(); i2.onload = () => { g.drawImage(i2, 300, 330, 480, 480); res(); }; i2.onerror = res; i2.src = u; };
+    im.src = "bouquet-cumple.webp";
+  });
   g.fillStyle = "#3B2A2E"; g.font = '500 36px "Cormorant Garamond", Georgia, serif';
   let y = 880;
   t("bdBody").split("\n").forEach(par => {
@@ -102,7 +106,9 @@ function showBirthday(next, previewName) {
   const el = C.el, name = (previewName || C.profile().first_name || "").trim();
   const ok = el("button", { type: "button", class: "primary dn-ok", text: t("dnThanks") });
   const save = el("button", { type: "button", class: "secondary dn-see", text: t("bdSave") });
-  const wrapB = el("div", { class: "dn-bwrap" }, bouquet());
+  const photo = el("img", { class: "dn-photo", src: "bouquet-cumple.webp", alt: "" });
+  const wrapB = el("div", { class: "dn-bwrap" }, photo);
+  photo.addEventListener("error", () => { wrapB.replaceChildren(bouquet()); });
   const close = modal([petals(), el("div", { class: "dn-conf", "aria-hidden": "true" }, "✦ ✧ ✦ ✧ ✦"), wrapB, el("div", { class: "dn-name", text: name }), el("h2", { class: "dn-h dn-script dn-first", text: t("bdFirst") }),
     el("p", { class: "dn-p dn-bd", text: t("bdBody") }), save, ok], next);
   ok.addEventListener("click", close);

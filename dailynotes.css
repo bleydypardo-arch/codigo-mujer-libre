@@ -33,3 +33,5 @@
 .dn-first { font-size: 34px; line-height: 1.2; margin: 4px 0 12px; }
 .dn-bd { white-space: pre-line; }
 .dn-name { font-size: 30px; }
+
+.dn-photo { display: block; width: min(260px, 72%); max-height: 300px; object-fit: cover; margin: 6px auto 4px; border-radius: 22px; border: 2px solid #C5A46A; box-shadow: 0 10px 28px rgba(128, 15, 50, .28); animation: dnRise .8s cubic-bezier(.2,.8,.2,1) both; }
