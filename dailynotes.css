@@ -19,3 +19,13 @@
 @media (prefers-reduced-motion: reduce) { .dn-back, .dn-card, .dn-bouquet, .dn-conf, .dn-fl { animation: none !important } }
 
 .dn-msg { padding: 10px 0 4px; border-top: 1px solid #EBDDBB; } .dn-msg:first-of-type { border-top: 0; }
+
+.dn-script { font-family: "Great Vibes", "Cormorant Garamond", cursive; font-weight: 400; font-size: 46px; margin: 0; }
+.dn-name { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-size: 28px; color: #3B2A2E; margin: 0 0 8px; }
+.dn-bwrap { position: relative; margin-top: 4px; }
+.dn-bwrap::before { content: ""; position: absolute; inset: 8% 12% 6%; background: radial-gradient(circle, rgba(229, 177, 110, .35), transparent 70%); animation: dnTwinkle 3s ease-in-out infinite; }
+.dn-bouquet { position: relative; width: min(300px, 82%); }
+.dn-petals { position: absolute; inset: 0; overflow: hidden; border-radius: 24px; pointer-events: none; }
+.dn-petal { position: absolute; top: -30px; border-radius: 100% 0 100% 0; opacity: .85; animation: dnFall linear infinite; }
+@keyframes dnFall { 0% { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0 } 10% { opacity: .9 } 100% { transform: translateY(520px) rotate(540deg) translateX(30px); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) { .dn-petal { animation: none !important; display: none } }
