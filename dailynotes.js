@@ -12,7 +12,7 @@ const ES = {
   dnNewH: "Nuevo mensaje", dnDate: "Día en que se muestra", dnCity: "Para", dnAll: "Todas las ciudades", dnEs: "Mensaje en español", dnEn: "Mensaje en inglés (opcional)", dnFromLbl: "Firma (ej. Karen, líder de Bogotá)",
   dnPlan: "Recomendar un plan o lugar (opcional)", dnNoPlan: "Ninguno", dnSave: "Guardar mensaje", dnSaved: "Mensaje guardado.", dnFail: "No se pudo guardar.", dnEmpty: "Escribe el mensaje en español.",
   dnBulkH: "Cargar varios de una vez", dnBulkHelp: "Una línea por día: 2026-11-12 | mensaje en español | mensaje en inglés (opcional) | firma (opcional) | ciudad (opcional, si la dejas vacía usa la de arriba). Sirve para cargar toda la semana de Karen.", dnBulkBtn: "Cargar las líneas", dnBulkOk: n => n + " mensajes cargados.",
-  dnListH: "Mensajes programados", dnNone: "Todavía no hay mensajes.", dnDel: "Quitar", dnDelCity: "Quitar todos los de esta ciudad", dnDelCityAsk: n => "¿Quitar " + n + " mensajes de esa ciudad?", dnDelAsk: "¿Quitar este mensaje?",
+  dnListH: "Mensajes programados", dnNone: "Todavía no hay mensajes.", dnDel: "Quitar", dnWipe: "Borrar TODOS los mensajes y empezar limpio", dnWipeAsk: n => "¿Borrar los " + n + " mensajes programados? Después tendrás que cargarlos otra vez.", dnDelCity: "Quitar todos los de esta ciudad", dnDelCityAsk: n => "¿Quitar " + n + " mensajes de esa ciudad?", dnDelAsk: "¿Quitar este mensaje?",
   dnBdH: "Cumpleaños de los próximos 7 días", dnBdNone: "Nadie cumple años esta semana.", dnBdToday: "hoy", dnBdWa: "Felicitar por WhatsApp", dnBdDraft: n => "Hola " + n + " 🌸 Hoy es tu día y toda la comunidad Código ML se alegra contigo. ¡Feliz cumpleaños! 💐 Con cariño, Código ML"
 };
 const EN = {
@@ -22,7 +22,7 @@ const EN = {
   dnNewH: "New message", dnDate: "Day it shows", dnCity: "For", dnAll: "All cities", dnEs: "Message in Spanish", dnEn: "Message in English (optional)", dnFromLbl: "Signature (e.g. Karen, Bogotá leader)",
   dnPlan: "Recommend a plan or place (optional)", dnNoPlan: "None", dnSave: "Save message", dnSaved: "Message saved.", dnFail: "Could not save.", dnEmpty: "Write the message in Spanish.",
   dnBulkH: "Load several at once", dnBulkHelp: "One line per day: 2026-11-12 | Spanish message | English message (optional).", dnBulkBtn: "Load lines", dnBulkOk: n => n + " messages loaded.",
-  dnListH: "Scheduled messages", dnNone: "No messages yet.", dnDel: "Remove", dnDelCity: "Remove all for this city", dnDelCityAsk: n => "Remove " + n + " messages for that city?", dnDelAsk: "Remove this message?",
+  dnListH: "Scheduled messages", dnNone: "No messages yet.", dnDel: "Remove", dnWipe: "Delete ALL messages and start clean", dnWipeAsk: n => "Delete all " + n + " scheduled messages? You will need to load them again.", dnDelCity: "Remove all for this city", dnDelCityAsk: n => "Remove " + n + " messages for that city?", dnDelAsk: "Remove this message?",
   dnBdH: "Birthdays in the next 7 days", dnBdNone: "No birthdays this week.", dnBdToday: "today", dnBdWa: "Wish her on WhatsApp", dnBdDraft: n => "Hi " + n + " 🌸 Today is your day and the whole Código ML community celebrates with you. Happy birthday! 💐 With love, Código ML"
 };
 const t = (k, ...a) => { const v = C ? C.t(k) : ""; return typeof v === "function" ? v(...a) : (v || k); };
@@ -154,7 +154,16 @@ async function build() {
     try { for (const id of ids) await A.setMapEntry(KEY, id, null); if (C.refreshPublic) await C.refreshPublic(); paintList(); } catch { K.toast(t("dnFail")); }
     dall.disabled = false;
   });
-  ls.append(el("div", { class: "sa-row" }, dcity, dall), list);
+  const wipe = el("button", { type: "button", class: "danger", text: t("dnWipe") });
+  wipe.addEventListener("click", async () => {
+    const ids = Object.keys(all());
+    if (!ids.length) return K.toast(t("dnNone"));
+    if (!await window.cmlConfirm(t("dnWipeAsk", ids.length))) return;
+    wipe.disabled = true;
+    try { await A.setMapEntry(KEY, "__wipe__", null); const r = await C.db.from("settings").upsert({ key: KEY, value: {}, updated_at: new Date().toISOString() }, { onConflict: "key" }); if (r.error) throw r.error; if (C.refreshPublic) await C.refreshPublic(); paintList(); } catch { K.toast(t("dnFail")); }
+    wipe.disabled = false;
+  });
+  ls.append(el("div", { class: "sa-row" }, dcity, dall), el("div", { class: "sa-row" }, wipe), list);
   function paintList() {
     const items = Object.keys(all()).map(id => Object.assign({ id }, all()[id])).filter(n => n.day >= C.todayStr()).sort((a, b) => (a.day < b.day ? -1 : 1));
     list.replaceChildren(...(items.length ? items.map(n => {
