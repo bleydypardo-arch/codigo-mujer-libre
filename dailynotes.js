@@ -31,7 +31,9 @@ const all = () => { const s = C.setting(KEY); return s && typeof s === "object" 
 const text = n => (C.lang() === "en" && n.en && n.en.trim()) ? n.en : n.es;
 function today() {
   const d = C.todayStr(), v = C.viewCity(), mine = Object.keys(all()).map(id => Object.assign({ id }, all()[id]));
-  return mine.filter(n => n.day === d && n.es && (!n.city || v === "all" || C.cityKey(n.city) === v));
+  // The spheres / prizes contest is Bogotá-only for now: those messages never reach any other city, whatever city they were loaded for.
+  const contest = n => /esfera|sphere|ticket|premios de las/i.test((n.es || "") + " " + (n.en || ""));
+  return mine.filter(n => n.day === d && n.es && (!n.city || v === "all" || C.cityKey(n.city) === v) && (!contest(n) || v === "bogota"));
 }
 function isBirthday() {
   const p = C.profile(), n = new Date();
