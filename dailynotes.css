@@ -29,3 +29,7 @@
 .dn-petal { position: absolute; top: -30px; border-radius: 100% 0 100% 0; opacity: .85; animation: dnFall linear infinite; }
 @keyframes dnFall { 0% { transform: translateY(0) rotate(0deg) translateX(0); opacity: 0 } 10% { opacity: .9 } 100% { transform: translateY(520px) rotate(540deg) translateX(30px); opacity: 0 } }
 @media (prefers-reduced-motion: reduce) { .dn-petal { animation: none !important; display: none } }
+
+.dn-first { font-size: 34px; line-height: 1.2; margin: 4px 0 12px; }
+.dn-bd { white-space: pre-line; }
+.dn-name { font-size: 30px; }

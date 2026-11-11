@@ -7,7 +7,7 @@ let C = null, shownThisSession = false;
 const KEY = "daily_notes", SEEN = "cml_dn_seen", BDAY = "cml_bday_seen";
 const ES = {
   dnTitle: "Mensaje de hoy", dnFrom: "De Código ML, con cariño", dnThanks: "Gracias 🌸", dnSee: "Ver el plan", dnBell: n => "💌 Mensaje de hoy: " + n,
-  bdTitle2: "¡Feliz cumpleaños!", bdSave: "Guardar mi tarjeta", bdPreview: "Ver cómo se ve el ramo de cumpleaños", bdBody: n => n + "Hoy es tu día. Este ramo es para ti, de parte de Jazz y de todas las mujeres de Código ML. Que Dios te llene de amor, paz y flores este año nuevo de vida 🌸", bdBell: "💐 Hoy es tu cumpleaños: abre tu ramo.",
+  bdTitle2: "¡Feliz cumpleaños!", bdSave: "Guardar mi tarjeta", bdPreview: "Ver cómo se ve el ramo de cumpleaños", bdFirst: "🌸✨ ¡Feliz cumpleaños, mujer extraordinaria! 🎂💖", bdBody: () => "Hoy celebramos mucho más que tu cumpleaños: celebramos tu vida, tu esencia y el valor inmenso que tienes.\nNunca olvides que eres única, que tu historia importa y que dentro de ti hay sueños, talentos y una fuerza maravillosa que merecen florecer.\nQue este nuevo año de vida te recuerde que eres valiosa, mereces ser feliz y nunca es tarde para descubrir todo lo extraordinario que puedes llegar a ser.\n¡Que Dios bendiga tus pasos y llene tu vida de amor, alegría y nuevos comienzos! 💕\nCon cariño,\nCódigo Mujer Libre 🌸\nConecta · Vive · Crece\n✨ Tu vida cambia cuando descubres tu propósito.", bdBell: "💐 Hoy es tu cumpleaños: abre tu ramo.",
   dnTab: "Mensajes diarios", dnIntro: "Un mensaje al día para todas las mujeres (o para una ciudad). Aparece al entrar a la app y en la campanita. Escríbelo corto, cálido y con una acción.",
   dnNewH: "Nuevo mensaje", dnDate: "Día en que se muestra", dnCity: "Para", dnAll: "Todas las ciudades", dnEs: "Mensaje en español", dnEn: "Mensaje en inglés (opcional)", dnFromLbl: "Firma (ej. Karen, líder de Bogotá)",
   dnPlan: "Recomendar un plan o lugar (opcional)", dnNoPlan: "Ninguno", dnSave: "Guardar mensaje", dnSaved: "Mensaje guardado.", dnFail: "No se pudo guardar.", dnEmpty: "Escribe el mensaje en español.",
@@ -17,7 +17,7 @@ const ES = {
 };
 const EN = {
   dnTitle: "Today's message", dnFrom: "From Código ML, with love", dnThanks: "Thank you 🌸", dnSee: "See the plan", dnBell: n => "💌 Today's message: " + n,
-  bdTitle2: "Happy birthday!", bdSave: "Save my card", bdPreview: "Preview the birthday bouquet", bdBody: n => n + "Today is your day. This bouquet is for you, from Jazz and all the women of Código ML. May this new year of life bring you love, peace and flowers 🌸", bdBell: "💐 Today is your birthday: open your bouquet.",
+  bdTitle2: "Happy birthday!", bdSave: "Save my card", bdPreview: "Preview the birthday bouquet", bdFirst: "🌸✨ Happy birthday, extraordinary woman! 🎂💖", bdBody: () => "Today we celebrate so much more than your birthday: we celebrate your life, your essence and the immense value you carry.\nNever forget that you are unique, that your story matters, and that inside you there are dreams, talents and a wonderful strength that deserve to bloom.\nMay this new year of life remind you that you are valuable, that you deserve to be happy, and that it is never too late to discover all the extraordinary things you can become.\nMay God bless your steps and fill your life with love, joy and new beginnings! 💕\nWith love,\nCódigo Mujer Libre 🌸\nConnect · Live · Grow\n✨ Your life changes when you discover your purpose.", bdBell: "💐 Today is your birthday: open your bouquet.",
   dnTab: "Daily messages", dnIntro: "One message a day for every woman (or for one city). It shows when they open the app and in the bell.",
   dnNewH: "New message", dnDate: "Day it shows", dnCity: "For", dnAll: "All cities", dnEs: "Message in Spanish", dnEn: "Message in English (optional)", dnFromLbl: "Signature (e.g. Karen, Bogotá leader)",
   dnPlan: "Recommend a plan or place (optional)", dnNoPlan: "None", dnSave: "Save message", dnSaved: "Message saved.", dnFail: "Could not save.", dnEmpty: "Write the message in Spanish.",
@@ -65,7 +65,7 @@ function modal(kids, onClose) {
   back.addEventListener("click", e => { if (e.target === back) close(); });
   document.addEventListener("keydown", esc);
   back.appendChild(card); document.body.appendChild(back);
-  const btn = card.querySelector("button"); if (btn) btn.focus();
+  const btn = card.querySelector("button"); if (btn) btn.focus({ preventScroll: true });
   return close;
 }
 function petals() {
@@ -78,20 +78,24 @@ function petals() {
   return box;
 }
 async function makeCard(name) {
-  const W = 1080, H = 1350, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const W = 1080, H = 1840, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
   const g = cv.getContext("2d"), gr = g.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#FFF8EF"); gr.addColorStop(1, "#F9DCE4");
   g.fillStyle = gr; g.fillRect(0, 0, W, H);
   g.strokeStyle = "#C5A46A"; g.lineWidth = 6; g.strokeRect(36, 36, W - 72, H - 72); g.lineWidth = 2; g.strokeRect(54, 54, W - 108, H - 108);
   try { await document.fonts.load('90px "Great Vibes"'); await document.fonts.load('600 44px "Cormorant Garamond"'); } catch { /* fonts optional */ }
-  g.textAlign = "center"; g.fillStyle = "#800F32"; g.font = '120px "Great Vibes", cursive'; g.fillText(t("bdTitle2").replace(/¡|!/g, ""), W / 2, 230);
-  g.font = '600 64px "Cormorant Garamond", Georgia, serif'; g.fillText(name || "", W / 2, 320);
+  g.textAlign = "center"; g.fillStyle = "#800F32"; g.font = '120px "Great Vibes", cursive'; g.fillText(name || "", W / 2, 200);
+  g.font = '600 46px "Cormorant Garamond", Georgia, serif'; g.fillText(t("bdFirst").replace(/[^\p{L}\p{N}\s,¡!¿?.]/gu, "").trim(), W / 2, 290, W - 160);
   const svg = bouquet(); svg.setAttribute("xmlns", "http://www.w3.org/2000/svg"); svg.setAttribute("width", "700"); svg.setAttribute("height", "700");
   const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml" }));
-  await new Promise(res => { const im = new Image(); im.onload = () => { g.drawImage(im, 240, 340, 600, 600); res(); }; im.onerror = res; im.src = url; });
-  g.fillStyle = "#3B2A2E"; g.font = '500 40px "Cormorant Garamond", Georgia, serif';
-  const words = t("bdBody", "").replace(/^[, ]+/, "").split(" "); let line = "", y = 1010;
-  words.forEach(w => { if (g.measureText(line + w).width > 800) { g.fillText(line.trim(), W / 2, y); y += 50; line = ""; } line += w + " "; }); g.fillText(line.trim(), W / 2, y);
-  g.fillStyle = "#8A6D3B"; g.font = 'italic 40px "Cormorant Garamond", Georgia, serif'; g.fillText("Código ML", W / 2, H - 90);
+  await new Promise(res => { const im = new Image(); im.onload = () => { g.drawImage(im, 300, 330, 480, 480); res(); }; im.onerror = res; im.src = url; });
+  g.fillStyle = "#3B2A2E"; g.font = '500 36px "Cormorant Garamond", Georgia, serif';
+  let y = 880;
+  t("bdBody").split("\n").forEach(par => {
+    let line = "";
+    par.split(" ").forEach(w => { if (g.measureText(line + w).width > 820) { g.fillText(line.trim(), W / 2, y); y += 46; line = ""; } line += w + " "; });
+    g.fillText(line.trim(), W / 2, y); y += 62;
+  });
+  g.fillStyle = "#8A6D3B"; g.font = 'italic 40px "Cormorant Garamond", Georgia, serif'; g.fillText("Código Mujer Libre", W / 2, H - 80);
   return new Promise(res => cv.toBlob(res, "image/png"));
 }
 function showBirthday(next, previewName) {
@@ -99,8 +103,8 @@ function showBirthday(next, previewName) {
   const ok = el("button", { type: "button", class: "primary dn-ok", text: t("dnThanks") });
   const save = el("button", { type: "button", class: "secondary dn-see", text: t("bdSave") });
   const wrapB = el("div", { class: "dn-bwrap" }, bouquet());
-  const close = modal([petals(), el("div", { class: "dn-conf", "aria-hidden": "true" }, "✦ ✧ ✦ ✧ ✦"), wrapB, el("h2", { class: "dn-h dn-script", text: t("bdTitle2") }), el("div", { class: "dn-name", text: name }),
-    el("p", { class: "dn-p", text: t("bdBody", "").replace(/^[, ]+/, "") }), el("small", { class: "dn-from", text: t("dnFrom") }), save, ok], next);
+  const close = modal([petals(), el("div", { class: "dn-conf", "aria-hidden": "true" }, "✦ ✧ ✦ ✧ ✦"), wrapB, el("div", { class: "dn-name", text: name }), el("h2", { class: "dn-h dn-script dn-first", text: t("bdFirst") }),
+    el("p", { class: "dn-p dn-bd", text: t("bdBody") }), save, ok], next);
   ok.addEventListener("click", close);
   save.addEventListener("click", async () => {
     save.disabled = true;
