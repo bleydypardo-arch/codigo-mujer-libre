@@ -17,3 +17,5 @@
 @keyframes dnTwinkle { 0%, 100% { opacity: .45 } 50% { opacity: 1 } }
 @keyframes dnBloom { from { transform: scale(.2); opacity: 0 } to { transform: scale(1); opacity: 1 } }
 @media (prefers-reduced-motion: reduce) { .dn-back, .dn-card, .dn-bouquet, .dn-conf, .dn-fl { animation: none !important } }
+
+.dn-msg { padding: 10px 0 4px; border-top: 1px solid #EBDDBB; } .dn-msg:first-of-type { border-top: 0; }

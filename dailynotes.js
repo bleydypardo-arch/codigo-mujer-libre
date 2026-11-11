@@ -73,23 +73,30 @@ function showBirthday(next) {
   ok.addEventListener("click", close);
   store(BDAY, [C.todayStr()]);
 }
-function showNote(n, next) {
+function showNote(n, next) { showNotes([n], next); }
+function showNotes(list, next) {
   const el = C.el, ok = el("button", { type: "button", class: "primary dn-ok", text: t("dnThanks") });
-  const kids = [el("div", { class: "dn-ic", "aria-hidden": "true" }, "💌"), el("h2", { class: "dn-h", text: t("dnTitle") }), el("p", { class: "dn-p", text: text(n) })];
-  let planBtn = null;
-  if (n.plan && C.homeData().plans.some(p => p.id === n.plan)) { planBtn = el("button", { type: "button", class: "secondary dn-see", text: t("dnSee") }); kids.push(planBtn); }
-  kids.push(el("small", { class: "dn-from", text: n.from || t("dnFrom") }), ok);
+  const kids = [el("div", { class: "dn-ic", "aria-hidden": "true" }, "💌"), el("h2", { class: "dn-h", text: t("dnTitle") })];
+  const planBtns = [];
+  list.forEach((n, i) => {
+    const box = el("div", { class: "dn-msg" }, el("p", { class: "dn-p", text: text(n) }));
+    if (n.plan && C.homeData().plans.some(p => p.id === n.plan)) { const b = el("button", { type: "button", class: "secondary dn-see", text: t("dnSee") }); planBtns.push([b, n.plan]); box.appendChild(b); }
+    box.appendChild(el("small", { class: "dn-from", text: n.from || t("dnFrom") }));
+    kids.push(box);
+  });
+  kids.push(ok);
   const close = modal(kids, next);
   ok.addEventListener("click", close);
-  if (planBtn) planBtn.addEventListener("click", () => { close(); try { C.openDetail(n.plan); } catch { /* plan gone */ } });
-  const seen = store(SEEN); seen.push(n.id); store(SEEN, seen.slice(-60));
+  planBtns.forEach(([b, id]) => b.addEventListener("click", () => { close(); try { C.openDetail(id); } catch { /* plan gone */ } }));
+  const seen = store(SEEN); list.forEach(n => seen.push(n.id)); store(SEEN, seen.slice(-120));
 }
 function runEntrance() {
   if (shownThisSession || !C.session() || !C.profile()) return;
   shownThisSession = true;
   const seen = store(SEEN), queue = [];
   if (isBirthday() && !store(BDAY).includes(C.todayStr())) queue.push(next => showBirthday(next));
-  today().filter(n => !seen.includes(n.id)).slice(0, 2).forEach(n => queue.push(next => showNote(n, next)));
+  const fresh = today().filter(n => !seen.includes(n.id)).slice(0, 3);
+  if (fresh.length) queue.push(next => showNotes(fresh, next));
   const go = () => { const f = queue.shift(); if (f) f(go); };
   go();
 }
