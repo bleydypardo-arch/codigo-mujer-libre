@@ -11,13 +11,13 @@ try {
 
 const ES = {
   lbExploreK: "Explora el", lbExploreT: "Hall de Experiencias", lbCode: "Tu Código Hoy", lbCodeWeek: "Escoge tu código de la semana", lbCodeWeekAria: "Tu código esta semana",
-  lbEvents: "Eventos Especiales", lbRecs: "Recomendados", lbTalk: "Hablemos", lbDyk: "¿Sabías que?", lbSeeAll: "Ver todo", lbClose: "Cerrar",
+  lbEvents: "Eventos Especiales", lbRecs: "Gourmet y Bienestar", lbEventos: "Eventos", lbEventosS: "con fecha", lbExp: "Experiencias", lbExpS: "tours y clases", lbPromos: "Promociones", lbPromosS: "ofertas", lbBares: "Bares y Happy Hour", lbSpas: "Spas y Bienestar", lbTalk: "Hablemos", lbDyk: "¿Sabías que?", lbSeeAll: "Ver todo", lbClose: "Cerrar",
   lbBub1: "Toca la placa y ve tu mensaje de hoy", lbBub2: "Aquí tienes un lugar para ti", lbSoonT: "Pronto, un nuevo plan", lbSoonD: "Estamos preparando algo especial para ti.",
   lbHappy: "Happy Hour", lbDine: "Restaurante", lbWell: "Bienestar", lbEvent: "Evento", lbSocialK: "Social", lbWellPromo: "Bienestar", lbWellPromoS: "y promociones", lbSocial: "Social", lbSocialS: "planes con amigas", lbTours: "Tours y experiencias", lbToursS: "tu ciudad", lbRest: "Restaurante", lbHappyH: "Happy Hour", lbWeekS: "de la semana", lbCodeSub: "Mensaje para hoy"
 };
 const EN = {
   lbExploreK: "Explore the", lbExploreT: "Experiences Hall", lbCode: "Your Code Today", lbCodeWeek: "Choose your code of the week", lbCodeWeekAria: "Your code this week",
-  lbEvents: "Special Events", lbRecs: "Our picks", lbTalk: "Let's talk", lbDyk: "Did you know?", lbSeeAll: "See all", lbClose: "Close",
+  lbEvents: "Special Events", lbRecs: "Gourmet & Wellness", lbEventos: "Events", lbEventosS: "with dates", lbExp: "Experiences", lbExpS: "tours & classes", lbPromos: "Promotions", lbPromosS: "deals", lbBares: "Bars & Happy Hour", lbSpas: "Spas & Wellness", lbTalk: "Let's talk", lbDyk: "Did you know?", lbSeeAll: "See all", lbClose: "Close",
   lbBub1: "Tap the plaque for today's message", lbBub2: "A place picked just for you", lbSoonT: "Soon, a new plan", lbSoonD: "We're preparing something special for you.",
   lbHappy: "Happy Hour", lbDine: "Restaurant", lbWell: "Wellness", lbEvent: "Event", lbSocialK: "Social", lbWellPromo: "Wellness", lbWellPromoS: "& promotions", lbSocial: "Social", lbSocialS: "plans with friends", lbTours: "Tours & experiences", lbToursS: "your city", lbRest: "Restaurant", lbHappyH: "Happy Hour", lbWeekS: "of the week", lbCodeSub: "Message for today"
 };
@@ -90,14 +90,14 @@ function paintHello() {
 /* ---------- pantallas: tres categorías, con miniatura que rota ---------- */
 const ROWS = {
   events: { title: "lbEvents", rows: [
-    { k: "lbWellPromo", s: "lbWellPromoS", ic: "🌿", pick: p => C.eventCategory(p) === "wellness", go: () => C.showEventsCat("wellness") },
-    { k: "lbSocial", s: "lbSocialS", ic: "🥂", pick: p => C.eventCategory(p) === "social", go: () => C.showEventsCat("social") },
-    { k: "lbTours", s: "lbToursS", ic: "🧭", pick: p => !!(C.sideTrip && C.sideTrip(p)), go: () => { if (C.showEventsCat) C.showEventsCat("events"); else C.showPage("events"); } }
+    { k: "lbEventos", s: "lbEventosS", ic: "🎟️", pick: p => C.eventCategory(p) === "events" && !(C.isTour && C.isTour(p)), go: () => C.showAgenda("events") },
+    { k: "lbExp", s: "lbExpS", ic: "🧭", pick: p => !!(C.isTour && C.isTour(p)), go: () => C.showAgenda("exp") },
+    { k: "lbPromos", s: "lbPromosS", ic: "🥂", pick: p => !!(C.activePromo && C.activePromo(p)), go: () => C.showEventsCat("all") }
   ] },
   recs: { title: "lbRecs", rows: [
     { k: "lbRest", s: "lbWeekS", ic: "🍽️", pick: p => C.eventCategory(p) === "dining", go: () => C.showEventsCat("dining") },
-    { k: "lbHappyH", s: "lbWeekS", ic: "🍹", pick: p => C.eventCategory(p) === "social", go: () => C.showEventsCat("social") },
-    { k: "lbWellPromo", s: "lbWeekS", ic: "🌿", pick: p => C.eventCategory(p) === "wellness", go: () => C.showEventsCat("wellness") }
+    { k: "lbBares", s: "lbWeekS", ic: "🍹", pick: p => C.eventCategory(p) === "social", go: () => C.showEventsCat("social") },
+    { k: "lbSpas", s: "lbWeekS", ic: "🌿", pick: p => C.eventCategory(p) === "wellness", go: () => C.showEventsCat("wellness") }
   ] }
 };
 function photosFor(row) {
@@ -129,9 +129,9 @@ function rowEl(row, big) {
 }
 
 /* ---------- televisores del lobby: rotan TODO (spa, experiencias, promociones | happy hour, restaurantes) ---------- */
-const TV_MS = 50000; let tvLast = Date.now();   // cada foto dura 1 minuto: da tiempo de leer nombre e información
+const TV_MS = 60000; let tvLast = Date.now();   // cada foto dura 1 minuto: da tiempo de leer nombre e información
 const TV_STATE = {};
-const TV_CATS = { events: ["wellness", "events"], recs: ["social", "dining"] };
+const TV_CATS = { events: ["events"], recs: ["social", "dining", "wellness"] };
 function tvPool(kind) {
   if (!C.session()) return [];
   const hd = C.homeData(), plans = (hd && hd.plans) || [], today = C.todayStr(), cats = TV_CATS[kind];
@@ -151,7 +151,7 @@ function tvPool(kind) {
 function tvKicker(p) {
   const c = C.eventCategory(p);
   if (c === "wellness") return t("lbTvSpa"); if (c === "social") return t("lbTvHappy"); if (c === "dining") return t("lbTvRest");
-  return C.activePromo && C.activePromo(p) ? t("lbTvPromo") : t("lbTvExp");
+  return C.activePromo && C.activePromo(p) ? t("lbTvPromo") : (C.isTour && C.isTour(p) ? t("lbTvExp") : t("lbEvent"));
 }
 function tvImg(p) {
   let u = ""; try { const tag = C.planTag ? C.planTag(p.id) : {}; u = C.safeUrl((tag && tag.homeImg) || p.image_url || ""); if (!u) { const r = C.richOf && C.richOf(p); const g = r && r.gallery; u = Array.isArray(g) ? (g.map(C.safeUrl).find(Boolean) || "") : ""; } } catch (e) {}
@@ -169,7 +169,7 @@ function tvSlide(p, i) {
   if (!u) sl.__load();
   const pr = C.activePromo ? C.activePromo(p) : null;
   const tx = mk("lb-tvt"); tx.append(mk("lb-tvk", esc(pr ? "✦ " + pr.promo : tvKicker(p))), mk("lb-tvn", esc(C.pick(p, "title") || "")));
-  sl.appendChild(tx); sl.dataset.cat = c; return sl;
+  sl.appendChild(tx); sl.dataset.cat = c; sl.__p = p; return sl;
 }
 function tvBuild(kind, pool) {
   tvLast = Date.now();
@@ -178,7 +178,7 @@ function tvBuild(kind, pool) {
   wr.appendChild(mk("lb-tvb", "<i></i>")); tv.appendChild(wr); tv.appendChild(mk("lb-tva", esc(t("lbTvAll")) + " ›"));
   tv.__n = pool.length; tv.__i = (TV_STATE[kind] ? TV_STATE[kind].idx : 0) % pool.length;
   { const l = wr.querySelectorAll(".lb-tvs"); l.forEach(x => x.classList.remove("on")); l[tv.__i].classList.add("on"); l[tv.__i].__load(); l[(tv.__i + 1) % l.length].__load(); }
-  tv.addEventListener("click", e => { e.stopPropagation(); const sl = tv.querySelectorAll(".lb-tvs")[tv.__i]; const c = sl && sl.dataset.cat; C.showEventsCat(c === "events" ? "events" : c || "all"); });
+  tv.addEventListener("click", e => { e.stopPropagation(); const sl = tv.querySelectorAll(".lb-tvs")[tv.__i]; const c = sl && sl.dataset.cat; if (c === "events" && sl.__p) C.showAgenda(C.isTour && C.isTour(sl.__p) ? "exp" : "events"); else C.showEventsCat(c || "all"); });
   return tv;
 }
 function tvStep() {

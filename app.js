@@ -130,7 +130,7 @@ Object.assign(translations.es, {
   greetMorning: n => n ? "Buenos días, " + n : "Buenos días",
   greetAfternoon: n => n ? "Buenas tardes, " + n : "Buenas tardes",
   greetEvening: n => n ? "Buenas noches, " + n : "Buenas noches",
-  swipeHint: "Desliza para ver más", swipeNext: "Siguiente", swipePrev: "Anterior", upcomingTitle: "Eventos Especiales", allyTag: "Aliada", tourK: "Tours y Experiencias", tourGo: "Ver tour", tourAsk: "Consultar fechas", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", wellLess: "Ver menos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
+  swipeHint: "Desliza para ver más", swipeNext: "Siguiente", swipePrev: "Anterior", upcomingTitle: "Eventos Especiales", agEvTitle: "Eventos", agEvIntro: "Conciertos, teatro, shows y planes con fecha. Se borran solos cuando pasa la fecha.", agExpTitle: "Experiencias", agExpIntro: "Tours, clases y vivencias para disfrutar en tu ciudad.", allyTag: "Aliada", tourK: "Tours y Experiencias", tourGo: "Ver tour", tourAsk: "Consultar fechas", upcomingSub: "Planes que te inspiran, experiencias que te conectan", promoUntil:"hasta",soonT: "Pronto, un nuevo plan", soonD: "Estamos preparando algo especial para ti.", soonCta: "Recomendar un plan", soonWellT: "Pronto: bienestar para ti", soonWellD: "Aquí verás promociones y planes de bienestar.", seeAll: "Ver todos", wellLess: "Ver menos", agendaTitle: "Eventos & Promociones", agendaIntro: "Conciertos, teatro, descuentos y ofertas. Todo lo de pago, en un solo lugar.", agEmptyTitle: "Pronto habrá eventos y promociones", agEmptyText: "Aquí verás conciertos, obras de teatro y descuentos.",
   viewDetails: "Ver detalles", goingCount: n => n === 1 ? "1 va" : n + " van",
   firstToGo: "Sé la primera en confirmar", attendanceTitle: "Quiénes van",
   aboutEvent: "Sobre este plan", detailsOf: "Detalles del plan",
@@ -177,7 +177,7 @@ Object.assign(translations.en, {
   greetMorning: n => n ? "Good morning, " + n : "Good morning",
   greetAfternoon: n => n ? "Good afternoon, " + n : "Good afternoon",
   greetEvening: n => n ? "Good evening, " + n : "Good evening",
-  swipeHint: "Swipe to see more", swipeNext: "Next", swipePrev: "Previous", upcomingTitle: "Special Events", allyTag: "Partner", tourK: "Tours & Experiences", tourGo: "See tour", tourAsk: "Ask for dates", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", wellLess: "Show less", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
+  swipeHint: "Swipe to see more", swipeNext: "Next", swipePrev: "Previous", upcomingTitle: "Special Events", agEvTitle: "Events", agEvIntro: "Concerts, theater, shows and dated plans. They disappear by themselves once the date has passed.", agExpTitle: "Experiences", agExpIntro: "Tours, classes and things to live in your city.", allyTag: "Partner", tourK: "Tours & Experiences", tourGo: "See tour", tourAsk: "Ask for dates", upcomingSub: "Plans that inspire you, experiences that connect you", promoUntil: "until", soonT: "A new plan is coming", soonD: "We are preparing something special for you.", soonCta: "Recommend a plan", soonWellT: "Soon: wellness for you", soonWellD: "Here you will see wellness offers and plans.", seeAll: "View all", wellLess: "Show less", agendaTitle: "Events & Promotions", agendaIntro: "Concerts, theater, discounts and offers. Everything paid, in one place.", agEmptyTitle: "Events and deals are coming soon", agEmptyText: "You will find concerts, plays and discounts here.",
   viewDetails: "View details", goingCount: n => n + " going",
   firstToGo: "Be the first to join", attendanceTitle: "Who's going",
   aboutEvent: "About this plan", detailsOf: "Plan details",
@@ -1484,7 +1484,7 @@ function renderUpcoming() {
   const prog = rotate(programming, 1)[0], tour = rotate(tours, 1)[0];
   host.hidden = false;
   const all = el("button", { type: "button", class: "see-all", text: t("seeAll") + " →" });
-  all.addEventListener("click", () => showPage("agenda"));
+  all.addEventListener("click", () => { agendaMode = ""; showPage("agenda"); renderAgenda(); });
   host.replaceChildren(
     window.cmlSecHead("cal", "rose", t("upcomingTitle"), t("upcomingSub"), all),
     el("div", { class: "ev-grid" },
@@ -1518,11 +1518,14 @@ function soonCard(title, text) {
     el("b", { class: "ev-title", text: title || t("soonT") }),
     el("p", { class: "ev-soon-d", text: text || t("soonD") }), go);
 }
+let agendaMode = "";   // "" = todo | "events" = solo eventos con fecha | "exp" = solo experiencias
 function renderAgenda() {
   const list = byId("agendaList");
   if (!list) return;
   const today = todayStr();
-  const evs = plans.filter(p => (p.kind === "event" || sideTrip(p)) && eventCategory(p) === "events" && (!p.event_date || p.event_date >= today)).sort(byDate);
+  const h = document.querySelector("#agenda .ph-text h1"), ip = document.querySelector("#agenda .ph-text .ph-intro");
+  if (h && ip) { if (agendaMode) { h.removeAttribute("data-i18n"); ip.removeAttribute("data-i18n"); h.textContent = t(agendaMode === "exp" ? "agExpTitle" : "agEvTitle"); ip.textContent = t(agendaMode === "exp" ? "agExpIntro" : "agEvIntro"); } else { h.setAttribute("data-i18n", "agendaTitle"); ip.setAttribute("data-i18n", "agendaIntro"); h.textContent = t("agendaTitle"); ip.textContent = t("agendaIntro"); } }
+  const evs = plans.filter(p => (p.kind === "event" || sideTrip(p)) && eventCategory(p) === "events" && (!p.event_date || p.event_date >= today) && (agendaMode === "exp" ? isTour(p) : agendaMode === "events" ? !isTour(p) : true)).sort(byDate);
   if (!evs.length) return list.replaceChildren(session ? emptyState("🎟️", t("agEmptyTitle"), t("agEmptyText")) : "");
   list.replaceChildren(...evs.map(p => eventCard(p)));
 }
@@ -2431,7 +2434,7 @@ function initialize() {
     refreshPublic: async () => { if (session) await loadAll(); }, discoverPick, todayStr, eventCategory, sideTrip,
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail, respondButton,
-    setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, showEventsCat: cat => { codeSel = ""; catSel = EVENT_CATS.includes(cat) ? cat : "all"; monthSel = "all"; showPage("events"); renderEvents(); }, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, activePromo, soonCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,
+    setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, showAgenda: mode => { agendaMode = mode === "exp" || mode === "events" ? mode : ""; showPage("agenda"); renderAgenda(); }, isTour, showEventsCat: cat => { codeSel = ""; catSel = EVENT_CATS.includes(cat) ? cat : "all"; monthSel = "all"; showPage("events"); renderEvents(); }, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, activePromo, soonCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
       setLanguage(currentLanguage, false);
