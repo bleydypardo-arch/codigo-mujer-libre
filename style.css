@@ -293,3 +293,11 @@ header button.bell { position: relative; padding: 8px 11px; }
 .sp-txt{display:flex;flex-direction:column;gap:6px;min-width:0}.sp-txt b{font-size:1.05rem}.sp-txt small{opacity:.85;line-height:1.35}
 .sp-btn{align-self:flex-start;margin-top:4px}.sp-err{color:#b3263e;font-weight:600;font-size:.9rem}
 .sp-pend{max-width:420px;margin:16px auto}
+
+/* Estudio de foto */
+.sp-modal{position:fixed;inset:0;z-index:9999;background:rgba(40,20,30,.6);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:16px}
+.sp-card{position:relative;background:#fff8f4;color:#3a2330;border-radius:20px;padding:20px 16px 18px;width:100%;max-width:440px;margin:auto;text-align:center;display:flex;flex-direction:column;gap:8px}
+.sp-x{position:absolute;top:6px;right:10px;border:0;background:none;font-size:30px;line-height:1;cursor:pointer;color:#3a2330}
+.sp-mt{font-size:1.2rem;padding:0 22px}.sp-wide{width:100%;padding:14px;border-radius:30px;font-weight:700;font-size:1.02rem}.sp-alt{background:#fff;color:#b0576f;border:2px solid #b0576f}
+.sp-st{min-height:1.3em;font-weight:600;color:#b0576f}.sp-out{width:280px;height:280px;max-width:75vw;max-height:75vw;border-radius:50%;border:4px solid #c9a14a;margin:6px auto;background:#f3e6cd}
+.sp-chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.sp-chip{padding:8px 15px;border-radius:20px;border:1.5px solid #c9a14a;background:#fff;color:#3a2330;font-weight:600;cursor:pointer}.sp-chip.on{background:#c9a14a;color:#fff}
