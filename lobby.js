@@ -11,13 +11,13 @@ try {
 
 const ES = {
   lbExploreK: "Explora el", lbExploreT: "Hall de Experiencias", lbCode: "Tu Código Hoy", lbCodeWeek: "Escoge tu código de la semana", lbCodeWeekAria: "Tu código esta semana",
-  lbEvents: "Eventos Especiales", lbRecs: "Gourmet y Bienestar", lbEventos: "Eventos", lbEventosS: "con fecha", lbExp: "Experiencias", lbExpS: "tours y clases", lbPromos: "Promociones", lbPromosS: "ofertas", lbBares: "Bares y Happy Hour", lbSpas: "Spas y Bienestar", lbTalk: "Hablemos", lbDyk: "¿Sabías que?", lbSeeAll: "Ver todo", lbClose: "Cerrar",
+  lbEvents: "Eventos Especiales", lbRecs: "Gourmet y Bienestar", lbEventos: "Eventos", lbEventosS: "con fecha", lbExp: "Experiencias", lbExpS: "tours y clases", lbPromos: "Promociones", lbPromosS: "ofertas", lbBares: "Happy Hour", lbSpas: "Spas", lbTalk: "Hablemos", lbDyk: "¿Sabías que?", lbSeeAll: "Ver todo", lbClose: "Cerrar",
   lbBub1: "Toca la placa y ve tu mensaje de hoy", lbBub2: "Aquí tienes un lugar para ti", lbSoonT: "Pronto, un nuevo plan", lbSoonD: "Estamos preparando algo especial para ti.",
   lbHappy: "Happy Hour", lbDine: "Restaurante", lbWell: "Bienestar", lbEvent: "Evento", lbSocialK: "Social", lbWellPromo: "Bienestar", lbWellPromoS: "y promociones", lbSocial: "Social", lbSocialS: "planes con amigas", lbTours: "Tours y experiencias", lbToursS: "tu ciudad", lbRest: "Restaurante", lbHappyH: "Happy Hour", lbWeekS: "de la semana", lbCodeSub: "Mensaje para hoy"
 };
 const EN = {
   lbExploreK: "Explore the", lbExploreT: "Experiences Hall", lbCode: "Your Code Today", lbCodeWeek: "Choose your code of the week", lbCodeWeekAria: "Your code this week",
-  lbEvents: "Special Events", lbRecs: "Gourmet & Wellness", lbEventos: "Events", lbEventosS: "with dates", lbExp: "Experiences", lbExpS: "tours & classes", lbPromos: "Promotions", lbPromosS: "deals", lbBares: "Bars & Happy Hour", lbSpas: "Spas & Wellness", lbTalk: "Let's talk", lbDyk: "Did you know?", lbSeeAll: "See all", lbClose: "Close",
+  lbEvents: "Special Events", lbRecs: "Gourmet & Wellness", lbEventos: "Events", lbEventosS: "with dates", lbExp: "Experiences", lbExpS: "tours & classes", lbPromos: "Deals", lbPromosS: "deals", lbBares: "Happy Hour", lbSpas: "Spas", lbTalk: "Let's talk", lbDyk: "Did you know?", lbSeeAll: "See all", lbClose: "Close",
   lbBub1: "Tap the plaque for today's message", lbBub2: "A place picked just for you", lbSoonT: "Soon, a new plan", lbSoonD: "We're preparing something special for you.",
   lbHappy: "Happy Hour", lbDine: "Restaurant", lbWell: "Wellness", lbEvent: "Event", lbSocialK: "Social", lbWellPromo: "Wellness", lbWellPromoS: "& promotions", lbSocial: "Social", lbSocialS: "plans with friends", lbTours: "Tours & experiences", lbToursS: "your city", lbRest: "Restaurant", lbHappyH: "Happy Hour", lbWeekS: "of the week", lbCodeSub: "Message for today"
 };
@@ -343,7 +343,7 @@ function fitGroup(sel, v, base, min) {
 }
 function fitAll() {
   if (!built) return;
-  fitGroup(".lb-pt", "--fs-pt", 11, 6); fitGroup(".lb-cat", "--fs-cat", 7.5, 4.5); fitGroup(".lb-plq b", "--fs-code", 11, 6); fitGroup(".lb-ex b", "--fs-hall", 12.5, 7); fitGroup(".lb-sub", "--fs-sub", 4.8, 3.6); fitGroup(".lb-plq small", "--fs-csub", 4.8, 3.6); fitGroup(".lb-pc span", "--fs-pc", 10.5, 4.5);
+  fitGroup(".lb-pt", "--fs-pt", 13, 6); fitGroup(".lb-cat", "--fs-cat", 7.5, 3.4); fitGroup(".lb-plq b", "--fs-code", 11, 6); fitGroup(".lb-ex b", "--fs-hall", 12.5, 7); fitGroup(".lb-sub", "--fs-sub", 4.8, 3.6); fitGroup(".lb-plq small", "--fs-csub", 4.8, 3.6); fitGroup(".lb-pc span", "--fs-pc", 10.5, 4.5);
 }
 function labels() {
   if (!built) return;
