@@ -31,8 +31,8 @@ const say=t=>$("st").textContent=t;
 // fondo de la marca: el ramo de orquídeas, desenfocado y teñido de rosa
 const bg=new Image();bg.src="bouquet-cumple.webp";bg.onload=()=>{bgImg=bg;if(person)draw()};
 function drawBg(c){const g=c.createLinearGradient(0,0,S,S);g.addColorStop(0,"#f7d6e0");g.addColorStop(1,"#e9c9a3");c.fillStyle=g;c.fillRect(0,0,S,S);
- if(bgImg){c.save();if("filter"in c)c.filter="blur(18px) saturate(1.2)";const r=Math.max(S/bgImg.width,S/bgImg.height)*1.25;c.drawImage(bgImg,(S-bgImg.width*r)/2,(S-bgImg.height*r)/2,bgImg.width*r,bgImg.height*r);c.restore();}
- c.fillStyle="rgba(255,225,235,.28)";c.fillRect(0,0,S,S);}
+ if(bgImg){c.save();if("filter"in c)c.filter="blur(5px) saturate(1.35) contrast(1.05)";const r=Math.max(S/bgImg.width,S/bgImg.height)*1.05;c.drawImage(bgImg,(S-bgImg.width*r)/2,(S-bgImg.height*r)/2,bgImg.width*r,bgImg.height*r);c.restore();}
+ c.fillStyle="rgba(255,225,235,.08)";c.fillRect(0,0,S,S);}
 function personLayer(){const c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d");
  const f=FILTERS[filt];const ok="filter"in x;
  if(ok){x.filter=f[1]==="none"?"none":f[1];}x.drawImage(person,0,0,S,S);
@@ -48,7 +48,7 @@ async function getSeg(){if(seg)return seg;const V="https://cdn.jsdelivr.net/npm/
  seg=await m.ImageSegmenter.createFromOptions(fs,{baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite"},runningMode:"IMAGE",outputConfidenceMasks:true,outputCategoryMask:false});return seg;}
 async function handle(file){if(!file)return;try{say("Preparando tu foto… 🌸");
  const bmp=await createImageBitmap(file,{imageOrientation:"from-image"});const c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d");
- const s=Math.min(bmp.width,bmp.height);x.drawImage(bmp,(bmp.width-s)/2,(bmp.height-s)/2,s,s,0,0,S,S);person=c;mask=null;useBg=false;draw();
+ const s=Math.min(bmp.width,bmp.height);x.drawImage(bmp,(bmp.width-s)/2,(bmp.height-s)*0.12,s,s,0,0,S,S);person=c;mask=null;useBg=false;draw();
  try{say("Poniendo el fondo de Código ML… (la primera vez tarda unos segundos)");const sg=await getSeg();const r=sg.segment(c);
   const cm=r.confidenceMasks[0],w=cm.width,h=cm.height,arr=cm.getAsFloat32Array();
   const mc=document.createElement("canvas");mc.width=w;mc.height=h;const mx=mc.getContext("2d"),id=mx.createImageData(w,h);
