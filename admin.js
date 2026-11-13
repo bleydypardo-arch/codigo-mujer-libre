@@ -881,7 +881,7 @@ function formView() {
     title_es: val0("title_es"), title_en: val0("title_en"), desc_es: val0("desc_es"), desc_en: val0("desc_en"),
     event_date: cfg.fields.includes("date") && val0("event_date") ? val0("event_date") : null,
     event_time: val0("event_time"), date_text: val0("date_text"), location: val0("location"), price: val0("price"),
-    url: val0("url"), details: richEditor ? richEditor.value() : val0("details"), image_url: picker ? picker.value : "", published: published.checked
+    url: val0("url"), details: richEditor ? richEditor.value() : val0("details"), image_url: picker ? (C.photoBlocked(picker.value) ? (toast("⚠️ Esa foto NO se guardó: el enlace no es permitido (muse.ai u otro temporal). Sube la foto desde el computador o usa un enlace directo y permanente."), "") : picker.value) : "", published: published.checked
   });
   const buildTag = () => Object.assign(buildTag0(), { show: showSel.value }, Array.isArray(oldTag.dates) ? { dates: oldTag.dates } : {});
   const buildTag0 = () => kind === "matcha"

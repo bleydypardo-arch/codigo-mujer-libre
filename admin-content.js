@@ -605,13 +605,13 @@ async function importTab() {
     return rows;
   };
   const create = async rows => {
-    const type = typeSel.value, city = citySel.value, publish = now.checked;
+    const type = typeSel.value, city = citySel.value, publish = now.checked; const blockedPh = [];
     const payloads = rows.map(r => ({
       kind: type === "wellness" ? "wellness" : "event", code: type === "wellness" ? "Wellness" : "Social", published: publish,
       title_es: r.name, title_en: r.name, desc_es: r.des || r.den, desc_en: r.den || r.des,
-      location: r.address, url: r.url, event_date: null, event_time: "", date_text: "", price: "", details: "", image_url: r.img || ""
+      location: r.address, url: r.url, event_date: null, event_time: "", date_text: "", price: "", details: "", image_url: (C.photoBlocked(r.img) ? (blockedPh.push(r.name), "") : (r.img || ""))
     }));
-    const ins = await C.db.from("plans").insert(payloads).select("id");
+    const ins = await C.db.from("plans").insert(payloads).select("id"); if (blockedPh.length) { K.toast("⚠️ " + blockedPh.length + " fotos NO se guardaron: enlace no permitido (muse.ai u otro temporal). Esos lugares quedaron SIN foto. Usa enlaces directos y permanentes."); }
     if (ins.error) throw ins.error;
     const ids = (ins.data || []).map(x => x.id);
     const cur = await C.db.from("settings").select("key,value").eq("key", "plan_tags").maybeSingle();
@@ -654,15 +654,15 @@ async function importTab() {
     const bad = rows.find(r => !r.name || (!r.addr && !C.safeUrl(r.url)) || (r.url && !C.safeUrl(r.url))); if (bad) return say(phFb, "Revisa esta línea: " + (bad.name || "?") + ". Debe ser: Nombre | Dirección | https://link-de-la-foto (la dirección o la foto pueden faltar, pero no las dos)");
     const res = await C.db.from("plans").select("id,title_es,image_url"); if (res.error) return say(phFb, tx("saveFail"));
     const byName = new Map(); (res.data || []).forEach(p => { const k = norm(p.title_es); if (!byName.has(k)) byName.set(k, []); byName.get(k).push(p); });
-    let ok = 0; const miss = [];
+    let ok = 0; const miss = [], badPh = [];
     for (const r of rows) {
       const hit = byName.get(norm(r.name));
       if (!hit) { miss.push(r.name); continue; }
-      for (const p of hit) { const patch = {}; if (r.url) patch.image_url = C.safeUrl(r.url); if (r.addr) patch.location = r.addr.slice(0, 200); const u = await C.db.from("plans").update(patch).eq("id", p.id); if (u.error) return say(phFb, tx("saveFail")); }
+      for (const p of hit) { const patch = {}; if (r.url) { if (C.photoBlocked(r.url)) { badPh.push(r.name); } else patch.image_url = C.safeUrl(r.url); } if (r.addr) patch.location = r.addr.slice(0, 200); const u = await C.db.from("plans").update(patch).eq("id", p.id); if (u.error) return say(phFb, tx("saveFail")); }
       ok++;
     }
     await C.refreshPublic();
-    phOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + ok + " lugares actualizados." + (miss.length ? " No encontré estos lugares (revisa el nombre): " + miss.join(", ") + "." : "") + (skipped.length ? " Sin cambios (no traían dirección ni foto): " + skipped.join(", ") + "." : "") }));
+    phOut.replaceChildren(el("p", { class: "small-note", text: "Listo: " + ok + " lugares actualizados." + (badPh.length ? " ⚠️ " + badPh.length + " fotos NO se guardaron porque el enlace no es permitido (muse.ai u otro temporal): " + badPh.join(", ") + "." : "") + (miss.length ? " No encontré estos lugares (revisa el nombre): " + miss.join(", ") + "." : "") + (skipped.length ? " Sin cambios (no traían dirección ni foto): " + skipped.join(", ") + "." : "") }));
   };
   // ---- Publish every draft place of one city in one tap (for lists that were created but not published) ----
   const pubCity = el("select", {}, ...C.cities().map(c => el("option", { value: c.name, text: c.name })));
@@ -804,12 +804,13 @@ async function evImportTab() {
   const create = async (rows, city, isTour, publish) => {
     const items = [];   // an event with several dates becomes one plan per date; a tour is ONE plan that remembers all its dates
     rows.forEach(r => { if (isTour) items.push(Object.assign({}, r, { date: r.dates.length ? r.dates[r.dates.length - 1] : null })); else r.dates.forEach(d => items.push(Object.assign({}, r, { date: d }))); });
+    const blockedPh = [];
     const payloads = items.map(r => ({
       kind: isTour ? "trip" : "event", code: isTour ? "Adventure" : (typeSel.value === "wellness" ? "Wellness" : "Social"), published: publish,
       title_es: r.name, title_en: r.name, desc_es: r.des || r.den, desc_en: r.den || r.des,
-      location: r.place, url: r.url, event_date: r.date, event_time: r.time, date_text: "", price: r.price, details: "", image_url: r.img || ""
+      location: r.place, url: r.url, event_date: r.date, event_time: r.time, date_text: "", price: r.price, details: "", image_url: (C.photoBlocked(r.img) ? (blockedPh.push(r.name), "") : (r.img || ""))
     }));
-    const ins = await C.db.from("plans").insert(payloads).select("id");
+    const ins = await C.db.from("plans").insert(payloads).select("id"); if (blockedPh.length) { K.toast("⚠️ " + blockedPh.length + " fotos NO se guardaron: enlace no permitido (muse.ai u otro temporal). Esos lugares quedaron SIN foto. Usa enlaces directos y permanentes."); }
     if (ins.error) throw ins.error;
     const ids = (ins.data || []).map(x => x.id);
     const cur = await C.db.from("settings").select("key,value").eq("key", "plan_tags").maybeSingle();

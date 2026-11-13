@@ -708,6 +708,13 @@ function pick(row, base) {
   const other = row[base + "_" + (currentLanguage === "es" ? "en" : "es")];
   return (own && own.trim()) ? own : (other || "");
 }
+// Candado de fotos: enlaces temporales o de almacenamientos privados (muse.ai, chatgpt/openai, blob) NO se aceptan: mueren y dejan la app sin fotos.
+const BAD_PHOTO_HOST = /(^|\.)(muse\.ai|oaiusercontent\.com|openai\.com|chatgpt\.com|localhost)$/i;
+function photoBlocked(v) {
+  if (!v || !String(v).trim()) return false;
+  const u = safeUrl(v); if (!u) return true;
+  try { return BAD_PHOTO_HOST.test(new URL(u).hostname); } catch { return true; }
+}
 function safeUrl(value) {
   try {
     const u = new URL(String(value || ""));
@@ -2447,7 +2454,7 @@ function initialize() {
     refreshPublic: async () => { if (session) await loadAll(); }, discoverPick, todayStr, eventCategory, sideTrip,
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail, respondButton,
-    setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, lastDay, inWindow, isXmas, showAgenda: mode => { agendaMode = mode === "exp" || mode === "events" ? mode : ""; showPage("agenda"); renderAgenda(); }, isTour, showEventsCat: cat => { codeSel = ""; catSel = EVENT_CATS.includes(cat) ? cat : "all"; monthSel = "all"; showPage("events"); renderEvents(); }, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, activePromo, soonCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,
+    setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, photoBlocked, lastDay, inWindow, isXmas, showAgenda: mode => { agendaMode = mode === "exp" || mode === "events" ? mode : ""; showPage("agenda"); renderAgenda(); }, isTour, showEventsCat: cat => { codeSel = ""; catSel = EVENT_CATS.includes(cat) ? cat : "all"; monthSel = "all"; showPage("events"); renderEvents(); }, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, activePromo, soonCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
       setLanguage(currentLanguage, false);
