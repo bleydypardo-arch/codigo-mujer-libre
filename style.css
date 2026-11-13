@@ -286,3 +286,10 @@ header button.bell { position: relative; padding: 8px 11px; }
 .notif-settings summary { min-height: 44px; display: flex; align-items: center; color: #80525a; font-weight: bold; }
 .notif-settings .check { display: flex; gap: 10px; align-items: center; min-height: 40px; font-weight: normal; }
 .notif-settings .check input { width: 20px; height: 20px; }
+
+/* Foto obligatoria al unirse / en espera de aprobación */
+.sp-box{display:flex;gap:14px;align-items:center;padding:14px;margin:0 0 16px;border:1.5px dashed #c9a14a;border-radius:16px;background:rgba(201,161,74,.10)}
+.sp-prev{flex:0 0 84px;height:84px;border-radius:50%;display:grid;place-items:center;font-size:32px;background:#f3e6cd center/cover no-repeat;border:2px solid #c9a14a}
+.sp-txt{display:flex;flex-direction:column;gap:6px;min-width:0}.sp-txt b{font-size:1.05rem}.sp-txt small{opacity:.85;line-height:1.35}
+.sp-btn{align-self:flex-start;margin-top:4px}.sp-err{color:#b3263e;font-weight:600;font-size:.9rem}
+.sp-pend{max-width:420px;margin:16px auto}
