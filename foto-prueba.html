@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>Prueba de foto · Código ML</title>
+<style>
+:root{--rose:#b0576f;--gold:#c9a14a;--ink:#3a2330;--bg:#fff8f4}
+*{box-sizing:border-box}body{margin:0;font:16px/1.45 system-ui,sans-serif;background:var(--bg);color:var(--ink);padding:20px 16px 60px;text-align:center}
+.wrap{max-width:440px;margin:0 auto}h1{font-size:1.4rem;margin:.2em 0}p{margin:.4em 0}.mut{opacity:.75;font-size:.92rem}
+.btn{display:block;width:100%;padding:15px;margin:10px 0;border:0;border-radius:30px;background:var(--rose);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer}
+.btn.alt{background:#fff;color:var(--rose);border:2px solid var(--rose)}
+#out{width:300px;height:300px;max-width:80vw;max-height:80vw;border-radius:50%;border:4px solid var(--gold);margin:18px auto 8px;display:none;background:#f3e6cd}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0}.chip{padding:9px 16px;border-radius:20px;border:1.5px solid var(--gold);background:#fff;cursor:pointer;font-weight:600}.chip.on{background:var(--gold);color:#fff}
+#st{min-height:1.4em;font-weight:600;color:var(--rose)}#tools{display:none}
+</style></head><body><div class="wrap">
+<h1>📸 Pon tu foto</h1><p>Queremos que seas parte de la comunidad.</p><p class="mut">PÁGINA DE PRUEBA · no guarda nada. Tu foto se queda en tu celular.</p>
+<button class="btn" id="bSelfie">Tomarme un selfie</button>
+<button class="btn alt" id="bUp">Subir una foto</button>
+<input type="file" id="fSelfie" accept="image/*" capture="user" hidden><input type="file" id="fUp" accept="image/*" hidden>
+<div id="st" role="status"></div>
+<canvas id="out" width="600" height="600"></canvas>
+<div id="tools">
+ <div class="chips" id="chips"></div>
+ <button class="btn alt" id="bOrig">Usar mi foto original (sin fondo)</button>
+ <button class="btn" id="bSave">Guardar como imagen (prueba)</button>
+</div></div>
+<script type="module">
+const $=id=>document.getElementById(id),out=$("out"),ctx=out.getContext("2d"),S=600;
+let person=null,mask=null,useBg=true,filt="natural",bgImg=null,seg=null;
+const FILTERS={natural:["Natural","none",0],luz:["Luz","brightness(1.12) contrast(1.05) saturate(1.08)",0],suave:["Piel suave","brightness(1.08) contrast(.96) saturate(1.05)",1.6],rosa:["Rosa","brightness(1.08) saturate(1.15) sepia(.18) hue-rotate(-12deg)",1]};
+const chips=$("chips");Object.keys(FILTERS).forEach(k=>{const b=document.createElement("button");b.className="chip"+(k===filt?" on":"");b.textContent=FILTERS[k][0];b.onclick=()=>{filt=k;[...chips.children].forEach(c=>c.classList.toggle("on",c===b));draw()};chips.appendChild(b)});
+const say=t=>$("st").textContent=t;
+// fondo de la marca: el ramo de orquídeas, desenfocado y teñido de rosa
+const bg=new Image();bg.src="bouquet-cumple.webp";bg.onload=()=>{bgImg=bg;if(person)draw()};
+function drawBg(c){const g=c.createLinearGradient(0,0,S,S);g.addColorStop(0,"#f7d6e0");g.addColorStop(1,"#e9c9a3");c.fillStyle=g;c.fillRect(0,0,S,S);
+ if(bgImg){c.save();if("filter"in c)c.filter="blur(18px) saturate(1.2)";const r=Math.max(S/bgImg.width,S/bgImg.height)*1.25;c.drawImage(bgImg,(S-bgImg.width*r)/2,(S-bgImg.height*r)/2,bgImg.width*r,bgImg.height*r);c.restore();}
+ c.fillStyle="rgba(255,225,235,.28)";c.fillRect(0,0,S,S);}
+function personLayer(){const c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d");
+ const f=FILTERS[filt];const ok="filter"in x;
+ if(ok){x.filter=f[1]==="none"?"none":f[1];}x.drawImage(person,0,0,S,S);
+ if(ok&&f[2]){x.filter="blur("+f[2]+"px) "+(f[1]==="none"?"":f[1]);x.globalAlpha=.35;x.drawImage(person,0,0,S,S);x.globalAlpha=1;}
+ x.filter="none";return c;}
+function draw(){if(!person)return;ctx.clearRect(0,0,S,S);
+ const pl=personLayer();
+ if(useBg&&mask){drawBg(ctx);const t=document.createElement("canvas");t.width=t.height=S;const tx=t.getContext("2d");tx.drawImage(pl,0,0);tx.globalCompositeOperation="destination-in";tx.drawImage(mask,0,0,S,S);ctx.drawImage(t,0,0);}
+ else ctx.drawImage(pl,0,0);
+ out.style.display="block";$("tools").style.display="block";$("bOrig").style.display=mask?"block":"none";$("bOrig").textContent=useBg&&mask?"Usar mi foto original (sin fondo)":"Poner el fondo de Código ML";}
+async function getSeg(){if(seg)return seg;const V="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+ const m=await import(V+"/vision_bundle.mjs");const fs=await m.FilesetResolver.forVisionTasks(V+"/wasm");
+ seg=await m.ImageSegmenter.createFromOptions(fs,{baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite"},runningMode:"IMAGE",outputConfidenceMasks:true,outputCategoryMask:false});return seg;}
+async function handle(file){if(!file)return;try{say("Preparando tu foto… 🌸");
+ const bmp=await createImageBitmap(file,{imageOrientation:"from-image"});const c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d");
+ const s=Math.min(bmp.width,bmp.height);x.drawImage(bmp,(bmp.width-s)/2,(bmp.height-s)/2,s,s,0,0,S,S);person=c;mask=null;useBg=false;draw();
+ try{say("Poniendo el fondo de Código ML… (la primera vez tarda unos segundos)");const sg=await getSeg();const r=sg.segment(c);
+  const cm=r.confidenceMasks[0],w=cm.width,h=cm.height,arr=cm.getAsFloat32Array();
+  const mc=document.createElement("canvas");mc.width=w;mc.height=h;const mx=mc.getContext("2d"),id=mx.createImageData(w,h);
+  for(let i=0;i<arr.length;i++){const v=Math.max(0,Math.min(1,(arr[i]-.35)/.4));id.data[i*4+3]=Math.round(v*255);id.data[i*4]=id.data[i*4+1]=id.data[i*4+2]=255;}
+  mx.putImageData(id,0,0);
+  const m2=document.createElement("canvas");m2.width=m2.height=S;const m2x=m2.getContext("2d");if("filter"in m2x)m2x.filter="blur(1.5px)";m2x.drawImage(mc,0,0,S,S);mask=m2;useBg=true;say("¡Listo! Elige tu estilo 👇");}
+ catch(e){console.error(e);say("No pudimos poner el fondo. Te dejamos tu foto original.");}
+ draw();}catch(e){console.error(e);say("No pudimos leer esa foto. Prueba con otra.");}}
+$("bSelfie").onclick=()=>$("fSelfie").click();$("bUp").onclick=()=>$("fUp").click();
+$("fSelfie").onchange=e=>handle(e.target.files[0]);$("fUp").onchange=e=>handle(e.target.files[0]);
+$("bOrig").onclick=()=>{if(mask){useBg=!useBg;draw();}};
+$("bSave").onclick=()=>{out.toBlob(b=>{const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mi-foto-codigo-ml.jpg";a.click();},"image/jpeg",.9)};
+</script></body></html>
