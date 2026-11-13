@@ -30,9 +30,11 @@ const chips=$("chips");Object.keys(FILTERS).forEach(k=>{const b=document.createE
 const say=t=>$("st").textContent=t;
 // fondo de la marca: el ramo de orquídeas, desenfocado y teñido de rosa
 const bg=new Image();bg.src="bouquet-cumple.webp";bg.onload=()=>{bgImg=bg;if(person)draw()};
-function drawBg(c){const g=c.createLinearGradient(0,0,S,S);g.addColorStop(0,"#f7d6e0");g.addColorStop(1,"#e9c9a3");c.fillStyle=g;c.fillRect(0,0,S,S);
- if(bgImg){c.save();if("filter"in c)c.filter="blur(5px) saturate(1.35) contrast(1.05)";const r=Math.max(S/bgImg.width,S/bgImg.height)*1.05;c.drawImage(bgImg,(S-bgImg.width*r)/2,(S-bgImg.height*r)/2,bgImg.width*r,bgImg.height*r);c.restore();}
- c.fillStyle="rgba(255,225,235,.08)";c.fillRect(0,0,S,S);}
+function drawBg(c){const g=c.createRadialGradient(S*.5,S*.38,S*.05,S*.5,S*.5,S*.78);g.addColorStop(0,"#fff4ef");g.addColorStop(.55,"#efb3c6");g.addColorStop(1,"#b0576f");c.fillStyle=g;c.fillRect(0,0,S,S);
+ const B=[[.12,.15,70,"#ffe9b8",.55],[.82,.12,55,"#ffffff",.5],[.9,.42,80,"#f7c96b",.45],[.07,.5,60,"#ffffff",.45],[.2,.82,85,"#f7c96b",.5],[.78,.85,70,"#ffffff",.5],[.5,.06,45,"#f7c96b",.5],[.95,.8,40,"#ffe9b8",.5],[.4,.93,50,"#ffffff",.4],[.62,.2,35,"#ffffff",.4]];
+ B.forEach(([x,y,r,col,a])=>{c.beginPath();c.arc(x*S,y*S,r,0,7);c.fillStyle=col;c.globalAlpha=a;c.fill();c.lineWidth=3;c.strokeStyle="#fff";c.globalAlpha=a*.6;c.stroke();});c.globalAlpha=1;
+ /* pétalos de orquídea */
+ [[.1,.3,-.6],[.9,.62,.7],[.15,.68,.5],[.85,.25,-.4]].forEach(([x,y,r])=>{c.save();c.translate(x*S,y*S);c.rotate(r);c.fillStyle="rgba(255,255,255,.55)";c.beginPath();c.ellipse(0,0,70,32,0,0,7);c.fill();c.fillStyle="rgba(214,92,140,.45)";c.beginPath();c.ellipse(22,0,34,15,0,0,7);c.fill();c.restore();});}
 function personLayer(){const c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d");
  const f=FILTERS[filt];const ok="filter"in x;
  if(ok){x.filter=f[1]==="none"?"none":f[1];}x.drawImage(person,0,0,S,S);
