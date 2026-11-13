@@ -134,3 +134,9 @@ footer{padding:36px 0 70px;color:var(--mute);font-size:13px;text-align:center}
 .note{margin-top:14px;font-size:12.5px;color:var(--mute)}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;max-width:92vw;background:var(--ink);color:#fff;padding:12px 20px;border-radius:14px;font-size:14px;box-shadow:0 14px 40px -10px #000}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* Botón ES / EN del demo */
+.langfab{position:fixed;top:max(10px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));z-index:200;min-width:44px;height:36px;padding:0 12px;border-radius:18px;border:1px solid rgba(255,255,255,.55);background:rgba(20,16,18,.62);color:#fff;font:600 13px/1 Inter,system-ui,sans-serif;letter-spacing:.06em;cursor:pointer;backdrop-filter:blur(6px)}
+.langfab:focus-visible{outline:2px solid #d4b26a;outline-offset:2px}
+.langfab.low{top:auto;bottom:max(14px,env(safe-area-inset-bottom));left:max(10px,env(safe-area-inset-left));min-width:40px;height:32px;padding:0 10px;font-size:12px}
+@media(min-width:700px){.langfab.low{bottom:auto;top:max(10px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left))}}
