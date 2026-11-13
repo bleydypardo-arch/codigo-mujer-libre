@@ -146,7 +146,7 @@ function svg(code, cls) {
 function svgPath(d, cls) { const s = el("span", { class: cls, "aria-hidden": "true" }); s.innerHTML = '<svg class="ci" viewBox="0 0 24 24" focusable="false"><path d="' + d + '"/></svg>'; return s; }
 function upcomingWith(code) {
   const today = C.todayStr();
-  return C.homeData().plans.filter(p => p.kind === "event" && p.code === code && (!p.event_date || C.lastDay(p) >= today)).length;
+  return C.homeData().plans.filter(p => p.kind === "event" && p.code === code && (!p.event_date || (C.lastDay(p) >= today && C.inWindow(p)))).length;
 }
 function go(page, after) { return () => { if (page === "travel" && window.CMLRedesign) window.CMLRedesign.paintTravel(); C.showPage(page); if (after) after(); }; }
 function actions(code) {

@@ -913,7 +913,7 @@ function eventCategory(p) {
   if (p.code === "Wellness") return "wellness";
   return p.code === "Social" || p.code === "Connection" ? "social" : "events";
 }
-const upcomingEvents = () => { const today = todayStr(); return plans.filter(p => (p.kind === "event" || p.kind === "wellness" || sideTrip(p)) && (!p.event_date || lastDay(p) >= today) && EVENT_CATS.includes(eventCategory(p))); };
+const upcomingEvents = () => { const today = todayStr(); return plans.filter(p => (p.kind === "event" || p.kind === "wellness" || sideTrip(p)) && (!p.event_date || (lastDay(p) >= today && inWindow(p))) && EVENT_CATS.includes(eventCategory(p))); };
 let catSel = "all";
 let codeSel = "";          // set from "¿Cuál es tu código esta semana?" on Home
 const CAT_ICON = {
@@ -1166,7 +1166,7 @@ function eventCard(p, mini) {
 // Tours and experiences (a trip with a city): compact card = photo, name, next dates, pick-up point and the operator's link.
 const isTour = p => p.kind === "trip" && sideTrip(p) && !["dining", "party"].includes(planTag(p.id).cat);
 function tourDates(p) { const d = planTag(p.id).dates; return Array.isArray(d) ? d.filter(x => /^\d{4}-\d\d-\d\d$/.test(x) && x >= todayStr()).sort() : []; }
-function tourLive(p) { const today = todayStr(), d = planTag(p.id).dates; if (Array.isArray(d) && d.length && !tourDates(p).length) return false; return !p.event_date || lastDay(p) >= today; }
+function tourLive(p) { const today = todayStr(), d = planTag(p.id).dates; if (Array.isArray(d) && d.length && !tourDates(p).length) return false; return !p.event_date || (lastDay(p) >= today && inWindow(p)); }
 function tourCard(p) {
   const card = el("article", { class: "ev-card ev-mini ev-place ev-tour" });
   const media = eventMedia(p, "ev-cover");
@@ -1202,6 +1202,17 @@ const RICH_GROUPS = [
 ];
 // Un evento sigue visible hasta su ÚLTIMO día (fecha de fin si la tiene) y se borra solo después.
 function lastDay(p) { const r = richOf(p), e = r && r.end_date; return e && p.event_date && e > p.event_date ? e : (p.event_date || ""); }
+// Ventana de aparición: un evento con fecha empieza a verse 25 días antes de su inicio (y sigue hasta su último día).
+// Excepción: los de Navidad se ven desde ya (la gente planea con meses de anticipación), en cualquier ciudad.
+const EVENT_WINDOW_DAYS = 25;
+const XMAS_RE = /navid|christmas|xmas|nochebuena|santa claus|pesebre|villancic|winter wonderland|holiday lights/i;
+const isXmas = p => XMAS_RE.test([p.title_es, p.title_en, p.description_es, p.description_en, p.details].map(x => String(x || "")).join(" "));
+function inWindow(p) {
+  if (!p || p.kind !== "event" || !p.event_date) return true;
+  if (isXmas(p)) return true;
+  const ms = s => Date.parse(s + "T00:00:00Z"), days = (ms(p.event_date) - ms(todayStr())) / 86400000;
+  return !(days > EVENT_WINDOW_DAYS);
+}
 function richOf(p) {
   const raw = String((p && p.details) || "");
   if (!raw.startsWith("CML:")) return null;
@@ -1412,7 +1423,7 @@ function discoverPick() {
   // an event that is the same outing as an experience already shown in "Código Experiences" is not repeated here
   const tripTitles = new Set(plans.filter(p => p.kind === "trip").map(p => String(p.title_es || p.title_en || "").trim().toLowerCase()).filter(Boolean));
   const dedupe = false;   // every city behaves like Orlando
-  const ok = p => p.kind === "event" && (!p.event_date || lastDay(p) >= today) && !(dedupe && tripTitles.has(String(p.title_es || p.title_en || "").trim().toLowerCase()));
+  const ok = p => p.kind === "event" && (!p.event_date || (lastDay(p) >= today && inWindow(p))) && !(dedupe && tripTitles.has(String(p.title_es || p.title_en || "").trim().toLowerCase()));
   const pinned = plans.find(p => ok(p) && planTag(p.id).pin);
   if (pinned) return pinned;
   const tried = new Set(plans.filter(p => mine.has(p.id) && p.code).map(p => p.code));
@@ -1470,7 +1481,7 @@ function renderUpcoming() {
   const n0 = new Date(); const day = Math.floor((new Date(n0.getFullYear(), n0.getMonth(), n0.getDate()) - new Date(2026, 0, 5)) / 86400000);
   const period = day * 3 + Math.floor(n0.getHours() / 8);
   const rotate = (list, count) => { const L = list.length; if (L <= count) return list; return Array.from({ length: count }, (_, i) => list[(((period * count) + i) % L + L) % L]); };
-  const dateOk = p => p.event_date && lastDay(p) >= today;
+  const dateOk = p => p.event_date && lastDay(p) >= today && inWindow(p);
   const promoHome = p => (p.kind === "event" || p.kind === "wellness") && !p.event_date && (p.kind === "wellness" || ["dining", "social", "spa"].includes(planTag(p.id).cat)) && planTag(p.id).promoHome && activePromo(p);
   const untilOf = p => planTag(p.id).promoUntil || "9999";
   const when = p => p.event_date || untilOf(p);
@@ -1527,7 +1538,7 @@ function renderAgenda() {
   const today = todayStr();
   const h = document.querySelector("#agenda .ph-text h1"), ip = document.querySelector("#agenda .ph-text .ph-intro");
   if (h && ip) { if (agendaMode) { h.removeAttribute("data-i18n"); ip.removeAttribute("data-i18n"); h.textContent = t(agendaMode === "exp" ? "agExpTitle" : "agEvTitle"); ip.textContent = t(agendaMode === "exp" ? "agExpIntro" : "agEvIntro"); } else { h.setAttribute("data-i18n", "agendaTitle"); ip.setAttribute("data-i18n", "agendaIntro"); h.textContent = t("agendaTitle"); ip.textContent = t("agendaIntro"); } }
-  const evs = plans.filter(p => (p.kind === "event" || sideTrip(p)) && eventCategory(p) === "events" && (!p.event_date || lastDay(p) >= today) && (agendaMode === "exp" ? isTour(p) : agendaMode === "events" ? !isTour(p) : true)).sort(byDate);
+  const evs = plans.filter(p => (p.kind === "event" || sideTrip(p)) && eventCategory(p) === "events" && (!p.event_date || (lastDay(p) >= today && inWindow(p))) && (agendaMode === "exp" ? isTour(p) : agendaMode === "events" ? !isTour(p) : true)).sort(byDate);
   if (!evs.length) return list.replaceChildren(session ? emptyState("🎟️", t("agEmptyTitle"), t("agEmptyText")) : "");
   list.replaceChildren(...evs.map(p => eventCard(p)));
 }
@@ -1557,7 +1568,7 @@ function renderEvents() {
   if (!list) return;
   const today = todayStr();
   const events = plans
-    .filter(p => (p.kind === "event" || p.kind === "wellness" || sideTrip(p)) && EVENT_CATS.includes(eventCategory(p)) && (!p.event_date || lastDay(p) >= today))
+    .filter(p => (p.kind === "event" || p.kind === "wellness" || sideTrip(p)) && EVENT_CATS.includes(eventCategory(p)) && (!p.event_date || (lastDay(p) >= today && inWindow(p))))
     .sort(byDate);
   renderWeeklyCode();
   if (!events.length) {
@@ -2436,7 +2447,7 @@ function initialize() {
     refreshPublic: async () => { if (session) await loadAll(); }, discoverPick, todayStr, eventCategory, sideTrip,
     showPage, signOut: () => db.auth.signOut(), setLanguage,
     homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail, respondButton,
-    setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, lastDay, showAgenda: mode => { agendaMode = mode === "exp" || mode === "events" ? mode : ""; showPage("agenda"); renderAgenda(); }, isTour, showEventsCat: cat => { codeSel = ""; catSel = EVENT_CATS.includes(cat) ? cat : "all"; monthSel = "all"; showPage("events"); renderEvents(); }, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, activePromo, soonCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,
+    setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, lastDay, inWindow, isXmas, showAgenda: mode => { agendaMode = mode === "exp" || mode === "events" ? mode : ""; showPage("agenda"); renderAgenda(); }, isTour, showEventsCat: cat => { codeSel = ""; catSel = EVENT_CATS.includes(cat) ? cat : "all"; monthSel = "all"; showPage("events"); renderEvents(); }, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, activePromo, soonCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
       setLanguage(currentLanguage, false);

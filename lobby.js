@@ -103,7 +103,7 @@ const ROWS = {
 function photosFor(row) {
   if (!C.session()) return [];
   const { plans } = C.homeData(), today = C.todayStr(), out = [];
-  plans.filter(p => (p.kind === "event" || p.kind === "wellness" || (C.sideTrip && C.sideTrip(p))) && (!p.event_date || C.lastDay(p) >= today) && row.pick(p)).forEach(p => {
+  plans.filter(p => (p.kind === "event" || p.kind === "wellness" || (C.sideTrip && C.sideTrip(p))) && (!p.event_date || (C.lastDay(p) >= today && C.inWindow(p))) && row.pick(p)).forEach(p => {
     const tag = C.planTag ? C.planTag(p.id) : {}, u = C.safeUrl((tag && tag.homeImg) || p.image_url || ""); if (u && !out.includes(u)) out.push(u);
   });
   return out.slice(0, 5);
@@ -135,7 +135,7 @@ const TV_CATS = { events: ["events"], recs: ["social", "dining", "wellness"] };
 function tvPool(kind) {
   if (!C.session()) return [];
   const hd = C.homeData(), plans = (hd && hd.plans) || [], today = C.todayStr(), cats = TV_CATS[kind];
-  const ok = p => (p.kind === "event" || p.kind === "wellness" || (C.sideTrip && C.sideTrip(p))) && (!p.event_date || C.lastDay(p) >= today);
+  const ok = p => (p.kind === "event" || p.kind === "wellness" || (C.sideTrip && C.sideTrip(p))) && (!p.event_date || (C.lastDay(p) >= today && C.inWindow(p)));
   const by = {}; cats.forEach(c => by[c] = []);
   plans.filter(ok).forEach(p => { const c = C.eventCategory(p); if (by[c]) by[c].push(p); });
   const shuf = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };

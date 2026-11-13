@@ -93,7 +93,7 @@ const MATCHA_DEFAULT = "matcha-cup.jpg";
 const MATCHA_RE = /^\s*🍵\s*Matcha/i;
 const DAY = 86400000;
 const todayStr = () => C.todayStr();
-const upcoming = p => !p.event_date || C.lastDay(p) >= todayStr();
+const upcoming = p => !p.event_date || (C.lastDay(p) >= todayStr() && C.inWindow(p));
 const shortWhen = p => p.event_date
   ? new Date(p.event_date + "T12:00:00").toLocaleDateString(C.loc(), { weekday: "short", day: "numeric", month: "short" }) + (p.event_time ? " · " + p.event_time : "")
   : (p.date_text || "");

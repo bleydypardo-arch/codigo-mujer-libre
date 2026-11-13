@@ -71,7 +71,7 @@ async function collect() {
   }
   if (on("newEvents")) {
     const mineCodes = me.interests || [];
-    plans.filter(p => p.kind === "event" && p.code && mineCodes.includes(p.code) && !mine.get(p.id) && (!p.event_date || C.lastDay(p) >= C.todayStr())
+    plans.filter(p => p.kind === "event" && p.code && mineCodes.includes(p.code) && !mine.get(p.id) && (!p.event_date || (C.lastDay(p) >= C.todayStr() && C.inWindow(p)))
       && p.created_at && now - new Date(p.created_at).getTime() < 7 * DAY)
       .slice(0, 3).forEach(p => out.push({ at: new Date(p.created_at).getTime(), text: t("ntNewEvent", C.pick(p, "title")), page: "events", pri: 4 }));
   }
