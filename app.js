@@ -1212,7 +1212,7 @@ function lastDay(p) { const r = richOf(p), e = r && r.end_date; return e && p.ev
 // Ventana de aparición: un evento con fecha empieza a verse 25 días antes de su inicio (y sigue hasta su último día).
 // Excepción: los de Navidad se ven desde ya (la gente planea con meses de anticipación), en cualquier ciudad.
 const EVENT_WINDOW_DAYS = 25;
-const XMAS_RE = /navid|christmas|xmas|nochebuena|santa claus|pesebre|villancic|winter wonderland|holiday lights/i;
+const XMAS_RE = /navid|christmas|xmas|nochebuena|santa claus|pesebre|villancic|winter wonderland|holiday|nutcracker|cascanueces|tree lighting|festival of trees|light up winter|merry winter/i;
 const isXmas = p => XMAS_RE.test([p.title_es, p.title_en, p.description_es, p.description_en, p.details].map(x => String(x || "")).join(" "));
 function inWindow(p) {
   if (!p || p.kind !== "event" || !p.event_date) return true;
