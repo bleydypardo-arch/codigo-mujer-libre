@@ -823,15 +823,17 @@ async function evImportTab() {
       const raw = lines[i].trim(); if (!raw) continue;
       const p = raw.split("|").map(x => x.trim());
       if (!p[0]) continue;
+      let rng = (p[1] || "").match(/^(\d{4}-\d\d-\d\d)\s*\.\.\s*(\d{4}-\d\d-\d\d)$/), endD = "";
+      if (rng && !isTour && okDate(rng[1]) && okDate(rng[2]) && rng[2] >= rng[1]) { endD = rng[2]; p[1] = rng[1]; }   // range 2026-11-06..2027-01-04 = ONE event with an end date
       const dates = (p[1] || "").split(/[,;]/).map(x => x.trim()).filter(Boolean);
       const bad = dates.find(d => !okDate(d));
       if (bad) { say(fb, "Línea " + (i + 1) + ": la fecha «" + bad + "» no es válida. Usa el formato 2026-11-08."); return null; }
-      const future = dates.filter(d => d >= todayS).sort();
+      const future = endD ? (endD >= todayS ? [dates[0]] : []) : dates.filter(d => d >= todayS).sort();
       if (dates.length && !future.length) continue;   // everything already past: nothing to publish
       if (!isTour && !future.length) { say(fb, "Línea " + (i + 1) + ": el evento necesita una fecha (2026-11-08)."); return null; }
       if (p[5] && !C.safeUrl(p[5])) { say(fb, "Línea " + (i + 1) + ": el enlace no es válido (debe empezar con https://)."); return null; }
       if (p[8] && !C.safeUrl(p[8])) { say(fb, "Línea " + (i + 1) + ": el enlace de la foto no es válido (debe empezar con https://)."); return null; }
-      rows.push({ name: p[0].slice(0, 120), dates: future, time: (p[2] || "").slice(0, 40), place: (p[3] || "").slice(0, 200), price: (p[4] || "").slice(0, 80), url: p[5] ? C.safeUrl(p[5]) : "", des: (p[6] || "").slice(0, 600), den: (p[7] || "").slice(0, 600), img: p[8] ? C.safeUrl(p[8]) : "" });
+      rows.push({ end: endD, name: p[0].slice(0, 120), dates: future, time: (p[2] || "").slice(0, 40), place: (p[3] || "").slice(0, 200), price: (p[4] || "").slice(0, 80), url: p[5] ? C.safeUrl(p[5]) : "", des: (p[6] || "").slice(0, 600), den: (p[7] || "").slice(0, 600), img: p[8] ? C.safeUrl(p[8]) : "" });
     }
     return rows;
   };
@@ -842,7 +844,7 @@ async function evImportTab() {
     const payloads = items.map(r => ({
       kind: isTour ? "trip" : "event", code: isTour ? "Adventure" : (typeSel.value === "wellness" ? "Wellness" : "Social"), published: publish,
       title_es: r.name, title_en: r.name, desc_es: r.des || r.den, desc_en: r.den || r.des,
-      location: r.place, url: r.url, event_date: r.date, event_time: r.time, date_text: "", price: r.price, details: "", image_url: (C.photoBlocked(r.img) ? (blockedPh.push(r.name), "") : (r.img || ""))
+      location: r.place, url: r.url, event_date: r.date, event_time: r.time, date_text: "", price: r.price, details: (r.end && r.end > r.date ? "CML:" + JSON.stringify({ end_date: r.end }) : ""), image_url: (C.photoBlocked(r.img) ? (blockedPh.push(r.name), "") : (r.img || ""))
     }));
     const ins = await C.db.from("plans").insert(payloads).select("id"); if (blockedPh.length) { K.toast("⚠️ " + blockedPh.length + " fotos NO se guardaron: enlace no permitido (muse.ai u otro temporal). Esos lugares quedaron SIN foto. Usa enlaces directos y permanentes."); }
     if (ins.error) throw ins.error;
@@ -877,7 +879,7 @@ async function evImportTab() {
   };
   paintDone();
   return el("div", { class: "admin-form" },
-    el("p", { class: "small-note", text: "Pega una línea por tour o evento, con estos datos separados por barras |: Título | Fechas (2026-11-08, 2026-11-15; en un tour pueden faltar) | Hora | Lugar o punto de salida | Precio | Enlace directo | Descripción en español | Description in English | Foto. Solo el título es obligatorio (y la fecha en eventos). Se crean como borradores y los publicas con un botón. En los tours, la app muestra solo las fechas que faltan y el tour se borra solo 5 días después de su última fecha." }),
+    el("p", { class: "small-note", text: "Pega una línea por tour o evento, con estos datos separados por barras |: Título | Fechas (2026-11-08, 2026-11-15, o un rango de varios días 2026-11-06..2027-01-04 que se crea como UN solo evento; en un tour pueden faltar) | Hora | Lugar o punto de salida | Precio | Enlace directo | Descripción en español | Description in English | Foto. Solo el título es obligatorio (y la fecha en eventos). Se crean como borradores y los publicas con un botón. En los tours, la app muestra solo las fechas que faltan y el tour se borra solo 5 días después de su última fecha." }),
     field("Tipo", typeSel), field(tx("impCity"), citySel), field("Pega aquí la lista", area),
     el("label", { class: "check-row" }, now, el("span", { text: tx("impPublishNow") })),
     el("div", { class: "admin-bar" }, K.button(tx("impPreview"), "secondary", showPreview)), fb, out);
