@@ -729,11 +729,45 @@ async function importTab() {
     } catch (err) { console.error(err); chkOut.replaceChildren(); say(chkFb, tx("saveFail")); }
     btn.disabled = false;
   };
+  // ---- One-time repair: re-link Orlando photos stored in the app (fotos/orlando) to places whose photo died ----
+  const repOut = el("div", {}), repFb = feedbackNode();
+  const repRun = async e0 => {
+    const btn = e0.currentTarget; btn.disabled = true; say(repFb, ""); repOut.replaceChildren(el("p", { class: "small-note", text: "Buscando…" }));
+    try {
+      const base = new URL("fotos/orlando/", location.href.split("?")[0].replace(/[^/]*$/, "")).href;
+      const mf = await fetch(base + "manifest.json", { cache: "no-store" }); if (!mf.ok) throw new Error("manifest");
+      const files = await mf.json();
+      const STOP = new Set(["the", "de", "la", "el", "by", "at", "of", "and", "y", "restaurant", "restaurante", "spa", "hotel", "orlando", "resort", "salon", "bar", "lounge"]);
+      const norm = t => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/&/g, " ").replace(/[^a-z0-9]+/g, " ").trim().split(" ").filter(w => w && !STOP.has(w));
+      const res = await C.db.from("plans").select("id,title_es,image_url,kind"); if (res.error) throw res.error;
+      const need = (res.data || []).filter(p => { const u = String(p.image_url || "").trim(); return !u || /muse\.ai|openai|oaiusercontent|chatgpt|localhost/i.test(u); });
+      const F = files.map(f => ({ f, t: norm(f.name) })), cand = [];
+      need.forEach(p => { const pt = norm(p.title_es); if (!pt.length) return; F.forEach(x => { if (!x.t.length) return; const sh = x.t.filter(w => pt.includes(w)).length; const sc = sh / Math.max(x.t.length, pt.length); if (sh && sc >= 0.6) cand.push({ p, x, sc }); }); });
+      cand.sort((a, b) => b.sc - a.sc);
+      const usedP = new Set(), usedF = new Set(), pairs = [];
+      cand.forEach(c => { if (usedP.has(c.p.id) || usedF.has(c.x.f.file)) return; usedP.add(c.p.id); usedF.add(c.x.f.file); pairs.push(c); });
+      const left = need.filter(p => !usedP.has(p.id)), unusedF = files.filter(f => !usedF.has(f.file));
+      if (!pairs.length) { repOut.replaceChildren(el("p", { class: "small-note", text: "No encontré coincidencias. Lugares sin foto buena: " + need.length + "." })); btn.disabled = false; return; }
+      if (!await confirmed("Encontré " + pairs.length + " lugares para reparar con su foto guardada en la app. ¿Reparar ahora?")) { repOut.replaceChildren(); btn.disabled = false; return; }
+      let ok = 0;
+      for (const c of pairs) { const u = await C.db.from("plans").update({ image_url: base + c.x.f.file }).eq("id", c.p.id); if (!u.error) ok++; }
+      await C.refreshPublic();
+      K.toast("Reparados: " + ok);
+      repOut.replaceChildren(el("p", { class: "small-note", text: "Reparados: " + ok + " de " + pairs.length + ". Lugares que siguen sin foto buena: " + left.length + ". Fotos sin usar: " + unusedF.length + "." }),
+        left.length ? el("p", { class: "small-note", text: "Sin foto: " + left.map(p => p.title_es).slice(0, 60).join(" · ") }) : el("span", {}),
+        unusedF.length ? el("p", { class: "small-note", text: "Fotos sin lugar: " + unusedF.map(f => f.name).join(" · ") }) : el("span", {}));
+    } catch (err) { console.error(err); repOut.replaceChildren(); say(repFb, tx("saveFail")); }
+    btn.disabled = false;
+  };
   return el("div", { class: "admin-form" }, el("p", { class: "small-note", text: tx("impIntro") }),
     el("hr", {}),
     el("h3", { text: "Cambiar el tipo de lugares ya creados" }),
     el("p", { class: "small-note", text: "Si cargaste una lista con el tipo equivocado (por ejemplo restaurantes que salieron en Happy hour), elige la ciudad y el tipo correcto y toca el botón. Cambia todos los lugares sin fecha de esa ciudad de una vez." }),
     field("Ciudad", rtCity), field("Pasar a", rtTo), field("Dirección contiene", rtText), rtFb, el("div", { class: "admin-bar" }, K.button("Cambiar el tipo de estos lugares", "primary", rtRun)), rtOut,
+    el("hr", {}),
+    el("h3", { text: "Reparar fotos de Orlando" }),
+    el("p", { class: "small-note", text: "Pone de nuevo las 92 fotos originales (restaurantes y spas) en los lugares de Orlando que perdieron la foto. Se hace una sola vez." }),
+    repFb, el("div", { class: "admin-bar" }, K.button("Reparar fotos de Orlando", "primary", repRun)), repOut,
     el("hr", {}),
     el("h3", { text: "Revisar las fotos guardadas" }),
     el("p", { class: "small-note", text: "Cuenta cuántos lugares tienen foto guardada y prueba si cada foto realmente se puede mostrar en la app." }),
