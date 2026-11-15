@@ -99,6 +99,8 @@
   function enabled() {
     if (!init() || !C.session()) return false;
     const city = String((C.profile() && C.profile().city) || "");
+    /* La campaña es SOLO de Bogotá: si la ciudad que se está viendo no es Bogotá (Orlando, otra o "todas"), no sale para nadie, ni admins. */
+    try { const vc = C.viewCity ? String(C.viewCity() || "") : ""; if (!/bogot/i.test(vc)) return false; } catch (e) {}
     if (demo()) return true;
     const d = bogota();
     return /bogot/i.test(city) && d >= START && d <= END;
@@ -240,6 +242,7 @@
   document.addEventListener("visibilitychange", () => { if (!document.hidden && loaded) { load().then(() => paintFab()).catch(() => {}); } });
   document.addEventListener("cml:session", () => { row = null; hist = []; loaded = false; if (ov) close(); paintFab(); setTimeout(() => start().catch(() => {}), 2500); });
   document.addEventListener("cml:lang", () => { if (ov) paint(); paintFab(); });
+  document.addEventListener("cml:render", () => { paintFab(); });   // al cambiar de ciudad, la caja aparece o se esconde
   window.addEventListener("load", () => setTimeout(() => start().catch(() => {}), 3000));
 
   /* Mi boleto: números de la mujer y reglas de la rifa (se calcula con sus propios días; el servidor aplica lo mismo al sortear). */
