@@ -20,7 +20,10 @@
     chBadWords: "Ese mensaje tiene palabras que no van con nuestro pacto de respeto. Escríbelo de otra forma, por favor.",
     chBadLink: "Aquí solo compartimos enlaces de Código ML y mapas. Si es un lugar, envía su ubicación en un mapa.",
     chSales: "Recuerda: aquí no se venden productos ni servicios de afuera. Solo se comparte lo que está dentro de Código ML. ¿Tu mensaje es sobre algo que está en la plataforma?",
-    chSalesYes: "Sí, enviar", chSalesNo: "Cambiar mi mensaje"
+    chSalesYes: "Sí, enviar", chSalesNo: "Cambiar mi mensaje",
+    invBtn: "💌 Invitar a ir", invT: "Invitar a ir", invTo: "¿A quién invitas?", invNote: "Tu mensaje", invSend: "Enviar invitación", invCancel: "Cancelar",
+    invDef: n => "¡Hola! Quiero ir a " + n + ". ¿Vamos? ¿Quién se anima?", invNone: "Aún no tienes mujeres conectadas. Saluda a alguien en Comunidad y, cuando acepte, podrás invitarla.", invPick: "Elige al menos una mujer.",
+    invSent: n => n === 1 ? "Invitación enviada." : "Invitaciones enviadas a " + n + " mujeres.", invPart: (a, b) => "Se envió a " + a + " de " + b + ". Revisa e intenta de nuevo con las demás.", invAt: "📍 ", invOpen: "Ver mis conversaciones"
   };
   const EN = {
     chTitle: "My conversations", chEntry: "My conversations", chEntrySub: "Write to the women you are already connected with.",
@@ -39,7 +42,10 @@
     chBadWords: "That message has words that do not fit our respect pact. Please write it another way.",
     chBadLink: "Here we only share Código ML links and maps. If it is a place, send its location on a map.",
     chSales: "Remember: outside products or services are not sold here. Only what is inside Código ML is shared. Is your message about something on the platform?",
-    chSalesYes: "Yes, send", chSalesNo: "Change my message"
+    chSalesYes: "Yes, send", chSalesNo: "Change my message",
+    invBtn: "💌 Invite to go", invT: "Invite to go", invTo: "Who do you invite?", invNote: "Your message", invSend: "Send invitation", invCancel: "Cancel",
+    invDef: n => "Hi! I want to go to " + n + ". Shall we? Who is in?", invNone: "You have no connected women yet. Say hello to someone in Community and, once she accepts, you can invite her.", invPick: "Choose at least one woman.",
+    invSent: n => n === 1 ? "Invitation sent." : "Invitations sent to " + n + " women.", invPart: (a, b) => "Sent to " + a + " of " + b + ". Check and try again with the others.", invAt: "📍 ", invOpen: "See my conversations"
   };
   let C = null, ok = true, all = [], partner = "", timer = null, unread = 0, busy = false;
   const t = (k, ...a) => { const v = C ? C.t(k) : ""; return typeof v === "function" ? v(...a) : (v || k); };
@@ -211,5 +217,49 @@
   document.addEventListener("cml:lang", () => { if (active()) (partner ? paintThread(false) : paintInbox()); });
   document.addEventListener("cml:session", () => { all = []; unread = 0; partner = ""; stop(); if (init() && C.session()) setTimeout(() => fetchAll().catch(() => {}), 1500); });
 
-  window.CMLChat = { ready: () => (init() && C.session() ? fetchAll() : Promise.resolve(false)), entry, open: openInbox, openWith: openThread, unread: () => unread };
+  // Invitar a ir: desde el detalle de un lugar o evento, manda el lugar + una nota a una o varias mujeres ya conectadas.
+  async function invite(plan) {
+    if (!init() || !C.session() || !plan) return;
+    if (!(await ensurePact())) return;
+    const name = String(plan.title_es || plan.title_en || "").trim();
+    const list = CN() && CN().connected ? CN().connected().filter(m => !blocked(m.id)) : [];
+    const ov = el("div", { class: "ch-pact", role: "dialog", "aria-modal": "true", "aria-label": t("invT") });
+    const close = () => ov.remove();
+    const cancel = el("button", { type: "button", class: "link-btn", text: t("invCancel") }); cancel.addEventListener("click", close);
+    const kids = [el("h2", { text: t("invT") }), el("p", { text: "📍 " + name })];
+    if (!list.length) {
+      kids.push(el("p", { text: t("invNone") }), el("div", { class: "ch-pact-act" }, cancel));
+    } else {
+      const picked = new Set(), rows = el("div", { class: "ch-list" });
+      list.forEach(m => {
+        const cb = el("input", { type: "checkbox", "aria-label": m.first_name });
+        const row = el("label", { class: "ch-row" }, cb, avatar(m, "avatar-sm"), el("span", { class: "ch-rtxt" }, el("b", { text: m.first_name }), el("small", { text: m.city || "" })));
+        cb.addEventListener("change", () => { if (cb.checked) picked.add(m.id); else picked.delete(m.id); });
+        rows.appendChild(row);
+      });
+      const ta = el("textarea", { class: "ch-input", rows: 3, maxlength: 400, "aria-label": t("invNote") }); ta.value = t("invDef", name);
+      const fb = el("p", { class: "form-feedback", role: "alert", hidden: true });
+      const send = el("button", { type: "button", class: "primary", text: t("invSend") });
+      send.addEventListener("click", async () => {
+        const note = ta.value.trim(); fb.hidden = true;
+        if (!picked.size) { fb.textContent = t("invPick"); fb.hidden = false; return; }
+        if (!note) { ta.focus(); return; }
+        if (WORDS.test(note)) { fb.textContent = t("chBadWords"); fb.hidden = false; return; }
+        if (badLink(note)) { fb.textContent = t("chBadLink"); fb.hidden = false; return; }
+        const body = (note + "\n" + t("invAt") + name).slice(0, 1000);
+        send.disabled = true; let okN = 0; const ids = [...picked];
+        for (const id of ids) {
+          const r = await C.db.from("chat_messages").insert({ sender: me(), recipient: id, body }).select("id,sender,recipient,body,created_at,read_at").single();
+          if (!r.error) { okN++; all.push(Object.assign({ created_at: new Date().toISOString() }, r.data)); }
+        }
+        send.disabled = false;
+        if (okN === ids.length) { close(); try { C.announce ? C.announce(t("invSent", okN)) : null; } catch (e) {} const n = document.createElement("div"); n.className = "ch-toast"; n.setAttribute("role", "status"); n.textContent = t("invSent", okN); n.style.cssText = "position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#7A2238;color:#fff;padding:10px 16px;border-radius:14px;z-index:500;font-size:14px"; document.body.appendChild(n); setTimeout(() => n.remove(), 3200); }
+        else { fb.textContent = t("invPart", okN, ids.length); fb.hidden = false; }
+      });
+      kids.push(el("p", { text: t("invTo") }), rows, el("p", { text: t("invNote") }), ta, fb, el("div", { class: "ch-pact-act" }, send, cancel));
+    }
+    ov.appendChild(el("div", { class: "ch-pact-box" }, ...kids));
+    document.body.appendChild(ov);
+  }
+  window.CMLChat = { ready: () => (init() && C.session() ? fetchAll() : Promise.resolve(false)), entry, open: openInbox, openWith: openThread, invite, btnLabel: () => (init() ? t("invBtn") : ""), unread: () => unread };
 })();

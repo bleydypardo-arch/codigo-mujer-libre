@@ -2453,7 +2453,7 @@ function initialize() {
     isAdmin, isSuper, isContentAdmin, isStaff, announce, viewCity, cities, cityKey, cityName, cityCountry, hostTier, hostBadge, TIERS,
     refreshPublic: async () => { if (session) await loadAll(); }, discoverPick, todayStr, eventCategory, sideTrip,
     showPage, signOut: () => db.auth.signOut(), setLanguage,
-    homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail, respondButton,
+    homeData: () => ({ plans, counts, mine, posts, settings }), respond, openDetail, respondButton, sheetPlan: () => (previewPlan && sheetPlanId === previewPlan.id ? null : plans.find(x => x.id === sheetPlanId) || null),
     setting: key => settings[key], isTestContent, COPY_KEYS, copyDefault: (lang, key) => (key in copyDefaults[lang] ? copyDefaults[lang][key] : translations[lang][key]), TRIP_TYPES, tripTypeOf, setTripType: v => { tripType = v; renderTrips(); }, tripType: () => tripType, richOf, openImage, photoBlocked, lastDay, inWindow, isXmas, showAgenda: mode => { agendaMode = mode === "exp" || mode === "events" ? mode : ""; showPage("agenda"); renderAgenda(); }, isTour, showEventsCat: cat => { codeSel = ""; catSel = EVENT_CATS.includes(cat) ? cat : "all"; monthSel = "all"; showPage("events"); renderEvents(); }, showEventsCode: code => { codeSel = codeLabels[code] ? code : ""; catSel = "all"; monthSel = "all"; showPage("events"); renderEvents(); }, planTag, eventCategory, eventCard, activePromo, soonCard, openModal, byDate, openPreview, rsvpState, richText, avatarStack, respondButton,
     addStrings: (es, en) => {           // lets add-on modules (Memories) use the same ES/EN system
       Object.assign(translations.es, es); Object.assign(translations.en, en);
