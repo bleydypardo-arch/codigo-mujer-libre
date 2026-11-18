@@ -58,14 +58,12 @@
     return l.from_user === me() ? "sent" : "incoming";
   };
   async function needPhoto() { if (window.CMLWelcome && !(await window.CMLWelcome.ensurePhoto())) throw new Error("nophoto"); }
-  async function greet(m) {
-    await needPhoto();
+  async function greet(m) {   // la foto ya no es requisito: se invita a ponerla, pero no frena el saludo
     const r = await C.db.from("connections").insert({ from_user: me(), to_user: m.id }).select("id,from_user,to_user,status,created_at,from_share,to_share").single();
     if (r.error) throw r.error;
     links.set(m.id, r.data); changed();
   }
   async function answer(m, status) {
-    if (status === "accepted") await needPhoto();
     const l = links.get(m.id); if (!l) return;
     const r = await C.db.from("connections").update({ status }).eq("id", l.id);
     if (r.error) throw r.error;

@@ -6,6 +6,7 @@
 let C = null, shownThisSession = false;
 const KEY = "daily_notes", SEEN = "cml_dn_seen", BDAY = "cml_bday_seen";
 const ES = {
+  gtTitle: "Mujeres que quieren conocerte 👋", gtBtn: "Listo",
   ptTitle: "Ponle cara a tu perfil 📸", ptBody: "Las mujeres de tu ciudad quieren conocerte. Con tu foto te reconocen, te escriben y te invitan a sus planes. Toma menos de 1 minuto.", ptBtn: "Subir mi foto", ptLater: "Ahora no",
   dnTitle: "Mensaje de hoy", dnFrom: "De Código ML, con cariño", dnThanks: "Gracias 🌸", dnSee: "Ver el plan", dnBell: n => "💌 Mensaje de hoy: " + n,
   bdTitle2: "¡Feliz cumpleaños!", bdSave: "Guardar mi tarjeta", bdMakeCard: "Crear su tarjeta", bdCopy: "Copiar el mensaje", bdCopied: "Mensaje copiado.", bdPreview: "Ver cómo se ve el ramo de cumpleaños", bdFirst: "🌸✨ ¡Feliz cumpleaños, mujer extraordinaria! 🎂💖", bdBody: () => "Hoy celebramos mucho más que tu cumpleaños: celebramos tu vida, tu esencia y el valor inmenso que tienes.\nNunca olvides que eres única, que tu historia importa y que dentro de ti hay sueños, talentos y una fuerza maravillosa que merecen florecer.\nQue este nuevo año de vida te recuerde que eres valiosa, mereces ser feliz y nunca es tarde para descubrir todo lo extraordinario que puedes llegar a ser.\n¡Que Dios bendiga tus pasos y llene tu vida de amor, alegría y nuevos comienzos! 💕\nCon cariño,\nCódigo Mujer Libre 🌸\nConecta · Vive · Crece\n✨ Tu vida cambia cuando descubres tu propósito.", bdBell: "💐 Hoy es tu cumpleaños: abre tu ramo.",
@@ -17,6 +18,7 @@ const ES = {
   dnBdH: "Cumpleaños de los próximos 7 días", dnBdNone: "Nadie cumple años esta semana.", dnBdToday: "hoy", dnBdWa: "Felicitar por WhatsApp", dnBdDraft: n => "Hola " + n + " 🌸 Hoy es tu día y toda la comunidad Código ML se alegra contigo. ¡Feliz cumpleaños! 💐 Con cariño, Código ML"
 };
 const EN = {
+  gtTitle: "Women who want to meet you 👋", gtBtn: "Done",
   ptTitle: "Put a face to your profile 📸", ptBody: "The women in your city want to meet you. With your photo they recognize you, message you and invite you to their plans. It takes less than a minute.", ptBtn: "Add my photo", ptLater: "Not now",
   dnTitle: "Today's message", dnFrom: "From Código ML, with love", dnThanks: "Thank you 🌸", dnSee: "See the plan", dnBell: n => "💌 Today's message: " + n,
   bdTitle2: "Happy birthday!", bdSave: "Save my card", bdMakeCard: "Make her card", bdCopy: "Copy the message", bdCopied: "Message copied.", bdPreview: "Preview the birthday bouquet", bdFirst: "🌸✨ Happy birthday, extraordinary woman! 🎂💖", bdBody: () => "Today we celebrate so much more than your birthday: we celebrate your life, your essence and the immense value you carry.\nNever forget that you are unique, that your story matters, and that inside you there are dreams, talents and a wonderful strength that deserve to bloom.\nMay this new year of life remind you that you are valuable, that you deserve to be happy, and that it is never too late to discover all the extraordinary things you can become.\nMay God bless your steps and fill your life with love, joy and new beginnings! 💕\nWith love,\nCódigo Mujer Libre 🌸\nConnect · Live · Grow\n✨ Your life changes when you discover your purpose.", bdBell: "💐 Today is your birthday: open your bouquet.",
@@ -150,6 +152,18 @@ function showPhoto(next) {
   go.addEventListener("click", () => { close(); const b = document.getElementById("profileBtn"); if (b) b.click(); });
   later.addEventListener("click", close);
 }
+function showGreetings(next) {
+  const CN = window.CMLConnect; let tries = 0;
+  const attempt = () => {
+    let node = null; try { node = CN && CN.incoming ? CN.incoming() : null; } catch (e) {}
+    if (!node) { if (++tries < 6) return setTimeout(attempt, 1000); return next && next(); }
+    const el = C.el, ok = el("button", { type: "button", class: "primary dn-ok", text: t("gtBtn") });
+    node.querySelectorAll("b")[0] && (node.querySelectorAll("b")[0].style.display = "none");
+    const close = modal([el("h3", { class: "dn-title", text: t("gtTitle") }), node, ok], () => { if (next) next(); });
+    ok.addEventListener("click", close);
+  };
+  attempt();
+}
 function runEntrance() {
   if (shownThisSession || !C.session() || !C.profile()) return;
   shownThisSession = true;
@@ -159,6 +173,7 @@ function runEntrance() {
   if (fresh.length) queue.push(next => showNotes(fresh, next));
   const me = C.profile(), PK = "cml_photo_ask";
   if (me && !me.avatar_path && store(PK).indexOf(C.todayStr()) < 0) queue.push(next => { try { localStorage.setItem(PK, JSON.stringify([C.todayStr()])); } catch (e) {} showPhoto(next); });
+  queue.push(next => showGreetings(next));   // saludos esperando respuesta: aparecen al entrar, no solo dentro de Comunidad
   const go = () => { const f = queue.shift(); if (f) f(go); };
   go();
 }
