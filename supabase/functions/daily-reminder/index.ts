@@ -31,7 +31,7 @@ const T = {
   },
 };
 
-// 34 correos distintos (20 de Jazz + 14 nuevos). Cada día se elige uno distinto; nunca el mismo dos días seguidos.
+// 40 correos distintos (20 de Jazz + 14 nuevos + 6 «¿Sabías que…?»). Cada día se elige uno distinto; nunca el mismo dos días seguidos.
 const VARS: [string, string][] = [
   ["Hoy quiero regalarte un minuto 🌸", "Entre tantas cosas que haces por los demás, ¿cuándo fue la última vez que dedicaste un momento solo para ti?\n\nHoy tenemos unas palabras especiales esperándote."],
   ["Quizás hoy necesitabas leer esto 💗", "Hay días en los que una sola frase puede cambiar nuestra manera de mirar la vida.\n\nDescubre la reflexión que preparamos para ti."],
@@ -67,8 +67,14 @@ const VARS: [string, string][] = [
   ["Quizás justo lo que necesitabas oír 💫", "A veces una sola frase es lo que le faltaba al día.\n\nEntra y descubre la de hoy."],
   ["Cada paso tuyo cuenta 🌅", "Buenos días, valiente.\n\nMira lo que hay para ti hoy."],
   ["Paz para tu mañana 🕊️", "Un mensaje corto para empezar el día con calma."],
+  ["¿Sabías que puedes tener tu propia tienda virtual? 🛍️", "Si eres emprendedora, en Código Mujer Libre podemos crear tu tienda virtual.\n\nEntra y descubre cómo."],
+  ["¿Sabías que tenemos los eventos de tu ciudad? 🗓️", "Todos en un solo lugar.\n\nRevisa la sección Eventos y elige el que más te guste."],
+  ["¿Sabías que aquí tú eres lo importante? 💗", "Creamos este espacio para ti: para respirar, sentirte acompañada y recordar cuánto vales.\n\nEntra, hoy es tu momento."],
+  ["¿Sabías que cinco minutos pueden cambiar tu día? 🌿", "Dentro de la app puedes regalarte unos minutos de calma.\n\nEntra y respira."],
+  ["¿Sabías que puedes invitar a otra mujer a ir contigo? 💌", "Elige un restaurante o un evento y escríbele a otra mujer de la comunidad: ¿vamos?\n\nAsí es más bonito ir acompañada."],
+  ["¿Sabías que aquí encuentras planes para ti? 🍽️", "Restaurantes, experiencias y eventos recomendados.\n\nEntra y elige tu próximo plan."],
 ];
-const dayVar = (today: string) => { const [y, m, d] = today.split("-").map(Number); const n = Math.floor(Date.UTC(y, m - 1, d) / 86400000); return VARS[(n * 13) % VARS.length]; }; // 13 y 34 no comparten divisores: recorre las 34 y nunca repite seguido
+const dayVar = (today: string) => { const [y, m, d] = today.split("-").map(Number); const n = Math.floor(Date.UTC(y, m - 1, d) / 86400000); return VARS[(n * 13) % VARS.length]; }; // 13 y 40 no comparten divisores: recorre las 40 y nunca repite seguido
 const BOGOTA_ES = "🎁 ¿Ya atrapaste tu esfera de hoy? Recuerda que el 15 de diciembre es el Gran Premio. Cada esfera cuenta. ¡Atrápala!"; // SOLO mujeres de Bogotá
 
 function render(lang: "es" | "en", kind: "note" | "bday", name: string, v?: [string, string], bogota = false) {
