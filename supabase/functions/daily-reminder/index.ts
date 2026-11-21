@@ -4,6 +4,7 @@
 // - Usa los mismos mensajes que la app (tabla settings, clave "daily_notes") y las mismas reglas de ciudad:
 //   los mensajes de esferas/premios y los firmados por Karen son SOLO para Bogotá.
 // - Envía por Resend (la misma clave RESEND_API_KEY del correo de aprobación). Tope de seguridad: 90 correos por corrida.
+// - Envía 4 días por semana (domingo, lunes, miércoles y viernes, hora Bogotá); los cumpleaños siempre. Las mujeres en inglés reciben las 40 variantes en inglés.
 // - Prueba sin enviar: body {"dry": true}. Prueba a un solo correo: body {"only": "tu@correo.com"}.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -76,15 +77,62 @@ const VARS: Var[] = [
   ["¿Sabías que puedes invitar a otra mujer a ir contigo? 💌", "Elige un restaurante o un evento y escríbele a otra mujer de la comunidad: ¿vamos?\n\nAsí es más bonito ir acompañada."],
   ["¿Sabías que aquí encuentras planes para ti? 🍽️", "Restaurantes, experiencias y eventos recomendados.\n\nEntra y elige tu próximo plan."],
 ];
-const dayVar = (today: string) => { const [y, m, d] = today.split("-").map(Number); const n = Math.floor(Date.UTC(y, m - 1, d) / 86400000); return VARS[(n * 13) % VARS.length]; }; // 13 y 40 no comparten divisores: recorre las 40 y nunca repite seguido
+
+const DEMO_TIENDAS_EN = "https://bleydypardo-arch.github.io/codigo-mujer-libre/boutiques/centro.html?lang=en";
+// Las mismas 40 en inglés (mismo orden) para las mujeres que se registraron en inglés.
+const VARS_EN: Var[] = [
+  ["Today I want to give you a minute 🌸", "Among everything you do for others, when was the last time you took a moment just for yourself?\n\nWe have some special words waiting for you today."],
+  ["Maybe you needed to read this today 💗", "There are days when a single sentence can change the way we see life.\n\nDiscover the reflection we prepared for you."],
+  ["Before your day begins… ☀️", "Don't rush yet.\n\nGive yourself a minute of calm, inspiration and faith.\n\nYour message for today is already waiting for you."],
+  ["A word for your heart 🤍", "We don't know how you woke up today, but we want to keep you company with words that invite you to find peace."],
+  ["Today you can bloom too 🌷", "Every day brings its own chance to grow.\n\nCome in and discover what we want to share with you this morning."],
+  ["What if today you surprise yourself? ✨", "Sometimes we forget what we are capable of.\n\nToday we want to remind you of something important."],
+  ["Your lovely pause of the day 🦋", "Not everything has to be work, to-dos and responsibilities.\n\nYou also deserve a moment to nourish your inner self."],
+  ["There's something we want to remind you 💌", "In the middle of busy days, there are important things we stop listening to.\n\nToday's reflection can help you remember them."],
+  ["Begin with faith, continue with hope 🙏", "Before facing today's challenges, find a small space to strengthen your spirit."],
+  ["A woman like you deserves to hear this 🌸", "Your effort, your dreams and your story have value.\n\nToday we prepared a reflection to keep you company."],
+  ["Your heart needs rest too 🤍", "Sometimes we take care of everything and forget our own well-being.\n\nToday we invite you to give yourself a few minutes."],
+  ["Today we want to talk about your dreams ✨", "Those projects you keep in your heart deserve attention too.\n\nDiscover the message we chose for this day."],
+  ["You are not walking alone 💗", "At Código Mujer Libre we believe in the power of walking together.\n\nToday we have a reflection to share with you."],
+  ["A small dose of hope 🌻", "You don't need to have all the answers this morning.\n\nSometimes all it takes is a new perspective."],
+  ["What does your soul need today? 🌷", "Maybe calm, confidence, gratitude or a little encouragement.\n\nCome discover our reflection of the day."],
+  ["Today is a good day to believe in yourself 🦋", "Your talents and abilities deserve room to grow.\n\nWe have some words to inspire you."],
+  ["Your well-being matters too 🌿", "Taking care of yourself shouldn't be last on your list.\n\nTake a moment to listen to what your inner self needs."],
+  ["There is beauty in new beginnings 🌸", "It doesn't matter how yesterday ended.\n\nToday you have a new chance to build something valuable."],
+  ["A message for the woman you are 💕", "Beyond your responsibilities, there is a woman with dreams, virtues and a unique story.\n\nToday we want to celebrate her."],
+  ["Start your day with purpose ✨", "Before the routine carries you away, we invite you to find a moment of faith, reflection and inspiration."],
+  ["Someone thought of you today 💌", "There is something waiting for you inside your app.\n\nTake a minute to discover it."],
+  ["A moment just for you 🌸", "Take a deep breath.\n\nYour message for today is ready."],
+  ["We left you something today ✨", "It's short and made with love.\n\nCome in and discover it."],
+  ["Breathe, this is for you 🌿", "Before you go on with your day, pause for a moment.\n\nYour message for today is waiting for you."],
+  ["A word for your day 💛", "Read it slowly, before your schedule fills up."],
+  ["Your community wrote to you 🦋", "Come see what we left for you today.\n\nIt takes a few seconds and it's worth it."],
+  ["With your coffee today ☕", "Enjoy your first sip with a message made for you."],
+  ["Today you count too 🌼", "So many things to do, and today you count too.\n\nCome in and discover your message."],
+  ["For you, no rush 🤍", "There's no need to hurry.\n\nYour message is waiting whenever you have a moment."],
+  ["A smile is waiting for you 🌷", "Come in and see what we prepared for this morning."],
+  ["A breath of faith 🙏", "A few words to strengthen your heart today."],
+  ["Maybe just what you needed to hear 💫", "Sometimes a single sentence is what your day was missing.\n\nCome in and discover today's."],
+  ["Every step you take counts 🌅", "Good morning, brave one.\n\nSee what's here for you today."],
+  ["Peace for your morning 🕊️", "A short message to start the day with calm."],
+  ["Did you know you can have your own virtual store? 🛍️", "If you're an entrepreneur, at Código Mujer Libre we can create your virtual store.\n\nSee what the demo looks like and come discover how.", ["🛍️ SEE THE STORES DEMO", DEMO_TIENDAS_EN]],
+  ["Did you know we have your city's events? 🗓️", "All in one place.\n\nCheck the Events section and pick the one you like most."],
+  ["Did you know that here, you are what matters? 💗", "We created this space for you: to breathe, feel accompanied and remember how much you are worth.\n\nCome in, today is your moment."],
+  ["Did you know five minutes can change your day? 🌿", "Inside the app you can give yourself a few minutes of calm.\n\nCome in and breathe."],
+  ["Did you know you can invite another woman to go with you? 💌", "Pick a restaurant or an event and write to another woman in the community: shall we go?\n\nIt's nicer to go with company."],
+  ["Did you know you can find plans for you here? 🍽️", "Restaurants, experiences and events we recommend.\n\nCome in and pick your next plan."],
+];
+const dayIdx = (today: string) => { const [y, m, d] = today.split("-").map(Number); const n = Math.floor(Date.UTC(y, m - 1, d) / 86400000); return (n * 13) % VARS.length; }; // 13 y 40 no comparten divisores: recorre las 40 y nunca repite seguido
+const BOGOTA_EN = "🎁 Have you caught today's sphere yet? Remember the Grand Prize is on December 15. Every sphere counts. Catch it!"; // ONLY women in Bogotá
 const BOGOTA_ES = "🎁 ¿Ya atrapaste tu esfera de hoy? Recuerda que el 15 de diciembre es el Gran Premio. Cada esfera cuenta. ¡Atrápala!"; // SOLO mujeres de Bogotá
 
 function render(lang: "es" | "en", kind: "note" | "bday", name: string, v?: Var, bogota = false) {
   const t = T[lang];
-  const k = (kind === "note" && lang === "es" && v) ? { subject: v[0], head: v[0], p: v[1], cta: "🌸 DESCUBRIR MI MENSAJE DE HOY" } : t[kind];
+  const k = (kind === "note" && v) ? { subject: v[0], head: v[0], p: v[1], cta: lang === "es" ? "🌸 DESCUBRIR MI MENSAJE DE HOY" : "🌸 DISCOVER TODAY'S MESSAGE" } : t[kind];
+  const BOG = lang === "es" ? BOGOTA_ES : BOGOTA_EN;
   const paras = k.p.split("\n\n").map((x: string) => `<p style="margin:0 0 12px;font-size:16.5px;line-height:1.6;">${esc(x)}</p>`).join("");
-  const bog = (bogota && lang === "es" && kind === "note") ? `<tr><td style="padding:6px 32px 0;"><div style="background:#FFF1EE;border-radius:14px;padding:14px 16px;font-family:Georgia,'Times New Roman',serif;font-size:15.5px;line-height:1.55;color:#7E3A44;">${esc(BOGOTA_ES)}</div></td></tr>` : "";
-  const ex = (kind === "note" && lang === "es" && v && v[2]) ? v[2] : null;
+  const bog = (bogota && kind === "note") ? `<tr><td style="padding:6px 32px 0;"><div style="background:#FFF1EE;border-radius:14px;padding:14px 16px;font-family:Georgia,'Times New Roman',serif;font-size:15.5px;line-height:1.55;color:#7E3A44;">${esc(BOG)}</div></td></tr>` : "";
+  const ex = (kind === "note" && v && v[2]) ? v[2] : null;
   const extra = ex ? `<tr><td align="center" style="padding:6px 32px 8px;"><a href="${esc(ex[1])}" style="display:inline-block;border:2px solid #B85F68;color:#B85F68;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:999px;">${esc(ex[0])}</a></td></tr>` : "";
   const greet = name ? `${t.hi} ${esc(name)},` : `${t.hi},`;
   const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(k.subject)}</title></head>
@@ -96,7 +144,7 @@ function render(lang: "es" | "en", kind: "note" | "bday", name: string, v?: Var,
 <tr><td align="center" style="padding:20px 32px 8px;"><a href="${esc(APP_URL)}" style="display:inline-block;background:#B85F68;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:999px;">${esc(k.cta)}</a></td></tr>${extra}
 <tr><td style="padding:18px 32px 26px;font-family:Georgia,'Times New Roman',serif;color:#272525;"><p style="margin:0;font-size:16px;">${esc(t.bye)}<br><span style="color:#B85F68;font-size:18px;">Código ML</span></p></td></tr>
 </table><div style="max-width:520px;padding:14px 20px 0;font-family:Arial,Helvetica,sans-serif;font-size:11.5px;line-height:1.5;color:#8a8282;">${esc(t.foot)}</div></td></tr></table></body></html>`;
-  return { subject: k.subject, html, text: `${greet}\n\n${k.p}${bog ? "\n\n" + BOGOTA_ES : ""}\n\n${k.cta}: ${APP_URL}${ex ? "\n\n" + ex[0] + ": " + ex[1] : ""}\n\n${t.bye}\nCódigo ML` };
+  return { subject: k.subject, html, text: `${greet}\n\n${k.p}${bog ? "\n\n" + BOG : ""}\n\n${k.cta}: ${APP_URL}${ex ? "\n\n" + ex[0] + ": " + ex[1] : ""}\n\n${t.bye}\nCódigo ML` };
 }
 
 Deno.serve(async (req) => {
@@ -112,7 +160,9 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch { /* empty */ }
 
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(new Date()); // YYYY-MM-DD
-  const [, mm, dd] = today.split("-").map(Number);
+  const [yy, mm, dd] = today.split("-").map(Number);
+  const dow = new Date(Date.UTC(yy, mm - 1, dd)).getUTCDay(); // día de la semana en Bogotá: 0 domingo, 1 lunes, 3 miércoles, 5 viernes
+  const sendDay = [0, 1, 3, 5].includes(dow); // 4 correos por semana: lunes, miércoles, viernes y domingo. Los cumpleaños salen siempre.
 
   const { data: ppl } = await db.from("profiles").select("id,email,first_name,city,role,approved,rejected,birth_month,birth_day,application,notif_prefs").eq("approved", true);
   let sent = 0, skipped = 0, failed = 0; const would: string[] = [];
@@ -122,13 +172,15 @@ Deno.serve(async (req) => {
     if (body.only && p.email.toLowerCase() !== body.only.toLowerCase()) continue;
     const city = ckey(p.city ?? "");
     const bday = p.birth_month === mm && p.birth_day === dd;
+    if (!bday && !sendDay && !body.only) { skipped++; continue; }
     if (sent >= MAX) break;
     const lang = p.application?.lang === "en" ? "en" : "es";
-    const mail = render(lang, bday ? "bday" : "note", p.first_name ?? "", dayVar(today), city === "bogota");
+    const mail = render(lang, bday ? "bday" : "note", p.first_name ?? "", (lang === "en" ? VARS_EN : VARS)[dayIdx(today)], city === "bogota");
     if (body.dry) { would.push(`${p.first_name ?? ""} <${p.email}> ${bday ? "cumpleaños" : "mensaje"}${city === "bogota" ? " +esfera" : ""}`); sent++; continue; }
     const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: FROM, to: [p.email], reply_to: REPLY_TO, subject: mail.subject, html: mail.html, text: mail.text }) });
+      body: JSON.stringify({ from: FROM, to: [p.email], reply_to: REPLY_TO, subject: mail.subject, html: mail.html, text: mail.text,
+        headers: { "List-Unsubscribe": `<mailto:${REPLY_TO}?subject=${encodeURIComponent("Cancelar avisos / Unsubscribe")}>` } }) });
     if (r.ok) sent++; else { failed++; console.error("resend", r.status, (await r.text()).slice(0, 200)); }
   }
-  return json({ ok: true, today, dry: !!body.dry, sent, skipped, failed, would });
+  return json({ ok: true, today, sendDay, dry: !!body.dry, sent, skipped, failed, would });
 });
