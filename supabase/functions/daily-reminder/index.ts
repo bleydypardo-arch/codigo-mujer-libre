@@ -32,7 +32,9 @@ const T = {
 };
 
 // 40 correos distintos (20 de Jazz + 14 nuevos + 6 «¿Sabías que…?»). Cada día se elige uno distinto; nunca el mismo dos días seguidos.
-const VARS: [string, string][] = [
+type Var = [string, string, [string, string]?]; // [asunto, texto, [rótulo, enlace] opcional]
+const DEMO_TIENDAS = "https://bleydypardo-arch.github.io/codigo-mujer-libre/boutiques/centro.html?lang=es"; // demo público del centro comercial virtual (no es Admin)
+const VARS: Var[] = [
   ["Hoy quiero regalarte un minuto 🌸", "Entre tantas cosas que haces por los demás, ¿cuándo fue la última vez que dedicaste un momento solo para ti?\n\nHoy tenemos unas palabras especiales esperándote."],
   ["Quizás hoy necesitabas leer esto 💗", "Hay días en los que una sola frase puede cambiar nuestra manera de mirar la vida.\n\nDescubre la reflexión que preparamos para ti."],
   ["Antes de comenzar tu día… ☀️", "No corras todavía.\n\nRegálate un minuto de calma, inspiración y fe.\n\nTu mensaje de hoy ya te está esperando."],
@@ -67,7 +69,7 @@ const VARS: [string, string][] = [
   ["Quizás justo lo que necesitabas oír 💫", "A veces una sola frase es lo que le faltaba al día.\n\nEntra y descubre la de hoy."],
   ["Cada paso tuyo cuenta 🌅", "Buenos días, valiente.\n\nMira lo que hay para ti hoy."],
   ["Paz para tu mañana 🕊️", "Un mensaje corto para empezar el día con calma."],
-  ["¿Sabías que puedes tener tu propia tienda virtual? 🛍️", "Si eres emprendedora, en Código Mujer Libre podemos crear tu tienda virtual.\n\nEntra y descubre cómo."],
+  ["¿Sabías que puedes tener tu propia tienda virtual? 🛍️", "Si eres emprendedora, en Código Mujer Libre podemos crear tu tienda virtual.\n\nMira cómo se ve el demo y entra a descubrir cómo.", ["🛍️ VER EL DEMO DE LAS TIENDAS", DEMO_TIENDAS]],
   ["¿Sabías que tenemos los eventos de tu ciudad? 🗓️", "Todos en un solo lugar.\n\nRevisa la sección Eventos y elige el que más te guste."],
   ["¿Sabías que aquí tú eres lo importante? 💗", "Creamos este espacio para ti: para respirar, sentirte acompañada y recordar cuánto vales.\n\nEntra, hoy es tu momento."],
   ["¿Sabías que cinco minutos pueden cambiar tu día? 🌿", "Dentro de la app puedes regalarte unos minutos de calma.\n\nEntra y respira."],
@@ -77,11 +79,13 @@ const VARS: [string, string][] = [
 const dayVar = (today: string) => { const [y, m, d] = today.split("-").map(Number); const n = Math.floor(Date.UTC(y, m - 1, d) / 86400000); return VARS[(n * 13) % VARS.length]; }; // 13 y 40 no comparten divisores: recorre las 40 y nunca repite seguido
 const BOGOTA_ES = "🎁 ¿Ya atrapaste tu esfera de hoy? Recuerda que el 15 de diciembre es el Gran Premio. Cada esfera cuenta. ¡Atrápala!"; // SOLO mujeres de Bogotá
 
-function render(lang: "es" | "en", kind: "note" | "bday", name: string, v?: [string, string], bogota = false) {
+function render(lang: "es" | "en", kind: "note" | "bday", name: string, v?: Var, bogota = false) {
   const t = T[lang];
   const k = (kind === "note" && lang === "es" && v) ? { subject: v[0], head: v[0], p: v[1], cta: "🌸 DESCUBRIR MI MENSAJE DE HOY" } : t[kind];
   const paras = k.p.split("\n\n").map((x: string) => `<p style="margin:0 0 12px;font-size:16.5px;line-height:1.6;">${esc(x)}</p>`).join("");
   const bog = (bogota && lang === "es" && kind === "note") ? `<tr><td style="padding:6px 32px 0;"><div style="background:#FFF1EE;border-radius:14px;padding:14px 16px;font-family:Georgia,'Times New Roman',serif;font-size:15.5px;line-height:1.55;color:#7E3A44;">${esc(BOGOTA_ES)}</div></td></tr>` : "";
+  const ex = (kind === "note" && lang === "es" && v && v[2]) ? v[2] : null;
+  const extra = ex ? `<tr><td align="center" style="padding:6px 32px 8px;"><a href="${esc(ex[1])}" style="display:inline-block;border:2px solid #B85F68;color:#B85F68;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:999px;">${esc(ex[0])}</a></td></tr>` : "";
   const greet = name ? `${t.hi} ${esc(name)},` : `${t.hi},`;
   const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(k.subject)}</title></head>
 <body style="margin:0;padding:0;background:#F6ECE9;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F6ECE9;"><tr><td align="center" style="padding:28px 14px;">
@@ -89,10 +93,10 @@ function render(lang: "es" | "en", kind: "note" | "bday", name: string, v?: [str
 <tr><td align="center" style="background:#FFF1EE;padding:28px 24px 8px;"><img src="${esc(IMG_URL)}" width="110" height="110" alt="Código Mujer Libre" style="display:block;border:0;width:110px;height:110px;"></td></tr>
 <tr><td align="center" style="background:#FFF1EE;padding:4px 28px 24px;"><div style="font-family:Georgia,'Times New Roman',serif;font-size:26px;line-height:1.25;color:#7E3A44;">${esc(k.head)}</div></td></tr>
 <tr><td style="padding:26px 32px 6px;font-family:Georgia,'Times New Roman',serif;color:#272525;"><p style="margin:0 0 12px;font-size:18px;">${greet}</p>${paras}</td></tr>${bog}
-<tr><td align="center" style="padding:20px 32px 8px;"><a href="${esc(APP_URL)}" style="display:inline-block;background:#B85F68;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:999px;">${esc(k.cta)}</a></td></tr>
+<tr><td align="center" style="padding:20px 32px 8px;"><a href="${esc(APP_URL)}" style="display:inline-block;background:#B85F68;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:999px;">${esc(k.cta)}</a></td></tr>${extra}
 <tr><td style="padding:18px 32px 26px;font-family:Georgia,'Times New Roman',serif;color:#272525;"><p style="margin:0;font-size:16px;">${esc(t.bye)}<br><span style="color:#B85F68;font-size:18px;">Código ML</span></p></td></tr>
 </table><div style="max-width:520px;padding:14px 20px 0;font-family:Arial,Helvetica,sans-serif;font-size:11.5px;line-height:1.5;color:#8a8282;">${esc(t.foot)}</div></td></tr></table></body></html>`;
-  return { subject: k.subject, html, text: `${greet}\n\n${k.p}${bog ? "\n\n" + BOGOTA_ES : ""}\n\n${k.cta}: ${APP_URL}\n\n${t.bye}\nCódigo ML` };
+  return { subject: k.subject, html, text: `${greet}\n\n${k.p}${bog ? "\n\n" + BOGOTA_ES : ""}\n\n${k.cta}: ${APP_URL}${ex ? "\n\n" + ex[0] + ": " + ex[1] : ""}\n\n${t.bye}\nCódigo ML` };
 }
 
 Deno.serve(async (req) => {
