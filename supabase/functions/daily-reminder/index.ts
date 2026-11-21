@@ -13,6 +13,10 @@ const REPLY_TO = Deno.env.get("APPROVAL_REPLY_TO") ?? "hola@codigomujerlibre.com
 const APP_URL = Deno.env.get("APP_URL") ?? "https://bleydypardo-arch.github.io/codigo-mujer-libre/";
 const IMG_URL = Deno.env.get("APPROVAL_IMAGE_URL") ?? "https://bleydypardo-arch.github.io/codigo-mujer-libre/email/orchid-email.png";
 const MAX = 90;
+const SPHERE_END = "2026-12-12"; // hasta este día (Bogotá) la esfera y el Gran Premio; después, impulso de tiendas virtuales
+const ORLANDO = ["orlando", "wintergarden", "clermont", "altamontesprings"]; // Orlando y alrededores: solo 2 correos por semana (lun y vie) mientras Jazz viaja
+const STORE_ES = "🛍️ ¿Tienes un negocio o conoces a una emprendedora? Aquí puede tener su tienda virtual. ¡Mira cómo se ve!";
+const STORE_EN = "🛍️ Do you have a business or know a woman entrepreneur? She can have her virtual store here. See how it looks!";
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { "Content-Type": "application/json" } });
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const ckey = (v: string) => String(v || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z]/g, "");
@@ -123,16 +127,16 @@ const VARS_EN: Var[] = [
   ["Did you know you can find plans for you here? 🍽️", "Restaurants, experiences and events we recommend.\n\nCome in and pick your next plan."],
 ];
 const dayIdx = (today: string) => { const [y, m, d] = today.split("-").map(Number); const n = Math.floor(Date.UTC(y, m - 1, d) / 86400000); return (n * 13) % VARS.length; }; // 13 y 40 no comparten divisores: recorre las 40 y nunca repite seguido
-const BOGOTA_EN = "🎁 Have you caught today's sphere yet? Remember the Grand Prize is on December 15. Every sphere counts. Catch it!"; // ONLY women in Bogotá
-const BOGOTA_ES = "🎁 ¿Ya atrapaste tu esfera de hoy? Recuerda que el 15 de diciembre es el Gran Premio. Cada esfera cuenta. ¡Atrápala!"; // SOLO mujeres de Bogotá
+const BOGOTA_EN = "🎁 Have you caught today's sphere yet? Remember the Grand Prize is on December 12. Every sphere counts. Catch it!"; // ONLY women in Bogotá
+const BOGOTA_ES = "🎁 ¿Ya atrapaste tu esfera de hoy? Recuerda que el 12 de diciembre es el Gran Premio. Cada esfera cuenta. ¡Atrápala!"; // SOLO mujeres de Bogotá
 
-function render(lang: "es" | "en", kind: "note" | "bday", name: string, v?: Var, bogota = false) {
+function render(lang: "es" | "en", kind: "note" | "bday", name: string, v?: Var, bogota = false, store = false) {
   const t = T[lang];
   const k = (kind === "note" && v) ? { subject: v[0], head: v[0], p: v[1], cta: lang === "es" ? "🌸 DESCUBRIR MI MENSAJE DE HOY" : "🌸 DISCOVER TODAY'S MESSAGE" } : t[kind];
-  const BOG = lang === "es" ? BOGOTA_ES : BOGOTA_EN;
+  const BOG = store ? (lang === "es" ? STORE_ES : STORE_EN) : (lang === "es" ? BOGOTA_ES : BOGOTA_EN);
   const paras = k.p.split("\n\n").map((x: string) => `<p style="margin:0 0 12px;font-size:16.5px;line-height:1.6;">${esc(x)}</p>`).join("");
-  const bog = (bogota && kind === "note") ? `<tr><td style="padding:6px 32px 0;"><div style="background:#FFF1EE;border-radius:14px;padding:14px 16px;font-family:Georgia,'Times New Roman',serif;font-size:15.5px;line-height:1.55;color:#7E3A44;">${esc(BOG)}</div></td></tr>` : "";
-  const ex = (kind === "note" && v && v[2]) ? v[2] : null;
+  const bog = ((bogota || store) && kind === "note") ? `<tr><td style="padding:6px 32px 0;"><div style="background:#FFF1EE;border-radius:14px;padding:14px 16px;font-family:Georgia,'Times New Roman',serif;font-size:15.5px;line-height:1.55;color:#7E3A44;">${esc(BOG)}</div></td></tr>` : "";
+  const ex = (kind === "note" && v && v[2]) ? v[2] : ((store && kind === "note") ? (lang === "es" ? ["🛍️ VER EL DEMO DE LAS TIENDAS", DEMO_TIENDAS] : ["🛍️ SEE THE STORES DEMO", DEMO_TIENDAS_EN]) as [string, string] : null);
   const extra = ex ? `<tr><td align="center" style="padding:6px 32px 8px;"><a href="${esc(ex[1])}" style="display:inline-block;border:2px solid #B85F68;color:#B85F68;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:999px;">${esc(ex[0])}</a></td></tr>` : "";
   const greet = name ? `${t.hi} ${esc(name)},` : `${t.hi},`;
   const html = `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(k.subject)}</title></head>
@@ -162,9 +166,10 @@ Deno.serve(async (req) => {
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(new Date()); // YYYY-MM-DD
   const [yy, mm, dd] = today.split("-").map(Number);
   const dow = new Date(Date.UTC(yy, mm - 1, dd)).getUTCDay(); // día de la semana en Bogotá: 0 domingo, 1 lunes, 3 miércoles, 5 viernes
-  const sendDay = [0, 1, 3, 5].includes(dow); // 4 correos por semana: lunes, miércoles, viernes y domingo. Los cumpleaños salen siempre.
+  const sendDay4 = [0, 1, 3, 5].includes(dow), sendDay2 = [1, 5].includes(dow); // 4 correos por semana: lunes, miércoles, viernes y domingo. Los cumpleaños salen siempre.
 
   const { data: ppl } = await db.from("profiles").select("id,email,first_name,city,role,approved,rejected,birth_month,birth_day,application,notif_prefs").eq("approved", true);
+  const sphereOn = today <= SPHERE_END;
   let sent = 0, skipped = 0, failed = 0; const would: string[] = [];
   for (const p of ppl ?? []) {
     if (p.rejected || !p.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(p.email)) { skipped++; continue; }
@@ -172,15 +177,16 @@ Deno.serve(async (req) => {
     if (body.only && p.email.toLowerCase() !== body.only.toLowerCase()) continue;
     const city = ckey(p.city ?? "");
     const bday = p.birth_month === mm && p.birth_day === dd;
+    const sendDay = (ORLANDO.includes(city) || /32837/.test(String(p.city ?? ""))) ? sendDay2 : sendDay4;
     if (!bday && !sendDay && !body.only) { skipped++; continue; }
     if (sent >= MAX) break;
     const lang = p.application?.lang === "en" ? "en" : "es";
-    const mail = render(lang, bday ? "bday" : "note", p.first_name ?? "", (lang === "en" ? VARS_EN : VARS)[dayIdx(today)], city === "bogota");
-    if (body.dry) { would.push(`${p.first_name ?? ""} <${p.email}> ${bday ? "cumpleaños" : "mensaje"}${city === "bogota" ? " +esfera" : ""}`); sent++; continue; }
+    const mail = render(lang, bday ? "bday" : "note", p.first_name ?? "", (lang === "en" ? VARS_EN : VARS)[dayIdx(today)], city === "bogota" && sphereOn, city === "bogota" && !sphereOn);
+    if (body.dry) { would.push(`${p.first_name ?? ""} <${p.email}> ${bday ? "cumpleaños" : "mensaje"}${city === "bogota" ? (sphereOn ? " +esfera" : " +tiendas") : ""}`); sent++; continue; }
     const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: FROM, to: [p.email], reply_to: REPLY_TO, subject: mail.subject, html: mail.html, text: mail.text,
         headers: { "List-Unsubscribe": `<mailto:${REPLY_TO}?subject=${encodeURIComponent("Cancelar avisos / Unsubscribe")}>` } }) });
     if (r.ok) sent++; else { failed++; console.error("resend", r.status, (await r.text()).slice(0, 200)); }
   }
-  return json({ ok: true, today, sendDay, dry: !!body.dry, sent, skipped, failed, would });
+  return json({ ok: true, today, sendDay4, sendDay2, sphereOn, dry: !!body.dry, sent, skipped, failed, would });
 });
