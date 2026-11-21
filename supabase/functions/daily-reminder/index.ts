@@ -170,6 +170,7 @@ Deno.serve(async (req) => {
 
   const { data: ppl } = await db.from("profiles").select("id,email,first_name,city,role,approved,rejected,birth_month,birth_day,application,notif_prefs").eq("approved", true);
   const sphereOn = today <= SPHERE_END;
+  const promoDay = [1, 5].includes(dow); // Bogotá: solo lunes y viernes llevan el recuadro de promoción (esfera/concurso, luego tiendas); domingo y miércoles van con el mensaje normal
   let sent = 0, skipped = 0, failed = 0; const would: string[] = [];
   for (const p of ppl ?? []) {
     if (p.rejected || !p.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(p.email)) { skipped++; continue; }
@@ -181,12 +182,12 @@ Deno.serve(async (req) => {
     if (!bday && !sendDay && !body.only) { skipped++; continue; }
     if (sent >= MAX) break;
     const lang = p.application?.lang === "en" ? "en" : "es";
-    const mail = render(lang, bday ? "bday" : "note", p.first_name ?? "", (lang === "en" ? VARS_EN : VARS)[dayIdx(today)], city === "bogota" && sphereOn, city === "bogota" && !sphereOn);
-    if (body.dry) { would.push(`${p.first_name ?? ""} <${p.email}> ${bday ? "cumpleaños" : "mensaje"}${city === "bogota" ? (sphereOn ? " +esfera" : " +tiendas") : ""}`); sent++; continue; }
+    const mail = render(lang, bday ? "bday" : "note", p.first_name ?? "", (lang === "en" ? VARS_EN : VARS)[dayIdx(today)], city === "bogota" && promoDay && sphereOn, city === "bogota" && promoDay && !sphereOn);
+    if (body.dry) { would.push(`${p.first_name ?? ""} <${p.email}> ${bday ? "cumpleaños" : "mensaje"}${city === "bogota" && promoDay ? (sphereOn ? " +esfera" : " +tiendas") : ""}`); sent++; continue; }
     const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: FROM, to: [p.email], reply_to: REPLY_TO, subject: mail.subject, html: mail.html, text: mail.text,
         headers: { "List-Unsubscribe": `<mailto:${REPLY_TO}?subject=${encodeURIComponent("Cancelar avisos / Unsubscribe")}>` } }) });
     if (r.ok) sent++; else { failed++; console.error("resend", r.status, (await r.text()).slice(0, 200)); }
   }
-  return json({ ok: true, today, sendDay4, sendDay2, sphereOn, dry: !!body.dry, sent, skipped, failed, would });
+  return json({ ok: true, today, sendDay4, sendDay2, promoDay, sphereOn, dry: !!body.dry, sent, skipped, failed, would });
 });
