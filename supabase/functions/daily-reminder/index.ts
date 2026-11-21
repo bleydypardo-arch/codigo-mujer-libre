@@ -90,9 +90,9 @@ function render(lang: "es" | "en", kind: "note" | "bday", name: string, v?: [str
 <tr><td align="center" style="background:#FFF1EE;padding:4px 28px 24px;"><div style="font-family:Georgia,'Times New Roman',serif;font-size:26px;line-height:1.25;color:#7E3A44;">${esc(k.head)}</div></td></tr>
 <tr><td style="padding:26px 32px 6px;font-family:Georgia,'Times New Roman',serif;color:#272525;"><p style="margin:0 0 12px;font-size:18px;">${greet}</p>${paras}</td></tr>${bog}
 <tr><td align="center" style="padding:20px 32px 8px;"><a href="${esc(APP_URL)}" style="display:inline-block;background:#B85F68;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:bold;text-decoration:none;padding:14px 32px;border-radius:999px;">${esc(k.cta)}</a></td></tr>
-<tr><td style="padding:18px 32px 26px;font-family:Georgia,'Times New Roman',serif;color:#272525;"><p style="margin:0;font-size:16px;">${esc(t.bye)}<br><span style="color:#B85F68;font-size:18px;">Código Mujer Libre</span></p></td></tr>
+<tr><td style="padding:18px 32px 26px;font-family:Georgia,'Times New Roman',serif;color:#272525;"><p style="margin:0;font-size:16px;">${esc(t.bye)}<br><span style="color:#B85F68;font-size:18px;">Código ML</span></p></td></tr>
 </table><div style="max-width:520px;padding:14px 20px 0;font-family:Arial,Helvetica,sans-serif;font-size:11.5px;line-height:1.5;color:#8a8282;">${esc(t.foot)}</div></td></tr></table></body></html>`;
-  return { subject: k.subject, html, text: `${greet}\n\n${k.p}${bog ? "\n\n" + BOGOTA_ES : ""}\n\n${k.cta}: ${APP_URL}\n\n${t.bye}\nCódigo Mujer Libre` };
+  return { subject: k.subject, html, text: `${greet}\n\n${k.p}${bog ? "\n\n" + BOGOTA_ES : ""}\n\n${k.cta}: ${APP_URL}\n\n${t.bye}\nCódigo ML` };
 }
 
 Deno.serve(async (req) => {
