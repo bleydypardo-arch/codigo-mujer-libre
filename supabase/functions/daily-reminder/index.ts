@@ -1,6 +1,6 @@
 // Supabase Edge Function: daily-reminder
 // Cada mañana avisa por correo a las mujeres que HOY tienen un "Mensaje de hoy" (o su cumpleaños): "Tienes un mensaje en Código ML".
-// - Lo dispara el reloj de Supabase (pg_cron) con una clave secreta (CRON_SECRET). Nadie más puede dispararlo.
+// - Lo dispara el reloj de Supabase (pg_cron) con una clave secreta guardada en la tabla privada cron_secrets. Nadie más puede dispararlo.
 // - Usa los mismos mensajes que la app (tabla settings, clave "daily_notes") y las mismas reglas de ciudad:
 //   los mensajes de esferas/premios y los firmados por Karen son SOLO para Bogotá.
 // - Envía por Resend (la misma clave RESEND_API_KEY del correo de aprobación). Tope de seguridad: 90 correos por corrida.
@@ -97,19 +97,18 @@ function render(lang: "es" | "en", kind: "note" | "bday", name: string, v?: [str
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
-  const secret = Deno.env.get("CRON_SECRET");
-  if (!secret || req.headers.get("x-cron-secret") !== secret) return json({ error: "unauthorized" }, 401);
   const url = Deno.env.get("SUPABASE_URL"), service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"), resendKey = Deno.env.get("RESEND_API_KEY");
   if (!url || !service || !resendKey) return json({ error: "not_configured" }, 503);
+  const db = createClient(url, service);
+  // La clave del reloj vive en una tabla privada (cron_secrets) que ninguna usuaria puede leer.
+  const { data: sec } = await db.from("cron_secrets").select("value").eq("name", "daily_reminder").maybeSingle();
+  const given = req.headers.get("x-cron-secret");
+  if (!sec?.value || !given || given !== sec.value) return json({ error: "unauthorized" }, 401);
   let body: { dry?: boolean; only?: string } = {};
   try { body = await req.json(); } catch { /* empty */ }
 
-  const db = createClient(url, service);
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" }).format(new Date()); // YYYY-MM-DD
   const [, mm, dd] = today.split("-").map(Number);
-  const { data: s } = await db.from("settings").select("value").eq("key", "daily_notes").maybeSingle();
-  const notes = Object.values((s?.value ?? {}) as Record<string, { day: string; city?: string; es?: string; en?: string; from?: string }>).filter((n) => n.day === today && n.es);
-  const bogotaOnly = (n: { es?: string; en?: string; from?: string }) => /esfera|sphere|ticket|premios de las/i.test((n.es ?? "") + " " + (n.en ?? "")) || /karen/i.test(n.from ?? "");
 
   const { data: ppl } = await db.from("profiles").select("id,email,first_name,city,role,approved,rejected,birth_month,birth_day,application,notif_prefs").eq("approved", true);
   let sent = 0, skipped = 0, failed = 0; const would: string[] = [];
@@ -122,7 +121,7 @@ Deno.serve(async (req) => {
     if (sent >= MAX) break;
     const lang = p.application?.lang === "en" ? "en" : "es";
     const mail = render(lang, bday ? "bday" : "note", p.first_name ?? "", dayVar(today), city === "bogota");
-    if (body.dry) { would.push(`${p.first_name ?? ""} <${p.email}> ${bday ? "cumpleaños" : "mensaje"}`); sent++; continue; }
+    if (body.dry) { would.push(`${p.first_name ?? ""} <${p.email}> ${bday ? "cumpleaños" : "mensaje"}${city === "bogota" ? " +esfera" : ""}`); sent++; continue; }
     const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: FROM, to: [p.email], reply_to: REPLY_TO, subject: mail.subject, html: mail.html, text: mail.text }) });
     if (r.ok) sent++; else { failed++; console.error("resend", r.status, (await r.text()).slice(0, 200)); }
