@@ -127,8 +127,8 @@ const VARS_EN: Var[] = [
   ["Did you know you can find plans for you here? 🍽️", "Restaurants, experiences and events we recommend.\n\nCome in and pick your next plan."],
 ];
 const dayIdx = (today: string) => { const [y, m, d] = today.split("-").map(Number); const n = Math.floor(Date.UTC(y, m - 1, d) / 86400000); return (n * 13) % VARS.length; }; // 13 y 40 no comparten divisores: recorre las 40 y nunca repite seguido
-const BOGOTA_EN = "🎁 Have you caught today's sphere yet? Remember the Grand Prize is on December 12. Every sphere counts. Catch it!"; // ONLY women in Bogotá
-const BOGOTA_ES = "🎁 ¿Ya atrapaste tu esfera de hoy? Recuerda que el 12 de diciembre es el Gran Premio. Cada esfera cuenta. ¡Atrápala!"; // SOLO mujeres de Bogotá
+const BOGOTA_EN = "🎁 Have you caught today's sphere yet? Remember the Grand Prize is on December 15. Every sphere counts. Catch it!"; // ONLY women in Bogotá
+const BOGOTA_ES = "🎁 ¿Ya atrapaste tu esfera de hoy? Recuerda que el 15 de diciembre es el Gran Premio. Cada esfera cuenta. ¡Atrápala!"; // SOLO mujeres de Bogotá
 
 function render(lang: "es" | "en", kind: "note" | "bday", name: string, v?: Var, bogota = false, store = false) {
   const t = T[lang];
